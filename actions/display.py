@@ -1,14 +1,26 @@
 """
 Display-related actions
 """
-from actions.base import Action, ActionLevel
+from actions.base import Action
 from utils.registry import register
 
 
 class DisplayTextAction(Action):
-    """Display text to user"""
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    """Display text to user
+    
+    Required:
+        text (str): Text to display
+        OR
+        text_key (str): Localization key
+        
+    Optional:
+        None
+    """
+    REQUIRED_PARAMS = {}
+    OPTIONAL_PARAMS = {
+        "text": (str, ""),
+        "text_key": (str, None),
+    }
 
     def execute(self):
         from localization import t
@@ -23,15 +35,30 @@ class DisplayTextAction(Action):
 
 class SelectAction(Action):
     """Action that presents choices to user"""
-    def __init__(self, title, choices, **kwargs):
+    def __init__(self, title, options=None, **kwargs):
         super().__init__(**kwargs)
         self.title = title
         self.title_key = kwargs.get("title_key")
-        self.choices = choices  # List of (description, action_list) tuples
+        if options is None:
+            options = kwargs.get("options", [])
+        self.options = options  # List of dicts with 'name' and 'actions', or tuples (description, action_list)
+
+    def _normalize_options(self):
+        """Normalize options to list of (name, actions) tuples"""
+        normalized = []
+        for option in self.options:
+            if isinstance(option, dict):
+                normalized.append((option.get('name', ''), option.get('actions', [])))
+            elif isinstance(option, (list, tuple)) and len(option) == 2:
+                normalized.append(option)
+            else:
+                # Invalid format, skip or handle
+                normalized.append(('', []))
+        return normalized
 
     def execute(self):
         # If only one choice (and we're not in a menu), execute it directly
-        base_choices = list(self.choices)
+        base_choices = self._normalize_options()
         if self._should_auto_select(base_choices):
             _, action_list = base_choices[0]
             return action_list
@@ -57,6 +84,10 @@ class SelectAction(Action):
                 if isinstance(label, str) and label.startswith("@"):
                     label = t(label[1:], default=label[1:])
                 print(f"{i+1}. {label}")
+
+        if self._should_auto_select_first(effective_choices):
+            _, action_list = effective_choices[0]
+            return action_list
 
         while True:
             try:
@@ -85,11 +116,17 @@ class SelectAction(Action):
         game_state = self._get_game_state()
         return bool(game_state.config.get("show_menu", True))
 
+    def _should_auto_select_first(self, effective_choices):
+        game_state = self._get_game_state()
+        if not effective_choices:
+            return False
+        return bool(game_state.config.get("ai_debug", False))
+
     def _create_return_action(self):
         """Create an action that returns to this same selection pool"""
         return SelectAction(
             self.title,
-            self.choices,
+            options=self.options,
         )
 
     def _get_game_state(self):

@@ -4,7 +4,6 @@ Base room definitions for the new architecture.
 
 from actions.base import action_queue
 from engine.game_state import game_state
-from actions.misc import StartEventAction
 
 class Room:
     """Base room class - represents a location where events occur"""

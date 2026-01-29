@@ -5,29 +5,36 @@ from engine.game_state import game_state
 
 from enum import Enum
 
-class ActionLevel(Enum):
-    NO_MESSAGE = 0
-    HP_CHANGE = 1
-
 class Action:
     """Base action class - executable game logic unit"""
 
+    REQUIRED_PARAMS = {}
+    OPTIONAL_PARAMS = {}
+
     def __init__(self, **kwargs):
         # Remaining kwargs stored for action use
-        self.level = ActionLevel.NO_MESSAGE
         self.kwargs = kwargs
+        self._validate_params()
+
+    def _validate_params(self):
+        """Validate required params and inject optional defaults"""
+        for name, typ in self.REQUIRED_PARAMS.items():
+            if name not in self.kwargs:
+                raise ValueError(
+                    f"{self.__class__.__name__} missing required param: {name}"
+                )
+            if typ and not isinstance(self.kwargs[name], typ):
+                raise TypeError(f"{name} must be {typ}")
+
+        for name, (typ, default) in self.OPTIONAL_PARAMS.items():
+            if name not in self.kwargs:
+                self.kwargs[name] = default
+            elif typ and not isinstance(self.kwargs[name], typ):
+                raise TypeError(f"{name} must be {typ}")
 
     def execute(self):
         """Execute this action - to be overridden"""
         raise NotImplementedError
-
-    def notify(self):
-        """Notify listeners for this action."""
-        try:
-            if hasattr(game_state, 'notify_listeners'):
-                game_state.notify_listeners(self)
-        except Exception:
-            pass
 
     def __str__(self):
         return f"{self.__class__.__name__}()"
@@ -53,13 +60,12 @@ class ActionQueue:
             self.queue.extend(actions)
 
     def execute_next(self):
-        """Execute next action in queue and notify listeners afterwards"""
+        """Execute next action in queue and return result"""
         if self.queue:
             action = self.queue.pop(0)
             if game_state.config.debug:
                 print(f"Executing action: {action}")
             result = action.execute()
-            action.notify()
             return result
         return None
 

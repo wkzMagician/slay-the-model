@@ -16,10 +16,9 @@ from actions.display import DisplayTextAction, SelectAction
 from actions.misc import (
     MoveToPositionAction,
     GenerateMapAction,
-    GainRelicAction,
     StartEventAction,
 )
-from actions.card import CreateRandomCardAction
+from actions.card import CreateRandomCardAction, RemoveCardAction
 
 # Global action queue
 
@@ -31,8 +30,9 @@ __all__ = [
     'DisplayTextAction', 'SelectAction',
 
     # Misc actions
-    'MoveToPositionAction', 'GenerateMapAction', 'GainRelicAction', 'StartEventAction',
+    'MoveToPositionAction', 'GenerateMapAction', 'StartEventAction',
 
     # Card actions
     'CreateRandomCardAction',
+    'RemoveCardAction',
 ]

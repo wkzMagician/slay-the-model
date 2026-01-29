@@ -5,6 +5,9 @@ import random as rd
 from config.game_config import GameConfig
 import os
 import time
+from .combat_state import CombatState
+
+
 class GameState:
     """Global game state containing all persistent game data"""
 
@@ -16,13 +19,6 @@ class GameState:
         self.map_data = []
         self.map_connections = {}
         self.current_position = [0, 0]
-
-        # Combat data
-        self.current_enemies = []
-        self.combat_turn = 0
-        self.player_turn = True
-        self.turn_cards_played = 0
-        self.turn_attack_cards_played = 0
 
         # Game progress
         self.current_floor = 0
@@ -51,6 +47,9 @@ class GameState:
         self.current_room = None
         self.event_stack = []
         
+        # Combat state
+        self.combat_state = CombatState()
+        
         self.setup()
         
     def setup(self):
@@ -58,10 +57,16 @@ class GameState:
             self.config.seed = int(time.time())
         rd.seed(self.config.seed)
 
+    def handle_creature_death(self, creature):
+        """Handle creature death notifications."""
+        if creature is self.player:
+            self.combat_state.game_phase = "game_over"
+
     @property
     def current_event(self):
         """Get the current event (top of the stack)"""
         return self.event_stack[-1] if self.event_stack else None
+
 
 # Global game state instance
 game_state = GameState()

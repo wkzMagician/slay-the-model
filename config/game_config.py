@@ -10,6 +10,8 @@ class GameConfig:
             "seed": None,
             "character": "Ironclad",
             "debug": True,
+            "ai_debug": False,
+            "ai_debug_log_path": "logs/ai_debug.log",
         }
 
         # Update defaults with provided kwargs
@@ -18,6 +20,10 @@ class GameConfig:
         # Set attributes dynamically
         for key, value in defaults.items():
             setattr(self, key, value)
+
+    def get(self, key, default=None):
+        """Dict-like access for compatibility with config.get usage."""
+        return getattr(self, key, default)
 
     @staticmethod
     def load(config_path):

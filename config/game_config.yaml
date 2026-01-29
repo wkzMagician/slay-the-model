@@ -3,3 +3,5 @@ language: en
 seed: -1
 character: Ironclad
 debug: True
+ai_debug: False
+ai_debug_log_path: logs/ai_debug.log
