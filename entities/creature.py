@@ -15,11 +15,28 @@ class Creature:
         powers: Optional[List[Any]] = None,
         on_death: Optional[Callable[["Creature"], None]] = None,
     ) -> None:
-        self.max_hp = max_hp
+        self._max_hp = max_hp
         self._hp = max_hp
-        self.block = 0
+        self._block = 0
         self.powers: List[Any] = list(powers or [])
         self._on_death = on_death
+
+    @property
+    def max_hp(self) -> int:
+        return self._max_hp
+
+    @max_hp.setter
+    def max_hp(self, value: int) -> None:
+        self._hp += value - self._max_hp
+        self._max_hp = max(1, int(value))
+
+    @property
+    def block(self) -> int:
+        return self._block
+
+    @block.setter
+    def block(self, value: int) -> None:
+        self._block = max(0, int(value))
 
     def set_on_death(self, callback: Optional[Callable[["Creature"], None]]) -> None:
         self._on_death = callback
@@ -33,7 +50,7 @@ class Creature:
 
     @hp.setter
     def hp(self, value: int) -> None:
-        self._hp = max(0, int(value))
+        self._hp = max(0, min(self.max_hp, int(value)))
         if self.is_dead():
             self.on_death()
 
@@ -57,15 +74,13 @@ class Creature:
         self.block -= absorbed
         remaining = damage - absorbed
         if remaining > 0:
-            self._hp -= remaining
-            if self.is_dead():
-                self.on_death()
+            self.hp -= remaining
         return remaining
 
     def heal(self, amount: int) -> int:
         if amount <= 0:
             return 0
-        self._hp = min(self.max_hp, self._hp + amount)
+        self.hp += amount
         return self._hp
 
     def gain_block(self, amount: int, source=None, card=None) -> None:

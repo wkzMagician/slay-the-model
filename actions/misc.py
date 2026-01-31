@@ -219,7 +219,66 @@ class AddRandomPotionAction(Action):
             from potions.base import create_random_potion
             potion = create_random_potion()
             if potion:
-                game_state.player.potions.append(potion)
-                from localization import t
-                print(t("ui.received_potion", default=f"Received potion: {potion.name}!", name=potion.name))
-                return potion
+                if len(game_state.player.potions) >= game_state.player.potion_limit:
+                    from actions.display import SelectAction
+                    from localization import t
+                    options = [
+                        ("@ui.skip_potion", []),
+                    ]
+                    for index, existing in enumerate(game_state.player.potions):
+                        options.append(
+                            (
+                                t(
+                                    "ui.replace_potion_option",
+                                    default=f"Replace {existing.name}",
+                                    name=existing.name,
+                                ),
+                                [ReplacePotionAction(index=index, new_potion=potion)],
+                            )
+                        )
+                    return [
+                        SelectAction(
+                            title="@ui.potion_full_title",
+                            options=options,
+                        )
+                    ]
+                added = game_state.player.potions.append(potion)
+                if added:
+                    from localization import t
+                    print(t("ui.received_potion", default=f"Received potion: {potion.name}!", name=potion.name))
+                    return potion
+                return None
+
+
+@register("action")
+class ReplacePotionAction(Action):
+    """Replace a potion at a specific index with a new potion.
+
+    Required:
+        index (int): Index of potion to replace
+        new_potion (object): Potion instance to place
+
+    Optional:
+        None
+    """
+    REQUIRED_PARAMS = {
+        "index": int,
+        "new_potion": object,
+    }
+    OPTIONAL_PARAMS = {}
+
+    def execute(self):
+        from engine.game_state import game_state
+        if not game_state.player:
+            return None
+        index = self.kwargs.get("index")
+        new_potion = self.kwargs.get("new_potion")
+        if new_potion is None or not isinstance(index, int):
+            return None
+        potions = game_state.player.potions
+        if 0 <= index < len(potions):
+            potions[index] = new_potion
+            from localization import t
+            print(t("ui.received_potion", default=f"Received potion: {new_potion.name}!", name=new_potion.name))
+            return new_potion
+        return None

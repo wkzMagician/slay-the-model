@@ -9,6 +9,9 @@ ui:
   invalid_number: "Please enter a valid number"
   choose_blessings: "Choose blessings"
   blessing_choice: "Blessing {index}: {name}"
+  potion_full_title: "Potion slots full"
+  skip_potion: "Skip"
+  replace_potion_option: "Replace {name}"
 
 combat:
   deal_damage_enemy: "Deal {amount} damage to enemy"

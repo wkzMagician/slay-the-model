@@ -6,15 +6,12 @@ from config.game_config import GameConfig
 import os
 import time
 from .combat_state import CombatState
-
+from player.player_factory import create_player
 
 class GameState:
     """Global game state containing all persistent game data"""
 
     def __init__(self):
-        # Player data
-        self.player = None
-
         # Map data
         self.map_data = []
         self.map_connections = {}
@@ -50,12 +47,12 @@ class GameState:
         # Combat state
         self.combat_state = CombatState()
         
-        self.setup()
-        
-    def setup(self):
+        # game setup
         if self.config.seed == -1:
             self.config.seed = int(time.time())
         rd.seed(self.config.seed)
+        # character
+        self.player = create_player(self.config.character)
 
     def handle_creature_death(self, creature):
         """Handle creature death notifications."""

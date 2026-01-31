@@ -221,3 +221,29 @@ class RemoveCardAction(Action):
         if card and game_state.player:
             if hasattr(game_state.player, "card_manager"):
                 game_state.player.card_manager.remove_from_deck(card)
+
+
+@register("action")
+class ExhaustCardAction(Action):
+    """Exhaust a card into exhaust pile.
+
+    Required:
+        card (Card): Card to exhaust
+
+    Optional:
+        source_pile (str): Source pile name
+    """
+    REQUIRED_PARAMS = {
+        "card": None,
+    }
+    OPTIONAL_PARAMS = {
+        "source_pile": (str, None),
+    }
+
+    def execute(self):
+        from engine.game_state import game_state
+        card = self.kwargs.get("card")
+        source_pile = self.kwargs.get("source_pile")
+        if card and game_state.player and hasattr(game_state.player, "card_manager"):
+            return game_state.player.card_manager.exhaust(card, source_pile=source_pile)
+        return False
