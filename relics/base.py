@@ -1,6 +1,9 @@
-class Relic:
+from utils.localizable import Localizable
+
+
+class Relic(Localizable):
+    localization_prefix = "relics"
     rarity = "Common"
-    # todo: localized display_name and description
 
     def __init__(self):
         pass

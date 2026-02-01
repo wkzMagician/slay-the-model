@@ -3,12 +3,13 @@ from typing import List
 from actions.base import Action
 from engine.game_state import game_state
 from entities.creature import Creature
+from utils.localizable import Localizable
 
-class Potion:
+class Potion(Localizable):
+    localization_prefix = "potions"
     rarity = "Common"
     category = "Global"
     amount = None
-    # todo: localized display_name and description
 
     def __init__(self):
         pass

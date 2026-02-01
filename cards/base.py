@@ -1,26 +1,27 @@
 """
 Card base class - class-driven card system with namespace support
 """
-from typing import List
+from typing import Any, List
 from actions.base import Action
 from entities.creature import Creature
-from cards.description_parser import description_parser
 from engine.game_state import game_state
 from utils.types import TargetType
 from cards.namespaces import get_color_for_namespace, _namespace_from_module
+from utils.localizable import Localizable
+from utils.parser import parse
 
 COST_X = -1
 COST_UNPLAYABLE = -2
 
 
-class Card:
+class Card(Localizable):
     """Advanced card class with dynamic values and multiple triggers"""
+
+    localization_prefix = "cards"
 
     # * card attributes
     card_type = "Attack"  # Attack, Skill, Power, Status, Curse
     rarity = "Starter"  # Starter, Common, Uncommon, Rare
-    description_template = ""
-    upgrade_description_template = None
 
     # * card values
     base_cost = 0
@@ -57,8 +58,10 @@ class Card:
 
     # * card triggers
     target_type = None
+    
+    localizable_fields = ("name", "description", "upgrade_description")
 
-    def __init__(self, card_name=None):
+    def __init__(self):
         # ***** Basic card attributes with namespace support
         # Determine namespace from module path
         self.namespace = _namespace_from_module(self.__class__.__module__)
@@ -68,22 +71,9 @@ class Card:
         
         # Get class name as base name
         self.base_name = self.__class__.__name__
-            
-        # Apply localization for name
-        from localization import t
-        self.localized_name = t(f"cards.{self.namespace}.{self.base_name}.name", default="NONE")
-        self.display_name = self.localized_name
+        self.display_name = self.get_localized_value("name")
+        self.description_template = self.get_localized_value("description")
         
-        # Resolve description templates with localization
-        self.description_template = self._resolve_description_template(
-            f"{self.namespace}.{self.base_name}",
-            self.description_template,
-        )
-        self.upgrade_description_template = self._resolve_description_template(
-            f"{self.namespace}.{self.base_name}",
-            self.upgrade_description_template,
-            suffix="description_upgraded",
-        )
         # ************************
 
         # Upgrade info
@@ -101,7 +91,7 @@ class Card:
 
         # Computed properties
         self.target_type = self._resolve_target()
-        self.description = self._generate_description()
+        self.update_description()
  
     def __str__(self):
         """Display name for in-game use (without namespace)"""
@@ -168,28 +158,16 @@ class Card:
         """Modify a card value (for buffs/debuffs)"""
         # todo: 调用util里的函数，更新self.temp_values
         # Regenerate description with new values
-        self.description = self._generate_description()
+        self.update_description()
     
     def recalculate_all_temp_values(self):
         """Modify a card value (for buffs/debuffs)"""
         for key, value in self.base_values.items():
             self.recalculate_temp_value(key, value)     
 
-    # * * * desctiption 相关
-    def _generate_description(self):
-        """Generate description with dynamic values"""
-        return description_parser.parse(self.description_template, self)
-
-    def _resolve_description_template(self, key_name, fallback, suffix="description"):
-        from localization import t
-        key = f"cards.{key_name}.{suffix}"
-        value = t(key, default=key)
-        if value == key:
-            key = f"cards.{self.base_name}.{suffix}"
-            value = t(key, default=key)
-        if value == key:
-            return fallback
-        return value
+    def update_description(self):
+        """Regenerate description based on current temp values"""
+        self.description = parse(self.description_template, self.temp_values)
 
     # * * * actions 相关
 
@@ -275,18 +253,20 @@ class Card:
 
         # Update name with upgrade level
         if self.upgrade_level == 1:
-            self.display_name = f"{self.localized_name}+"
+            self.display_name = f"{self.get_localized_value("name")}+"
         else:
             # For cards that can be upgraded multiple times (like Searing Blow)
-            self.display_name = f"{self.localized_name}+{self.upgrade_level}"
+            self.display_name = f"{self.get_localized_value("name")}+{self.upgrade_level}"
 
         # Apply upgrade effects
         self.apply_upgrade()
 
-        if self.upgrade_description_template:
-            self.description_template = self.upgrade_description_template
+        if self.has_localized_key("upgrade_description"):
+            self.description_template = self.get_localized_value("upgrade_description")
+        else:
+            self.description_template = self.get_localized_value("description")
         # Regenerate description with new values
-        self.description = self._generate_description()
+        self.update_description()
 
         from localization import t
         print(t(

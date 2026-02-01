@@ -1,13 +1,12 @@
 from engine.game_state import game_state
 from player.player import Player
 from utils.types import TargetType
+from utils.localizable import Localizable
 
-
-class Orb:
+class Orb(Localizable):
+    localization_prefix = "orbs"
     passive_timing = "turn_end"
     target_type = TargetType.SELF
-    
-    # todo: localized display_name and description
     
     def __init__(self):
         pass
