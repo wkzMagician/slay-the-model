@@ -73,7 +73,7 @@ class TransformCardAction(Action):
         
         # Return actions to be added to caller's action_queue
         return [
-            RemoveCardAction(self.card, self.pile, reason=self.reason or 'Unknown'),
+            RemoveCardAction(card=self.card, src_pile=self.pile),
             AddCardAction(card=get_random_card(namespaces=[namespace]), dest_pile=self.pile),
         ]
 

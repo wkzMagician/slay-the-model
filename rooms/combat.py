@@ -2,7 +2,8 @@
 Combat room implementation - manages Combat instance execution.
 """
 from actions.display import DisplayTextAction
-from actions.reward import AddGoldAction, AddCardAction, AddRandomPotionAction
+from actions.reward import AddGoldAction, AddRandomPotionAction
+from actions.card import AddCardAction
 from engine.combat import Combat
 from engine.game_state import game_state
 from rooms.base import Room
@@ -72,9 +73,15 @@ class CombatRoom(Room):
         if gold_amount > 0:
             self.action_queue.add_action(AddGoldAction(amount=gold_amount))
         
-        # Add card reward (non-boss)
-        if not self.is_boss:
-            self.action_queue.add_action(AddCardAction(random_from_pool=True))
+         # Add card reward (non-boss)
+         if not self.is_boss:
+             from actions.card import AddRandomCardAction
+             self.action_queue.add_action(AddRandomCardAction(
+                 pile="hand",
+                 namespace=game_state.player.character,
+                 card_type=CardType.ATTACK,
+                 rarity=RarityType.COMMON
+             ))
         
         # Add potion reward (elites and bosses)
         if self.is_elite or self.is_boss:

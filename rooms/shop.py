@@ -4,14 +4,14 @@ Shop room implementation - manages purchasing loop.
 import random
 from actions.card import AddCardAction
 from actions.display import SelectAction, DisplayTextAction
-from actions.reward import AddGoldAction, AddRelicAction, AddRandomPotionAction
-from actions.shop import BuyItemAction, CardRemovalAction
+from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
+from actions.shop import BuyItemAction, CardRemovalAction, LeaveShopAction
+from actions.room import TriggerRelicAction, LeaveRoomAction
 from engine.game_state import game_state
 from localization import LocalStr, t
-from rooms.base import Room
 from utils.option import Option
-from utils.random import get_random_card, get_random_relic, get_random_potion
 from utils.registry import register
+from utils.random import get_random_card, get_random_relic, get_random_potion
 from utils.types import RarityType, CardType, RoomType
 
 

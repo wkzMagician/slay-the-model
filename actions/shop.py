@@ -19,7 +19,7 @@ class BuyItemAction(Action):
         self.item_idx = item_idx
 
     def execute(self):
-        ascension = game_state.ascension_level if game_state else 0
+        ascension = getattr(game_state, "ascension_level", 0) if game_state else 0
         final_price = _get_final_price(self.shop_item, ascension)
 
         if game_state.player.gold >= final_price:
@@ -52,6 +52,10 @@ class CardRemovalAction(Action):
         self.shop_room = shop_room
 
     def execute(self):
+        from actions.card import RemoveCardAction
+        from actions.display import SelectAction
+        from engine.game_state import game_state
+        
         price = self.shop_room.card_removal_price
         if _has_relic("SmilingMask"):
             price = 50
@@ -66,9 +70,29 @@ class CardRemovalAction(Action):
                 self.shop_room.card_removal_price += 25
 
             print(t("ui.card_removal_complete", default="Card removal complete!"))
-            game_state.current_room.enter()
-        else:
-            print(t("ui.not_enough_gold", default="Not enough gold!"))
+            
+            # Build deck selection options
+            deck = game_state.player.card_manager.get_pile('deck')
+            options = []
+            
+            for card in deck:
+                option = card.display_name
+                options.append(
+                    Option(
+                        name = option,
+                        actions = [
+                            RemoveCardAction(card=card, src_pile='deck'),
+                        ]
+                    )
+                )
+            
+            select_action = SelectAction(
+                title=LocalStr("ui.choose_cards_to_remove"),
+                options=options
+            )
+            
+            # Return SelectAction to be added to caller's action_queue
+            self.action_queue.add_action(select_action)
 
 
 @register("action")

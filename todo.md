@@ -3,9 +3,9 @@
 [] 拉去杀戮尖塔wiki中的所有内容，部分内容已经位于docs/下
     [] https://slay-the-spire.fandom.com/wiki/Slay_the_Spire_Wiki, 
     [] https://slaythespire.wiki.gg/
-[] 对爬虫拉去的页面，进行清洗，整理出详细规整的markdown文档
-[] 解决所有 error warning
-[] 解决所有 todo
+[] 对爬虫拉取的页面，进行清洗，整理出详细规整的markdown文档
+[] 解决所有会导致 error warning 的地方，包括Typing检查错误的地方（即使程序可以正常运行）
+[] 实现所有 todo
 [] 新建MockRoom，模拟完整的游戏流程（从塔底爬到塔顶，胜利结束）
 [] 实现战士的部分卡牌，所有starter，5common, 5uncommon, 5rare, 保证attack,skill,power 各>=3
     [] 相应，实现power

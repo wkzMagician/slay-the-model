@@ -123,9 +123,8 @@ class NeoEvent(Event):
             Option(
                 name=LocalStr("blessing.three_random_potions_option"),
                 actions=[
-                    AddRandomPotionAction(),
-                    AddRandomPotionAction(),
-                    AddRandomPotionAction()
+                    AddRandomPotionAction(character=game_state.player.character),
+                    AddRandomPotionAction(character=game_state.player.character)
                 ]
             )
         ]

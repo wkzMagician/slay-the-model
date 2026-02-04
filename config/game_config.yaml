@@ -3,5 +3,4 @@ language: en
 seed: -1
 character: Ironclad
 debug: True
-debug: False
 debug_log_path: logs/debug.log

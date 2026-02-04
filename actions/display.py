@@ -2,15 +2,7 @@
 """
 Display-related actions
 """
-from typing import List
-from actions.base import Action
-from localization import BaseLocalStr, t
-from utils.option import Option
-from utils.registry import register
 # 延迟导入以避免循环导入
-def get_game_state():
-    from engine.game_state import game_state
-    return game_state
 
 @register("action")
 class DisplayTextAction(Action):

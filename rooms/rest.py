@@ -5,6 +5,7 @@ from actions.card import ChooseRemoveCardAction, ChooseUpgradeCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.health import HealAction
 from actions.reward import AddRelicAction, AddRandomRelicAction
+from actions.room import TriggerRelicAction, LeaveRoomAction
 from engine.game_state import game_state
 from localization import LocalStr
 from rooms.base import Room

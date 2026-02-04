@@ -17,6 +17,7 @@ from actions.misc import (
 from actions.card import RemoveCardAction
 from actions.shop import BuyItemAction, CardRemovalAction, LeaveShopAction
 from actions.treasure import OpenChestAction, SkipTreasureAction
+from actions.room import TriggerRelicAction, LeaveRoomAction
 
 __all__ = [
     # Base classes
@@ -36,4 +37,7 @@ __all__ = [
 
     # Treasure actions
     'OpenChestAction', 'SkipTreasureAction',
+
+    # Room actions
+    'TriggerRelicAction', 'LeaveRoomAction',
 ]

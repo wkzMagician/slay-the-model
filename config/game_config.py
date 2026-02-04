@@ -17,9 +17,13 @@ class GameConfig:
         # Update defaults with provided kwargs
         defaults.update(kwargs)
 
-        # Set attributes dynamically
-        for key, value in defaults.items():
-            setattr(self, key, value)
+        # Set attributes explicitly for pylint
+        self.mode = defaults["mode"]
+        self.language = defaults["language"]
+        self.seed = defaults["seed"]
+        self.character = defaults["character"]
+        self.debug = defaults["debug"]
+        self.debug_log_path = defaults["debug_log_path"]
 
     def get(self, key, default=None):
         """Dict-like access for compatibility with config.get usage."""
