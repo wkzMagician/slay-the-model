@@ -1,7 +1,7 @@
 """
 Card base class - class-driven card system with namespace support
 """
-from typing import Any, List
+from typing import Any, List, Optional
 from actions.base import Action
 from entities.creature import Creature
 # 延迟导入以避免循环导入
@@ -164,10 +164,11 @@ class Card(Localizable):
 
     # * * * actions 相关
 
-    def on_play(self, target:Creature|None=None) -> List[Action]:
+    def on_play(self, target:Optional[Creature]=None) -> List[Action]:
         """卡牌被打出时触发，默认返回 Action 列表。"""
         # Import actions here to avoid circular imports
         try:
+            # todo: Card Actions
             from actions.combat import (
                 DealDamageAction,
                 GainBlockAction,

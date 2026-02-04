@@ -1,3 +1,4 @@
+from typing import List
 from actions.base import Action
 from localization import LocalStr, t
 from relics.base import Relic
@@ -25,7 +26,7 @@ class AddRelicAction(Action):
             relic = get_registered_instance("relic", self.relic)
             if relic:
                 game_state.player.relics.append(relic)
-                print(t("ui.received_relic", default=f"Received relic: {relic.name}!", name=relic.name))
+                print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
             
 @register("action")
 class AddRandomRelicAction(Action):
@@ -46,7 +47,7 @@ class AddRandomRelicAction(Action):
             relic = get_random_relic(rarities=self.rarities)
             if relic:
                 game_state.player.relics.append(relic)
-                print(t("ui.received_relic", default=f"Received relic: {relic.name}!", name=relic.name))
+                print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
             
 @register("action")
 class LoseRelicAction(Action):
@@ -140,7 +141,7 @@ class AddRandomPotionAction(Action):
                     ]
                 added = game_state.player.potions.append(potion)
                 if added:
-                    print(t("ui.received_potion", default=f"Received potion: {potion.name}!", name=potion.name))
+                    print(t("ui.received_potion", default=f"Received potion: {potion.idstr}!", name=potion.idstr))
                     return potion
                 return None
 
@@ -169,6 +170,6 @@ class ReplacePotionAction(Action):
         potions = game_state.player.potions
         if 0 <= self.index < len(potions):
             potions[self.index] = self.new_potion
-            print(t("ui.received_potion", default=f"Received potion: {self.new_potion.name}!", name=self.new_potion.name))
+            print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.idstr))
             return self.new_potion
         return None

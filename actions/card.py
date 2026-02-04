@@ -1,4 +1,5 @@
 from actions.base import Action
+from typing import Optional
 from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register, get_registered, list_registered
@@ -58,23 +59,23 @@ class TransformCardAction(Action):
     Optional:
         reason (str): Transform reason (for UI / logging)
     """
-    def __init__(self, card, pile: str, reason: str | None = None):
+    def __init__(self, card, pile: str, reason: Optional[str] = None):
         self.card = card
         self.pile = pile
         self.reason = reason
     
     def execute(self):
         # 相当于删掉原卡，随机获得一张新卡
-        from actions import action_queue
+        from engine.game_state import game_state
+        if not game_state.player:
+            return
         namespace = self.card.namespace # ??
         
-        action_queue.add_actions(
-            [
-                RemoveCardAction(self.card, self.pile, reason=self.reason or 'Unknown'),
-                AddCardAction(card=get_random_card(namespaces=[namespace]), dest_pile=self.pile),
-            ],
-            to_front=True
-        )
+        # Return actions to be added to caller's action_queue
+        return [
+            RemoveCardAction(self.card, self.pile, reason=self.reason or 'Unknown'),
+            AddCardAction(card=get_random_card(namespaces=[namespace]), dest_pile=self.pile),
+        ]
 
 @register("action")
 class ExhaustCardAction(Action):
@@ -86,7 +87,7 @@ class ExhaustCardAction(Action):
     Optional:
         source_pile (str): Source pile name
     """
-    def __init__(self, card, source_pile: str | None = None):
+    def __init__(self, card, source_pile: Optional[str] = None):
         self.card = card
         self.source_pile = source_pile
 
@@ -139,8 +140,6 @@ class ChooseRemoveCardAction(Action):
         # * build SelecAction options
         
         card_manager = game_state.player.card_manager
-        
-        from actions import action_queue
         from actions.display import SelectAction
         
         # todo: 暂时只支持单选
@@ -162,7 +161,8 @@ class ChooseRemoveCardAction(Action):
                 title = LocalStr("ui.choose_cards_to_remove"),
                 options = options
             )
-            action_queue.add_action(select_action, to_front=True)
+            # Return SelectAction to be added to caller's action_queue
+            return select_action
             
         # todo: print remove info message
 
@@ -189,7 +189,6 @@ class ChooseTransformCardAction(Action):
         amount = self.amount
         # * build SelecAction options
         card_manager = game_state.player.card_manager
-        from actions import action_queue
         from actions.display import SelectAction
         
         # todo: 暂时只支持单选
@@ -211,7 +210,8 @@ class ChooseTransformCardAction(Action):
                 title = LocalStr("ui.choose_cards_to_transform"),
                 options = options
             )
-            action_queue.add_action(select_action, to_front=True)
+            # Return SelectAction to be added to caller's action_queue
+            return select_action
             
         # todo: print transform info message
       
@@ -239,7 +239,6 @@ class ChooseUpgradeCardAction(Action):
         
         # * build SelecAction options
         card_manager = game_state.player.card_manager
-        from actions import action_queue
         from actions.display import SelectAction
         
         # todo: 暂时只支持单选
@@ -263,7 +262,8 @@ class ChooseUpgradeCardAction(Action):
                 title = LocalStr("ui.choose_cards_to_upgrade"),
                 options = options
             )
-            action_queue.add_action(select_action, to_front=True)
+            # Return SelectAction to be added to caller's action_queue
+            return select_action
             
         # todo: print upgrade info message
         
@@ -280,7 +280,7 @@ class ChooseAddRandomCardAction(Action):
     Optional:
         None
     """
-    def __init__(self, pile: str = 'hand', total: int = 3, namespace: str | None = None, rarity: RarityType | None = None):
+    def __init__(self, pile: str = 'hand', total: int = 3, namespace: Optional[str] = None, rarity: Optional[RarityType] = None):
         self.pile = pile
         self.total = total
         self.namespace = namespace
@@ -292,7 +292,6 @@ class ChooseAddRandomCardAction(Action):
             return
         
         # 构造 SelectAction options
-        from actions import action_queue
         from actions.display import SelectAction
         
         options = []
@@ -316,7 +315,8 @@ class ChooseAddRandomCardAction(Action):
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options
         )
-        action_queue.add_action(select_action, to_front=True)
+        # Return SelectAction to be added to caller's action_queue
+        return select_action
         
         # todo: print add card info message       
         
@@ -333,7 +333,7 @@ class AddRandomCardAction(Action):
     Optional:
         None
     """
-    def __init__(self, pile: str = 'hand', card_type: CardType | None = None, rarity: RarityType | None = None):
+    def __init__(self, pile: str = 'hand', card_type: Optional[CardType] = None, rarity: Optional[RarityType] = None):
         self.pile = pile
         self.card_type = card_type
         self.rarity = rarity
@@ -349,10 +349,7 @@ class AddRandomCardAction(Action):
             rarities=[self.rarity] if self.rarity else None
         )
         
-        from actions import action_queue
-        action_queue.add_action(
-            AddCardAction(card=random_card, dest_pile=self.pile),
-            to_front=True
-        )
+        # Return AddCardAction to be added to caller's action_queue
+        return AddCardAction(card=random_card, dest_pile=self.pile)
         
         # todo: print add card info message

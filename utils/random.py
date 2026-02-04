@@ -1,5 +1,7 @@
 from typing import Any, List, Optional
 from cards.base import Card
+from potions.base import Potion
+from relics.base import Relic
 from utils.registry import get_registered, list_registered
 from utils.types import CardType, RarityType
 import random
@@ -57,7 +59,7 @@ def get_random_card(namespaces: Optional[List[str]] = None,
     
 
 def get_random_relic(characters: Optional[List[str]] = None, 
-                     rarities: Optional[List[RarityType]] = None) -> Optional[Any]:
+                     rarities: Optional[List[RarityType]] = None) -> Optional[Relic]:
     """
     Get a random relic from the registry based on criteria.
     
@@ -86,6 +88,8 @@ def get_random_relic(characters: Optional[List[str]] = None,
         if rarities and relic_instance.rarity not in rarities:
             continue
         
+        # todo: 玩家不能重复获得遗物，全局记录已经获得了哪些遗物
+        
         filtered_relic_idstrs.append(relic_idstr)
         
     if not filtered_relic_idstrs:
@@ -95,12 +99,14 @@ def get_random_relic(characters: Optional[List[str]] = None,
     selected_relic_cls = get_registered("relic", selected_relic_idstr)
     return selected_relic_cls() if selected_relic_cls else None
 
-def get_random_potion(characters: Optional[List[str]] = None) -> Optional[Any]:
+def get_random_potion(characters: Optional[List[str]] = None,
+                      rarities: Optional[List[RarityType]] = None) -> Optional[Potion]:
     """
     Get a random potion from the registry based on criteria.
     
     args:
         characters (Optional[List[str]]): List of character namespaces to filter potions.
+        rarities (Optional[List[RarityType]]): List of rarities to filter potions.
         
     returns:
         Optional[Any]: A random potion matching the criteria, or None if none found.
@@ -118,6 +124,8 @@ def get_random_potion(characters: Optional[List[str]] = None) -> Optional[Any]:
         potion_instance = potion_cls()
         
         if characters and potion_instance.namespace not in characters:
+            continue
+        if rarities and potion_instance.rarity not in rarities:
             continue
         
         filtered_potion_idstrs.append(potion_idstr)

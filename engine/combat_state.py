@@ -20,8 +20,10 @@ class CombatState:
         self.turn_cards_played: int = 0
         self.turn_attack_cards_played: int = 0
         
-        # Current enemies
-        self.current_enemies: list = []
+        # enemies
+        self.enemies: list = []
+        self.is_elite = False
+        self.is_boss = False
         
         # Blood for Blood tracking
         self.blood_for_blood_hits: int = 0

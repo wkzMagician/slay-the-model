@@ -36,9 +36,10 @@ class BuyItemAction(Action):
 
             if self.shop_item.item_type != "relic" and _has_relic("TheCourier"):
                 # TODO: Implement restock logic
-
+                pass
+            
             print(t("ui.shop_bought_item", default=f"Bought {self.shop_item.item.name} for {final_price} gold!"))
-            game_state.current_room.enter_room()
+            game_state.current_room.enter()
         else:
             print(t("ui.not_enough_gold", default="Not enough gold!"))
 
@@ -65,20 +66,20 @@ class CardRemovalAction(Action):
                 self.shop_room.card_removal_price += 25
 
             print(t("ui.card_removal_complete", default="Card removal complete!"))
-            game_state.current_room.enter_room()
+            game_state.current_room.enter()
         else:
             print(t("ui.not_enough_gold", default="Not enough gold!"))
 
 
 @register("action")
 class LeaveShopAction(Action):
-    """Action to leave the shop"""
+    """Action to leave of shop"""
 
     def execute(self):
         if _has_relic("MawBank"):
             # TODO: Track gold spending
             pass
-        game_state.current_room.leave_room()
+        game_state.current_room.leave()
 
 
 def _has_relic(relic_name: str) -> bool:

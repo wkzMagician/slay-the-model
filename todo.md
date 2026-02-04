@@ -1,52 +1,132 @@
-# todo
+# TODO List
 
-## 2.4 架构逻辑要大改。
+## 已完成的重构任务
 
-game_flow的总循环逻辑，由迭代各个action，改为迭代room.
-伪代码：
+### 架构重构
 
-```text
-while curRoom.floor < maxFloor:
-    curRoom = map_select()
-    curRoom.init()
-    res = curRoom.enter()
-    if res == "DEATH" or "WIN":
-        break
-    curRoom.leave()
-```
+- [x] 重构GameFlow主循环
+  - 从迭代action改为迭代room
+  - 实现room-based的游戏循环
+  - 支持room的init()和leave()生命周期
 
-action_queue仍然是必要的，但是应该在room内部进行构建。比如在ShopRoom中：
+- [x] 重新定义Room基类接口
+  - 每个Room有自己的action_queue
+  - 实现init(), enter(), leave()方法
+  - 实现execute_actions()辅助方法
+  - 添加should_leave控制标志
 
-```text
-def enter_room(self, ...):
-    ...
-    while not self.should_leave:
-        # build SelectAction
-        action_queue.add_action(select_action)
-        action_queue.execute_all()
+- [x] 创建Combat类
+  - 将战斗逻辑从CombatRoom中提取
+  - 实现start()方法返回"WIN"/"DEATH"/None
+  - 使用全局action_queue管理战斗操作
 
-def LeaveRoomAction(Action):
-    ...
-    def leave(self, ...):
-        game_state.current_room.should_leave = True
-        # 其它Action还会指定不同的字段
-        # 比如战斗回合结束，就应该是 xxx.player_trun_end = True
-```
+- [x] 重构CombatRoom
+  - 使用新的Combat类
+  - 只负责创建和执行Combat实例
+  - 管理战斗后的奖励逻辑
 
-此外，Event的定义也完全变化了。或许不再需要EventStage。
-现在Event本身，只代表 Unknown Room 中可能触发的，随机事件，有很多不同的可能。有些EventRoom也会带来奖励，有的会带来战斗。
-由于Combat并不只会被CombatRoom触发，还可能被Event触发，所以主逻辑应该写在单独的Combat类里面。CombatRoom只负责管理Combat的创建和执行。
-NeoEvent的逻辑，完全可以写在NeoRoom里面。
-UnknownRoom如果随机到其它Room类型，比如CombatRoom/RestRoom/ShopRoom，直接替换当前的currRoom即可；如果是Event的话，则执行相关的Event。
+- [x] 重构ShopRoom
+  - 实现完整的商店逻辑
+  - 内部构建action_queue
+  - 使用LeaveShopAction控制离开
 
-架构和接口实现上，应当参考目前的风格，保证能够复用，不要有太短的工具函数
+- [x] 重构其他Room类型
+  - RestRoom: 实现休息选项
+  - TreasureRoom: 实现宝箱开启
+  - UnknownRoom: 实现房间/事件解析
 
-拟定一份详细的更改说明，要求精细到类的接口和字段
+- [x] 重构Event系统
+  - 简化Event基类，移除EventStage
+  - Event拥有自己的action_queue
+  - Event只有trigger()方法
+  - 添加CombatEvent基类
 
-## 2.4 各个room功能检查
+- [x] 重构UnknownRoom
+  - 支持解析为其他Room类型
+  - 支持解析为Event
+  - 添加EVENT类型到RoomType
 
-## 2.7-2.8 最复杂的是战斗类
+- [x] 调整GameState
+  - 移除全局action_queue引用
+  - 添加注释说明每个room/event有自己的queue
 
-## 2.6 基类：enemy
+- [x] 更新所有Action以适配新架构
+  - MoveToMapNodeAction: 只更新状态，不调用enter()
+  - NeoEvent: 使用新的trigger()接口
+  - NeoRewardRoom: 触发event并管理自身action_queue
 
-## 2.x 是否支持多选?
+## 待完成的任务
+
+### 功能实现
+
+- [ ] 实现Event池系统
+  - 创建Event注册机制
+  - UnknownRoom从池中随机选择Event
+  - Event触发规则配置
+
+- [ ] 完善Combat类
+  - 实现完整的战斗流程
+  - 回合管理
+  - 卡牌系统集成
+  - 敌人AI
+
+- [ ] 完善RestRoom
+  - 实现休息选项
+  - 卡牌移除功能
+  - 卡牌升级功能
+
+- [ ] 完善ShopRoom
+  - 商品生成逻辑
+  - 价格计算
+  - 卡牌移除服务
+
+- [ ] 完善TreasureRoom
+  - 宝箱类型系统
+  - 奖励池配置
+  - Boss宝箱特殊处理
+
+### 测试
+
+- [ ] 编写单元测试
+  - 测试GameFlow主循环
+  - 测试各种Room的enter/leave
+  - 测试Event的trigger()
+  - 测试Combat流程
+
+- [ ] 集成测试
+  - 测试完整的游戏流程
+  - 测试房间转换
+  - 测试战斗流程
+
+### 文档
+
+- [ ] 更新架构文档
+  - 新的Room-based架构说明
+  - Event系统说明
+  - Combat类说明
+
+- [ ] 添加代码注释
+  - 关键类和方法添加docstring
+  - 复杂逻辑添加行内注释
+
+## 技术债务
+
+- [ ] 移除旧的Event相关代码
+  - 检查是否有旧的EventStage引用
+  - 清理不再使用的类和方法
+
+- [ ] 统一ActionQueue使用
+  - 明确哪些使用全局queue
+  - 明确哪些使用局部queue
+  - 添加清晰的文档说明
+
+## 未来改进
+
+- [ ] 性能优化
+  - 减少不必要的对象创建
+  - 优化事件/房间数据结构
+
+- [ ] 扩展性改进
+  - 支持自定义房间类型
+  - 支持自定义事件
+  - 支持插件系统

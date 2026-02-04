@@ -46,3 +46,4 @@ class RoomType(str, Enum):
     UNKNOWN = "Unknown"
     TREASURE = "Treasure"
     BOSS = "Boss"
+    EVENT = "Event"

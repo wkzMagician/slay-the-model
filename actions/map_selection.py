@@ -84,31 +84,25 @@ class SelectMapNodeAction(Action):
             option = Option(option_name, [move_action])
             options.append(option)
         
-        # Create SelectAction and add it to the front of the queue
+        # Return SelectAction to be added to caller's action_queue
         select_action = SelectAction(
             title=t("ui.select_move", default="Select your next move"),
             options=options
         )
-        
-        from actions.base import action_queue
-        action_queue.add_action(select_action, to_front=True)
+        return select_action
     
     def _execute_move_via_action(self, node: MapNode):
         """
-        Execute move to selected node by adding MoveToMapNodeAction to queue.
+        Execute move to selected node by creating MoveToMapNodeAction.
         
         This is used in AI mode where decision is made immediately.
-        Instead of executing the move directly, we add the action to the queue
-        to maintain consistency with the Action system.
         
         Args:
             node: The MapNode to move to
         """
-        from actions.base import action_queue
-        
-        # Create and add MoveToMapNodeAction to queue
+        # Create MoveToMapNodeAction to return
         move_action = MoveToMapNodeAction(node.floor, node.position)
-        action_queue.add_action(move_action, to_front=True)
+        return move_action
     
     def _make_ai_decision(self, map_manager) -> int:
         """

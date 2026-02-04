@@ -82,7 +82,7 @@ class CardManager:
             return True
         return False
 
-    def move_to(self, card: Card, dst: str, src: str | None, pos: PilePosType) -> bool:
+    def move_to(self, card: Card, dst: str, src: Optional[str], pos: PilePosType) -> bool:
         """Move a card to a specified pile.
         
         Args:
@@ -104,7 +104,7 @@ class CardManager:
         self.remove_from_pile(card, source_pile)
         return self.add_to_pile(card, dst, pos)
 
-    def exhaust(self, card: Card, src: str | None) -> bool:
+    def exhaust(self, card: Card, src: Optional[str]) -> bool:
         """Exhaust a card (move to exhaust pile).
         
         Args:

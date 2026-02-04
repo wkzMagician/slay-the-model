@@ -1,50 +1,131 @@
-from engine.game_state import game_state
-from actions import (
-    action_queue,
-    DisplayTextAction,
-)
+"""
+Game flow controller - manages the main game loop by iterating over rooms.
+"""
 from utils.registry import get_registered_instance
+from engine.game_state import game_state
+from localization import t
+from utils.types import RoomType
 
 
 class GameFlow:
-    """Action-based game flow using action queue loop"""
-
+    """
+    Room-based game flow controller.
+    
+    The main loop iterates over rooms, with each room managing its own
+    action queue internally. This provides better separation of concerns
+    and makes room logic more self-contained.
+    """
+    
+    MAX_FLOOR = 16  # Maximum floor number (0-16)
+    
     def __init__(self):
-        pass
-
+        self.current_room = None
+    
     def start_game(self):
-        """Initialize the game using actions"""
-        # Add initial setup actions to queue
-        setup_actions = [
-            DisplayTextAction(text_key="ui.game_welcome"),
-            DisplayTextAction(text_key="ui.game_awaken"),
-            DisplayTextAction(text_key="ui.seed_display", seed=game_state.config.seed),
-            DisplayTextAction(text_key="ui.character_display", character=game_state.config.character),
-        ]
-        action_queue.add_actions(setup_actions)
-        # Start with neo room
+        """
+        Start the game and run the main room loop.
+        
+        The loop continues until:
+        - Player reaches max floor (WIN)
+        - Player dies (DEATH)
+        """
+        # Display game welcome messages
+        self._display_welcome()
+        
+        # Initialize map
+        game_state.initialize_map()
+        
+        # Start with Neo room
+        self._start_neo_room()
+        
+        # Main game loop - iterate over rooms
+        while game_state.current_floor < self.MAX_FLOOR:
+            # Select next room from map
+            cur_room = self._select_next_room()
+            
+            if cur_room is None:
+                # No more rooms available
+                break
+            
+            # Initialize the room
+            cur_room.init()
+            
+            # Enter the room (room manages its own action queue)
+            result = cur_room.enter()
+            
+            # Check for game end conditions
+            if result == "DEATH":
+                self._handle_game_over()
+                break
+            elif result == "WIN":
+                self._handle_game_won()
+                break
+            
+            # Leave the room (cleanup)
+            cur_room.leave()
+        
+        # If we exited the loop normally, player won by reaching max floor
+        if game_state.current_floor >= self.MAX_FLOOR and result != "DEATH":
+            self._handle_game_won()
+    
+    def _display_welcome(self):
+        """Display initial game welcome messages"""
+        print(f"\n{t('ui.game_welcome', default='Welcome to the Spire!')}")
+        print(f"{t('ui.game_awaken', default='You awaken in a strange place...')}")
+        print(f"{t('ui.seed_display', seed=game_state.config.seed, default=f'Seed: {game_state.config.seed}')}")
+        print(f"{t('ui.character_display', character=game_state.config.character, default=f'Character: {game_state.config.character}')}\n")
+    
+    def _start_neo_room(self):
+        """Start with Neo reward room"""
         neo_room = get_registered_instance("room", "NeoRewardRoom")
         game_state.current_room = neo_room
-        neo_room.enter_room()
-
-        while True:
-            assert not action_queue.is_empty()
-
-            # Execute next action in queue
-            result = action_queue.execute_next()
-
-            # Check game end conditions
-            if result == "game_over":
-                from localization import t
-                print(f"\n💀 {t('ui.game_over', default='Game Over! You have fallen in the Spire. 💀')}")
-                break
-            elif result == "game_won":
-                from localization import t
-                print(f"\n🎉 {t('ui.game_won', default='Congratulations! You have conquered the Spire! 🎉')}")
-                break
-
-            # If result is a list of actions, add them to queue
-            elif isinstance(result, list):
-                action_queue.add_actions(result)
-                
+        game_state.current_floor = 0
         
+        # Initialize and enter Neo room
+        neo_room.init()
+        result = neo_room.enter()
+        
+        # Handle Neo room result
+        if result == "DEATH":
+            self._handle_game_over()
+            return
+        
+        # Leave Neo room
+        neo_room.leave()
+    
+    def _select_next_room(self):
+        """
+        Select and move to the next room from the map.
+        
+        Returns:
+            Room instance for the next room, or None if no moves available
+        """
+        # Get available moves from current position
+        available_nodes = game_state.map_manager.get_available_moves()
+        
+        if not available_nodes:
+            # No more moves available
+            return None
+        
+        # For now, just select the first available node
+        # TODO: Implement player selection or AI decision
+        node = available_nodes[0]
+        
+        # Move to the node and create room
+        room = game_state.map_manager.move_to_node(node.floor, node.position)
+        
+        # Update game state
+        game_state.current_room = room
+        game_state.current_floor = node.floor
+        
+        return room
+    
+    def _handle_game_over(self):
+        """Handle player death"""
+        print(f"\n💀 {t('ui.game_over', default='Game Over! You have fallen in the Spire. 💀')}")
+        game_state.game_phase = "game_over"
+    
+    def _handle_game_won(self):
+        """Handle player victory"""
+        print(f"\n🎉 {t('ui.game_won', default='Congratulations! You have conquered the Spire! 🎉')}")
+        game_state.game_phase = "game_won"

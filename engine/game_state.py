@@ -2,9 +2,12 @@
 Global game state management for persistent data
 """
 import random as rd
+from typing import Optional
 from config.game_config import GameConfig
 import os
 import time
+
+from rooms.base import Room
 from .combat_state import CombatState
 from player.player_factory import create_player
 
@@ -12,10 +15,6 @@ class GameState:
     """Global game state containing all persistent game data"""
 
     def __init__(self):
-        # Map system
-        self.map_manager = None
-        self.map_data = None
-
         # Game progress
         self.current_floor = 0
 
@@ -40,8 +39,11 @@ class GameState:
         self.event_room_counter = 0
 
         # Current room and event tracking
-        self.current_room = None
+        self.current_room: Optional[Room] = None
         self.event_stack = []
+        
+        # Note: action_queue is no longer in game_state
+        # Each room/event now has its own action_queue
         
         # Game phase
         self.game_phase: str = "room"  # "map", "room", "menu", "gameover"

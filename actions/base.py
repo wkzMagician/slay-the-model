@@ -62,7 +62,3 @@ class ActionQueue:
         if self.queue:
             return self.queue[0]
         return None
-
-
-# Global action queue
-action_queue = ActionQueue()
