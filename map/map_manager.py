@@ -325,10 +325,12 @@ class MapManager:
         
         if room_type == RoomType.MONSTER:
             # TODO: Get monster encounter from game state
+            # For now, returning empty enemy list - requires encounter pool system
             return CombatRoom(enemies=[])
         
         elif room_type == RoomType.ELITE:
             # TODO: Get elite encounter from game state
+            # For now, returning empty enemy list with elite flag
             return CombatRoom(enemies=[], is_elite=True)
         
         elif room_type == RoomType.BOSS:
@@ -693,7 +695,8 @@ class MapManager:
         
         # Ssserpent Head effect: gain 50 Gold
         if self.has_ssserpent_head:
-            # TODO: Add 50 gold to player
-            pass
+            from engine.game_state import game_state
+            game_state.player.gold += 50
+            print(t("ui.ssserpent_head_gold", default="Ssserpent Head: Gained 50 gold!"))
         
         return chosen_type

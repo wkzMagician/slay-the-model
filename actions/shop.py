@@ -19,10 +19,17 @@ class BuyItemAction(Action):
         self.item_idx = item_idx
 
     def execute(self):
+        # Track gold spent for MawBank relic
+        gold_spent = 0
+        from engine.game_state import game_state
+        if not game_state:
+            return
+
         ascension = getattr(game_state, "ascension_level", 0) if game_state else 0
         final_price = _get_final_price(self.shop_item, ascension)
 
         if game_state.player.gold >= final_price:
+            gold_spent = final_price
             game_state.player.gold -= final_price
 
             if self.shop_item.item_type == "card":
@@ -35,13 +42,17 @@ class BuyItemAction(Action):
             self.shop_item.purchased = True
 
             if self.shop_item.item_type != "relic" and _has_relic("TheCourier"):
-                # TODO: Implement restock logic
-                pass
-            
+                # TheCourier restock: when relic items are bought, restock at 80% price
+                self.shop_item.price_multiplier = 0.8
+
             print(t("ui.shop_bought_item", default=f"Bought {self.shop_item.item.name} for {final_price} gold!"))
             game_state.current_room.enter()
         else:
             print(t("ui.not_enough_gold", default="Not enough gold!"))
+
+        # MawBank effect: track gold spent
+        if _has_relic("MawBank"):
+            game_state.gold_spent_in_shop = getattr(game_state, "gold_spent_in_shop", 0) + gold_spent
 
 
 @register("action")
@@ -100,9 +111,17 @@ class LeaveShopAction(Action):
     """Action to leave of shop"""
 
     def execute(self):
+        from engine.game_state import game_state
+        # MawBank effect: gain 10% of gold spent as interest
         if _has_relic("MawBank"):
-            # TODO: Track gold spending
-            pass
+            gold_spent = getattr(game_state, "gold_spent_in_shop", 0)
+            if gold_spent > 0:
+                interest = gold_spent // 10  # 10% of spent gold
+                game_state.player.gold += interest
+                print(t("ui.maw_bank_interest", default=f"MawBank: Gained {interest} gold interest!"))
+            # Reset gold spent for next shop
+            game_state.gold_spent_in_shop = 0
+
         game_state.current_room.leave()
 
 

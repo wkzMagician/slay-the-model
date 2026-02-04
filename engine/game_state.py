@@ -38,6 +38,9 @@ class GameState:
         # Tiny Chest relic tracking
         self.event_room_counter = 0
 
+        # Gold spending tracking for MawBank relic
+        self.gold_spent_in_shop = 0
+
         # Current room and event tracking
         self.current_room: Optional[Room] = None
         self.event_stack = []
