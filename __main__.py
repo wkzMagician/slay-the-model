@@ -19,11 +19,11 @@ class TeeStream:
             stream.flush()
 
 
-def _setup_ai_debug_logging():
-    if not game_state.config.get("ai_debug", False):
+def _setup_debug_logging():
+    if not game_state.config.get("debug", False):
         return None
 
-    log_path = game_state.config.get("ai_debug_log_path", "logs/ai_debug.log")
+    log_path = game_state.config.get("debug_log_path", "logs/debug.log")
     log_dir = os.path.dirname(log_path)
     if log_dir:
         os.makedirs(log_dir, exist_ok=True)
@@ -34,7 +34,7 @@ def _setup_ai_debug_logging():
     return log_file
 
 if __name__ == "__main__":
-    log_file = _setup_ai_debug_logging()
+    log_file = _setup_debug_logging()
     try:
         game = GameFlow()
         game.start_game()

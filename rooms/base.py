@@ -22,3 +22,8 @@ class Room(Localizable):
         action_queue.clear()
         # 2. clear all the events in the event stack
         game_state.event_stack.clear()
+        
+        # 3. Add map selection action to queue
+        # This will handle choosing the next node to move to
+        from actions.map_selection import SelectMapNodeAction
+        action_queue.add_action(SelectMapNodeAction())

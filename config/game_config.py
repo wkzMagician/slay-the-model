@@ -10,8 +10,8 @@ class GameConfig:
             "seed": None,
             "character": "Ironclad",
             "debug": True,
-            "ai_debug": False,
-            "ai_debug_log_path": "logs/ai_debug.log",
+            "debug": False,
+            "debug_log_path": "logs/debug.log",
         }
 
         # Update defaults with provided kwargs

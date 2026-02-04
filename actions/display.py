@@ -78,7 +78,7 @@ class SelectAction(Action):
                 print(f"{i+1}. {option.name}")
 
         # 4) AI 调试模式可自动选择第一项
-        if effective_options and bool(get_game_state().config.get("ai_debug", False)):
+        if effective_options and bool(get_game_state().config.get("debug", False)):
             action_list = effective_options[0].actions
             return action_list
 

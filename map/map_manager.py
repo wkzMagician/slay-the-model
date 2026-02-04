@@ -343,6 +343,279 @@ class MapManager:
             # For now, return a basic Room
             return Room()
     
+    def display_map_for_human(self):
+        """
+        Display the map in a human-friendly format.
+        
+        Shows the complete map with:
+        - * for current position
+        - > for available next moves
+        - X for visited nodes
+        - Room type symbols (M, E, $, ?, R, T, B)
+        - Connection lines (/, |, \)
+        """
+        print("\n" + "="*60)
+        print("MAP VIEW")
+        print("="*60)
+        
+        # Get available moves
+        available_moves = self.get_available_moves()
+        available_positions = {(node.floor, node.position) for node in available_moves}
+        
+        # Get current position
+        current_floor = self.map_data.current_floor
+        current_position = self.map_data.current_position
+        
+        # Get visited nodes (we need to track this separately)
+        # For now, assume nodes before current floor are visited
+        visited_positions = set()
+        for floor in range(current_floor):
+            for pos in range(len(self.map_data.nodes[floor])):
+                visited_positions.add((floor, pos))
+        
+        # Legend
+        print("\nLegend:")
+        print("  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Unknown")
+        print("  [R]=Rest     [T]=Treasure  [B]=Boss")
+        print("  *=Current   >=Available  X=Visited")
+        print()
+        
+        # Display map floor by floor
+        for floor in range(len(self.map_data.nodes)):
+            floor_nodes = self.map_data.nodes[floor]
+            if not floor_nodes:
+                continue
+            
+            # Display floor nodes
+            line = f"Floor {floor:2d}: "
+            for pos, node in enumerate(floor_nodes):
+                # Determine symbol and prefix
+                symbol = self._get_room_symbol(node.room_type)
+                prefix = ""
+                
+                if floor == current_floor and pos == current_position:
+                    prefix = "*"
+                elif (floor, pos) in available_positions:
+                    prefix = ">"
+                elif (floor, pos) in visited_positions:
+                    symbol = "X"
+                
+                line += f"[{prefix}{symbol}] "
+            
+            print(line)
+            
+            # Display connection lines to next floor
+            if floor < len(self.map_data.nodes) - 1:
+                connection_line = "        "
+                for pos, node in enumerate(floor_nodes):
+                    if not node.connections_up:
+                        connection_line += "    "
+                    else:
+                        # Sort connections for proper display
+                        sorted_connections = sorted(node.connections_up)
+                        # Determine connector based on relative position
+                        next_floor_nodes = self.map_data.nodes[floor + 1]
+                        if len(next_floor_nodes) == 0:
+                            connection_line += "    "
+                        else:
+                            min_conn = sorted_connections[0]
+                            max_conn = sorted_connections[-1]
+                            
+                            if min_conn == max_conn:
+                                # Single vertical connection
+                                connection_line += " |  "
+                            elif min_conn == pos:
+                                # Connection to right
+                                connection_line += " /  "
+                            elif max_conn == pos:
+                                # Connection to left
+                                connection_line += " \\  "
+                            else:
+                                # Multiple connections
+                                connection_line += " |  "
+                
+                print(connection_line)
+        
+        print("\n" + "="*60)
+        print()
+    
+    def get_map_for_ai(self) -> Dict:
+        """
+        Get AI-friendly map data including both ASCII and JSON formats.
+        
+        Returns:
+            Dict containing:
+            - current_floor: Current floor number
+            - current_position: Current position index
+            - map_ascii: ASCII representation of the map
+            - map_json: Structured JSON data
+            - available_moves: List of available next moves with metadata
+        """
+        available_moves = self.get_available_moves()
+        
+        # Get current position
+        current_floor = self.map_data.current_floor
+        current_position = self.map_data.current_position
+        
+        # Get visited nodes
+        visited_positions = set()
+        for floor in range(current_floor):
+            for pos in range(len(self.map_data.nodes[floor])):
+                visited_positions.add((floor, pos))
+        
+        # Generate available moves data
+        available_moves_data = []
+        for idx, node in enumerate(available_moves):
+            available_moves_data.append({
+                "index": idx,
+                "floor": node.floor,
+                "position": node.position,
+                "room_type": node.room_type.value,
+                "risk_level": self._get_risk_level(node.room_type),
+                "reward_level": self._get_reward_level(node.room_type)
+            })
+        
+        # Generate map structure JSON
+        map_structure = []
+        for floor in range(len(self.map_data.nodes)):
+            floor_data = []
+            for pos, node in enumerate(self.map_data.nodes[floor]):
+                floor_data.append({
+                    "position": pos,
+                    "room_type": node.room_type.value,
+                    "visited": (floor, pos) in visited_positions,
+                    "connections_up": node.connections_up
+                })
+            map_structure.append(floor_data)
+        
+        return {
+            "current_floor": current_floor,
+            "current_position": current_position,
+            "map_ascii": self._format_map_ascii(available_positions={(node.floor, node.position) for node in available_moves}),
+            "map_json": {
+                "structure": map_structure,
+                "total_floors": len(self.map_data.nodes)
+            },
+            "available_moves": available_moves_data
+        }
+    
+    def _get_room_symbol(self, room_type: RoomType) -> str:
+        """Get display symbol for room type"""
+        symbols = {
+            RoomType.MONSTER: "M",
+            RoomType.ELITE: "E",
+            RoomType.BOSS: "B",
+            RoomType.REST: "R",
+            RoomType.MERCHANT: "$",
+            RoomType.TREASURE: "T",
+            RoomType.UNKNOWN: "?"
+        }
+        return symbols.get(room_type, "?")
+    
+    def _get_risk_level(self, room_type: RoomType) -> str:
+        """Get risk level for room type"""
+        risks = {
+            RoomType.MONSTER: "MEDIUM",
+            RoomType.ELITE: "HIGH",
+            RoomType.BOSS: "VERY_HIGH",
+            RoomType.REST: "NONE",
+            RoomType.MERCHANT: "NONE",
+            RoomType.TREASURE: "NONE",
+            RoomType.UNKNOWN: "RANDOM"
+        }
+        return risks.get(room_type, "UNKNOWN")
+    
+    def _get_reward_level(self, room_type: RoomType) -> str:
+        """Get reward level for room type"""
+        rewards = {
+            RoomType.MONSTER: "MEDIUM",
+            RoomType.ELITE: "HIGH",
+            RoomType.BOSS: "VERY_HIGH",
+            RoomType.REST: "HEAL",
+            RoomType.MERCHANT: "SHOP",
+            RoomType.TREASURE: "HIGH",
+            RoomType.UNKNOWN: "RANDOM"
+        }
+        return rewards.get(room_type, "UNKNOWN")
+    
+    def _format_map_ascii(self, available_positions: set = None) -> str:
+        """
+        Generate ASCII map representation.
+        
+        Args:
+            available_positions: Set of (floor, position) tuples that are available
+            
+        Returns:
+            ASCII string representation of the map
+        """
+        if available_positions is None:
+            available_moves = self.get_available_moves()
+            available_positions = {(node.floor, node.position) for node in available_moves}
+        
+        lines = []
+        
+        current_floor = self.map_data.current_floor
+        current_position = self.map_data.current_position
+        
+        # Get visited positions
+        visited_positions = set()
+        for floor in range(current_floor):
+            for pos in range(len(self.map_data.nodes[floor])):
+                visited_positions.add((floor, pos))
+        
+        # Display map floor by floor
+        for floor in range(len(self.map_data.nodes)):
+            floor_nodes = self.map_data.nodes[floor]
+            if not floor_nodes:
+                continue
+            
+            # Display floor nodes
+            line = f"Floor {floor:2d}: "
+            for pos, node in enumerate(floor_nodes):
+                # Determine symbol and prefix
+                symbol = self._get_room_symbol(node.room_type)
+                prefix = ""
+                
+                if floor == current_floor and pos == current_position:
+                    prefix = "*"
+                elif (floor, pos) in available_positions:
+                    prefix = ">"
+                elif (floor, pos) in visited_positions:
+                    symbol = "X"
+                
+                line += f"[{prefix}{symbol}] "
+            
+            lines.append(line)
+            
+            # Display connection lines to next floor
+            if floor < len(self.map_data.nodes) - 1:
+                connection_line = "        "
+                for pos, node in enumerate(floor_nodes):
+                    if not node.connections_up:
+                        connection_line += "    "
+                    else:
+                        # Sort connections for proper display
+                        sorted_connections = sorted(node.connections_up)
+                        next_floor_nodes = self.map_data.nodes[floor + 1]
+                        if len(next_floor_nodes) == 0:
+                            connection_line += "    "
+                        else:
+                            min_conn = sorted_connections[0]
+                            max_conn = sorted_connections[-1]
+                            
+                            if min_conn == max_conn:
+                                connection_line += " |  "
+                            elif min_conn == pos:
+                                connection_line += " /  "
+                            elif max_conn == pos:
+                                connection_line += " \\  "
+                            else:
+                                connection_line += " |  "
+                
+                lines.append(connection_line)
+        
+        return "\n".join(lines)
+
     def _resolve_unknown_type(self, floor: int) -> RoomType:
         """
         Determine what type an unknown room becomes when entered.
