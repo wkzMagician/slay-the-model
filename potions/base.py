@@ -1,7 +1,6 @@
 import random
 from typing import List
 from actions.base import Action
-from engine.game_state import game_state
 from entities.creature import Creature
 from localization import Localizable
 from utils.types import RarityType

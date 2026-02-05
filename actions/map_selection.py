@@ -4,7 +4,6 @@ Map selection action for choosing the next node to visit.
 from actions.base import Action
 from actions.display import SelectAction
 from actions.misc import MoveToMapNodeAction
-from engine.game_state import game_state
 from map.map_node import MapNode
 from utils.option import Option
 from localization import BaseLocalStr, LocalStr, t
@@ -32,22 +31,23 @@ class SelectMapNodeAction(Action):
     
     def execute(self):
         """
-        Execute the map selection action.
-        
+        Execute map selection action.
+
         This method:
-        1. Gets available moves from the map manager
+        1. Gets available moves from map manager
         2. Based on game mode (human/ai), either presents options to player
            or calls AI decision engine
-        3. Executes the move to the selected node
+        3. Executes move to selected node
         """
+        from engine.game_state import game_state
         # Get available moves
         map_manager = game_state.map_manager
         available_moves = map_manager.get_available_moves()
-        
+
         if not available_moves:
             print("\nNo available moves. You've reached the end of the act!")
             return
-        
+
         # Check game mode and handle accordingly
         if game_state.config.mode == "ai":
             # AI mode: Call AI decision engine and execute via action
@@ -107,19 +107,20 @@ class SelectMapNodeAction(Action):
     def _make_ai_decision(self, map_manager) -> int:
         """
         Make decision in AI mode by calling AI decision engine.
-        
+
         Args:
             map_manager: The MapManager instance
-            
+
         Returns:
-            int: Index of the selected move
+            int: Index of selected move
         """
         # Import AI tools
         from ai_tools.map_tools import get_map_context_for_ai
-        
+        from engine.game_state import game_state
+
         # Get map context for AI
         map_context = get_map_context_for_ai(map_manager)
-        
+
         # Get or create AI engine
         if self.ai_engine is None:
             # Use MockAIDecisionEngine with default strategy
@@ -127,10 +128,10 @@ class SelectMapNodeAction(Action):
             debug = game_state.config.get('debug', False)
             ai_strategy = game_state.config.get('ai_strategy', 'first')
             self.ai_engine = MockAIDecisionEngine(strategy=ai_strategy, debug=debug)
-        
+
         # Get AI decision
         choice_index = self.ai_engine.make_map_decision(map_context)
-        
+
         return choice_index
     
     def _get_move_option_name(self, node: MapNode) -> BaseLocalStr:

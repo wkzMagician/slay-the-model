@@ -1,116 +1,268 @@
-ui:
-  choose_enemy: "选择敌人："
-  select_prompt: "选择 (1-{count}): "
-  select_move: "选择你的下一步移动"
-  floor_position: "第 {floor} 层，位置 {position}"
-  map_move_option: "{floor_pos} - {room_type}"
-  invalid_option: "无效选择！"
-  invalid_number: "请输入有效数字"
-  room_type:
-    MONSTER: "怪物"
-    ELITE: "精英"
-    BOSS: "Boss"
-    REST: "休息"
-    MERCHANT: "商人"
-    TREASURE: "宝箱"
-    UNKNOWN: "?"
-  choose_blessings: "选择祝福"
-  game_welcome: "欢迎来到杀戮尖塔！"
-  game_awaken: "你醒来在尖塔中，开始你的攀登..."
-  seed_display: "种子: {seed}"
-  character_display: "角色: {character}"
-  neo_blessing_header: "\n--- Neo的祝福 ---"
-  neo_failed: "你上次未能到达尖塔之心..."
-  neo_basic_blessings: "但Neo为你提供这些基本祝福:"
-  neo_proven: "你证明了自己是值得的..."
-  neo_four_blessings: "Neo为你提供四个祝福。明智选择！"
-  map_generated: "为新章节生成地图！"
-  seed_set: "种子设置为: {seed}"
-  random_seed: "使用随机种子"
-  character_selected: "选择的角色: {character}"
-  no_character: "未指定角色"
-  received_gold: "收到 {amount} 金币！"
-  received_relic: "收到遗物: {name}！"
-  received_potion: "收到药水: {name}！"
-  potion_full_title: "药水已满"
-  skip_potion: "不拾取"
-  replace_potion_option: "替换 {name}"
-  received_card: "收到卡牌: {name}！"
-  card_removed: "移除卡牌: {card}！"
-  game_over: "游戏结束！你已在尖塔中倒下。💀"
-  game_won: "恭喜！你已征服尖塔！🎉"
-
+cards:
+  ironclad:
+    Anger:
+      description: 造成 {damage} 点伤害。将此牌的1份复制加入弃牌堆。
+      name: 愤怒
+      upgrade_description: 造成 {damage} 点伤害。将此牌的1份复制加入弃牌堆。
+    Armaments:
+      description: 获得 {block} 点格挡。将手牌中的一张牌升级（本场战斗）。
+      name: 武装
+      upgrade_description: 获得 {block} 点格挡。将手牌中的一张牌升级（本场战斗）。
+    Bash:
+      description: 造成 {damage} 点伤害。施加 {magic[vulnerable]} 层脆弱。
+      name: 重击
+      upgrade_description: 造成 {damage} 点伤害。施加 {magic[vulnerable]} 层脆弱。
+    Bludgeon:
+      description: 造成 {damage} 点伤害。获得 {block} 点格挡。若你没有格挡，获得 {magic[block_if_no_block]}
+        点格挡。
+      name: 钝击
+      upgrade_description: 造成 {damage} 点伤害。获得 {block} 点格挡。若你没有格挡，获得 {magic[block_if_no_block]}
+        点格挡。
+    BodySlam:
+      description: 造成等同于你格挡值的伤害。
+      name: 身体猛撞
+      upgrade_description: 造成等同于你格挡值的伤害。费用为0。
+    Carnage:
+      description: 对所有敌人造成 {damage} 点伤害。
+      name: 大屠杀
+      upgrade_description: 对所有敌人造成 {damage} 点伤害。
+    Clothesline:
+      description: 造成 {damage} 点伤害。施加 {magic[weak]} 层虚弱。
+      name: 猛击
+      upgrade_description: 造成 {damage} 点伤害。施加 {magic[weak]} 层虚弱。
+    Defend:
+      description: 获得 {block} 点格挡。
+      name: 防御
+      upgrade_description: 获得 {block} 点格挡。
+    Flex:
+      description: 获得 {magic[temp_strength]} 点力量。在你的回合结束时，失去 {magic[temp_strength]}
+        点力量。
+      name: 展示力量
+      upgrade_description: 获得 {magic[temp_strength]} 点力量。在你的回合结束时，失去 {magic[temp_strength]}
+        点力量。
+    HeavyBlade:
+      description: 造成 {damage} 点伤害。力量作用于这张牌 {magic[strength_mult]} 次。
+      name: 重刃
+      upgrade_description: 造成 {damage} 点伤害。力量作用于这张牌 {magic[strength_mult]} 次。
+    Inflame:
+      description: 获得 {magic[strength]} 点力量。
+      name: 燃烧
+      upgrade_description: 获得 {magic[strength]} 点力量。
+    IronWave:
+      description: 获得 {block} 点格挡。造成 {damage} 点伤害。
+      name: 铁波
+      upgrade_description: 获得 {block} 点格挡。造成 {damage} 点伤害。
+    LimitBreak:
+      description: 将你的力量翻倍。
+      name: 突破极限
+      upgrade_description: 将你的力量翻倍。费用为0。
+    Offering:
+      description: 失去 {magic[lose_hp]} 点生命值。获得 {energy_gain} 点能量。获得 {magic[strength]}
+        点力量。抽 {draw} 张牌。
+      name: 献祭
+      upgrade_description: 获得 {energy_gain} 点能量。获得 {magic[strength]} 点力量。抽 {draw}
+        张牌。
+    PommelStrike:
+      description: 造成 {damage} 点伤害。抽 {draw} 张牌。
+      name: 柄击
+      upgrade_description: 造成 {damage} 点伤害。抽 {draw} 张牌。
+    Pummel:
+      description: 造成 {damage} 点伤害，共 {attack_times} 次。
+      name: 拳打
+      upgrade_description: 造成 {damage} 点伤害，共 {attack_times} 次。
+    SevereStrike:
+      description: 造成 {damage} 点伤害。
+      name: 严厉打击
+      upgrade_description: 造成 {damage} 点伤害。
+    Strike:
+      description: 造成 {damage} 点伤害。
+      name: 打击
+      upgrade_description: 造成 {damage} 点伤害。
+    Uppercut:
+      description: 造成 {damage} 点伤害。施加 {magic[vulnerable]} 层脆弱和 {magic[weak]} 层虚弱。
+      name: 上勾拳
+      upgrade_description: 造成 {damage} 点伤害。施加 {magic[vulnerable]} 层脆弱和 {magic[weak]}
+        层虚弱。
 combat:
-  deal_damage_enemy: "对敌人造成 {amount} 点伤害"
-  deal_damage_random: "对随机敌人造成 {amount} 点伤害"
-  deal_damage_all: "对所有敌人造成 {damage} 点伤害"
-  deal_damage_self: "对自己造成 {damage} 点伤害"
-  gain_block: "获得 {amount} 点格挡"
-  gain_block_per_energy: "获得 {block_value} 点格挡 {count} 次（总计 {total}）。"
-  gain_block_no_block: "因为没有格挡，获得 {amount} 点格挡。"
-  remove_enemy_block: "移除 {target} 的所有格挡。"
-  gain_focus: "获得 {amount} 点专注。"
-  lose_focus: "失去 {amount} 点专注。"
-  deal_damage_by_orb: "对 {target} 造成 {amount} 点伤害（{orb_count} 个 {orb_type}）。"
-  heal: "治疗 {amount} 点生命值"
-  draw_cards: "抽 {count} 张牌"
-  discard_non_zero_cost_drawn: "丢弃了 {count} 张抽到的非零费用牌。"
-  gain_energy: "获得 {amount} 点能量"
-  double_energy: "双倍能量增加 {amount} 点能量（总计 {total}）。"
-  trigger_orb_passives: "触发 {count} 个 {orb_type} 球的被动能力。"
-  gain_artifact: "获得 {amount} 个神器。"
-  evoke_orb: "唤醒 {amount} 个球。"
-  evoke_all_orbs: "唤醒 {amount} 个球。"
-  remove_orbs: "移除 {amount} 个球。"
-  channel_random_orb: "引导 {amount} 个随机球。"
-  evoke_and_channel: "唤醒并引导 {amount} 个球。"
-  apply_power: "对 {target} 施加 {power} ({duration})"
-  apply_power_random: "对随机敌人施加 {power} ({duration}) {count} 次"
-  multiply_enemy_poison: "{target} 的毒药倍增 {factor} 倍。"
-  add_strength: "力量改变 {amount}"
-  gain_strength: "获得 {amount} 点力量"
-  double_strength: "双倍力量 ({amount} -> {total})"
-  spot_weakness_no_attack: "没有敌人意图攻击。"
-  remove_card: "从牌库移除 {card}"
-  no_cards_to_remove: "没有牌可移除"
-  exhaust_card: "消耗这张牌"
-  upgrade_card: "升级这张牌"
-  modify_card_value: "修改 {card} 的 {key} {amount}"
-  increase_card_stat_bonus: "{card} 的 {stat} 加成增加 {amount}（总计 {total}）。"
-  create_card: "在 {location} 创建 {card}"
-  create_random_card: "在 {location} 创建随机牌 {card}"
-  gain_potion: "获得药水: {name}"
-  discard_hand_add_card: "丢弃 {count} 张牌并添加 {count} 份 {card}。"
-  add_card_to_pile: "将 {card} 添加到 {location}。"
-  retain_hand: "保留你的手牌这一回合。"
-  white_noise_add: "将 {card}（本回合费用0）添加到你的手牌。"
-  transform_card: "将牌转化为 {card}"
-  multiply_block: "格挡倍增 {factor}"
-  move_card: "将 {card} 从 {source} 移动到 {destination}"
-  copy_card: "复制 {card} 到 {destination} ({count})"
-  night_terror_schedule: "夜惊将会在下回合添加 {count} 份 {card}。"
-  gain_max_health: "获得 {amount} 点最大生命值"
-  apply_stance: "进入 {stance} 姿态"
-  foresight: "占卜 {amount} 张牌: {cards}"
-  apply_mark: "对 {target} 施加 {amount} 标记"
-  retain_card: "保留 {card}"
-  end_turn: "结束回合"
-  play_card: "打出 {card}"
-  gain_gold: "获得 {amount} 金币"
-  deal_damage_all_heal: "对所有敌人造成 {damage} 点伤害"
-  place_card_on_top: "你这一回合打出的下一张牌将被放在牌库顶部。"
-  reduce_card_cost: "{card} 本场战斗费用减少 {amount}（总计 {total}）。"
-  gain_energy_if_discarded: "获得 {amount} 点能量（丢弃奖励）"
-  calculated_gamble: "丢弃手牌并抽 {count} 张牌。"
-  calculated_gamble_no_hand: "算计赌博丢弃无牌且不抽牌。"
-  exhaust_single: "从 {source} 消耗 {card}"
-  exhaust_hand: "从手牌消耗 {count} 张牌"
-  discard_cards: "丢弃 {count} 张牌{random}"
-  discard_cards_missing: "丢弃 {count} 张牌（玩家API缺失）"
-  retrieve_zero_cost: "从弃牌堆返回 {count} 张零费用牌到手牌。"
-  discard_non_attack: "丢弃了 {count} 张非攻击牌"
-  gain_energy_next_turn: "下回合获得 {amount} 点能量"
-  gain_energy_next_turn_scheduled: "安排下回合获得 {amount} 点能量（存储在player.pending_energy中）"
-  gain_block_next_turn: "下回合获得 {block} 点格挡"
-  gain_block_next_turn_scheduled: "安排下回合获得 {block} 点格挡（存储在player.pending_block中）"
-  reboot_shuffle: "重启将你的手牌和弃牌堆洗入抽牌堆。"
+  add_card_to_pile: 将 {card} 添加到 {location}。
+  add_strength: 力量改变 {amount}
+  apply_mark: 对 {target} 施加 {amount} 标记
+  apply_power: 对 {target} 施加 {power} ({duration})
+  apply_power_random: 对随机敌人施加 {power} ({duration}) {count} 次
+  apply_stance: 进入 {stance} 姿态
+  calculated_gamble: 丢弃手牌并抽 {count} 张牌。
+  calculated_gamble_no_hand: 算计赌博丢弃无牌且不抽牌。
+  channel_random_orb: 引导 {amount} 个随机球。
+  copy_card: 复制 {card} 到 {destination} ({count})
+  create_card: 在 {location} 创建 {card}
+  create_random_card: 在 {location} 创建随机牌 {card}
+  deal_damage_all: 对所有敌人造成 {damage} 点伤害
+  deal_damage_all_heal: 对所有敌人造成 {damage} 点伤害
+  deal_damage_by_orb: 对 {target} 造成 {amount} 点伤害（{orb_count} 个 {orb_type}）。
+  deal_damage_enemy: 对敌人造成 {amount} 点伤害
+  deal_damage_random: 对随机敌人造成 {amount} 点伤害
+  deal_damage_self: 对自己造成 {damage} 点伤害
+  discard_cards: 丢弃 {count} 张牌{random}
+  discard_cards_missing: 丢弃 {count} 张牌（玩家API缺失）
+  discard_hand_add_card: 丢弃 {count} 张牌并添加 {count} 份 {card}。
+  discard_non_attack: 丢弃了 {count} 张非攻击牌
+  discard_non_zero_cost_drawn: 丢弃了 {count} 张抽到的非零费用牌。
+  double_energy: 双倍能量增加 {amount} 点能量（总计 {total}）。
+  double_strength: 双倍力量 ({amount} -> {total})
+  draw_cards: 抽 {count} 张牌
+  end_turn: 结束回合
+  evoke_all_orbs: 唤醒 {amount} 个球。
+  evoke_and_channel: 唤醒并引导 {amount} 个球。
+  evoke_orb: 唤醒 {amount} 个球。
+  exhaust_card: 消耗这张牌
+  exhaust_hand: 从手牌消耗 {count} 张牌
+  exhaust_single: 从 {source} 消耗 {card}
+  foresight: '占卜 {amount} 张牌: {cards}'
+  gain_artifact: 获得 {amount} 个神器。
+  gain_block: 获得 {amount} 点格挡
+  gain_block_next_turn: 下回合获得 {block} 点格挡
+  gain_block_next_turn_scheduled: 安排下回合获得 {block} 点格挡（存储在player.pending_block中）
+  gain_block_no_block: 因为没有格挡，获得 {amount} 点格挡。
+  gain_block_per_energy: 获得 {block_value} 点格挡 {count} 次（总计 {total}）。
+  gain_energy: 获得 {amount} 点能量
+  gain_energy_if_discarded: 获得 {amount} 点能量（丢弃奖励）
+  gain_energy_next_turn: 下回合获得 {amount} 点能量
+  gain_energy_next_turn_scheduled: 安排下回合获得 {amount} 点能量（存储在player.pending_energy中）
+  gain_focus: 获得 {amount} 点专注。
+  gain_gold: 获得 {amount} 金币
+  gain_max_health: 获得 {amount} 点最大生命值
+  gain_potion: '获得药水: {name}'
+  gain_strength: 获得 {amount} 点力量
+  heal: 治疗 {amount} 点生命值
+  increase_card_stat_bonus: '{card} 的 {stat} 加成增加 {amount}（总计 {total}）。'
+  lose_focus: 失去 {amount} 点专注。
+  modify_card_value: 修改 {card} 的 {key} {amount}
+  move_card: 将 {card} 从 {source} 移动到 {destination}
+  multiply_block: 格挡倍增 {factor}
+  multiply_enemy_poison: '{target} 的毒药倍增 {factor} 倍。'
+  night_terror_schedule: 夜惊将会在下回合添加 {count} 份 {card}。
+  no_cards_to_remove: 没有牌可移除
+  place_card_on_top: 你这一回合打出的下一张牌将被放在牌库顶部。
+  play_card: 打出 {card}
+  reboot_shuffle: 重启将你的手牌和弃牌堆洗入抽牌堆。
+  reduce_card_cost: '{card} 本场战斗费用减少 {amount}（总计 {total}）。'
+  remove_card: 从牌库移除 {card}
+  remove_enemy_block: 移除 {target} 的所有格挡。
+  remove_orbs: 移除 {amount} 个球。
+  retain_card: 保留 {card}
+  retain_hand: 保留你的手牌这一回合。
+  retrieve_zero_cost: 从弃牌堆返回 {count} 张零费用牌到手牌。
+  spot_weakness_no_attack: 没有敌人意图攻击。
+  transform_card: 将牌转化为 {card}
+  trigger_orb_passives: 触发 {count} 个 {orb_type} 球的被动能力。
+  upgrade_card: 升级这张牌
+  white_noise_add: 将 {card}（本回合费用0）添加到你的手牌。
+powers:
+  ironclad:
+    FlexPower:
+      description: 获得 {amount} 点力量。在你的回合结束时，失去等量的力量。
+      name: 展示力量
+    HeavyBladePower:
+      description: 获得 {amount} 点力量。在你的回合结束时，失去等量的力量。
+      name: 重刃
+    StrengthPower:
+      description: 攻击伤害增加 {amount} 点。
+      name: 力量
+    VulnerablePower:
+      description: 受到的伤害增加50%（每层）。
+      name: 脆弱
+relics:
+  Anchor:
+    description: 战斗开始时获得 1 点力量。
+    name: 锚
+  BagOfPreparation:
+    description: 战斗开始时抽 3 张牌。
+    name: 备战包
+  Brimstone:
+    description: 每场战斗第一张牌升级。
+    name: 硫磺
+  BurningBlood:
+    description: 战斗开始时获得 1 点力量。
+    name: 燃烧之血
+  BurningPact:
+    description: 战斗开始时获得 1 点力量，失去 1 点生命值。
+    name: 燃烧契约
+  CeramicFish:
+    description: 战斗开始时抽 3 张牌。
+    name: 陶瓷鱼
+  ChampionsBelt:
+    description: 每第 5 张牌费用为 0。
+    name: 冠军腰带
+  Medalkit:
+    description: 战斗开始时治疗 3 点生命值。
+    name: 急救包
+  MembershipCard:
+    description: 商店中的卡牌费用减少 25%。
+    name: 会员卡
+  MoltenEgg:
+    description: 每回合 +1 点能量。
+    name: 熔岩蛋
+  PaperFrog:
+    description: 生命值降至 50% 以下时抽 2 张牌。
+    name: 纸青蛙
+  PaperKite:
+    description: 每回合抽 2 张牌。
+    name: 纸风筝
+  SlaversCage:
+    description: 每场战斗获得 2 点力量。
+    name: 奴隶笼
+  SneckoEye:
+    description: 敌人开始时生命值减少 3 点。
+    name: 斯内克之眼
+  Vajra:
+    description: 力量影响脆弱持续时间。
+    name: 金刚杵
+  WhiteBeastStatue:
+    description: 敌人生成时生命值减少 1 点。
+    name: 白色野兽雕像
+  WristBlade:
+    description: 战斗结束时获得 3 点力量。
+    name: 腕刃
+ui:
+  card_removed: '移除卡牌: {card}！'
+  character_display: '角色: {character}'
+  character_selected: '选择的角色: {character}'
+  choose_blessings: 选择祝福
+  choose_enemy: 选择敌人：
+  floor_position: 第 {floor} 层，位置 {position}
+  game_awaken: 你醒来在尖塔中，开始你的攀登...
+  game_over: 游戏结束！你已在尖塔中倒下。💀
+  game_welcome: 欢迎来到杀戮尖塔！
+  game_won: 恭喜！你已征服尖塔！🎉
+  invalid_number: 请输入有效数字
+  invalid_option: 无效选择！
+  map_generated: 为新章节生成地图！
+  map_move_option: '{floor_pos} - {room_type}'
+  neo_basic_blessings: '但Neo为你提供这些基本祝福:'
+  neo_blessing_header: '
+
+    --- Neo的祝福 ---'
+  neo_failed: 你上次未能到达尖塔之心...
+  neo_four_blessings: Neo为你提供四个祝福。明智选择！
+  neo_proven: 你证明了自己是值得的...
+  no_character: 未指定角色
+  potion_full_title: 药水已满
+  random_seed: 使用随机种子
+  received_card: '收到卡牌: {name}！'
+  received_gold: 收到 {amount} 金币！
+  received_potion: '收到药水: {name}！'
+  received_relic: '收到遗物: {name}！'
+  replace_potion_option: 替换 {name}
+  room_type:
+    BOSS: Boss
+    ELITE: 精英
+    MERCHANT: 商人
+    MONSTER: 怪物
+    REST: 休息
+    TREASURE: 宝箱
+    UNKNOWN: '?'
+  seed_display: '种子: {seed}'
+  seed_set: '种子设置为: {seed}'
+  select_move: 选择你的下一步移动
+  select_prompt: '选择 (1-{count}): '
+  skip_potion: 不拾取

@@ -94,7 +94,32 @@ class ExhaustCardAction(Action):
     def execute(self):
         from engine.game_state import game_state
         if self.card and game_state.player and hasattr(game_state.player, "card_manager"):
-            return game_state.player.card_manager.exhaust(self.card, src=self.source_pile)
+            # Trigger on_exhaust powers before exhausting
+            if hasattr(game_state.player, 'powers'):
+                for power in list(game_state.player.powers):
+                    if hasattr(power, "on_exhaust"):
+                        result = power.on_exhaust(self.card)
+                        if result and isinstance(result, list):
+                            # Return power actions before exhausting card
+                            return result
+
+            # Trigger card's on_exhaust method
+            card_actions = self.card.on_exhaust()
+
+            # Actually exhaust the card
+            exhausted = game_state.player.card_manager.exhaust(self.card, src=self.source_pile)
+
+            # Add card actions to result
+            if card_actions:
+                if exhausted is False or exhausted is None:
+                    exhausted = []
+                elif not isinstance(exhausted, list):
+                    exhausted = []
+
+                exhausted.extend(card_actions)
+                return exhausted
+
+            return exhausted
         return False
     
 class UpgradeCardAction(Action):

@@ -99,3 +99,157 @@ combat:
   gain_block_next_turn: "Gain {block} block next turn"
   gain_block_next_turn_scheduled: "Scheduled gain of {block} block next turn (stored in player.pending_block)"
   reboot_shuffle: "Reboot shuffles your hand and discard pile into your draw pile."
+
+cards:
+  ironclad:
+    # Starter Deck
+    Strike:
+      name: "Strike"
+      description: "Deal {damage} damage."
+      upgrade_description: "Deal {damage} damage."
+    Defend:
+      name: "Defend"
+      description: "Gain {block} Block."
+      upgrade_description: "Gain {block} Block."
+    Bash:
+      name: "Bash"
+      description: "Deal {damage} damage. Apply {magic[vulnerable]} Vulnerable."
+      upgrade_description: "Deal {damage} damage. Apply {magic[vulnerable]} Vulnerable."
+    Anger:
+      name: "Anger"
+      description: "Deal {damage} damage. Add a copy of this card to your discard pile."
+      upgrade_description: "Deal {damage} damage. Add a copy of this card to your discard pile."
+    
+    # Common Cards
+    IronWave:
+      name: "Iron Wave"
+      description: "Gain {block} Block. Deal {damage} damage."
+      upgrade_description: "Gain {block} Block. Deal {damage} damage."
+    PommelStrike:
+      name: "Pommel Strike"
+      description: "Deal {damage} damage. Draw {draw} card."
+      upgrade_description: "Deal {damage} damage. Draw {draw} cards."
+    HeavyBlade:
+      name: "Heavy Blade"
+      description: "Deal {damage} damage. Strength affects this {magic[strength_mult]} times."
+      upgrade_description: "Deal {damage} damage. Strength affects this {magic[strength_mult]} times."
+    Armaments:
+      name: "Armaments"
+      description: "Gain {block} Block. Upgrade a card in your hand this combat."
+      upgrade_description: "Gain {block} Block. Upgrade a card in your hand this combat."
+    Flex:
+      name: "Flex"
+      description: "Gain {magic[temp_strength]} Strength. Lose {magic[temp_strength]} Strength at the end of your turn."
+      upgrade_description: "Gain {magic[temp_strength]} Strength. Lose {magic[temp_strength]} Strength at the end of your turn."
+    
+    # Uncommon Cards
+    Clothesline:
+      name: "Clothesline"
+      description: "Deal {damage} damage. Apply {magic[weak]} Weak."
+      upgrade_description: "Deal {damage} damage. Apply {magic[weak]} Weak."
+    SevereStrike:
+      name: "Severe Strike"
+      description: "Deal {damage} damage."
+      upgrade_description: "Deal {damage} damage."
+    Inflame:
+      name: "Inflame"
+      description: "Gain {magic[strength]} Strength."
+      upgrade_description: "Gain {magic[strength]} Strength."
+    BodySlam:
+      name: "Body Slam"
+      description: "Deal damage equal to your Block."
+      upgrade_description: "Deal damage equal to your Block. Costs 0."
+    Carnage:
+      name: "Carnage"
+      description: "Deal {damage} damage to ALL enemies."
+      upgrade_description: "Deal {damage} damage to ALL enemies."
+    
+    # Rare Cards
+    Bludgeon:
+      name: "Bludgeon"
+      description: "Deal {damage} damage. Gain {block} Block. Gain {magic[block_if_no_block]} Block if you had no Block."
+      upgrade_description: "Deal {damage} damage. Gain {block} Block. Gain {magic[block_if_no_block]} Block if you had no Block."
+    LimitBreak:
+      name: "Limit Break"
+      description: "Double your Strength."
+      upgrade_description: "Double your Strength. Costs 0."
+    Pummel:
+      name: "Pummel"
+      description: "Deal {damage} damage {attack_times} times."
+      upgrade_description: "Deal {damage} damage {attack_times} times."
+    Uppercut:
+      name: "Uppercut"
+      description: "Deal {damage} damage. Apply {magic[vulnerable]} Vulnerable and {magic[weak]} Weak."
+      upgrade_description: "Deal {damage} damage. Apply {magic[vulnerable]} Vulnerable and {magic[weak]} Weak."
+    Offering:
+      name: "Offering"
+      description: "Lose {magic[lose_hp]} HP. Gain {energy_gain} Energy. Gain {magic[strength]} Strength. Draw {draw} cards."
+      upgrade_description: "Gain {energy_gain} Energy. Gain {magic[strength]} Strength. Draw {draw} cards."
+
+powers:
+  ironclad:
+    StrengthPower:
+      name: "Strength"
+      description: "Increases attack damage by {amount}."
+    VulnerablePower:
+      name: "Vulnerable"
+      description: "Increases damage taken by 50% per stack."
+    FlexPower:
+      name: "Flex"
+      description: "Gain {amount} Strength. Lose equal amount at end of turn."
+    HeavyBladePower:
+      name: "Heavy Blade"
+      description: "Gain {amount} Strength. Lose equal amount at end of turn."
+
+relics:
+  BurningBlood:
+    name: "Burning Blood"
+    description: "Start combat with 1 Strength."
+  Vajra:
+    name: "Vajra"
+    description: "Strength affects Vulnerable duration."
+  Anchor:
+    name: "Anchor"
+    description: "At start of combat, gain 1 Strength."
+  BurningPact:
+    name: "Burning Pact"
+    description: "At start of combat, gain 1 Strength, lose 1 HP."
+  Brimstone:
+    name: "Brimstone"
+    description: "First card is upgraded each combat."
+  CeramicFish:
+    name: "Ceramic Fish"
+    description: "Draw 3 cards at start of combat."
+  BagOfPreparation:
+    name: "Bag of Preparation"
+    description: "Draw 3 cards at start of combat."
+  WhiteBeastStatue:
+    name: "White Beast Statue"
+    description: "Enemies spawn with 1 less HP."
+  Medalkit:
+    name: "Medalkit"
+    description: "Heal 3 HP at start of combat."
+  PaperKite:
+    name: "Paper Kite"
+    description: "Draw 2 cards each turn."
+  WristBlade:
+    name: "Wrist Blade"
+    description: "Gain 3 Strength at end of combat."
+  SneckoEye:
+    name: "Snecko Eye"
+    description: "Enemies start with 3 less HP."
+  SlaversCage:
+    name: "Slaver's Cage"
+    description: "Gain 2 Strength each combat."
+  PaperFrog:
+    name: "Paper Frog"
+    description: "Draw 2 cards when HP drops below 50%."
+  MoltenEgg:
+    name: "Molten Egg"
+    description: "+1 Energy every turn."
+  ChampionsBelt:
+    name: "Champion's Belt"
+    description: "Cards cost 0 every 5th card."
+  MembershipCard:
+    name: "Membership Card"
+    description: "Cards in shop cost 25% less."

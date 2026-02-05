@@ -28,8 +28,14 @@ def register(category: str):
         if category not in _REGISTRY:
             _REGISTRY[category] = {}
 
-        # idstr
-        name = getattr(obj, "idstr", None)
+        # Get name from class __name__ or try to evaluate idstr property
+        if hasattr(obj, "__name__"):
+            name = obj.__name__
+        else:
+            # For functions, try idstr if it exists
+            name = getattr(obj, "idstr", None)
+            if name and callable(name):
+                name = name()
 
         if name:
             _REGISTRY[category][name] = obj

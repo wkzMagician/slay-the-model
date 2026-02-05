@@ -4,7 +4,6 @@ Each room manages its own action queue and lifecycle.
 """
 from actions.base import Action, ActionQueue
 from actions.map_selection import SelectMapNodeAction
-from engine.game_state import game_state
 from localization import Localizable
 from utils.types import RoomType
 
@@ -50,17 +49,18 @@ class Room(Localizable):
     
     def leave(self):
         """
-        Leave the room - perform cleanup.
-        
-        Called when the player exits the room.
+        Leave room - perform cleanup.
+
+        Called when player exits the room.
         Clears the action queue and prepares for the next room.
         """
-        # Clear the action queue
+        from engine.game_state import game_state
+        # Clear action queue
         self.action_queue.clear()
-        
+
         # Clear event stack in game state
         game_state.event_stack.clear()
-        
+
         # Reset leave flag
         self.should_leave = False
     
@@ -143,16 +143,17 @@ class UnknownRoom(Room):
     def _resolve_room_type(self) -> RoomType:
         """
         Determine what type this unknown room becomes.
-        
+
         Returns:
             The actual RoomType for this room
         """
+        from engine.game_state import game_state
         # Use map manager's resolution logic
         if game_state.map_manager:
             return game_state.map_manager._resolve_unknown_type(
                 game_state.current_floor
             )
-        
+
         # Fallback: random monster
         return RoomType.MONSTER
     
@@ -160,21 +161,21 @@ class UnknownRoom(Room):
         """Create a random event for this room"""
         from events.event_pool import event_pool
         from engine.game_state import game_state
-        
+
         # Get random event from pool for current floor
         event_class = event_pool.get_random_event(game_state.current_floor)
-        
+
         if event_class:
             # Create event instance
             event = event_class()
-            
+
             # Mark unique events as used
             metadata = self._get_event_metadata(event_class)
             if metadata and metadata.is_unique:
                 event_pool.mark_event_used(metadata.event_id)
-            
+
             return event
-        
+
         return None
     
     def _get_event_metadata(self, event_class):
@@ -190,9 +191,10 @@ class UnknownRoom(Room):
     
     def _create_room(self, room_type: RoomType) -> Room:
         """Create a room instance of the specified type"""
+        from engine.game_state import game_state
         if game_state.map_manager:
             return game_state.map_manager._create_room_instance(room_type)
-        
+
         # Fallback: create base room
         return Room()
     

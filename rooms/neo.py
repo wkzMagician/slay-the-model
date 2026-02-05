@@ -2,7 +2,6 @@
 Neo reward room - the starting room where player chooses their blessing.
 """
 from actions.display import DisplayTextAction
-from engine.game_state import game_state
 from localization import LocalStr
 from rooms.base import Room
 from utils.registry import register
