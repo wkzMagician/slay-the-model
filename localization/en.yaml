@@ -227,7 +227,7 @@ relics:
     name: "White Beast Statue"
     description: "Enemies spawn with 1 less HP."
   Medalkit:
-    name: "Medalkit"
+    name: "Medkit"
     description: "Heal 3 HP at start of combat."
   PaperKite:
     name: "Paper Kite"
@@ -253,3 +253,10 @@ relics:
   MembershipCard:
     name: "Membership Card"
     description: "Cards in shop cost 25% less."
+  # Global Common Relics
+  Sisyphus:
+    name: "Sisyphus (斯巴达克斯)"
+    description: "At the start of combat, play the 3 lowest cost cards from your deck."
+  BagOfPreparationGlobal:
+    name: "Bag of Preparation"
+    description: "Draw 3 additional cards at the start of each combat."

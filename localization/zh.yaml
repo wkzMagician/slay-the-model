@@ -171,25 +171,32 @@ powers:
     VulnerablePower:
       description: 受到的伤害增加50%（每层）。
       name: 脆弱
-relics:
-  Anchor:
-    description: 战斗开始时获得 1 点力量。
-    name: 锚
-  BagOfPreparation:
-    description: 战斗开始时抽 3 张牌。
-    name: 备战包
-  Brimstone:
-    description: 每场战斗第一张牌升级。
-    name: 硫磺
-  BurningBlood:
-    description: 战斗开始时获得 1 点力量。
-    name: 燃烧之血
-  BurningPact:
-    description: 战斗开始时获得 1 点力量，失去 1 点生命值。
-    name: 燃烧契约
-  CeramicFish:
-    description: 战斗开始时抽 3 张牌。
-    name: 陶瓷鱼
+  relics:
+    Anchor:
+      description: 战斗开始时获得 1 点力量。
+      name: 锚
+    BagOfPreparation:
+      description: 战斗开始时抽 3 张牌。
+      name: 备战包
+    Brimstone:
+      description: 每场战斗第一张牌升级。
+      name: 硫磺
+    BurningBlood:
+      description: 战斗开始时获得 1 点力量。
+      name: 燃烧之血
+    BurningPact:
+      description: 战斗开始时获得 1 点力量，失去 1 点生命值。
+      name: 燃烧契约
+    CeramicFish:
+      description: 战斗开始时抽 3 张牌。
+      name: 陶瓷鱼
+    Sisyphus:
+      description: 战斗开始时从牌库打出 3 张费用最低的牌。
+      name: 斯巴达克斯
+    BagOfPreparationGlobal:
+      description: 每场战斗开始时额外抽 3 张牌。
+      name: 备战包
+    Vajra:
   ChampionsBelt:
     description: 每第 5 张牌费用为 0。
     name: 冠军腰带
