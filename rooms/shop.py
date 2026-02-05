@@ -13,6 +13,7 @@ from utils.option import Option
 from utils.registry import register
 from utils.random import get_random_card, get_random_relic, get_random_potion
 from utils.types import RarityType, CardType, RoomType
+from rooms.base import Room
 
 
 class ShopItem:
