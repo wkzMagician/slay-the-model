@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html class="client-nojs view-dark theme-dark skin-theme-clientpref-night" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Mechanics - Slay the Spire Wiki</title>
+<script>(function(){var className="client-js view-dark theme-dark skin-theme-clientpref-night";var cookie=document.cookie.match(/(?:^|; )commons_enmwclientpreferences=([^;]+)/);if(cookie){cookie[1].split('%2C').forEach(function(pref){className=className.replace(new RegExp('(^| )'+pref.replace(/-clientpref-\w+$|[^\w-]+/g,'')+'-clientpref-\\w+( |$)'),'$1'+pref+'$2');});}document.documentElement.className=className;}());RLCONF={"wgBreakFrames":false,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"022abd316a33d42deae3a18b","wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"Mechanics","wgTitle":"Mechanics","wgCurRevisionId":14585,"wgRevisionId":14585,"wgArticleId":1534,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["Pages with hatnotes","ToUpdate","Game Mechanics"],"wgPageViewLanguage":"en","wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"Mechanics","wgRelevantArticleId":1534,"wgIsProbablyEditable":false,"wgRelevantPageIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true,"wgVisualEditor":{"pageLanguageCode":"en","pageLanguageDir":"ltr","pageVariantFallbacks":"en"},"wgCiteReferencePreviewsActive":true,"wgCheckUserClientHintsHeadersJsApi":["architecture","bitness","brands","fullVersionList","mobile","model","platform","platformVersion"],"wgVisualEditorDisabledByHook":true};
+RLSTATE={"ext.globalCssJs.user.styles":"ready","site.styles":"ready","user.styles":"ready","ext.globalCssJs.user":"ready","user":"ready","user.options":"loading","skins.vector.styles.legacy":"ready","wgg.skins.vector.styles.search":"ready","ext.CookieWarning.styles":"ready","oojs-ui-core.styles":"ready","oojs-ui.styles.indicators":"ready","mediawiki.widgets.styles":"ready","oojs-ui-core.icons":"ready","ext.removeredlinks.styles":"ready","ext.usergroupbadges.styles":"ready","ext.globalui.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.ready","skins.vector.legacy.js","ext.SimpleTooltip","ext.CookieWarning","ext.removeredlinks","ext.themes.switcher","ext.gadget.vectorScripts","mmv.bootstrap","ext.checkUser.clientHints","ext.globalui"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+}];});});</script>
+<link rel="stylesheet" href="/load.php?lang=en&amp;modules=ext.CookieWarning.styles%7Cext.globalui.styles%7Cext.removeredlinks.styles%7Cext.usergroupbadges.styles%7Cmediawiki.widgets.styles%7Coojs-ui-core.icons%2Cstyles%7Coojs-ui.styles.indicators%7Cskins.vector.styles.legacy%7Cwgg.skins.vector.styles.search&amp;only=styles&amp;skin=vector">
+<script async="" src="/load.php?lang=en&amp;modules=startup&amp;only=scripts&amp;raw=1&amp;skin=vector"></script>
+<meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="/load.php?lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector">
+<script async="" src="/load.php?lang=en&amp;skin=vector&amp;modules=ext.themes.apply&amp;only=scripts&amp;skin=vector&amp;raw=1"></script>
+<meta name="generator" content="MediaWiki 1.43.6">
+<meta name="robots" content="max-image-preview:standard">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Hit Points (HP): If you run out of HP, you die.&#10;The most fundamental resource. HP can take any value from 0 to the player&#039;s maximum HP. HP is depleted by taking damage, and may be replenished at Rest Sites, between acts, or with any number of healing effects.&#10;Max HP can be raised or lowered by various...">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.25, maximum-scale=5.0">
+<style type="text/css">@font-face {font-family:Nunito;font-style:normal;font-weight:400;src:url(/cf-fonts/v/nunito/5.0.16/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Nunito;font-style:normal;font-weight:400;src:url(/cf-fonts/v/nunito/5.0.16/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Nunito;font-style:normal;font-weight:400;src:url(/cf-fonts/v/nunito/5.0.16/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Nunito;font-style:normal;font-weight:400;src:url(/cf-fonts/v/nunito/5.0.16/latin-ext/wght/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Nunito;font-style:normal;font-weight:400;src:url(/cf-fonts/v/nunito/5.0.16/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}</style>
+<link rel="apple-touch-icon" href="/images/4/4a/Site-favicon.ico">
+<link rel="icon" href="/images/Site-favicon.ico?b2839f">
+<link rel="shortcut icon" href="/images/Site-favicon.ico?b2839f">
+<link rel="search" type="application/opensearchdescription+xml" href="/rest.php/v1/search" title="Slay the Spire Wiki (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://slaythespire.wiki.gg/api.php?action=rsd">
+<link rel="canonical" href="https://slaythespire.wiki.gg/wiki/Mechanics">
+<link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0">
+<link rel="alternate" type="application/atom+xml" title="Slay the Spire Wiki Atom feed" href="/wiki/Special:RecentChanges?feed=atom">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mechanics">
+<meta property="og:site_name" content="Slay the Spire Wiki">
+<meta property="og:url" content="https://slaythespire.wiki.gg/wiki/Mechanics">
+<meta property="og:description" content="Hit Points (HP): If you run out of HP, you die.&#10;The most fundamental resource. HP can take any value from 0 to the player&#039;s maximum HP. HP is depleted by taking damage, and may be replenished at Rest Sites, between acts, or with any number of healing effects.&#10;Max HP can be raised or lowered by various...">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","name":"Mechanics","headline":"Mechanics","mainEntityOfPage":"Mechanics","url":"https://slaythespire.wiki.gg/wiki/Mechanics","description":"Hit Points (HP): If you run out of HP, you die.\nThe most fundamental resource. HP can take any value from 0 to the player's maximum HP. HP is depleted by taking damage, and may be replenished at Rest Sites, between acts, or with any number of healing effects.\nMax HP can be raised or lowered by various...","datePublished":"2025-08-09T20:22:50Z","author":{"@type":"Organization","name":"Slay the Spire Wiki","url":"https://slaythespire.wiki.gg/","logo":{"@type":"ImageObject","url":"https://slaythespire.wiki.gg/images/Site-logo.png?cbcf47"}},"publisher":{"@type":"Organization","name":"Slay the Spire Wiki","url":"https://slaythespire.wiki.gg/","logo":{"@type":"ImageObject","url":"https://slaythespire.wiki.gg/images/Site-logo.png?cbcf47"}}}</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P68LVFKN');</script>
+<!-- End Google Tag Manager -->
+</head>
+<body class="wgg-dom-version-1_43 skin-vector-legacy mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-Mechanics rootpage-Mechanics skin-vector action-view skin--responsive"><header id="wgg-netbar" class="">
+	<div class="wgg-netbar__left">
+		<div class="wgg-netbar__logo">
+			<a href="/" aria-label="wiki.gg">
+				<img height=25 alt="wiki.gg logo" src="https://commons.wiki.gg/images/Network_header_logo.svg?feeba7">
+			</a>
+		</div>
+	</div>
+
+	<nav class="wgg-netbar__user-links" aria-label="Personal tools">
+		<div id="p-personal" class="mw-portlet mw-portlet-personal"  >
+		    
+		    <ul>
+		            <li id="pt-createaccount" class="mw-list-item wgg-netbar__desktop-only"><a data-mw="interface" class=""  href="/wiki/Special:CreateAccount?returnto=Mechanics" title="You are encouraged to create an account and log in; however, it is not mandatory"><span>Create account</span></a></li>
+		            <li id="pt-login" class="mw-list-item wgg-netbar__desktop-only"><a data-mw="interface" class=""  href="/wiki/Special:UserLogin?returnto=Mechanics" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o"><span>Log in</span></a></li>
+		    </ul>
+		    
+		</div>
+
+		<div id="wgg-user-menu-overflow" class="wgg-netbar__dropdown wgg-netbar__mobile-only">
+			<input type="checkbox"
+				id="wgg-user-menu-overflow-checkbox"
+				role="button"
+				aria-haspopup="true"
+				aria-labelledby="wgg-user-menu-overflow-label"
+			>
+			<label
+				id="wgg-user-menu-overflow-label"
+		        for="wgg-user-menu-overflow-checkbox"
+				class="wgg-netbar__icon-button"
+			><span class="wgg-netbar-icon wgg-netbar-icon--overflow"></span><span>Toggle personal tools menu</span></label>
+
+			<div class="wgg-netbar__dropdown-content">
+				<div id="p-user-menu" class="mw-portlet mw-portlet-user-menu"  >
+				    
+				    <ul>
+				            <li id="pt-createaccount-overflow" class="mw-list-item wgg-netbar__mobile-only"><a data-mw="interface" class=""  href="/wiki/Special:CreateAccount?returnto=Mechanics" title="You are encouraged to create an account and log in; however, it is not mandatory"><span>Create account</span></a></li>
+				            <li id="pt-login-overflow" class="mw-list-item wgg-netbar__mobile-only"><a data-mw="interface" class=""  href="/wiki/Special:UserLogin?returnto=Mechanics" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o"><span>Log in</span></a></li>
+				    </ul>
+				    
+				</div>
+			</div>
+		</div>
+</nav>
+
+</header>
+
+<div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div class="content-wrapper">
+	<div id="mw-navigation">
+		<h2>Navigation menu</h2>
+		<div id="mw-head">
+			<div id="left-navigation">
+				
+<div id="p-namespaces" class="mw-portlet mw-portlet-namespaces vector-menu-tabs vector-menu-tabs-legacy vectorTabs vector-menu" aria-labelledby="p-namespaces-label"  >
+	<h3
+		id="p-namespaces-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Namespaces</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="ca-nstab-main" class="selected mw-list-item"><a href="/wiki/Mechanics" title="View the content page [c]" accesskey="c"><span>Page</span></a></li><li id="ca-talk" class="mw-list-item"><a href="/wiki/Talk:Mechanics" rel="discussion" title="Discussion about the content page [t]" accesskey="t"><span>Make A Suggestion</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+				
+<div id="p-variants" class="mw-portlet mw-portlet-variants emptyPortlet vector-menu-dropdown vector-menu" aria-labelledby="p-variants-label"  >
+	<input type="checkbox"
+		id="p-variants-checkbox"
+		role="button"
+		aria-haspopup="true"
+		data-event-name="ui.dropdown-p-variants"
+		class="vector-menu-checkbox"
+		aria-labelledby="p-variants-label"
+	>
+	<label
+		id="p-variants-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">English</span>
+	</label>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+			</div>
+			<div id="right-navigation">
+				
+<div id="p-views" class="mw-portlet mw-portlet-views vector-menu-tabs vector-menu-tabs-legacy vectorTabs vector-menu" aria-labelledby="p-views-label"  >
+	<h3
+		id="p-views-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Views</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="ca-view" class="selected mw-list-item"><a href="/wiki/Mechanics"><span>Read</span></a></li><li id="ca-edit" class="mw-list-item"><a href="/wiki/Special:CreateAccount?warning=accountrequiredtoedit&amp;returnto=Mechanics&amp;returntoquery=action%3Dedit" title="Edit this page [e]" accesskey="e"><span>Sign up to edit</span></a></li><li id="ca-viewsource" class="mw-list-item"><a href="/wiki/Mechanics?action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e"><span>View source</span></a></li><li id="ca-history" class="mw-list-item"><a href="/wiki/Mechanics?action=history" title="Past revisions of this page [h]" accesskey="h"><span>View history</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+				
+<div id="p-cactions" class="mw-portlet mw-portlet-cactions emptyPortlet vectorMenu vector-menu-dropdown vector-menu" aria-labelledby="p-cactions-label"  title="More options" >
+	<input type="checkbox"
+		id="p-cactions-checkbox"
+		role="button"
+		aria-haspopup="true"
+		data-event-name="ui.dropdown-p-cactions"
+		class="vector-menu-checkbox"
+		aria-labelledby="p-cactions-label"
+	>
+	<label
+		id="p-cactions-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">More</span>
+	</label>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+				
+<div id="p-search" role="search" class="vector-search-box-vue  vector-search-box-show-thumbnail vector-search-box-auto-expand-width vector-search-box">
+	<div class="vector-typeahead-search-container">
+		<div class="vector-typeahead-search-wrapper">
+			<div class="cdx-typeahead-search cdx-typeahead-search--show-thumbnail">
+				<form action="/wiki/Special:Search" id="searchform" class="vector-search-box-form cdx-typeahead-search__form">
+					<div id="simpleSearch"
+						class="vector-search-box-inner cdx-search-input cdx-search-input--has-end-button cdx-typeahead-search__input"
+						 data-search-loc="header-navigation">
+						<div class="cdx-search-input__input-wrapper">
+							<div class="cdx-text-input">
+								<input class="vector-search-box-input cdx-text-input__input mw-searchInput"
+									 type="search" name="search" placeholder="Search Slay the Spire Wiki" aria-label="Search Slay the Spire Wiki" autocapitalize="sentences" spellcheck="false" title="Search Slay the Spire Wiki [f]" accesskey="f" id="searchInput"
+									
+								>
+							</div>
+						</div>
+					<button class="cdx-button cdx-search-input__end-button">
+						Search
+					</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+		
+<div id="mw-panel">
+	<div id="p-logo" role="banner">
+		<a class="mw-wiki-logo" href="/"
+			title="Visit the main page"></a>
+	</div>
+	
+<div id="p-navigation" class="mw-portlet mw-portlet-navigation vector-menu-portal portal vector-menu" aria-labelledby="p-navigation-label"  >
+	<h3
+		id="p-navigation-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Navigation</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="n-mainpage-description" class="mw-list-item"><a href="/" title="Visit the main page [z]" accesskey="z"><span>Main page</span></a></li><li id="n-recentchanges" class="mw-list-item"><a href="/wiki/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r"><span>Recent changes</span></a></li><li id="n-randompage" class="mw-list-item"><a href="/wiki/Special:Random" title="Load a random page [x]" accesskey="x"><span>Random page</span></a></li><li id="n-Editor-Portal" class="mw-list-item"><a href="/wiki/Editor_Portal"><span>Editor Portal</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+	
+<div id="p-Characters" class="mw-portlet mw-portlet-Characters vector-menu-portal portal vector-menu" aria-labelledby="p-Characters-label"  >
+	<h3
+		id="p-Characters-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Characters</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="n-Ironclad" class="mw-list-item"><a href="/wiki/Ironclad"><span>Ironclad</span></a></li><li id="n-Silent" class="mw-list-item"><a href="/wiki/Silent"><span>Silent</span></a></li><li id="n-Defect" class="mw-list-item"><a href="/wiki/Defect"><span>Defect</span></a></li><li id="n-Watcher" class="mw-list-item"><a href="/wiki/Watcher"><span>Watcher</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-Enemies" class="mw-portlet mw-portlet-Enemies vector-menu-portal portal vector-menu" aria-labelledby="p-Enemies-label"  >
+	<h3
+		id="p-Enemies-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Enemies</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="n-Monsters" class="mw-list-item"><a href="/wiki/Monsters"><span>Monsters</span></a></li><li id="n-Elites" class="mw-list-item"><a href="/wiki/Elites"><span>Elites</span></a></li><li id="n-Bosses" class="mw-list-item"><a href="/wiki/Bosses"><span>Bosses</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-Collections" class="mw-portlet mw-portlet-Collections vector-menu-portal portal vector-menu" aria-labelledby="p-Collections-label"  >
+	<h3
+		id="p-Collections-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Collections</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="n-Cards" class="mw-list-item"><a href="/wiki/Cards_List"><span>Cards</span></a></li><li id="n-Relics" class="mw-list-item"><a href="/wiki/Relics_List"><span>Relics</span></a></li><li id="n-Potions" class="mw-list-item"><a href="/wiki/Potions_List"><span>Potions</span></a></li><li id="n-Events" class="mw-list-item"><a href="/wiki/Events_List"><span>Events</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-More_Slay_the_Spire" class="mw-portlet mw-portlet-More_Slay_the_Spire vector-menu-portal portal vector-menu" aria-labelledby="p-More_Slay_the_Spire-label"  >
+	<h3
+		id="p-More_Slay_the_Spire-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">More Slay the Spire</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="n-Buffs" class="mw-list-item"><a href="/wiki/Buffs"><span>Buffs</span></a></li><li id="n-Debuffs" class="mw-list-item"><a href="/wiki/Debuffs"><span>Debuffs</span></a></li><li id="n-Neow" class="mw-list-item"><a href="/wiki/Neow"><span>Neow</span></a></li><li id="n-Mechanics" class="mw-list-item"><a href="/wiki/Mechanics"><span>Mechanics</span></a></li><li id="n-Keywords" class="mw-list-item"><a href="/wiki/Keywords"><span>Keywords</span></a></li><li id="n-Map-Locations" class="mw-list-item"><a href="/wiki/Map_Locations"><span>Map Locations</span></a></li><li id="n-Achievements" class="mw-list-item"><a href="/wiki/Achievements"><span>Achievements</span></a></li><li id="n-Custom-Mode" class="mw-list-item"><a href="/wiki/Custom_Mode"><span>Custom Mode</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-tb" class="mw-portlet mw-portlet-tb vector-menu-portal portal vector-menu" aria-labelledby="p-tb-label"  >
+	<h3
+		id="p-tb-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Tools</span>
+	</h3>
+	<div class="vector-menu-content body">
+		
+		<ul class="vector-menu-content-list menu">
+			
+			<li id="t-whatlinkshere" class="mw-list-item"><a href="/wiki/Special:WhatLinksHere/Mechanics" title="A list of all wiki pages that link here [j]" accesskey="j"><span>What links here</span></a></li><li id="t-recentchangeslinked" class="mw-list-item"><a href="/wiki/Special:RecentChangesLinked/Mechanics" rel="nofollow" title="Recent changes in pages linked from this page"><span>Related changes</span></a></li><li id="t-newpage" class="mw-list-item"><a href="/wiki/Special:NewPage" accesskey="]"><span>New page</span></a></li><li id="t-specialpages" class="mw-list-item"><a href="/wiki/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q"><span>Special pages</span></a></li><li id="t-print" class="mw-list-item"><a href="javascript:print();" rel="alternate" title="Printable version of this page [p]" accesskey="p"><span>Printable version</span></a></li><li id="t-info" class="mw-list-item"><a href="/wiki/Mechanics?action=info" title="More information about this page"><span>Page information</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+	
+</div>
+
+	</div>
+	<div id="content" class="mw-body" role="main">
+		<aside id="wikigg-sl-header" data-mw="WggShowcaseLayout">
+        <div
+            class="wikigg-showcase__unit wikigg-showcase__reserved--lb"
+            data-wgg-unit-type="internal"
+        ></div>
+</aside>
+
+		<div class="content-body">
+			<main>
+				<a id="top"></a>
+				<div id="siteNotice"></div>
+				<div class="mw-indicators">
+				</div>
+				<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="mw-page-title-main">Mechanics</span></h1>
+				<div id="bodyContent" class="vector-body">
+					<div id="siteSub" class="noprint">From Slay the Spire Wiki</div>
+					<div id="contentSub"></div>
+					<div id="contentSub2"></div>
+					
+					<div id="jump-to-nav"></div>
+					<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+					<a class="mw-jump-link" href="#searchInput">Jump to search</a>
+					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="ambox" style="--ambox-color: red;"><div class="ambox-icon metadata"><img alt="" src="/images/thumb/GremlinNob.png/42px-GremlinNob.png?deef85" decoding="async" loading="lazy" width="42" height="48" data-file-width="433" data-file-height="499" /></div><div class="ambox-content"><p class="ambox-title">WARNING!</p><p class="ambox-text"><i>This page is under construction. Information may be wrong or incomplete.</i></p></div></div>
+<h2><span class="mw-headline" id="Resources">Resources</span></h2>
+<h3><span class="mw-headline" id="Health">Health</span></h3>
+<blockquote> <p><i><b>Hit Points (HP):</b> If you run out of HP, you die.</i></p></blockquote>
+<p>The most fundamental resource. HP can take any value from 0 to the player's maximum HP. HP is depleted by taking damage, and may be replenished at <a href="/wiki/Map_Locations#Rest_Sites" title="Map Locations">Rest Sites</a>, between acts, or with any number of healing effects.
+</p><p>Max HP can be raised or lowered by various cards, relics, and events. Increasing max HP will also increase your current HP by the same amount.
+</p><p>Read more about <a href="/wiki/Health" title="Health">Health</a>.
+</p>
+<h3><span class="mw-headline" id="Cards">Cards</span></h3>
+<p>Each character comes equipped with a starting deck of 10 or 12 cards. Cards are played during combat. 
+</p><p>Outside of combat, they may be added, removed, upgraded, or transformed. Some cards or relics can also upgrade cards mid combat.
+</p><p>Read more about <a href="/wiki/Cards" title="Cards">Cards</a>.
+</p>
+<h4><span class="mw-headline" id="Upgrading">Upgrading</span></h4>
+<blockquote><p><i>Upgrading cards makes them more powerful. Cards can only be upgraded once.</i></p></blockquote>
+<p>Read more about <a href="/wiki/Upgrade" title="Upgrade">Upgrade</a>.
+</p>
+<h4><span class="mw-headline" id="Transforming">Transforming</span></h4>
+<blockquote><p><i>Transformed cards become a random card of any rarity.</i></p></blockquote>
+<p>Read more about <a href="/wiki/Transform" title="Transform">Transform rules</a>.
+</p>
+<h3><span class="mw-headline" id="Gold">Gold</span></h3>
+<blockquote> <p><i><b>Money Pouch:</b> Shows how much gold you're carrying. Gold is the currency within the Spire.</i></p></blockquote>
+<p>Obtained from combat rewards, <a href="/wiki/Events" title="Events">Events</a>, <a href="/wiki/Chests" class="mw-redirect" title="Chests">Chests</a> and certain relics/cards. Can be spent at the <a href="/wiki/Merchant" title="Merchant">Merchant</a> and certain <a href="/wiki/Events" title="Events">Events</a> to make purchases.
+</p><p>Read more about <a href="/wiki/Gold" title="Gold">Gold</a>.
+</p>
+<h3><span class="mw-headline" id="Potions">Potions</span></h3>
+<blockquote> <p><i>Use potions during combat to gain bonuses or hinder enemies.</i></p></blockquote><p>Single-use consumables that persist across combats.
+</p><p>Read more about <a href="/wiki/Potions" title="Potions">Potions</a>.
+</p>
+<h3><span class="mw-headline" id="Keys">Keys</span></h3>
+<p>After a run has been won on <a href="/wiki/Ironclad" title="Ironclad">Ironclad</a>, <a href="/wiki/Silent" title="Silent">Silent</a> and <a href="/wiki/Defect" title="Defect">Defect</a>, an icon of 3 empty <b>Keys</b> appear to the left of the player's name. To access <a href="/wiki/Acts#Act_4:_The_Ending" title="Acts">Act 4</a>, all 3 <b>Keys</b> need to be collected in the same run. They do not have to be collected in the same Act.
+</p>
+<ul><li><a href="/wiki/File:Ruby_Key.png" class="image"><img alt="Ruby Key.png" src="/images/thumb/Ruby_Key.png/40px-Ruby_Key.png?8088f3" decoding="async" loading="lazy" width="40" height="32" data-file-width="54" data-file-height="43" /></a> <span class="ironclad-text"><b>Ruby Key</b></span>: Can be obtained at a Rest Site by clicking the <b>Recall</b> action, instead of Smith or Rest (or <span class="relic-trigger inline-trigger" data-name="Girya"><a href="/wiki/Girya" title="Girya"><img alt="Girya.png" src="/images/thumb/Girya.png/24px-Girya.png?44e44f" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Girya" title="Girya">Lift</a></span>, <span class="relic-trigger inline-trigger" data-name="Shovel"><a href="/wiki/Shovel" title="Shovel"><img alt="Shovel.png" src="/images/thumb/Shovel.png/24px-Shovel.png?2ddcce" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Shovel" title="Shovel">Dig</a></span> and <span class="relic-trigger inline-trigger" data-name="Peace Pipe"><a href="/wiki/Peace_Pipe" title="Peace Pipe"><img alt="PeacePipe.png" src="/images/thumb/PeacePipe.png/24px-PeacePipe.png?9c5737" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Peace_Pipe" title="Peace Pipe">Toke</a></span>) at the same fire.</li></ul>
+<ul><li><a href="/wiki/File:Emerald_Key.png" class="image"><img alt="Emerald Key.png" src="/images/thumb/Emerald_Key.png/30px-Emerald_Key.png?ba33e5" decoding="async" loading="lazy" width="30" height="43" data-file-width="40" data-file-height="57" /></a> <span class="silent-text"><b>Emerald Key</b></span>: Can be obtained by fighting a "super" elite, indicated by a burning animation on a map. Once the Emerald Key is obtained, super elites won't show up in later Acts.</li></ul>
+<ul><li><a href="/wiki/File:Sapphire_Key.png" class="image"><img alt="Sapphire Key.png" src="/images/thumb/Sapphire_Key.png/40px-Sapphire_Key.png?92386e" decoding="async" loading="lazy" width="40" height="32" data-file-width="53" data-file-height="43" /></a> <span class="defect-text"><b>Sapphire Key</b></span>: Can be obtained at any Chest instead of the Relic in the chest. Will not appear if <span class="relic-trigger inline-trigger" data-name="N&#39;loth&#39;s Hungry Face"><a href="/wiki/N%27loth%27s_Hungry_Face" title="N&#39;loth&#39;s Hungry Face"><img alt="NlothsMask.png" src="/images/thumb/NlothsMask.png/24px-NlothsMask.png?420bdb" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/N%27loth%27s_Hungry_Face" title="N&#39;loth&#39;s Hungry Face">N'loth's Hungry Face</a></span> is active. Will only be linked to the bottom Relic if <span class="relic-trigger inline-trigger" data-name="Matryoshka"><a href="/wiki/Matryoshka" title="Matryoshka"><img alt="Matryoshka.png" src="/images/thumb/Matryoshka.png/24px-Matryoshka.png?5adf8f" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Matryoshka" title="Matryoshka">Matryoshka</a></span> is active.</li></ul>
+<p><b>Trivia:</b> These three keys appear in the game <a class="external text" href="https://deadcells.wiki.gg/">Dead Cells</a> and unlock an <a class="external text" href="https://deadcells.wiki.gg/wiki/Outfits#Ironclad_Outfit">outfit</a> resembling the <a href="/wiki/Ironclad" title="Ironclad">Ironclad</a>.
+</p>
+<h2><span class="mw-headline" id="In_Combat">In Combat</span></h2>
+<h3><span class="mw-headline" id="Card_Piles">Card Piles</span></h3>
+<p>There are three piles in which cards may reside when not in the player's hand.
+</p>
+<ul><li><b>Draw Pile</b>: The pile from which cards are drawn at the start of the turn. The draw pile is populated at the start of combat with all the cards from the player's deck. Attempting to draw a card when the draw pile is empty triggers a shuffle (see below).</li>
+<li><b>Discard Pile</b>: The pile to which most cards are sent after playing. When a shuffle is triggered, all cards from the discard pile are shuffled into the draw pile. Certain cards do not enter the discard pile after being played: <a href="/wiki/Exhaust" class="mw-redirect" title="Exhaust">Exhaust</a> cards instead enter the exhaust pile, while <span class="plainlink" data-name="Cards"><a class="text" href="https://slaythespire.wiki.gg/wiki/Cards_List?type=Power"><span class="none">Powers</span></a></span> cards disappear entirely.</li>
+<li><b>Exhaust Pile</b>: The pile in which cards that have been <a href="/wiki/Exhaust" class="mw-redirect" title="Exhaust">Exhausted</a> reside. There is no way to recover cards from this pile, except with <span class="card-trigger inline-trigger" data-name="Exhume"><a href="/wiki/Exhume" title="Exhume"><img alt="CardIcon Ironclad Skill Rare.png" src="/images/thumb/CardIcon_Ironclad_Skill_Rare.png/24px-CardIcon_Ironclad_Skill_Rare.png?78fe01" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Exhume" title="Exhume">Exhume</a></span>.</li></ul>
+<p>Certain enemies have attacks that shuffle <span class="plainlink" data-name="Cards"><a class="text" href="https://slaythespire.wiki.gg/wiki/Cards_List?type=Status"><span class="none">Status</span></a></span> cards into the discard or draw piles. Player cards may also shuffle cards into the discard pile (e.g. <span class="card-trigger inline-trigger" data-name="Overclock"><a href="/wiki/Overclock" title="Overclock"><img alt="CardIcon Defect Skill Uncommon.png" src="/images/thumb/CardIcon_Defect_Skill_Uncommon.png/24px-CardIcon_Defect_Skill_Uncommon.png?12d106" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Overclock" title="Overclock">Overclock</a></span>) or draw pile (e.g. <span class="card-trigger inline-trigger" data-name="Alpha"><a href="/wiki/Alpha" title="Alpha"><img alt="CardIcon Watcher Skill Rare.png" src="/images/thumb/CardIcon_Watcher_Skill_Rare.png/24px-CardIcon_Watcher_Skill_Rare.png?ae356d" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Alpha" title="Alpha">Alpha</a></span>).
+</p>
+<h3><span class="mw-headline" id="Hand">Hand</span></h3>
+<p>The hand is where cards reside after drawing and before playing. During their turn, players may play cards from the hand, so long as they have the <span class="keyword-trigger inline-trigger" data-name="Energy"><a href="/wiki/Keywords#Energy" title="Keywords"><img alt="ColorlessEnergy.png" src="/images/thumb/ColorlessEnergy.png/22px-ColorlessEnergy.png?259ded" decoding="async" loading="lazy" width="22" height="22" data-file-width="164" data-file-height="164" /></a> <a href="/wiki/Keywords#Energy" title="Keywords">Energy</a></span> to do so.
+</p>
+<h4><span class="mw-headline" id="Hand_Size_Limit">Hand Size Limit</span></h4>
+<p>The maximum number of cards allowed in hand is 10. There is no way to exceed this limit. Any draw action that would result in more than 10 cards in the player's hand will result in the remaining cards entering the discard pile immediately. Similarly, anything that creates cards, whether a relic (e.g. <span class="relic-trigger inline-trigger" data-name="Dead Branch"><a href="/wiki/Dead_Branch" title="Dead Branch"><img alt="DeadBranch.png" src="/images/thumb/DeadBranch.png/24px-DeadBranch.png?b0e6b0" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Dead_Branch" title="Dead Branch">Dead Branch</a></span>) or another card (e.g. <span class="card-trigger inline-trigger" data-name="Blade Dance"><a href="/wiki/Blade_Dance" title="Blade Dance"><img alt="CardIcon Silent Skill Common.png" src="/images/thumb/CardIcon_Silent_Skill_Common.png/24px-CardIcon_Silent_Skill_Common.png?711671" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Blade_Dance" title="Blade Dance">Blade Dance</a></span>), will send excess cards to the draw pile, so that the hand size limit is maintained at all times.
+</p>
+<h3><span class="mw-headline" id="Turns">Turns</span></h3>
+<p>Combat is turn-based: first the player takes a turn, then the enemy party takes a turn, then repeat. This continues until either the enemy or the player dies.
+</p>
+<h4><span class="mw-headline" id="Player_Turn">Player Turn</span></h4>
+<p>At the start of the player's turn, three things happen:
+</p>
+<ol><li>Energy is set to the base energy (default 3), and</li>
+<li>A number of cards are drawn (default 5), and</li>
+<li>Start-of-turn effects trigger.</li></ol>
+<p>The default behavior can be changed, typically by <a href="/wiki/Relics" title="Relics">Relics</a> (e.g. <span class="relic-trigger inline-trigger" data-name="Fusion Hammer"><a href="/wiki/Fusion_Hammer" title="Fusion Hammer"><img alt="FusionHammer.png" src="/images/thumb/FusionHammer.png/24px-FusionHammer.png?e0e3b2" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Fusion_Hammer" title="Fusion Hammer">Fusion Hammer</a></span> increases the base energy by 1; <span class="relic-trigger inline-trigger" data-name="Snecko Eye"><a href="/wiki/Snecko_Eye" title="Snecko Eye"><img alt="SneckoEye.png" src="/images/thumb/SneckoEye.png/24px-SneckoEye.png?9be98a" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Snecko_Eye" title="Snecko Eye">Snecko Eye</a></span> increases the number of cards drawn per turn by 2).
+</p><p>During their turn, the player may play cards or drink <a href="/wiki/Potions" title="Potions">Potions</a>. Cards with an energy cost will subtract that energy from the total. All player actions are resolved immediately upon being performed.
+</p><p>When the player presses End Turn, two things happen:
+</p>
+<ol><li>End-of-turn effects trigger.
+<ul><li>This generally resolves in the order <b>relics -&gt; buffs -&gt; cards</b> (e.g. <span class="relic-trigger inline-trigger" data-name="Orichalcum"><a href="/wiki/Orichalcum" title="Orichalcum"><img alt="Orichalcum.png" src="/images/thumb/Orichalcum.png/24px-Orichalcum.png?c37c55" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Orichalcum" title="Orichalcum">Orichalcum</a></span> will trigger before <span class="keyword-trigger inline-trigger" data-name="Plated Armor"><a href="/wiki/Plated_Armor" title="Plated Armor"><img alt="Icon PlatedArmor.png" src="/images/thumb/Icon_PlatedArmor.png/22px-Icon_PlatedArmor.png?647bdc" decoding="async" loading="lazy" width="22" height="22" data-file-width="109" data-file-height="109" /></a> <a href="/wiki/Plated_Armor" title="Plated Armor">Plated Armor</a></span>, which will trigger before <span class="card-trigger inline-trigger" data-name="Burn"><a href="/wiki/Burn" title="Burn"><img alt="CardIcon Status.png" src="/images/thumb/CardIcon_Status.png/24px-CardIcon_Status.png?5935a6" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Burn" title="Burn">Burns</a></span>).</li></ul></li>
+<li>Cards in hand are shuffled into the discard pile.
+<ul><li>This will not occur with <span class="relic-trigger inline-trigger" data-name="Runic Pyramid"><a href="/wiki/Runic_Pyramid" title="Runic Pyramid"><img alt="RunicPyramid.png" src="/images/thumb/RunicPyramid.png/24px-RunicPyramid.png?b3c035" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Runic_Pyramid" title="Runic Pyramid">Runic Pyramid</a></span> or any cards that are <span class="keyword-trigger inline-trigger" data-name="Retain"> <a href="/wiki/Keywords#Retain" title="Keywords">Retained</a></span>, unless they are cards with end-of-turn Effects like <span class="card-trigger inline-trigger" data-name="Regret"><a href="/wiki/Regret" title="Regret"><img alt="CardIcon Curse.png" src="/images/thumb/CardIcon_Curse.png/24px-CardIcon_Curse.png?f11a8c" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Regret" title="Regret">Regret</a></span> or <span class="card-trigger inline-trigger" data-name="Burn"><a href="/wiki/Burn" title="Burn"><img alt="CardIcon Status.png" src="/images/thumb/CardIcon_Status.png/24px-CardIcon_Status.png?5935a6" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Burn" title="Burn">Burn</a></span>.
+<ul><li>Cards with end-of-turn Effects can sometimes also be <span class="keyword-trigger inline-trigger" data-name="Retain"> <a href="/wiki/Keywords#Retain" title="Keywords">Retained</a></span> at exactly 1 point: during the <span class="enemy-trigger inline-trigger" data-name="Awakened One"><a href="/wiki/Awakened_One" title="Awakened One"><img alt="Map-Awakened.png" src="/images/thumb/Map-Awakened.png/22px-Map-Awakened.png?bfea9f" decoding="async" loading="lazy" width="22" height="22" style="vertical-align: middle" data-file-width="512" data-file-height="512" /></a> <a href="/wiki/Awakened_One" title="Awakened One">Awakened One</a></span> phase shift. If Awakened One's first phase is killed with an effect that takes place right after the player's turn ends, but before the enemy turn begins (Defect's <span class="keyword-trigger inline-trigger" data-name="@LO"><img alt="LightningOrb.png" src="/images/thumb/LightningOrb.png/20px-LightningOrb.png?295517" decoding="async" loading="lazy" width="20" height="20" style="vertical-align: middle" data-file-width="70" data-file-height="70" />&#160;</span> Lightning Orb passive or <span class="relic-trigger inline-trigger" data-name="Stone Calendar"><a href="/wiki/Stone_Calendar" title="Stone Calendar"><img alt="StoneCalendar.png" src="/images/thumb/StoneCalendar.png/24px-StoneCalendar.png?23e7f8" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="156" data-file-height="156" /></a> <a href="/wiki/Stone_Calendar" title="Stone Calendar">Stone Calendar</a></span>), cards that would normally be discarded like <span class="card-trigger inline-trigger" data-name="Burn"><a href="/wiki/Burn" title="Burn"><img alt="CardIcon Status.png" src="/images/thumb/CardIcon_Status.png/24px-CardIcon_Status.png?5935a6" decoding="async" loading="lazy" width="24" height="24" style="vertical-align: middle" data-file-width="32" data-file-height="32" /></a> <a href="/wiki/Burn" title="Burn">Burn</a></span> can be <span class="keyword-trigger inline-trigger" data-name="Retain"> <a href="/wiki/Keywords#Retain" title="Keywords">Retained</a></span>.</li></ul></li></ul></li></ol>
+<p>Then the enemy party takes its turn.
+</p>
+<h4><span class="mw-headline" id="Enemy_Turn">Enemy Turn</span></h4>
+<p>Enemy actions during their turn are governed by their <a href="/wiki/Intent" title="Intent">Intents</a>, visible as floating symbols above their heads. In multi-enemy encounters, enemies always take actions from left to right.
+</p>
+<h2><span class="mw-headline" id="Outside_Combat">Outside Combat</span></h2>
+<h3><span class="mw-headline" id="Acts">Acts</span></h3>
+<p>Slay the Spire is split up into 3 acts: <a href="/wiki/Acts#Act_1:_Exordium" title="Acts">The Exordium</a>, <a href="/wiki/Acts#Act_2:_The_City" title="Acts">The City</a>, and <a href="/wiki/Acts#Act_3:_The_Beyond" title="Acts">The Beyond</a>. Each act is 17 floors long and has certain features in common, such as a <a href="/wiki/Boss" class="mw-redirect" title="Boss">Boss</a> encounter at the end. An optional fourth act, <a href="/wiki/Acts#Act_4:_The_Ending" title="Acts">The Ending</a>, is unlocked after beating the game once with each of <a href="/wiki/Ironclad" title="Ironclad">Ironclad</a>, <a href="/wiki/Silent" title="Silent">Silent</a>, and <a href="/wiki/Defect" title="Defect">Defect</a> (see <a href="#Keys">Keys</a>).
+</p><p>Read more about <a href="/wiki/Acts" title="Acts">Acts</a>.
+</p>
+<h3><span class="mw-headline" id="Floors_and_Floor_Types">Floors and Floor Types</span></h3>
+<p>After completing any mandatory objectives, such as defeating enemies or choosing an option at an <a href="/wiki/Event" class="mw-redirect" title="Event">Event</a>, the player may proceed to the next floor using the Map interface. Only floors ("nodes") that are connected to the current floor with a dotted line on the map can be accessed. Each floor may be one of seven different types.
+</p><p>Read more about <a href="/wiki/Map_Locations" title="Map Locations">Map Locations</a>.
+</p>
+<h3><span class="mw-headline" id="Chests">Chests</span></h3><div class="hatnote">See <a href="/wiki/Map_Locations" title="Map Locations">Map Locations</a> for all possible rooms.</div>
+<p>Chests are objects which contain some amount of Gold and a <a href="/wiki/Relic" class="mw-redirect" title="Relic">Relic</a>. Chests are only obtained through killing <a href="/wiki/Bosses" title="Bosses">bosses</a>, or encountering <a href="/wiki/Treasure_Rooms" class="mw-redirect" title="Treasure Rooms">Treasure Rooms</a>. 
+</p><p>Boss Chests offer a choice of three different <span class="plainlink" data-name="Relics"><a class="text" href="https://slaythespire.wiki.gg/wiki/Relics_List?rarity=Boss"><span class="boss-font">Boss Relics</span></a></span>. You can choose to skip this reward. 
+</p><p>There are three types of Non-Boss chests: Small, Medium and Large. Each has a different chance to give you a <a href="/wiki/Relic" class="mw-redirect" title="Relic">Relic</a> and some amount of <a href="/wiki/Gold" title="Gold">Gold</a>.
+</p>
+<table class="wikitable">
+<caption>Chests
+</caption>
+<tbody><tr>
+<th>
+</th>
+<th>Small
+</th>
+<th>Medium
+</th>
+<th>Large
+</th></tr>
+<tr>
+<td>Spawn Chance
+</td>
+<td>50%
+</td>
+<td>33%
+</td>
+<td>17%
+</td></tr>
+<tr>
+<td colspan="4">
+<h5><span class="mw-headline" id="Relics">Relics</span></h5>
+</td></tr>
+<tr>
+<td><span class="plainlink" data-name="Relics"><a class="text" href="https://slaythespire.wiki.gg/wiki/Relics_List?rarity=Common"><span class="none">Common</span></a></span>
+</td>
+<td>75%
+</td>
+<td>35%
+</td>
+<td>0%
+</td></tr>
+<tr>
+<td><span class="plainlink" data-name="Relics"><a class="text" href="https://slaythespire.wiki.gg/wiki/Relics_List?rarity=Uncommon"><span class="uncommon-font">Uncommon</span></a></span>
+</td>
+<td>25%
+</td>
+<td>50%
+</td>
+<td>75%
+</td></tr>
+<tr>
+<td><span class="plainlink" data-name="Relics"><a class="text" href="https://slaythespire.wiki.gg/wiki/Relics_List?rarity=Rare"><span class="rare-font">Rare</span></a></span>
+</td>
+<td>0%
+</td>
+<td>15%
+</td>
+<td>25%
+</td></tr>
+<tr>
+<td colspan="4">
+<h5><span class="mw-headline" id="Gold_2">Gold</span></h5>
+</td></tr>
+<tr>
+<td>Chance
+</td>
+<td>50%
+</td>
+<td>35%
+</td>
+<td>50%
+</td></tr>
+<tr>
+<td>Amount
+</td>
+<td>23-27
+</td>
+<td>45-55
+</td>
+<td>68-82
+</td></tr></tbody></table>
+<table style="float:left; margin:0 0 10px 10px;">
+<tbody><tr>
+<td><div class="thumb tright"><div class="thumbinner" style="width:172px;"><a href="/wiki/File:SmallChest.png" class="image"><img src="/images/thumb/SmallChest.png/170px-SmallChest.png?7bdecc" decoding="async" loading="lazy" width="170" height="170" class="thumbimage" data-file-width="354" data-file-height="354" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/wiki/File:SmallChest.png" class="internal" title="Enlarge"></a></div>Small Chest</div></div></div>
+</td>
+<td><div class="thumb tright"><div class="thumbinner" style="width:172px;"><a href="/wiki/File:MediumChest.png" class="image"><img src="/images/thumb/MediumChest.png/170px-MediumChest.png?c359ca" decoding="async" loading="lazy" width="170" height="170" class="thumbimage" data-file-width="354" data-file-height="354" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/wiki/File:MediumChest.png" class="internal" title="Enlarge"></a></div>Medium Chest</div></div></div>
+</td>
+<td><div class="thumb tright"><div class="thumbinner" style="width:172px;"><a href="/wiki/File:LargeChest.png" class="image"><img src="/images/thumb/LargeChest.png/170px-LargeChest.png?69ee14" decoding="async" loading="lazy" width="170" height="170" class="thumbimage" data-file-width="354" data-file-height="354" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/wiki/File:LargeChest.png" class="internal" title="Enlarge"></a></div>Large Chest</div></div></div>
+</td>
+<td><div class="thumb tright"><div class="thumbinner" style="width:172px;"><a href="/wiki/File:BossChest.png" class="image"><img src="/images/thumb/BossChest.png/170px-BossChest.png?f2ea43" decoding="async" loading="lazy" width="170" height="170" class="thumbimage" data-file-width="354" data-file-height="354" /></a>  <div class="thumbcaption"><div class="magnify"><a href="/wiki/File:BossChest.png" class="internal" title="Enlarge"></a></div>Boss Chest</div></div></div>
+</td></tr></tbody></table>
+<div style="clear:both;" class=""></div>
+<h2><span class="mw-headline" id="Other">Other</span></h2>
+<h3><span class="mw-headline" id="Ascensions">Ascensions</span></h3>
+<blockquote><p><i>Runs get harder as you win... (Winstreaks are unaffected).</i> </p></blockquote><p>See a list of Ascension modifiers <a href="/wiki/Ascension" title="Ascension">here</a>.</p>
+<!-- 
+NewPP limit report
+Cached time: 20260131233544
+Cache expiry: 2592000
+Reduced expiry: false
+Complications: [no‐toc]
+CPU time usage: 0.073 seconds
+Real time usage: 0.164 seconds
+Preprocessor visited node count: 731/1000000
+Revision size: 9144/4194304 bytes
+Post‐expand include size: 8679/4194304 bytes
+Template argument size: 1392/4194304 bytes
+Highest expansion depth: 6/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 0/10000000 bytes
+Lua time usage: 0.022/15.000 seconds
+Lua memory usage: 2975997/52428800 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%   80.543      1 -total
+ 27.33%   22.013      5 Template:KW
+ 21.05%   16.953      8 Template:C
+ 19.61%   15.795     11 Template:R
+ 10.72%    8.631      1 Template:M
+  8.95%    7.211      5 Template:Infobox_Styling
+  8.31%    6.696      6 Template:QueryLink
+  3.03%    2.438      1 Template:Hatnote
+  2.86%    2.305      1 Template:Clear
+  2.65%    2.136      1 Template:Icon
+-->
+
+<!-- Saved in parser cache with key slaythespire_en:pcache:idhash:1534-0!canonical and timestamp 20260131233543 and revision id 14585. Rendering was triggered because: edit-page
+ -->
+</div>
+<div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://slaythespire.wiki.gg/wiki/Mechanics?oldid=14585">https://slaythespire.wiki.gg/wiki/Mechanics?oldid=14585</a>"</div></div>
+					<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/wiki/Special:Categories" title="Special:Categories">Categories</a>: <ul><li><a href="/wiki/Category:ToUpdate" title="Category:ToUpdate">ToUpdate</a></li><li><a href="/wiki/Category:Game_Mechanics" title="Category:Game Mechanics">Game Mechanics</a></li></ul></div><div id="mw-hidden-catlinks" class="mw-hidden-catlinks mw-hidden-cats-hidden">Hidden category: <ul><li><a href="/wiki/Category:Pages_with_hatnotes" title="Category:Pages with hatnotes">Pages with hatnotes</a></li></ul></div></div>
+				</div>
+			</main>
+			<aside id="wikigg-sl-rail" data-mw="WggShowcaseLayout">
+        <div
+            class="wikigg-showcase__unit wikigg-showcase__reserved--mhp"
+            data-wgg-unit-type="pubco"
+        ><div id="adngin-Sidebar-0"></div></div>
+        <div
+            class="wikigg-showcase__unit wikigg-showcase__reserved--mrec"
+            data-wgg-unit-type="pubco"
+        ><div id="nn_mpu1"></div></div>
+        <div
+            class="wikigg-showcase__unit wikigg-showcase__reserved--mrec"
+            data-wgg-unit-type="internal"
+        ></div>
+        <div
+            class="wikigg-showcase__unit wikigg-showcase__reserved--mrec"
+            data-wgg-unit-type="pubco"
+        ><div id="nn_mpu2"></div></div>
+        <div class="wikigg-showcase__report-link">
+            <a href="https://www.wiki.gg/t/bad-ad" target="_blank" rel="nofollow">Report bad advertisement</a>
+        </div>
+</aside>
+
+		</div>
+		<aside id="wikigg-sl-footer" data-mw="WggShowcaseLayout">
+        <div
+            class="wikigg-showcase__unit wikigg-showcase__reserved--lb"
+            data-wgg-unit-type="internal"
+        ></div>
+</aside>
+
+	</div>
+</div>
+<div id='mw-data-after-content'>
+	<div class="mw-cookiewarning-container"><div class="mw-cookiewarning-text"><span>Cookies help us deliver our services. By using our services, you agree to our use of cookies.</span></div><form method="POST"><div class='oo-ui-layout oo-ui-horizontalLayout'><span class='oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-progressive oo-ui-buttonWidget'><a role='button' tabindex='0' href='https://www.indie.io/privacy-policy' rel='nofollow' class='oo-ui-buttonElement-button'><span class='oo-ui-iconElement-icon oo-ui-iconElement-noIcon oo-ui-image-progressive'></span><span class='oo-ui-labelElement-label'>More information</span><span class='oo-ui-indicatorElement-indicator oo-ui-indicatorElement-noIndicator oo-ui-image-progressive'></span></a></span><span class='oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-buttonInputWidget'><button type='submit' tabindex='0' name='disablecookiewarning' value='OK' class='oo-ui-inputWidget-input oo-ui-buttonElement-button'><span class='oo-ui-iconElement-icon oo-ui-iconElement-noIcon oo-ui-image-invert'></span><span class='oo-ui-labelElement-label'>OK</span><span class='oo-ui-indicatorElement-indicator oo-ui-indicatorElement-noIndicator oo-ui-image-invert'></span></button></span></div></form></div>
+</div>
+
+
+<footer id="footer" class="mw-footer" >
+	<ul id="footer-info">
+	<li id="footer-info-lastmod"> This page was last edited on 28 December 2025, at 19:03.</li>
+	<li id="footer-info-copyright"><div class="wikigg-copyright-box">Page content is under <a class="external" rel="nofollow" href="https://creativecommons.org/licenses/by-sa/4.0">Creative Commons Attribution-ShareAlike 4.0 License</a> unless otherwise noted.</div></li>
+</ul>
+
+	<ul id="footer-places">
+	<li id="footer-places-wikigg-tos"><a href="https://www.indie.io/terms-of-service">Terms of Service</a></li>
+	<li id="footer-places-wikigg-privacy"><a href="https://www.indie.io/privacy-policy">Privacy policy</a></li>
+	<li id="footer-places-wikigg-support"><a href="https://support.wiki.gg">Support Wiki</a></li>
+	<li id="footer-places-wikigg-servicedesk"><a href="https://wiki.gg/go/servicedesk">Send a ticket to wiki.gg</a></li>
+	<li id="footer-places-wikigg-statuspage"><a href="https://wikiggstatus.com">Status page</a></li>
+	<li id="footer-places-wikigg-pcmp"><a href="#" class="nn-cmp-show" style="display: none">Manage cookie settings</a></li>
+</ul>
+
+	<ul id="footer-icons" class="noprint">
+	<li id="footer-copyrightico"><a href="https://creativecommons.org/licenses/by-sa/4.0" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="https://commons.wiki.gg/images/CC-BY-SA_footer_badge.svg?d931d3" alt="Creative Commons Attribution-ShareAlike 4.0 License" height="31" width="88" loading="lazy" data-theme="light"><img src="https://commons.wiki.gg/images/CC-BY-SA_footer_badge_dark.svg?55845c" alt="Creative Commons Attribution-ShareAlike 4.0 License" height="31" width="88" loading="lazy" data-theme="dark"></a></li>
+	<li id="footer-poweredbyico"><a href="https://www.mediawiki.org/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="https://commons.wiki.gg/images/MediaWiki_footer_badge.svg?8c3a36" alt="Powered by MediaWiki" width="88" height="31" loading="lazy" data-theme="light"><img src="https://commons.wiki.gg/images/MediaWiki_footer_badge_dark.svg?12ec0a" alt="Powered by MediaWiki" width="88" height="31" loading="lazy" data-theme="dark"></a></li>
+	<li id="footer-partofico"><a href="https://wiki.gg" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="https://commons.wiki.gg/images/d/d1/Network_footer_badge.svg?9d5a96" alt="Part of wiki.gg" height="31" width="88" loading="lazy" data-theme="light"><img src="https://commons.wiki.gg/images/2/23/Network_footer_badge_dark.svg?9cf3e8" alt="Part of wiki.gg" height="31" width="88" loading="lazy" data-theme="dark"></a></li>
+</ul>
+
+</footer>
+
+
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":128,"wgPageParseReport":{"limitreport":{"cputime":"0.073","walltime":"0.164","ppvisitednodes":{"value":731,"limit":1000000},"revisionsize":{"value":9144,"limit":4194304},"postexpandincludesize":{"value":8679,"limit":4194304},"templateargumentsize":{"value":1392,"limit":4194304},"expansiondepth":{"value":6,"limit":100},"expensivefunctioncount":{"value":0,"limit":500},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":0,"limit":10000000},"timingprofile":["100.00%   80.543      1 -total"," 27.33%   22.013      5 Template:KW"," 21.05%   16.953      8 Template:C"," 19.61%   15.795     11 Template:R"," 10.72%    8.631      1 Template:M","  8.95%    7.211      5 Template:Infobox_Styling","  8.31%    6.696      6 Template:QueryLink","  3.03%    2.438      1 Template:Hatnote","  2.86%    2.305      1 Template:Clear","  2.65%    2.136      1 Template:Icon"]},"scribunto":{"limitreport-timeusage":{"value":"0.022","limit":"15.000"},"limitreport-memusage":{"value":2975997,"limit":52428800}},"cachereport":{"timestamp":"20260131233544","ttl":2592000,"transientcontent":false}}});});</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c887fce3bb688f5',t:'MTc3MDE5MDYwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
