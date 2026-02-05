@@ -1,7 +1,6 @@
 """
 Enemy entity - represents monsters in combat.
 """
-from entities.player import Player
 from utils.types import RarityType
 
 
@@ -25,7 +24,7 @@ class Enemy:
         self.damage = damage
         self.is_elite = is_elite
         self.is_boss = is_boss
-        self.is_dead = False
+        self._is_dead = False
         
         # Combat modifiers (can be modified by relics/status effects)
         self.strength = 0
@@ -59,18 +58,20 @@ class Enemy:
         
         # Check for death
         if self.current_hp <= 0:
-            self.is_dead = True
+            self.current_hp = 0  # Clamp to 0
+            self._is_dead = True
         
         return actual_damage
     
+    @property
     def is_dead(self) -> bool:
         """Check if enemy is dead"""
-        return self.is_dead or self.current_hp <= 0
+        return self._is_dead or self.current_hp <= 0
     
     def reset_for_combat(self):
         """Reset enemy state at start of combat"""
         self.current_hp = self.max_hp
-        self.is_dead = False
+        self._is_dead = False
     
     def __str__(self):
         return f"{self.name} ({self.current_hp}/{self.max_hp} HP)"
