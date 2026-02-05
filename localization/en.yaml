@@ -253,6 +253,66 @@ relics:
   MembershipCard:
     name: "Membership Card"
     description: "Cards in shop cost 25% less."
+  Sisyphus:
+    name: "Sisyphus (斯巴达克斯)"
+    description: "At start of combat, play 3 lowest cost cards from your deck."
+  BagOfPreparationGlobal:
+    name: "Bag of Preparation"
+    description: "Draw 3 additional cards at start of each combat."
+  VajraBoss:
+    name: "Vajra Boss"
+    description: "Strength affects Vulnerable duration."
+  Akara:
+    name: "Akara"
+    description: "Draw 3 cards after each combat."
+  RedMask:
+    name: "Red Mask"
+    description: "Gain 1 Strength at end of combat."
+  MummyHand:
+    name: "Mummy Hand"
+    description: "Draw 1 additional card each turn."
+  VajraBoss:
+    name: "Vajra Boss"
+    description: "Strength affects Vulnerable duration."
+  Dagger:
+    name: "Dagger"
+    description: "Gain 1 Strength at start of combat."
+  MutagenicStrength:
+    name: "Mutagenic Strength"
+    description: "Gain 1 Strength at end of your turn."
+  BurningBloodBoss:
+    name: "Burning Blood Boss"
+    description: "At start of combat, lose 1 HP and gain 2 Strength."
+  SneckoEye:
+    name: "Snecko Eye"
+    description: "Enemies start with 3 less HP."
+  ChampionsBelt:
+    name: "Champion's Belt"
+    description: "Cards cost 0 every 5th card."
+  FrozenCore:
+    name: "Frozen Core"
+    description: "Draw 2 cards at end of your turn."
+  DeadBranch:
+    name: "Dead Branch"
+    description: "Draw 1 card and play random from discard, then exhaust."
+  MawBank:
+    name: "Maw Bank"
+    description: "Gain 10% interest on gold spent in shops."
+  TheCourier:
+    name: "The Courier"
+    description: "Restock shop at 80% price."
+  BlueCandle:
+    name: "Blue Candle"
+    description: "Gain 1 Artifact at start of combat."
+  RuneCube:
+    name: "Rune Cube"
+    description: "Draw 2 random cards from specific pool when playing cards."
+  BlackBloodBoss:
+    name: "Black Blood Boss"
+    description: "Gain 1 Strength at end of your turn."
+  TheHeart:
+    name: "The Heart"
+    description: "Lose 1 HP at the end of your turn."
   # Global Common Relics
   Sisyphus:
     name: "Sisyphus (斯巴达克斯)"

@@ -171,42 +171,118 @@ powers:
     VulnerablePower:
       description: 受到的伤害增加50%（每层）。
       name: 脆弱
-  relics:
-    Anchor:
-      description: 战斗开始时获得 1 点力量。
-      name: 锚
-    BagOfPreparation:
-      description: 战斗开始时抽 3 张牌。
-      name: 备战包
-    Brimstone:
-      description: 每场战斗第一张牌升级。
-      name: 硫磺
+relics:
     BurningBlood:
-      description: 战斗开始时获得 1 点力量。
       name: 燃烧之血
-    BurningPact:
-      description: 战斗开始时获得 1 点力量，失去 1 点生命值。
-      name: 燃烧契约
-    CeramicFish:
-      description: 战斗开始时抽 3 张牌。
-      name: 陶瓷鱼
-    Sisyphus:
-      description: 战斗开始时从牌库打出 3 张费用最低的牌。
-      name: 斯巴达克斯
-    BagOfPreparationGlobal:
-      description: 每场战斗开始时额外抽 3 张牌。
-      name: 备战包
+      description: 战斗开始时获得 1 点力量。
     Vajra:
+      name: 金刚杵
+      description: 力量影响脆弱持续时间。
+    Anchor:
+      name: 锚
+      description: 战斗开始时获得 1 点力量。
+    BurningPact:
+      name: 燃烧契约
+      description: 战斗开始时获得 1 点力量，失去 1 点生命值。
+    Brimstone:
+      name: 硫磺
+      description: 每场战斗第一张牌升级。
+    CeramicFish:
+      name: 陶瓷鱼
+      description: 战斗开始时抽 3 张牌。
+    BagOfPreparation:
+      name: 备战包
+      description: 战斗开始时抽 3 张牌。
+    WhiteBeastStatue:
+      name: 白色野兽雕像
+      description: 敌人生成时生命值减少 1 点。
+    Medalkit:
+      name: 急救包
+      description: 战斗开始时治疗 3 点生命值。
+    PaperKite:
+      name: 纸风筝
+      description: 每回合抽 2 张牌。
+    WristBlade:
+      name: 腕刃
+      description: 战斗结束时获得 3 点力量。
+    SneckoEye:
+      name: 斯内克之眼
+      description: 敌人开始时生命值减少 3 点。
+    SlaversCage:
+      name: 斯巴达克斯之笼
+      description: 每场战斗获得 2 点力量。
+    PaperFrog:
+      name: 纸青蛙
+      description: 生命值降至 50% 以下时抽 2 张牌。
+    MoltenEgg:
+      name: 熔岩蛋
+      description: 每回合 +1 点能量。
+    ChampionsBelt:
+      name: 冠军腰带
+      description: 每第 5 张牌费用为 0。
+    MembershipCard:
+      name: 会员卡
+      description: 商店中的卡牌费用减少 25%。
+    Sisyphus:
+      name: 斯巴达克斯
+      description: 战斗开始时从牌库打出 3 张费用最低的牌。
+    BagOfPreparationGlobal:
+      name: 备战包
+      description: 每场战斗开始时额外抽 3 张牌。
+    VajraBoss:
+      name: 金刚杵王
+      description: 力量影响脆弱持续时间。
+    Akara:
+      name: 阿卡拉
+      description: 战斗结束抽 3 张牌。
+    RedMask:
+      name: 红色面具
+      description: 战斗结束获得 1 点力量。
+    MummyHand:
+      name: 木乃伊手
+      description: 每回合额外抽 1 张牌。
+    Vajra:
+      name: 金刚杵
+      description: 力量影响脆弱持续时间。
+    Dagger:
+      name: 匕首
+      description: 战斗开始时获得 1 点力量。
+    MutagenicStrength:
+      name: 变异力量
+      description: 每回合结束获得 1 点力量。
+  BurningBloodBoss:
+      name: 燃烧之血王
+      description: 战斗开始时失去 1 点生命值，获得 2 点力量。
+  SneckoEye:
+      name: 斯内克之眼
+      description: 敌人开始时生命值减少 3 点。
   ChampionsBelt:
-    description: 每第 5 张牌费用为 0。
-    name: 冠军腰带
-  Medalkit:
-    description: 战斗开始时治疗 3 点生命值。
-    name: 急救包
-  MembershipCard:
-    description: 商店中的卡牌费用减少 25%。
-    name: 会员卡
-  MoltenEgg:
+      name: 冠军腰带
+      description: 每第 5 张牌费用为 0。
+  FrozenCore:
+      name: 冰冻核心
+      description: 你的回合结束抽 2 张牌。
+  DeadBranch:
+      name: 死亡分枝
+      description: 回合开始抽 1 张牌，从弃牌堆打出随机牌，然后移除它。
+  MawBank:
+      name: 巨口银行
+      description: 在商店消费的金币获得 10% 的利息。
+  TheCourier:
+      name: 信使
+      description: 遗物购买以 80% 的价格补货。
+  BlueCandle:
+      name: 蓝色蜡烛
+      description: 战斗开始时获得 1 点神器。
+  RuneCube:
+      name: 符文立方体
+      description: 打出卡牌时从特定卡池抽取 2 张随机牌。
+  BlackBloodBoss:
+      name: 黑血之王
+      description: 每回合结束获得 1 点力量。
+  TheHeart:
+      name: 尖塔之心
+      description: 你的回合结束时失去 1 点生命值。
     description: 每回合 +1 点能量。
     name: 熔岩蛋
   PaperFrog:
