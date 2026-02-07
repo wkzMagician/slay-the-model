@@ -1,8 +1,8 @@
 """
-Base event definitions for the new architecture.
-Events are now simple - they represent random encounters in Unknown Rooms.
+Base event definitions for new architecture.
+Events use global action queue - they represent random encounters in Unknown Rooms.
 """
-from actions.base import ActionQueue
+from utils.result_types import BaseResult
 from engine.game_state import game_state
 from localization import Localizable
 
@@ -19,42 +19,26 @@ class Event(Localizable):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         
-        # Each event has its own action queue
-        self.action_queue = ActionQueue()
-        
-        # Control flag for ending the event
+        # Control flag for ending event
         self.event_ended = False
     
-    def trigger(self) -> str:
+    def trigger(self) -> 'BaseResult':
         """
         Trigger and execute the event.
-        
+
         This method should implement the event's main logic,
         building and executing actions as needed.
-        
+
         Returns:
-            Execution result: None/"DEATH"/"WIN"
+            BaseResult: The result of this event.
+                NoneResult: Event completed with no follow-up
+                SingleActionResult: One action to queue next
+                MultipleActionsResult: Multiple actions to queue next
+                SelectActionResult: UI selection needed
+                GameStateResult: Game state transition (DEATH/WIN)
         """
+        from utils.result_types import NoneResult
         raise NotImplementedError(f"{self.__class__.__name__} must implement trigger()")
-    
-    def execute_actions(self) -> str:
-        """
-        Execute all actions in the event's action queue.
-        
-        This is a helper method for events to execute their actions.
-        Stops executing when event_ended is True or queue is empty.
-        
-        Returns:
-            Execution result if special value encountered, None otherwise
-        """
-        while not self.event_ended and not self.action_queue.is_empty():
-            result = self.action_queue.execute_next()
-            
-            # Check for special return values
-            if result in ("DEATH", "WIN"):
-                return result
-        
-        return None
     
     def end_event(self) -> None:
         """End the event and return to room flow"""
@@ -77,32 +61,34 @@ class CombatEvent(Event):
         self.enemies = enemies or []
         self.is_elite = is_elite
     
-    def trigger(self) -> str:
+    def trigger(self) -> 'BaseResult':
         """Trigger combat event"""
         from engine.combat import Combat
         from actions.display import DisplayTextAction
-        
+        from utils.result_types import GameStateResult
+
         # Display event description
-        self.action_queue.add_action(DisplayTextAction(
+        game_state.action_queue.add_action(DisplayTextAction(
             text_key=f"events.{self.__class__.__name__}.description"
         ))
-        
+
         # Create and start combat
         combat = Combat(
             enemies=self.enemies,
             is_elite=self.is_elite
         )
-        
+
         result = combat.start()
-        
+
         # Handle combat result
         if result == "WIN":
             self._handle_victory()
         elif result == "DEATH":
             # Death is handled by game flow
             pass
-        
-        return result
+
+        # Convert string result to GameStateResult
+        return GameStateResult(result)
     
     def _handle_victory(self):
         """Handle combat victory - add event-specific rewards"""

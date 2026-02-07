@@ -1,9 +1,9 @@
 """
-Neo reward room - the starting room where player chooses their blessing.
+Neo reward room - starting room where player chooses their blessing.
 """
 from actions.display import DisplayTextAction
-from localization import LocalStr
-from rooms.base import Room
+from utils.result_types import GameStateResult, NoneResult
+from rooms.base import Room, BaseResult
 from utils.registry import register
 
 
@@ -17,29 +17,29 @@ class NeoRewardRoom(Room):
     
     def init(self):
         """Initialize Neo room - no special initialization needed"""
-        pass
     
-    def enter(self) -> str:
+    def enter(self) -> BaseResult:
         """Enter Neo room and trigger blessing selection"""
+        from engine.game_state import game_state
+
         # Display welcome message
-        self.action_queue.add_action(DisplayTextAction(
+        game_state.action_queue.add_action(DisplayTextAction(
             text_key="ui.neo_welcome",
             default="Welcome, traveler. I am Neow. I shall grant you a blessing to begin your journey."
         ))
-        
+
         # Create and trigger Neo event
         from events.neo_event import NeoEvent
         neo_event = NeoEvent()
-        
-        # Execute the Neo event
+
+        # Execute Neo event
         result = neo_event.trigger()
         
-        # Check for game end
-        if result in ("DEATH", "WIN"):
+        if isinstance(result, GameStateResult):
             return result
         
         # Display goodbye message
-        self.action_queue.add_action(DisplayTextAction(
+        game_state.action_queue.add_action(DisplayTextAction(
             text_key="ui.neo_goodbye",
             default="Your journey begins now. Good luck!"
         ))
@@ -48,4 +48,4 @@ class NeoRewardRoom(Room):
         self.should_leave = True
         
         # Execute any remaining actions
-        return self.execute_actions()
+        return game_state.execute_all_actions()

@@ -1,9 +1,10 @@
 """
-Base room definitions for the new architecture.
-Each room manages its own action queue and lifecycle.
+Base room definitions for new architecture.
+Rooms use global action queue and lifecycle management.
 """
-from actions.base import Action, ActionQueue
+from actions.base import Action
 from actions.map_selection import SelectMapNodeAction
+from utils.result_types import BaseResult, NoneResult, GameStateResult
 from localization import Localizable
 from utils.types import RoomType
 
@@ -11,16 +12,13 @@ from utils.types import RoomType
 class Room(Localizable):
     """Base room class - represents a location where events occur
     
-    Each room manages its own action queue and lifecycle independently.
+    Rooms use the global action queue for action management.
     """
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         
-        # Each room has its own action queue
-        self.action_queue = ActionQueue()
-        
-        # Control flag for leaving the room
+        # Control flag for leaving room
         self.should_leave = False
         
         # Room type tracking
@@ -35,15 +33,15 @@ class Room(Localizable):
         """
         pass
     
-    def enter(self) -> str:
+    def enter(self) -> BaseResult:
         """
-        Enter the room and execute room logic.
-        
-        This method should implement the room's main logic loop,
+        Enter room and execute room logic.
+
+        This method should implement room's main logic loop,
         building and executing actions as needed.
-        
+
         Returns:
-            Execution result: None/"DEATH"/"WIN"
+            Execution result: NoneResult()/"DEATH"/"WIN"
         """
         raise NotImplementedError(f"{self.__class__.__name__} must implement enter()")
     
@@ -52,52 +50,18 @@ class Room(Localizable):
         Leave room - perform cleanup.
 
         Called when player exits the room.
-        Clears the action queue and prepares for the next room.
+        Clears the global action queue and prepares for next room.
         """
         from engine.game_state import game_state
-        # Clear action queue
-        self.action_queue.clear()
+        
+        # Clear global action queue
+        game_state.action_queue.clear()
 
         # Clear event stack in game state
         game_state.event_stack.clear()
 
         # Reset leave flag
         self.should_leave = False
-    
-    def execute_actions(self) -> str:
-        """
-        Execute all actions in the room's action queue.
-        
-        This is a helper method for rooms to execute their actions.
-        Stops executing when should_leave is True or queue is empty.
-        
-        Actions can return other Actions or lists of Actions, which will be
-        added to the queue automatically.
-        
-        Returns:
-            Execution result if special value encountered, None otherwise
-        """
-        while not self.should_leave and not self.action_queue.is_empty():
-            result = self.action_queue.execute_next()
-            
-            # Check if action returned another action to add to queue
-            if result is not None:
-                if isinstance(result, list):
-                    # Add list of actions to front of queue
-                    self.action_queue.add_actions(result, to_front=True)
-                elif isinstance(result, Action):
-                    # Add single action to front of queue
-                    self.action_queue.add_action(result, to_front=True)
-                # Check for special return values
-                elif result in ("DEATH", "WIN"):
-                    return result
-        
-        return None
-    
-    def add_map_selection_action(self):
-        """Add map selection action to queue (for room transitions)"""
-        self.action_queue.add_action(SelectMapNodeAction())
-
 
 class UnknownRoom(Room):
     """
@@ -128,17 +92,17 @@ class UnknownRoom(Room):
             if self.actual_room:
                 self.actual_room.init()
     
-    def enter(self) -> str:
-        """Enter the resolved room or event"""
+    def enter(self) -> BaseResult:
+        """Enter resolved room or event"""
         if self.event:
-            # Execute the event
+            # Execute event
             return self._execute_event()
         elif self.actual_room:
-            # Enter the actual room
+            # Enter actual room
             return self.actual_room.enter()
-        
+
         # Fallback: nothing to do
-        return None
+        return NoneResult()
     
     def _resolve_room_type(self) -> RoomType:
         """
@@ -198,15 +162,15 @@ class UnknownRoom(Room):
         # Fallback: create base room
         return Room()
     
-    def _execute_event(self) -> str:
-        """Execute the event logic"""
+    def _execute_event(self) -> BaseResult:
+        """Execute event logic"""
         if self.event:
-            # Events in the new architecture have a trigger() method
+            # Events in new architecture have a trigger() method
             if hasattr(self.event, 'trigger'):
                 return self.event.trigger()
             else:
-                # If event doesn't have trigger(), just return None
-                return None
-        
+                # If event doesn't have trigger(), just return NoneResult
+                return NoneResult()
+
         # No event to execute
-        return None
+        return NoneResult()

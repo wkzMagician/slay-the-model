@@ -1,106 +1,74 @@
-# PROJECT KNOWLEDGE BASE - EVENTS MODULE
-
-**Generated:** 2026-02-05 03:05:00
-**Commit:** 8593596
-**Branch:** main
+# EVENTS DOMAIN KNOWLEDGE
 
 ## OVERVIEW
-Event pool system with weighted selection and neo event support.
+Random encounters that occur in Unknown Rooms. Events offer player choices with rewards/punishments.
 
 ## STRUCTURE
 ```
 events/
-├── event_pool.py      # Main event pool with weighted random selection
-├── neo_event.py         # Neo event special handling
-├── base.py             # Base event class (not directly used)
-└── __init__.py          # Module initialization
+├── base_event.py       # Event and CombatEvent base classes
+├── event_pool.py       # Centralized registry and weighted selection
+├── neo_event.py        # Special starting event (Neow blessing)
+├── big_fish.py        # Simple choice event example
+├── the_cleric.py      # Random relic encounter
+├── house_of_god.py    # Divine relic selection
+├── the_shrine.py      # HP sacrifice/gold/heal choices
+├── woman_in_blue.py    # Mid-game rare card/gold encounter
+└── __init__.py        # Imports all events for auto-registration
 ```
 
 ## WHERE TO LOOK
-
 | Task | Location | Notes |
-|-------|-----------|--------|
-| Event pool | event_pool.py | Weighted event selection by floor, neo blessing |
-| Event base | events/base.py | Base Event class (not used directly) |
-| Neo event | neo_event.py | Special event handling (Neo reward) |
-| Registration | All events | @register("event") decorator in event modules |
-| Floor filtering | event_pool.py:115-140 | Events filtered by current_floor |
-
-## CODE MAP
-
-### Key Classes
-```python
-# Event pool manager (event_pool.py: 170 lines)
-EventPool
-    __init__(self)
-    get_random_event(floor: int)
-    mark_event_used(event_id: str)
-    
-# Event metadata (lines 12-22)
-EventMetadata
-    event_class: Event class
-    event_id: str
-    floor: int
-    is_unique: bool
-    is_neo: bool
-
-# Neo event (neo_event.py: 67 lines)
-NeoEvent(Event)
-    trigger(self) -> Optional[Event]
-```
-
-### Event Registration Pattern
-```python
-@register("event")
-class Event(Event):
-    def trigger(self) -> Optional[Event]:
-        ...
-```
+|------|----------|-------|
+| Base event classes | `base_event.py` | Event, CombatEvent, trigger() signature |
+| Event registration | `event_pool.py` | @register_event decorator, EventPool class |
+| Simple choice event | `big_fish.py` | Minimal event with SelectAction + Option |
+| Event with conditions | `neo_event.py` | Checks game state before showing options |
+| Weighted selection logic | `event_pool.py:124-147` | get_random_event() weighted by weights |
+| Floor range logic | `event_pool.py:172-189` | early(1-4), mid(5-10), late(11-15), boss(16) |
 
 ## CONVENTIONS
 
-**Event Pool:**
-- Weighted random selection based on floor number
-- Unique events are marked and only appear once
-- Events filtered by current_floor (min_floor/max_floor)
-- Neo blessing grants bonus gold on first Neo event
-
-**Neo Event:**
-- Special event that can only appear once per run
-- Rewards bonus gold (50% of total gold) when completed
-- Marked as used in event pool via is_neo flag
-
-**Floor Filtering:**
-- Events have min_floor and max_floor properties
-- Only events with min_floor <= current_floor <= max_floor are available
-- Prevents impossible events from appearing too early
-
-**Event Registration:**
-- Use @register("event") decorator in event modules
-- Store metadata in _event_registry dict (event_id, floor, is_unique, is_neo, event_class)
-
-**Anti-Patterns (THIS PROJECT):**
-- NEVER: events/neo_event.py:20 - Neo event special, not random
-- ALWAYS: events/base.py - Abstract base class, don't instantiate directly
-
-## COMMANDS
-```bash
-# Run game (includes events)
-python __main__.py
-
-# Run tests
-pytest tests/test_event_pool.py -v      # Specific event tests
-python tests/test_rooms.py -v             # Room tests (includes events)
+### Event Registration Pattern
+```python
+@register_event(
+    event_id="unique_id",
+    floors='early',  # 'early', 'mid', 'late', 'boss', 'all'
+    weight=100,      # Higher = more likely
+    is_unique=False   # True = once per run
+)
+class MyEvent(Event):
+    def trigger(self) -> BaseResult:
+        ...
 ```
 
-## NOTES
-- Event pool is initialized when GameState is created (game_state.event_pool = EventPool())
-- Events trigger() method returns Optional[Event] - can return None if no follow-up
-- Floor filtering prevents impossible events (e.g., combat too strong for floor 1)
-- Neo blessing is a one-time reward that scales with total gold earned
+### Event Flow Pattern
+1. Add `DisplayTextAction` for description (optional)
+2. Build `Option` list with actions to execute
+3. Add `SelectAction` to queue (title + options)
+4. Call `self.end_event()` to mark complete
+5. Return `NoneResult()` or appropriate result type
 
-## DEPENDENCIES
-- engine/game_state (GameState singleton)
-- utils/registry (@register decorator)
-- utils/random (get_random_event helper)
-- localization (t() function)
+### Action Queue Usage
+Events queue actions via `game_state.action_queue.add_action()`, then execute with `game_state.execute_all_actions()`.
+
+## ANTI-PATTERNS
+
+**NEVER do these:**
+- Return strings ("WIN", "DEATH") from trigger() → use ResultType
+- Directly modify game state without actions → use action queue
+- Call `game_state.execute_all_actions()` inside trigger() → let GameFlow handle
+- Import event files directly in tests → use `event_pool.get_event_by_id()`
+
+**ALWAYS do these:**
+- Inherit from `Event` (or `CombatEvent` for combat events)
+- Register events in `__init__.py` imports for auto-registration
+- Use `Option` objects with `actions` list for player choices
+- Check `game_state.run_history` for conditional options (like NeoEvent)
+
+## FLOOR RANGES
+- `early`: Floors 1-4 (basic encounters)
+- `mid`: Floors 5-10 (more complex events)
+- `late`: Floors 11-15 (high-stakes choices)
+- `boss`: Floor 16 (unique boss events)
+- `all`: Any floor (generic events)

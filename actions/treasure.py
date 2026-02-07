@@ -2,9 +2,11 @@
 Treasure room-related actions.
 """
 import random
+from typing import Optional
 from actions.base import Action
 from actions.display import SelectAction
 from actions.reward import AddRelicAction, AddGoldAction
+from utils.result_types import BaseResult, NoneResult, SingleActionResult
 from localization import LocalStr, t
 from utils.option import Option
 from utils.random import get_random_relic
@@ -19,10 +21,10 @@ class OpenChestAction(Action):
     def __init__(self, treasure_room):
         self.treasure_room = treasure_room
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if self.treasure_room.chest_opened:
-            return
+            return NoneResult()
 
         self.treasure_room.chest_opened = True
 
@@ -32,10 +34,6 @@ class OpenChestAction(Action):
             relics = []
             for _ in range(3):
                 relics.append(get_random_relic(rarities=[RarityType.BOSS]))
-
-            # Handle Matryoshka - add 4th hidden relic
-            if _has_relic("Matryoshka", game_state):
-                relics.append(get_random_relic(rarities=[RarityType.COMMON, RarityType.UNCOMMON]))
 
             # Create selection options
             options = []
@@ -51,10 +49,10 @@ class OpenChestAction(Action):
             ))
 
             # Return SelectAction to be added to room's action_queue
-            return SelectAction(
+            return SingleActionResult(SelectAction(
                 title=LocalStr("ui.choose_boss_relic"),
                 options=options
-            )
+            ))
 
         elif self.treasure_room.chest_type == "small":
             roll = random.random()
@@ -70,6 +68,7 @@ class OpenChestAction(Action):
                 else:
                     AddRelicAction(relic=relic.idstr).execute()
                     print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
+            return NoneResult()
 
         elif self.treasure_room.chest_type == "medium":
             roll = random.random()
@@ -86,6 +85,7 @@ class OpenChestAction(Action):
                 else:
                     AddRelicAction(relic=relic.idstr).execute()
                     print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
+            return NoneResult()
 
         elif self.treasure_room.chest_type == "large":
             roll = random.random()
@@ -101,27 +101,7 @@ class OpenChestAction(Action):
                 else:
                     AddRelicAction(relic=relic.idstr).execute()
                     print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
-
-
-@register("action")
-class SkipTreasureAction(Action):
-    """Action to skip treasure (boss only)"""
-
-    def execute(self):
-        from engine.game_state import game_state
-        # Skip treasure reward
-        print(t("ui.skipped_treasure", default="Skipped treasure"))
-
-        # Leave room
-        if game_state.current_room:
-            game_state.current_room.leave()
-
-
-def _has_relic(relic_name: str, game_state) -> bool:
-    """Check if player has a specific relic"""
-    if not game_state or not game_state.player:
-        return False
-    for relic in game_state.player.relics:
-        if relic.idstr == relic_name:
-            return True
-    return False
+            return NoneResult()
+        
+        else:
+            raise ValueError(f"Invalid chest type: {self.treasure_room.chest_type}")

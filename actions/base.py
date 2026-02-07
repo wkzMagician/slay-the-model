@@ -1,15 +1,32 @@
 """
 Base action system
 """
+from typing import TYPE_CHECKING, List
 from localization import Localizable
+from utils.result_types import NoneResult
+
+if TYPE_CHECKING:
+    from utils.result_types import (
+        BaseResult,
+    )
+
 
 class Action(Localizable):
     """Base action class - executable game logic unit"""
     def __init__(self):
         pass
 
-    def execute(self):
-        """Execute this action - to be overridden"""
+    def execute(self) -> 'BaseResult':
+        """Execute this action - to be overridden
+
+        Returns:
+            BaseResult: The result of this action execution.
+                NoneResult: Action completed with no follow-up
+                SingleActionResult: One action to queue next (includes UI selection via SelectAction)
+                MultipleActionsResult: Multiple actions to queue next
+                GameStateResult: Game state transition (DEATH/WIN)
+
+        """
         raise NotImplementedError
 
     def __str__(self):
@@ -19,7 +36,7 @@ class Action(Localizable):
 class ActionQueue:
     """Queue of actions to execute in loop"""
     def __init__(self):
-        self.queue = []
+        self.queue: List[Action] = []
 
     def add_action(self, action, to_front=False):
         """Add action to queue - optionally to front"""
@@ -36,7 +53,11 @@ class ActionQueue:
             self.queue.extend(actions)
 
     def execute_next(self):
-        """Execute next action in queue and return result"""
+        """Execute next action in queue and return result
+
+        Returns:
+            BaseResult: The result of this action execution.
+        """
         if self.queue:
             action = self.queue.pop(0)
             try:
@@ -45,9 +66,15 @@ class ActionQueue:
                     print(f"Executing action: {action}")
             except ImportError:
                 pass  # Debug mode not available
+
             result = action.execute()
-            return result
-        return None
+            if result is not None:
+                # If action returned a result (BaseResult subclass), return it
+                if hasattr(result, 'result_type'):
+                    return result
+
+            return NoneResult()
+        return NoneResult()
 
     def is_empty(self):
         """Check if queue is empty"""

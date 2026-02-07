@@ -1,15 +1,56 @@
 """
-Map selection action for choosing the next node to visit.
+Map selection action for choosing next node to visit.
 """
+from typing import List, Optional
 from actions.base import Action
 from actions.display import SelectAction
-from actions.misc import MoveToMapNodeAction
+from utils.result_types import BaseResult, NoneResult, SingleActionResult
 from map.map_node import MapNode
 from utils.option import Option
 from localization import BaseLocalStr, LocalStr, t
 from typing import List
 
+from utils.registry import register
 
+@register("action")
+class MoveToMapNodeAction(Action):
+    """Move to a specific map node
+    
+    Required:
+        floor (int): Target floor number
+        position (int): Target position on that floor
+        
+    Optional:
+        None
+        
+    Note: In the new architecture, this action only updates the game state.
+          The room enter() is called by the GameFlow main loop, not by this action.
+    """
+    def __init__(self, floor: int, position: int):
+        self.floor = floor
+        self.position = position
+    
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+
+        # Get map manager
+        map_manager = game_state.map_manager
+        if not map_manager:
+            print("Error: Map not initialized")
+            return NoneResult()
+
+        # Move to specified node
+        new_room = map_manager.move_to_node(self.floor, self.position)
+
+        # Update game state
+        game_state.current_room = new_room
+        game_state.current_floor = self.floor
+
+        # Note: Room enter() is called by GameFlow, not here
+        # This action just prepares state for next room
+        return NoneResult()
+
+@register("action")
 class SelectMapNodeAction(Action):
     """
     Action for selecting the next map node to move to.
@@ -29,7 +70,7 @@ class SelectMapNodeAction(Action):
         """
         self.ai_engine = ai_engine
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         """
         Execute map selection action.
 
@@ -45,8 +86,8 @@ class SelectMapNodeAction(Action):
         available_moves = map_manager.get_available_moves()
 
         if not available_moves:
-            print("\nNo available moves. You've reached the end of the act!")
-            return
+            print("\nNo available moves. You've reached end of act!")
+            return NoneResult()
 
         # Check game mode and handle accordingly
         if game_state.config.mode == "ai":
@@ -56,6 +97,7 @@ class SelectMapNodeAction(Action):
         else:
             # Human mode: Display map and present options via SelectAction
             self._make_human_decision(map_manager, available_moves)
+        return NoneResult()
     
     def _make_human_decision(self, map_manager, available_moves: List):
         """
@@ -89,20 +131,20 @@ class SelectMapNodeAction(Action):
             title=t("ui.select_move", default="Select your next move"),
             options=options
         )
-        return select_action
-    
-    def _execute_move_via_action(self, node: MapNode):
+        return SingleActionResult(select_action)
+
+    def _execute_move_via_action(self, node: MapNode) -> 'BaseResult':
         """
         Execute move to selected node by creating MoveToMapNodeAction.
-        
+
         This is used in AI mode where decision is made immediately.
-        
+
         Args:
             node: The MapNode to move to
         """
         # Create MoveToMapNodeAction to return
         move_action = MoveToMapNodeAction(node.floor, node.position)
-        return move_action
+        return SingleActionResult(move_action)
     
     def _make_ai_decision(self, map_manager) -> int:
         """

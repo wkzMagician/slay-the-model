@@ -6,9 +6,10 @@ from actions.display import SelectAction, DisplayTextAction
 from actions.health import HealAction
 from actions.reward import AddRelicAction, AddRandomRelicAction
 from actions.room import TriggerRelicAction, LeaveRoomAction
+from utils.result_types import GameStateResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr
-from rooms.base import Room
+from rooms.base import Room, BaseResult
 from utils.option import Option
 from utils.registry import register
 from utils.types import RarityType, RoomType
@@ -49,32 +50,31 @@ class RestRoom(Room):
             deck_size = len(deck)
             heal_amount = (deck_size // 5) * 3
             if heal_amount > 0:
-                self.action_queue.add_action(HealAction(amount=heal_amount))
+                game_state.action_queue.add_action(HealAction(amount=heal_amount))
     
-    def enter(self) -> str:
-        """Enter the rest room and handle rest options"""
+    def enter(self) -> BaseResult:
+        """Enter rest room and handle rest options"""
         # Display entry message
-        self.action_queue.add_action(DisplayTextAction(
+        game_state.action_queue.add_action(DisplayTextAction(
             text_key="rooms.rest.enter"
         ))
-        
+
         # Main rest loop
         while not self.should_leave:
             # Build rest options
             self._build_rest_menu()
-            
+
             # Execute actions
-            result = self.execute_actions()
-            
-            # Check for game end
-            if result in ("DEATH", "WIN"):
+            result = game_state.execute_all_actions()
+
+            if isinstance(result, GameStateResult):
                 return result
-            
+
             # Rebuild menu if not leaving
             if not self.should_leave:
-                self.action_queue.clear()
-        
-        return None
+                game_state.action_queue.clear()
+
+        return NoneResult()
     
     def leave(self):
         """Leave the rest room"""
@@ -103,6 +103,7 @@ class RestRoom(Room):
         # Smith option (upgrade card)
         can_smith = not _has_relic("FusionHammer")
         if can_smith:
+            can_smith = False
             deck = game_state.player.card_manager.get_pile('deck')
             for card in deck:
                 if card.can_upgrade():
@@ -146,11 +147,11 @@ class RestRoom(Room):
             actions=[]
         ))
         
-        # Add selection action to queue
-        self.action_queue.add_action(SelectAction(
+        # Add selection action to global queue
+        game_state.action_queue.add_action(SelectAction(
             title=self.local("RestRoom.title"),
             options=options
         ))
-        self.action_queue.add_action(
+        game_state.action_queue.add_action(
             LeaveRoomAction(room=self)
         )

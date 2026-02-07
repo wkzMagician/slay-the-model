@@ -1,10 +1,12 @@
 from actions.base import Action
-from typing import Optional
+from typing import Optional, Union
+from cards.base import Card
 from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register, get_registered, list_registered
 from utils.types import CardType, PilePosType, RarityType
 from utils.random import get_random_card
+from utils.result_types import BaseResult, NoneResult, MultipleActionsResult, SingleActionResult
             
 @register("action")
 class RemoveCardAction(Action):
@@ -21,11 +23,12 @@ class RemoveCardAction(Action):
         self.card = card
         self.src_pile = src_pile
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if self.card and game_state.player:
             if hasattr(game_state.player, "card_manager"):
                 game_state.player.card_manager.remove_from_pile(self.card, self.src_pile)
+        return NoneResult()
                 
 @register("action")
 class AddCardAction(Action):
@@ -42,11 +45,13 @@ class AddCardAction(Action):
         self.card = card
         self.dest_pile = dest_pile
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
+
         if self.card and game_state.player:
             if hasattr(game_state.player, "card_manager"):
                 game_state.player.card_manager.add_to_pile(self.card, self.dest_pile, pos=PilePosType.TOP)
+        return NoneResult()
                 
 @register("action")
 class TransformCardAction(Action):
@@ -64,18 +69,20 @@ class TransformCardAction(Action):
         self.pile = pile
         self.reason = reason
     
-    def execute(self):
-        # 相当于删掉原卡，随机获得一张新卡
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
+
+        # 相当于删掉原卡，随机获得一张新卡
         if not game_state.player:
-            return
-        namespace = self.card.namespace # ??
-        
+            return NoneResult()
+
+        namespace = self.card.namespace
+
         # Return actions to be added to caller's action_queue
-        return [
+        return MultipleActionsResult([
             RemoveCardAction(card=self.card, src_pile=self.pile),
             AddCardAction(card=get_random_card(namespaces=[namespace]), dest_pile=self.pile),
-        ]
+        ])
 
 @register("action")
 class ExhaustCardAction(Action):
@@ -87,40 +94,29 @@ class ExhaustCardAction(Action):
     Optional:
         source_pile (str): Source pile name
     """
-    def __init__(self, card, source_pile: Optional[str] = None):
+    def __init__(self, card: Card, source_pile: Optional[str] = None):
         self.card = card
         self.source_pile = source_pile
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if self.card and game_state.player and hasattr(game_state.player, "card_manager"):
-            # Trigger on_exhaust powers before exhausting
+            # Actually exhaust card
+            exhausted = game_state.player.card_manager.exhaust(self.card, src=self.source_pile)
+            
+             # Trigger on_exhaust powers before exhausting
             if hasattr(game_state.player, 'powers'):
                 for power in list(game_state.player.powers):
                     if hasattr(power, "on_exhaust"):
                         result = power.on_exhaust(self.card)
-                        if result and isinstance(result, list):
-                            # Return power actions before exhausting card
-                            return result
-
+                # todo: trigger relics
+            
             # Trigger card's on_exhaust method
             card_actions = self.card.on_exhaust()
 
-            # Actually exhaust the card
-            exhausted = game_state.player.card_manager.exhaust(self.card, src=self.source_pile)
+            MultipleActionsResult(card_actions)
 
-            # Add card actions to result
-            if card_actions:
-                if exhausted is False or exhausted is None:
-                    exhausted = []
-                elif not isinstance(exhausted, list):
-                    exhausted = []
-
-                exhausted.extend(card_actions)
-                return exhausted
-
-            return exhausted
-        return False
+        return NoneResult()
     
 class UpgradeCardAction(Action):
     """Upgrade a specific card.
@@ -134,11 +130,11 @@ class UpgradeCardAction(Action):
     def __init__(self, card):
         self.card = card
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         if self.card and self.card.can_upgrade():
             self.card.upgrade()
-            return True
-        return False
+            return NoneResult()
+        return NoneResult()
     
 @register("action")   
 class ChooseRemoveCardAction(Action):
@@ -155,23 +151,23 @@ class ChooseRemoveCardAction(Action):
         self.pile = pile
         self.amount = amount
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if not game_state.player:
-            return
+            return NoneResult()
         pile = self.pile
         amount = self.amount
-        
+
         # * build SelecAction options
-        
+
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
-        
+
         # todo: 暂时只支持单选
         for _ in range(amount):
             options = []
             cards_in_pile = card_manager.get_pile(pile)
-            
+
             for card in cards_in_pile:
                 option = card.display_name
                 options.append(
@@ -187,9 +183,10 @@ class ChooseRemoveCardAction(Action):
                 options = options
             )
             # Return SelectAction to be added to caller's action_queue
-            return select_action
-            
+            return SingleActionResult(select_action)
+
         # todo: print remove info message
+        return NoneResult()
 
 @register("action")         
 class ChooseTransformCardAction(Action):
@@ -206,21 +203,21 @@ class ChooseTransformCardAction(Action):
         self.pile = pile
         self.amount = amount
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if not game_state.player:
-            return
+            return NoneResult()
         pile = self.pile
         amount = self.amount
         # * build SelecAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
-        
+
         # todo: 暂时只支持单选
         for _ in range(amount):
             options = []
             cards_in_pile = card_manager.get_pile(pile)
-            
+
             for card in cards_in_pile:
                 option = card.display_name
                 options.append(
@@ -236,9 +233,10 @@ class ChooseTransformCardAction(Action):
                 options = options
             )
             # Return SelectAction to be added to caller's action_queue
-            return select_action
-            
+            return SingleActionResult(select_action)
+
         # todo: print transform info message
+        return NoneResult()
       
 @register("action")     
 class ChooseUpgradeCardAction(Action):
@@ -255,22 +253,22 @@ class ChooseUpgradeCardAction(Action):
         self.pile = pile
         self.amount = amount
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if not game_state.player:
-            return
+            return NoneResult()
         pile = self.pile
         amount = self.amount
-        
+
         # * build SelecAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
-        
+
         # todo: 暂时只支持单选
         for _ in range(amount):
             options = []
             cards_in_pile = card_manager.get_pile(pile)
-            
+
             for card in cards_in_pile:
                 if not card.can_upgrade():
                     continue
@@ -288,9 +286,10 @@ class ChooseUpgradeCardAction(Action):
                 options = options
             )
             # Return SelectAction to be added to caller's action_queue
-            return select_action
-            
+            return SingleActionResult(select_action)
+
         # todo: print upgrade info message
+        return NoneResult()
         
 @register("action")      
 class ChooseAddRandomCardAction(Action):
@@ -311,14 +310,14 @@ class ChooseAddRandomCardAction(Action):
         self.namespace = namespace
         self.rarity = rarity
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if not game_state.player:
-            return
-        
+            return NoneResult()
+
         # 构造 SelectAction options
         from actions.display import SelectAction
-        
+
         options = []
         for _ in range(self.total):
             random_card = get_random_card(
@@ -341,40 +340,41 @@ class ChooseAddRandomCardAction(Action):
             options = options
         )
         # Return SelectAction to be added to caller's action_queue
-        return select_action
-        
+        return SingleActionResult(select_action)
+
         # todo: print add card info message       
         
 @register("action")   
 class AddRandomCardAction(Action):
     """Obtain a random card
-    
+
     Required:
         pile (str): Card location ('deck' or 'hand')
         namespace (str): Card namespace
         card_type (CardType): Card type
         rarity (str): Card rarity
-        
+
     Optional:
         None
     """
-    def __init__(self, pile: str = 'hand', card_type: Optional[CardType] = None, rarity: Optional[RarityType] = None):
+    def __init__(self, pile: str = 'hand', card_type: Optional[CardType] = None, rarity: Optional[RarityType] = None, namespace: Optional[str] = None):
         self.pile = pile
         self.card_type = card_type
         self.rarity = rarity
+        self.namespace = namespace
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if not game_state.player:
-            return
-        
+            return NoneResult()
+
         random_card = get_random_card(
-            namespaces=[game_state.player.character],
+            namespaces=[self.namespace if self.namespace else game_state.player.character],
             card_types=[self.card_type] if self.card_type else None,
             rarities=[self.rarity] if self.rarity else None
         )
-        
+
         # Return AddCardAction to be added to caller's action_queue
-        return AddCardAction(card=random_card, dest_pile=self.pile)
-        
+        return SingleActionResult(AddCardAction(card=random_card, dest_pile=self.pile))
+
         # todo: print add card info message

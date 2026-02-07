@@ -2,8 +2,9 @@
 """
 Display-related actions
 """
-from typing import List
+from typing import List, Optional
 from actions.base import Action
+from utils.result_types import BaseResult, NoneResult, MultipleActionsResult
 from localization import BaseLocalStr, t
 from utils.option import Option
 from utils.registry import register
@@ -26,9 +27,12 @@ class DisplayTextAction(Action):
         self.text_key = text_key
         self.fmt = fmt
 
-    def execute(self):
-        text = t(self.text_key, default=self.text_key, **self.fmt)
+    def execute(self) -> 'BaseResult':
+        # Extract default from fmt if present, otherwise use text_key
+        fallback = self.fmt.get('default', self.text_key)
+        text = t(self.text_key, default=fallback, **{k: v for k, v in self.fmt.items() if k != 'default'})
         print(text)
+        return NoneResult()
 
 @register("action")
 class SelectAction(Action):
@@ -48,19 +52,19 @@ class SelectAction(Action):
         self.title = title
         self.options = options
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         """执行选择流程，返回需要执行的动作列表。"""
 
         # 1) 基础选项（不含"返回菜单"）
         if len(self.options) == 1:
             if get_game_state().config.get("mode") != "human":
                 action_list = self.options[0].actions
-                return action_list
+                return MultipleActionsResult(action_list)
             if bool(get_game_state().config.get("auto_select_single_option", False)):
                 action_list = self.options[0].actions
-                return action_list
+                return MultipleActionsResult(action_list)
         if len(self.options) == 0:
-            return []
+            return MultipleActionsResult([])
 
         # 2) 若为人类玩家，追加"返回菜单"选项
         # menu_action 内部可选择 return，将当前 SelectAction 插回队首
@@ -80,7 +84,7 @@ class SelectAction(Action):
         # 4) AI 调试模式可自动选择第一项
         if effective_options and bool(get_game_state().config.get("debug", False)):
             action_list = effective_options[0].actions
-            return action_list
+            return MultipleActionsResult(action_list)
 
         # 5) 交互式选择
         while True:
@@ -93,7 +97,7 @@ class SelectAction(Action):
                 option = int(input(prompt)) - 1
                 if 0 <= option < len(effective_options):
                     action_list = effective_options[option].actions
-                    return action_list
+                    return MultipleActionsResult(action_list)
                 print(t("ui.invalid_option", default="Invalid option!"))
             except (ValueError, EOFError):
                 print(t("ui.invalid_number", default="Please enter a valid number"))

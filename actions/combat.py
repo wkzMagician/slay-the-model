@@ -1,5 +1,6 @@
 from actions.base import Action
 from typing import Optional, Callable, Any, List
+from utils.result_types import BaseResult, BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import t
 from utils.registry import register
 from entities.creature import Creature
@@ -17,11 +18,12 @@ class ModifyMaxHpAction(Action):
     def __init__(self, amount: int):
         self.amount = amount
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
             game_state.player.max_hp += self.amount
             print(t("ui.max_hp_changed", default=f"Max HP changed by {self.amount}!", amount=self.amount))
+        return NoneResult()
 
 @register("action")
 class LoseHpAction(Action):
@@ -36,10 +38,11 @@ class LoseHpAction(Action):
     def __init__(self, amount: int):
         self.amount = amount
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
             game_state.player.hp -= self.amount
+        return NoneResult()
 
 @register("action")
 class DealDamageAction(Action):
@@ -120,7 +123,7 @@ class DealDamageAction(Action):
                     # This is handled in the attacker's next damage calculation
                     pass
 
-        return None
+        return NoneResult()
 
 @register("action")
 class GainBlockAction(Action):
@@ -153,7 +156,7 @@ class GainBlockAction(Action):
         # Determine target
         target = self.target or game_state.player
         if not target or target.is_dead():
-            return None
+            return NoneResult()
 
         # Apply frail modifier to block
         final_block = self.block
@@ -183,7 +186,7 @@ class GainBlockAction(Action):
                 if hasattr(power, "on_gain_block"):
                     power.on_gain_block(final_block, player=target, source=self.source, card=self.card)
 
-        return None
+        return NoneResult()
 
 @register("action")
 class DrawCardsAction(Action):
@@ -205,14 +208,14 @@ class DrawCardsAction(Action):
             return self._count()
         return int(self._count)
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         if game_state.player and hasattr(game_state.player, "card_manager"):
             cards = game_state.player.card_manager.draw(self.count)
-            return cards
+            return MultipleActionsResult(cards)
 
-        return []
+        return MultipleActionsResult([])
 
 @register("action")
 class GainEnergyAction(Action):
@@ -234,14 +237,14 @@ class GainEnergyAction(Action):
             return self._energy()
         return int(self._energy)
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         if game_state.player:
             game_state.player.gain_energy(self.energy)
-            return game_state.player.energy
+            return SingleActionResult(game_state.player.energy)
 
-        return None
+        return NoneResult()
 
 @register("action")
 class PlayCardAction(Action):
@@ -258,17 +261,17 @@ class PlayCardAction(Action):
         self.card = card
         self.target = target
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         if not self.card:
-            return None
+            return NoneResult()
 
         # Check if card can be played
         can_play, reason = self.card.can_play()
         if not can_play:
             print(f"Cannot play card: {reason}")
-            return None
+            return NoneResult()
 
         # Spend energy
         cost = self.card.get_temp_value('cost')
@@ -287,7 +290,7 @@ class PlayCardAction(Action):
                 if hasattr(power, "on_play_card"):
                     result = power.on_play_card(self.card)
                     if result and isinstance(result, list):
-                        return result
+                        return MultipleActionsResult(result)
 
         # Get card actions
         actions = self.card.on_play(self.target)
@@ -302,7 +305,7 @@ class PlayCardAction(Action):
             actions.insert(0, RemoveCardAction(card=self.card, src_pile="hand"))
             actions.append(AddCardAction(card=self.card, dest_pile="discard"))
 
-        return actions
+        return MultipleActionsResult(actions)
 
 @register("action")
 class EndTurnAction(Action):
@@ -317,14 +320,14 @@ class EndTurnAction(Action):
     def __init__(self):
         pass
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         # Transition to enemy action phase
         game_state.combat_state.current_phase = "enemy_action"
 
         # This will be handled by Combat._build_turn_actions()
-        return None
+        return NoneResult()
 
 @register("action")
 class HealAction(Action):
@@ -347,15 +350,15 @@ class HealAction(Action):
             return self._heal()
         return int(self._heal)
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         target = self.target or game_state.player
         if target:
             target.heal(self.heal)
-            return target.hp
+            return SingleActionResult(target.hp)
 
-        return None
+        return NoneResult()
 
 @register("action")
 class ApplyStatusAction(Action):
@@ -373,12 +376,12 @@ class ApplyStatusAction(Action):
         self.amount = amount
         self.target = target
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         target = self.target or game_state.player
         if target:
             game_state.combat_state.apply_status(target, self.status_type, self.amount)
-            return None
+            return NoneResult()
 
-        return None
+        return NoneResult()

@@ -1,13 +1,15 @@
 """
 Event 4 - The Shrine
 """
+from utils.result_types import BaseResult
 from events.base_event import Event
-from actions.card import AddCardAction
+from actions.card import AddRandomCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.health import HealAction, LoseHPAction
 from actions.reward import AddGoldAction
 from events.event_pool import register_event
 from localization import LocalStr
+from utils.option import Option
 
 @register_event(
     event_id="the_shrine",
@@ -17,26 +19,28 @@ from localization import LocalStr
 class ShrineEvent(Event):
     """Visit shrine and make a sacrifice"""
     
-    def trigger(self) -> str:
+    def trigger(self) -> 'BaseResult':
         """Trigger shrine event"""
+        from utils.result_types import NoneResult
         # Display event description
+        from engine.game_state import game_state
         from actions.display import DisplayTextAction
-        self.action_queue.add_action(DisplayTextAction(
+        game_state.action_queue.add_action(DisplayTextAction(
             text_key="events.the_shrine.description"
         ))
-        
+
         # Build options
         options = []
-        
+
         # Option 1: Sacrifice HP for max energy
         options.append(Option(
             name=LocalStr("events.the_shrine.option1"),
             actions=[
                 LoseHPAction(amount=10),
-                AddCardAction(pile="hand")
+                AddRandomCardAction(pile="hand")
             ]
         ))
-        
+
         # Option 2: Gain 100 gold
         options.append(Option(
             name=LocalStr("events.the_shrine.option2"),
@@ -44,7 +48,7 @@ class ShrineEvent(Event):
                 AddGoldAction(amount=100)
             ]
         ))
-        
+
         # Option 3: Heal fully
         options.append(Option(
             name=LocalStr("events.the_shrine.option3"),
@@ -52,14 +56,14 @@ class ShrineEvent(Event):
                 HealAction(amount=999)
             ]
         ))
-        
+
         # Display options and wait for selection
-        self.action_queue.add_action(ChoiceAction(
+        game_state.action_queue.add_action(SelectAction(
             title=LocalStr("events.the_shrine.title"),
             options=options
         ))
-        
+
         # End event after selection
         self.end_event()
-        
-        return None
+
+        return NoneResult()

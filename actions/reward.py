@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, Optional
 from actions.base import Action
+from utils.result_types import BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import LocalStr, t
+from potions.base import Potion
 from relics.base import Relic
 from utils.option import Option
 from utils.registry import register, get_registered_instance
@@ -20,13 +22,14 @@ class AddRelicAction(Action):
     def __init__(self, relic: str):
         self.relic = relic
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if self.relic and game_state.player:
             relic = get_registered_instance("relic", self.relic)
             if relic:
                 game_state.player.relics.append(relic)
                 print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
+        return NoneResult()
             
 @register("action")
 class AddRandomRelicAction(Action):
@@ -41,13 +44,14 @@ class AddRandomRelicAction(Action):
     def __init__(self, rarities: List[RarityType]):
         self.rarities = rarities
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if self.rarities and game_state.player:
             relic = get_random_relic(rarities=self.rarities)
             if relic:
                 game_state.player.relics.append(relic)
                 print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
+        return NoneResult()
             
 @register("action")
 class LoseRelicAction(Action):
@@ -62,10 +66,11 @@ class LoseRelicAction(Action):
     def __init__(self, relic: Relic):
         self.relic = relic
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if self.relic and game_state.player:
             game_state.player.relics.remove(self.relic)
+        return NoneResult()
             
 @register("action")
 class AddGoldAction(Action):
@@ -80,10 +85,11 @@ class AddGoldAction(Action):
     def __init__(self, amount: int):
         self.amount = amount
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
             game_state.player.gold += self.amount
+        return NoneResult()
             
 @register("action")
 class LoseGoldAction(Action):
@@ -98,10 +104,11 @@ class LoseGoldAction(Action):
     def __init__(self, amount: int):
         self.amount = amount
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
             game_state.player.gold -= self.amount
+        return NoneResult()
             
 @register("action")
 class AddRandomPotionAction(Action):
@@ -116,13 +123,13 @@ class AddRandomPotionAction(Action):
     def __init__(self, character: str):
         self.character = character
     
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
+        from actions.display import SelectAction
         if game_state.player:
             potion = get_random_potion(characters=[self.character])
             if potion:
                 if len(game_state.player.potions) >= game_state.player.potion_limit:
-                    from actions.display import SelectAction
                     options = [
                         Option(name=LocalStr("ui.skip_potion_option"), actions=[]),
                     ]
@@ -133,18 +140,36 @@ class AddRandomPotionAction(Action):
                                 actions=[ReplacePotionAction(index=index, new_potion=potion)],
                             )
                         )
-                    return [
+                    return SingleActionResult(
                         SelectAction(
                             title="ui.potion_full_title",
                             options=options,
                         )
-                    ]
+                    )
                 added = game_state.player.potions.append(potion)
                 if added:
                     print(t("ui.received_potion", default=f"Received potion: {potion.idstr}!", name=potion.idstr))
-                    return potion
-                return None
+        return NoneResult()
 
+@register("action")
+class AddPotionAction(Action):
+    """Add a potion to player
+    
+    Required:
+        potion (Potion): potion class
+        
+    Optional:
+        None
+    """
+    def __init__(self, potion: Potion):
+        self.potion = potion
+    
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        added = game_state.player.potions.append(self.potion)
+        if added:
+            print(t("ui.received_potion", default=f"Received potion: {self.potion.idstr}!", name=self.potion.idstr))
+        return NoneResult()
 
 @register("action")
 class ReplacePotionAction(Action):
@@ -161,15 +186,15 @@ class ReplacePotionAction(Action):
         self.index = index
         self.new_potion = new_potion
 
-    def execute(self):
+    def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if not game_state.player:
-            return None
+            return NoneResult()
         if self.new_potion is None or not isinstance(self.index, int):
-            return None
+            return NoneResult()
         potions = game_state.player.potions
         if 0 <= self.index < len(potions):
             potions[self.index] = self.new_potion
             print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.idstr))
-            return self.new_potion
-        return None
+            return SingleActionResult(self.new_potion)
+        return NoneResult()

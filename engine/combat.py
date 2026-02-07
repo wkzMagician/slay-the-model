@@ -1,8 +1,8 @@
 """
 Combat logic class - independent from rooms.
 Can be triggered by CombatRoom or Events.
+Uses global action queue for action management.
 """
-from actions.base import ActionQueue
 from actions.display import DisplayTextAction
 from localization import Localizable
 
@@ -14,6 +14,7 @@ class Combat(Localizable):
     Can be triggered by:
     - CombatRoom (normal battles)
     - Events (event-based combat)
+    Uses the global action queue from game_state for action management.
     """
     
     def __init__(self, enemies: list, is_elite: bool = False, is_boss: bool = False):
@@ -29,9 +30,6 @@ class Combat(Localizable):
         self.is_elite = is_elite
         self.is_boss = is_boss
         
-        # Use local action queue for combat
-        self.action_queue = ActionQueue()
-        
         # Combat control flags
         self.combat_ended = False
         self.player_turn_ended = False
@@ -46,6 +44,8 @@ class Combat(Localizable):
         Returns:
             Execution result: None/"DEATH"/"WIN"
         """
+        from engine.game_state import game_state
+        
         # Initialize combat state
         self._init_combat()
         
@@ -57,7 +57,7 @@ class Combat(Localizable):
         else:
             text_key = "combat.enter"
         
-        self.action_queue.add_action(DisplayTextAction(text_key=text_key))
+        game_state.action_queue.add_action(DisplayTextAction(text_key=text_key))
         
         # Combat main loop
         while not self.combat_ended:
@@ -66,10 +66,15 @@ class Combat(Localizable):
             
             # Execute actions
             result = self._execute_actions()
-            
+
             # Check if we need to return immediately
             if result in ("DEATH", "WIN"):
-                return result
+                # Result is already GameStateResult from combat loop
+                if isinstance(result, str):
+                    from utils.result_types import GameStateResult
+                    return GameStateResult(result)
+                else:
+                    return result
         
         return None
     
@@ -126,16 +131,16 @@ class Combat(Localizable):
         # Draw cards
         draw_count = game_state.player.max_energy  # Default: draw equal to energy
         if draw_count > 0:
-            from actions.card import DrawCardsAction
-            self.action_queue.add_action(DrawCardsAction(count=draw_count))
-
+            from actions.combat import DrawCardsAction
+            game_state.action_queue.add_action(DrawCardsAction(count=draw_count))
+        
         # Reset energy
         game_state.player.energy = game_state.player.max_energy
-
+        
         # Increment turn counter
-        game_state.combat_state.combat_turn += 1
+        game_state.combat_state.combat_turn +=1
         game_state.combat_state.current_phase = "player_action"
-
+        
         # TODO: Trigger on_turn_start powers
 
     def _player_action_phase(self):
@@ -232,42 +237,42 @@ class Combat(Localizable):
         if game_state.player.card_manager:
             hand = game_state.player.card_manager.get_pile("hand").copy()
             for card in hand:
-                self.action_queue.add_action(ExhaustCardAction(card=card, source_pile="hand"))
-
+                game_state.action_queue.add_action(ExhaustCardAction(card=card, source_pile="hand"))
+        
         # Reset player block
         game_state.player.block = 0
-
+        
         # Reset status effects that tick down (weak, vulnerable, frail)
         for entity_id, status in game_state.combat_state.status_effects.items():
             for effect in ["weak", "vulnerable", "frail"]:
                 if status[effect] > 0:
                     status[effect] -= 1
-
+        
         # Check win/lose conditions
         if game_state.player.is_dead():
             return "DEATH"
         if all(enemy.is_dead() for enemy in self.enemies):
             return "WIN"
-
+        
         # Start new player turn
         self._start_player_turn()
 
     def _execute_actions(self) -> str:
         """
-        Execute all actions in queue.
-
+        Execute all actions in global action queue.
+        
         Returns:
             Execution result if combat ended, None otherwise
         """
         from engine.game_state import game_state
-        while not self.action_queue.is_empty() and not self.combat_ended:
-            result = self.action_queue.execute_next()
-
+        while not game_state.action_queue.is_empty() and not self.combat_ended:
+            result = game_state.action_queue.execute_next()
+            
             # Check for special return values
             if result in ("DEATH", "WIN"):
                 self.combat_ended = True
                 return result
-
+            
             # Handle phase transitions
             combat_state = game_state.combat_state
             if combat_state.current_phase == "player_action":
@@ -275,27 +280,27 @@ class Combat(Localizable):
                 if game_state.player.energy <= 0:
                     combat_state.current_phase = "enemy_action"
                     self._build_turn_actions()
-
+            
             elif combat_state.current_phase == "player_end":
                 # After end phase actions execute, check win/lose
                 if game_state.player.is_dead():
                     return "DEATH"
                 if all(enemy.is_dead() for enemy in self.enemies):
                     return "WIN"
-
-            # Build actions for next phase
-            self._build_turn_actions()
-
+                
+                # Build actions for next phase
+                self._build_turn_actions()
+        
         # If queue is empty but combat not ended, check win/lose conditions
         if not self.combat_ended:
             if game_state.player.is_dead():
                 return "DEATH"
             if all(enemy.is_dead() for enemy in self.enemies):
                 return "WIN"
-
+            
             # Build actions for next phase
             self._build_turn_actions()
-
+        
         return None
     
     def end_combat(self, result: str):

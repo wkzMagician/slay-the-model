@@ -1,8 +1,14 @@
 """
 Global game state management for persistent data
+
+Global action queue architecture:
+- All rooms, events, and combat share the same global action_queue
+- Use game_state.execute_all_actions() to execute queued actions
+- No individual action queues in rooms/events/combat
 """
 import random as rd
 from typing import Optional
+from utils.result_types import BaseResult
 from config.game_config import GameConfig
 import os
 import time
@@ -45,8 +51,9 @@ class GameState:
         self.current_room: Optional[Room] = None
         self.event_stack = []
         
-        # Note: action_queue is no longer in game_state
-        # Each room/event now has its own action_queue
+        # Global action queue - shared across all rooms and events
+        from actions.base import ActionQueue
+        self.action_queue = ActionQueue()
         
         # Game phase
         self.game_phase: str = "room"  # "map", "room", "menu", "gameover"
@@ -76,9 +83,54 @@ class GameState:
         # Set game phase to map
         self.game_phase = "map"
 
+    def execute_all_actions(self) -> BaseResult:
+        """
+        Execute all actions in the global action queue.
+
+        This is the central action execution method that all rooms
+        and events should use instead of managing their own queues.
+
+        Supports both new BaseResult types and legacy return patterns
+        for backward compatibility.
+
+        Returns:
+            BaseResult if special result encountered, NoneResult otherwise
+        """
+        from utils.result_types import (
+            BaseResult, SingleActionResult, MultipleActionsResult,
+            GameStateResult, NoneResult
+        )
+        from actions.base import Action
+        from actions.display import SelectAction
+
+        result = None
+        while not self.action_queue.is_empty():
+            result = self.action_queue.execute_next()
+
+            # Check if action returned something to process
+            if result is not None:
+                # Handle legacy returns (Action, List[Action], str) directly
+                # for backward compatibility with actions that haven't been updated
+                from actions.base import Action
+
+                assert result is BaseResult
+                
+                # BaseResult types - handle appropriately
+                if isinstance(result, SingleActionResult):
+                    self.action_queue.add_action(result.action, to_front=True)
+                elif isinstance(result, MultipleActionsResult):
+                    self.action_queue.add_actions(result.actions, to_front=True)
+                elif isinstance(result, GameStateResult):
+                    return result
+                # NoneResult: nothing to queue, continue loop
+                elif isinstance(result, NoneResult):
+                    pass
+
+        return NoneResult()
+
     @property
     def current_event(self):
-        """Get the current event (top of the stack)"""
+        """Get current event (top of stack)"""
         return self.event_stack[-1] if self.event_stack else None
 
 

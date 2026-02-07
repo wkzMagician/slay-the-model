@@ -1,102 +1,99 @@
-# PROJECT KNOWLEDGE BASE - ACTIONS MODULE
+# ACTIONS DIRECTORY KNOWLEDGE BASE
 
-**Generated:** 2026-02-05 02:05:00
-**Commit:** 8593596
-**Branch:** main
+**Generated:** 2026-02-07
+**Files:** 13 action modules
 
 ## OVERVIEW
-Command pattern system implementing game actions via ActionQueue for deferred execution.
+All game mechanics flow through action classes that inherit from `actions.base.Action`.
+Actions return `ResultType` subclasses from `utils.result_types` to drive game flow.
 
-## STRUCTURE
+## ACTION CLASS PATTERN
+
+**Structure:**
+```python
+@register("action")
+class MyAction(Action):
+    def __init__(self, required_param, optional_param=None):
+        self.required_param = required_param
+        self.optional_param = optional_param
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state  # Lazy import pattern
+        # Action logic here
+        return NoneResult()  # Or other ResultType
 ```
-actions/
-├── base.py          # Base Action and ActionQueue classes
-├── card.py          # Choose actions (Choose*CardAction)
-├── combat.py        # Combat-specific actions (DamagePlayerAction, BlockPlayerAction, etc.)
-├── display.py        # UI actions (SelectAction, DisplayTextAction)
-├── health.py         # Player HP actions (HealAction, LoseMaxHPAction)
-├── map_selection.py # Map navigation (SelectMapNodeAction)
-├── misc.py           # Miscellaneous actions
-├── reward.py         # Reward actions (AddRelicAction, AddGoldAction, AddCardAction, etc.)
-├── room.py          # Room lifecycle actions (LeaveRoomAction, TriggerRelicAction)
-└── shop.py          # Shop-specific actions (BuyItemAction, CardRemovalAction, LeaveShopAction)
-```
+
+**ResultType Returns:**
+- `NoneResult()`: Action completed, no follow-up
+- `SingleActionResult(action)`: Queue one action next (e.g., SelectAction)
+- `MultipleActionsResult([actions])`: Queue multiple actions
+- `GameStateResult`: Win/Death/end-game transition
 
 ## WHERE TO LOOK
 
-| Task | Location | Notes |
-|-------|-----------|--------|
-| Base classes | actions/base.py | Action, ActionQueue with add_actions(to_front), execute_next() |
-| Card manipulation | actions/card.py | Choose actions return SelectAction for UI selection |
-| Combat system | actions/combat.py | DamagePlayerAction, BlockPlayerAction, AddEtherealModifierAction |
-| UI/Display | actions/display.py | SelectAction auto-selects single option in AI mode |
-| Reward system | actions/reward.py | AddRelicAction, AddGoldAction, potion handling |
-| Shop transactions | actions/shop.py | BuyItemAction with relic price modifiers |
-| Treasure chests | actions/treasure.py | OpenChestAction, SkipTreasureAction |
-| Room lifecycle | actions/room.py | LeaveRoomAction, TriggerRelicAction |
-| Map navigation | actions/map_selection.py | SelectMapNodeAction (AI/human modes) |
-| Health/Status | actions/health.py | HealAction, LoseMaxHPAction, max HP manipulation |
+| Task | File | Key Actions |
+|------|-------|-------------|
+| Damage/block/status | `combat.py` | DealDamageAction, GainBlockAction, ApplyStatusAction |
+| Card play/energy | `combat.py` | PlayCardAction, GainEnergyAction, EndTurnAction |
+| Card manipulation | `card.py` | AddCardAction, RemoveCardAction, TransformCardAction, ExhaustCardAction |
+| User choices | `display.py` | SelectAction, DisplayTextAction |
+| Rewards | `reward.py` | AddRelicAction, AddGoldAction, AddRandomPotionAction |
+| Health | `health.py` | HealAction, LoseHPAction, GainMaxHPAction |
+| Map navigation | `map_selection.py` | MoveToMapNodeAction, SelectMapNodeAction |
+| Shop | `shop.py` | BuyItemAction |
+| Events | `misc.py` | StartEventAction, EndEventAction |
 
 ## CONVENTIONS
-- All actions are @register("action") decorated classes
-- Actions can return other Actions or lists of Actions, which will be added to caller's queue
-- Choose*CardAction actions return SelectAction for UI flow
-- Each room/event/combat maintains its own ActionQueue for isolation
-- ActionQueue has debug printing from game_state.config.debug
-- Actions use execute() method that returns None on success or a result value
+
+**Required:**
+- `@register("action")` decorator on all action classes
+- `execute(self) -> 'BaseResult'` method override
+- Lazy import `game_state` inside execute method
+- Return appropriate `ResultType` subclass
+- Use `t()` function for all user-facing text
+
+**Callable Parameters:**
+- Damage/block/energy/count/heal amounts support callables: `self._damage` property checks `callable(self._damage)`
+- Allows dynamic values: `DealDamageAction(damage=lambda: game_state.player.block)`
+
+**User Selection Pattern:**
+- SelectAction accepts `List[Option]` where each `Option` has `name` and `actions`
+- Single option auto-selects in AI mode or if `auto_select_single_option=True`
+- Debug mode auto-selects first option
+
+**ActionQueue Usage:**
+- Actions are queued via `game_state.execute_all_actions()`
+- Use `add_action(action, to_front=True)` for priority
+- Use `add_actions([actions])` to batch enqueue
 
 ## ANTI-PATTERNS
-- NO separate DamageAction/BlockAction/DrawAction/EnergyAction - combat handled via cards directly
-- NO room enter() calls inside MoveToMapNodeAction - GameFlow main loop handles this
-- NO direct player modification in MoveToMapNodeAction - only updates game_state
 
-## CODE MAP
+**Never:**
+- Create new GameFlow/GameState instances (use singleton via lazy import)
+- Return strings like "WIN"/"DEATH" (use ResultType)
+- Skip `@register("action")` decorator
+- Call `game_state` at module level (import inside execute)
+- Mix synchronous and asynchronous action handling
 
-### Key Classes
-```python
-# Base classes
-Action
-ActionQueue
+**Avoid:**
+- Direct mutation of game_state without going through action pattern
+- Circular imports with engine.game_state at file level
+- Returning None instead of NoneResult()
 
-# Command pattern actions
-ChooseAddCardAction
-ChooseRemoveCardAction
-ChooseUpgradeCardAction
+## DOMAIN-SPECIFIC NOTES
 
-# Combat actions
-DamagePlayerAction
-BlockPlayerAction
-AddEtherealModifierAction
+**Combat Actions:**
+- Strength modifies damage in DealDamageAction
+- Weak reduces damage to 75% (artifact prevents)
+- Frail reduces block to 75% (artifact prevents)
+- Vulnerable tracked for next attack bonus
 
-# Reward/Shop actions
-AddRelicAction
-AddGoldAction
-AddRandomPotionAction
-BuyItemAction
-CardRemovalAction
+**Card Actions:**
+- ExhaustCardAction triggers `on_exhaust` powers before card.on_exhaust()
+- TransformCardAction removes card, adds random from same namespace
+- Choose*CardAction actions create SelectAction with Option wrappers
 
-# UI/Display
-SelectAction
-DisplayTextAction
-
-# Room/Map
-LeaveRoomAction
-TriggerRelicAction
-SelectMapNodeAction
-```
-
-## COMMANDS
-```bash
-# Run game (uses actions system)
-python __main__.py
-
-# Run tests
-pytest tests/                 # All tests
-python tests/test_*.py      # Individual test
-```
-
-## NOTES
-- 37 total action files implementing command pattern
-- Choose*CardAction delegates to SelectAction for UI
-- Each room/event/combat has independent ActionQueue
-- Action execution is deferred: add to queue, then execute loop
+**Display Actions:**
+- SelectAction adds "return to menu" option for human players (via `add_menu_option_if_human`)
+- Auto-selection logic: 1 option auto-selects, 0 options returns empty list
+- Debug mode always selects first option

@@ -1,9 +1,10 @@
 """
 Neo blessing event.
 """
+from utils.result_types import BaseResult, GameStateResult, NoneResult
 from events.event_pool import register_event
 from actions.card import ChooseAddRandomCardAction, ChooseRemoveCardAction, ChooseTransformCardAction, ChooseUpgradeCardAction, AddRandomCardAction
-from actions.display import SelectAction
+from actions.display import DisplayTextAction, SelectAction
 from actions.reward import AddGoldAction, AddRandomPotionAction, AddRandomRelicAction, AddRelicAction, LoseGoldAction, LoseRelicAction
 from actions.combat import LoseHpAction, ModifyMaxHpAction
 from engine.game_state import game_state
@@ -23,27 +24,28 @@ from utils.types import CardType, RarityType
 class NeoEvent(Event):
     """Neo blessing event - special starting event"""
 
-    def trigger(self) -> str:
+    def trigger(self) -> 'BaseResult':
         """Trigger Neo blessing selection"""
         # Display welcome message
-        from actions.display import DisplayTextAction
-        self.action_queue.add_action(DisplayTextAction(
+        game_state.action_queue.add_action(DisplayTextAction(
             text_key="events.neo.welcome"
         ))
-        
+
         # Check if player has reached boss before
         if game_state.run_history.get("reached_exordium_boss", False):
             self._show_four_blessings()
         else:
             self._show_basic_blessings()
-        
-        # Execute actions
-        result = self.execute_actions()
-        
+
+        # Execute actions using global queue
+        result = game_state.execute_all_actions()
+        if isinstance(result, GameStateResult):
+            return result
+
         # End event after selection
         self.end_event()
         
-        return result
+        return NoneResult()
     
     def _show_basic_blessings(self):
         """Show basic blessing options (first run)"""
@@ -60,7 +62,7 @@ class NeoEvent(Event):
             )
         ]
         
-        self.action_queue.add_action(
+        game_state.action_queue.add_action(
             SelectAction(
                 title=LocalStr("ui.choose_blessings"),
                 options=options
@@ -208,7 +210,7 @@ class NeoEvent(Event):
         else:
             options = [card_blessing, non_card_blessing, mixed_blessing]
         
-        self.action_queue.add_action(
+        game_state.action_queue.add_action(
             SelectAction(
                 title=LocalStr("ui.choose_blessings"),
                 options=options

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     log_file = _setup_debug_logging()
     try:
         game = GameFlow()
-        game.start_game()
+        game.start_game(game_state)
     except KeyboardInterrupt:
         from localization import t
         print(f"\n{t('ui.game_interrupted', default='Game interrupted by user.')}")
