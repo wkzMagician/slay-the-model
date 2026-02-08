@@ -1,10 +1,13 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, TYPE_CHECKING
 from cards.base import Card
-from potions.base import Potion
 from relics.base import Relic
 from utils.registry import get_registered, list_registered
 from utils.types import CardType, RarityType
 import random
+
+# Type hinting only, avoid circular import
+if TYPE_CHECKING:
+    from potions.base import Potion
 
 # todo: 对于没有指定稀有度的情况，考虑根据权重选择稀有度
 def get_random_card(namespaces: Optional[List[str]] = None, 
@@ -103,7 +106,7 @@ def get_random_relic(characters: Optional[List[str]] = None,
     return selected_relic_cls() if selected_relic_cls else None
 
 def get_random_potion(characters: Optional[List[str]] = None,
-                      rarities: Optional[List[RarityType]] = None) -> Optional[Potion]:
+                      rarities: Optional[List[RarityType]] = None):
     """
     Get a random potion from registry based on criteria.
     

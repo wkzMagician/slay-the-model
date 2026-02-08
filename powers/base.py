@@ -13,16 +13,12 @@ class Power(Localizable):
     
     # Localization
     localization_prefix = "powers"
-    
-    # Power configuration
-    name: str = ""
-    description: str = ""
-    duration: int = 0  # Number of turns or special values like "turn_start"/"turn_end"
-    amount: int = 0  # Effect magnitude
+    localizable_fields = ("name", "description")
     
     # Power behavior
     stackable: bool = True  # Can multiple instances stack?
-    duration_equals_amount: bool = False  # Should duration be set to amount on apply?
+    amount_equals_duration: bool = False  # Should amount be set to duration on apply?
+    is_buff: bool = True  # True for beneficial effects, False for harmful effects
     
     def __init__(self, amount: int = 0, duration: int = 0, owner=None):
         """Initialize power with amount and duration.
@@ -32,51 +28,50 @@ class Power(Localizable):
             duration: How long the power lasts
             owner: The creature that has this power
         """
-        self.amount = amount if amount != 0 else self.__class__.amount
-        self.duration = duration if duration != 0 else self.__class__.duration
+        self._amount = amount
+        self._duration = duration
         self.owner = owner
-        self.name = self.__class__.name or self.idstr
-        self.description = self.__class__.description
         self.stackable = self.__class__.stackable
-        self.duration_equals_amount = self.__class__.duration_equals_amount
-        self.amount = amount
-        self.duration = duration
-        
-        # If duration_equals_amount, sync duration with amount
-        if self.duration_equals_amount and self.amount:
-            self.duration = self.amount
+        self.amount_equals_duration = self.__class__.amount_equals_duration
+        self.is_buff = self.__class__.is_buff
     
     @property
     def idstr(self) -> str:
         """Return class name as ID string."""
         return self.__class__.__name__
     
-    def apply(self, owner=None) -> None:
-        """Apply the power to the target creature.
+    @property
+    def amount(self) -> int:
+        """Effect magnitude."""
+        if self.amount_equals_duration:
+            return self.duration
+        return self._amount
+    
+    @amount.setter
+    def amount(self, value: int):
+        self._amount = max(0, int(value))
         
-        Args:
-            owner: The creature to apply the power to
-        """
-        self.owner = owner or self.owner
-        if self.owner:
-            # Apply amount if it modifies a stat
-            self._apply_amount()
+    @property
+    def duration(self) -> int:
+        """Duration of the power."""
+        return self._duration
     
-    def remove(self) -> None:
-        """Remove the power from the creature."""
-        if self.owner:
-            # Reverse the amount if it modified a stat
-            self._remove_amount()
-            # Remove from powers list
-            self.owner.remove_power(self.name)
-    
-    def _apply_amount(self) -> None:
-        """Apply the power's amount to the owner's stats."""
-        pass
-    
-    def _remove_amount(self) -> None:
-        """Remove the power's amount from the owner's stats."""
-        pass
+    @duration.setter
+    def duration(self, value: int):
+        self._duration = max(0, int(value))
+        if self.amount_equals_duration:
+            self._amount = self._duration
+            
+    def tick(self) -> bool:
+        """Decrease duration by 1. Returns True if power should be removed."""
+        if self.duration is not None and self.duration != 0:
+            # Check if it's a special duration like "turn_start"/"turn_end"
+            if not isinstance(self.duration, int):
+                return False
+            
+            self.duration -= 1
+            return self.duration <= 0
+        return False
     
     def on_player_turn_start(self, player, entities) -> List[Action]:
         """Called at start of player's turn.
@@ -155,17 +150,6 @@ class Power(Localizable):
             List of actions to execute when block is gained
         """
         return []
-    
-    def tick(self) -> bool:
-        """Decrease duration by 1. Returns True if power should be removed."""
-        if self.duration is not None and self.duration != 0:
-            # Check if it's a special duration like "turn_start"/"turn_end"
-            if not isinstance(self.duration, int):
-                return False
-            
-            self.duration -= 1
-            return self.duration <= 0
-        return False
     
     def on_combat_end(self, owner, entities) -> List[Action]:
         """Called at end of combat.

@@ -105,8 +105,6 @@ class Creature(Localizable):
                     existing.amount += power.amount
                 if getattr(power, "duration", 0):
                     existing.duration += power.duration
-                if getattr(existing, "duration_equals_amount", False):
-                    existing.amount = existing.duration
                 return
         power.owner = self
         self.powers.append(power)

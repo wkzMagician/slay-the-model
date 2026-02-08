@@ -331,6 +331,7 @@ class ChooseUpgradeCardAction(Action):
 
         return NoneResult()
         
+# todo: 参数 card_type
 @register("action")      
 class ChooseAddRandomCardAction(Action):
     """Choose a random card to add to pile

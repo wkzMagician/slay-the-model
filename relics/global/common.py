@@ -83,5 +83,5 @@ class Vajra(Relic):
     def on_combat_start(self, player, entities) -> List[Action]:
         """Gain 1 Strength at start of combat"""
         from actions.combat import ApplyPowerAction
-        # todo: from powers.strength import StrengthPower
+        from powers import StrengthPower
         return [ApplyPowerAction(power=StrengthPower(amount=1))]

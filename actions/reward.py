@@ -1,13 +1,16 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from actions.base import Action
 from utils.result_types import BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import LocalStr, t
-from potions.base import Potion
 from relics.base import Relic
 from utils.option import Option
 from utils.registry import register, get_registered_instance
 from utils.random import get_random_relic, get_random_potion
 from utils.types import RarityType
+
+# Type hinting only, avoid circular import
+if TYPE_CHECKING:
+    from potions.base import Potion
 
 @register("action")
 class AddRelicAction(Action):
@@ -160,12 +163,12 @@ class AddPotionAction(Action):
     """Add a potion to player
     
     Required:
-        potion (Potion): potion class
+        potion: potion instance
         
     Optional:
         None
     """
-    def __init__(self, potion: Potion):
+    def __init__(self, potion):
         self.potion = potion
     
     def execute(self) -> 'BaseResult':

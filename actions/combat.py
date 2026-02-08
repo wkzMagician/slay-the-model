@@ -169,6 +169,8 @@ class GainEnergyAction(Action):
             
         return NoneResult()
 
+# todo: 支持从抽牌堆打出牌
+# todo: 支持打出时无视费用
 @register("action")
 class PlayCardAction(Action):
     """Play a card from hand
@@ -296,34 +298,35 @@ class ApplyPowerAction(Action):
 @register("action")
 class TriggerRelicAction(Action):
     """Trigger a relic's passive or active effect
-
+    
     Required:
-        relic_name (str): Name of the relic to trigger
-
+        relic_name (str): Name of relic to trigger
+    
     Optional:
         None
     """
     def __init__(self, relic_name: str):
         self.relic_name = relic_name
-
+    
     def execute(self) -> 'BaseResult':
         """Trigger a relic's effect"""
         from engine.game_state import game_state
-
+        
         if not game_state.player:
             return NoneResult()
-
+        
         # Find relic
         from utils.registry import get_registered
         relic = get_registered("relic", self.relic_name)
         if not relic:
             return NoneResult()
-
-        # Trigger the relic's effect
+        
+        # Trigger relic's effect
         # Relics implement their own trigger logic
         if hasattr(relic, "on_trigger"):
             relic.on_trigger()
         elif hasattr(relic, "passive"):
             relic.passive()
-
+        
         return NoneResult()
+
