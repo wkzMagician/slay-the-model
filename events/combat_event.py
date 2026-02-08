@@ -39,11 +39,11 @@ class CombatEvent(Event):
         result = combat.start()
         
         # Handle combat result
-        if result.result_type == "COMBAT_WIN":
+        if result.state == "COMBAT_WIN":
             self._handle_victory()
         # ESCAPE：没有reward
         
-        if result.result_type == "GAME_LOSE":
+        if result.state == "GAME_LOSE":
             return result
         else:
             return game_state.execute_all_actions()

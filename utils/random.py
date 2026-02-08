@@ -88,7 +88,10 @@ def get_random_relic(characters: Optional[List[str]] = None,
         if rarities and relic_instance.rarity not in rarities:
             continue
         
-        # todo: 玩家不能重复获得遗物，全局记录已经获得了哪些遗物
+        # Check if relic was already obtained
+        from engine.game_state import game_state
+        if relic_idstr in game_state.obtained_relics:
+            continue
         
         filtered_relic_idstrs.append(relic_idstr)
         

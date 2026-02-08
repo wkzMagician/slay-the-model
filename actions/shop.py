@@ -70,7 +70,6 @@ class BuyItemAction(Action):
             self.shop_item.price_multiplier = 0.8
 
         print(t("ui.shop_bought_item", default=f"Bought {self.shop_item.item.name} for {final_price} gold!"))
-        game_state.current_room.enter()
 
         # todo: MawBank的逻辑
         # MawBank effect: track gold spent

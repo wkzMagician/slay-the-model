@@ -32,7 +32,8 @@ from actions.misc import (
 from actions.card import RemoveCardAction
 from actions.shop import BuyItemAction
 from actions.treasure import OpenChestAction
-from actions.room import TriggerRelicAction, LeaveRoomAction
+from actions.room import LeaveRoomAction
+from actions.combat import TriggerRelicAction
 
 __all__ = [
     # Base classes

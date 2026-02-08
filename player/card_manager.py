@@ -114,10 +114,19 @@ class CardManager:
         Returns:
             bool: True if the card was successfully exhausted, False otherwise.
         """
-        source_pile = src if src in self.piles else self.get_card_location(card)
-        if not source_pile:
-            return False  # Card not found in any pile
-        return self.move_to(card, 'exhaust_pile', None, PilePosType.TOP)
+        return self.move_to(card, 'exhaust_pile', src, PilePosType.TOP)
+    
+    def discard(self, card: Card, src: Optional[str]) -> bool:
+        """Discard a card (move to discard pile).
+        
+        Args:
+            card: The card to discard (Card object or card ID)
+            src: Source pile name ('deck', 'draw_pile', 'hand')
+            
+        Returns:
+            bool: True if the card was successfully discarded, False otherwise.
+        """
+        return self.move_to(card, 'discard_pile', src, PilePosType.TOP)
 
     def get_pile(self, pile: str) -> List[Card]:
         """Get a pile by location name."""

@@ -5,7 +5,7 @@ from utils.result_types import BaseResult
 from events.base_event import Event
 from actions.card import AddRandomCardAction
 from actions.display import SelectAction, DisplayTextAction
-from actions.health import HealAction, LoseHPAction
+from actions.combat import HealAction, LoseHPAction
 from actions.reward import AddGoldAction
 from events.event_pool import register_event
 from localization import LocalStr

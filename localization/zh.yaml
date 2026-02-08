@@ -70,10 +70,6 @@ cards:
       description: 造成 {damage} 点伤害，共 {attack_times} 次。
       name: 拳打
       upgrade_description: 造成 {damage} 点伤害，共 {attack_times} 次。
-    SevereStrike:
-      description: 造成 {damage} 点伤害。
-      name: 严厉打击
-      upgrade_description: 造成 {damage} 点伤害。
     Strike:
       description: 造成 {damage} 点伤害。
       name: 打击

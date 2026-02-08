@@ -58,7 +58,7 @@ class NoneResult(BaseResult):
     directly without queueing additional actions.
 
     Example:
-        HealAction, GainBlockAction, ApplyStatusAction
+        HealAction, GainBlockAction
     """
 
     def __init__(self):

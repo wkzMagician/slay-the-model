@@ -1,5 +1,5 @@
 from actions.base import Action
-from typing import Optional, Union
+from typing import Optional, Union, List
 from cards.base import Card
 from localization import LocalStr, t
 from utils.option import Option
@@ -104,18 +104,61 @@ class ExhaustCardAction(Action):
             # Actually exhaust card
             exhausted = game_state.player.card_manager.exhaust(self.card, src=self.source_pile)
             
-             # Trigger on_exhaust powers before exhausting
+            # Trigger card's on_exhaust method
+            card_actions = self.card.on_exhaust() if hasattr(self.card, 'on_exhaust') else []
+            
+            # Trigger on_exhaust powers before exhausting
+            power_actions = []
+            for power in list(game_state.player.powers):
+                if hasattr(power, "on_exhaust"):
+                    result = power.on_exhaust()
+                    if result:
+                        power_actions.extend(result if isinstance(result, list) else [result])
+            
+            relic_actions = []
+            for relic in list(game_state.player.relics):
+                if hasattr(relic, "on_exhaust"):
+                    result = relic.on_exhaust()
+                    if result:
+                        relic_actions.extend(result if isinstance(result, list) else [result])
+
+            return MultipleActionsResult(card_actions + power_actions + relic_actions)
+
+        return NoneResult()
+    
+@register("action")
+class DiscardCardAction(Action):
+    """Discard a card into discard pile.
+
+    Required:
+        card (Card): Card to discard
+
+    Optional:
+        source_pile (str): Source pile name
+    """
+    def __init__(self, card: Card, source_pile: Optional[str] = None):
+        self.card = card
+        self.source_pile = source_pile
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if self.card and game_state.player and hasattr(game_state.player, "card_manager"):
+            # Actually discard card
+            discarded = game_state.player.card_manager.discard(self.card, src=self.source_pile)
+            
+            # Trigger on_discard powers before discarding
+            power_actions = []
             if hasattr(game_state.player, 'powers'):
                 for power in list(game_state.player.powers):
-                    if hasattr(power, "on_exhaust"):
-                        result = power.on_exhaust(self.card)
-                # todo: trigger relics
+                    if hasattr(power, "on_discard"):
+                        result = power.on_discard(self.card)
+                        if result:
+                            power_actions.extend(result if isinstance(result, list) else [result])
+                        
+            # Trigger card's on_discard method
+            card_actions = self.card.on_discard() if hasattr(self.card, 'on_discard') else []
             
-            # Trigger card's on_exhaust method
-            card_actions = self.card.on_exhaust()
-
-            MultipleActionsResult(card_actions)
-
+            return MultipleActionsResult(card_actions + power_actions)
         return NoneResult()
     
 class UpgradeCardAction(Action):
@@ -163,7 +206,7 @@ class ChooseRemoveCardAction(Action):
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
-        # todo: 暂时只支持单选
+        # ? 暂时只支持单选
         for _ in range(amount):
             options = []
             cards_in_pile = card_manager.get_pile(pile)
@@ -185,7 +228,6 @@ class ChooseRemoveCardAction(Action):
             # Return SelectAction to be added to caller's action_queue
             return SingleActionResult(select_action)
 
-        # todo: print remove info message
         return NoneResult()
 
 @register("action")         
@@ -213,7 +255,7 @@ class ChooseTransformCardAction(Action):
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
-        # todo: 暂时只支持单选
+        # ? 暂时只支持单选
         for _ in range(amount):
             options = []
             cards_in_pile = card_manager.get_pile(pile)
@@ -235,7 +277,6 @@ class ChooseTransformCardAction(Action):
             # Return SelectAction to be added to caller's action_queue
             return SingleActionResult(select_action)
 
-        # todo: print transform info message
         return NoneResult()
       
 @register("action")     
@@ -258,13 +299,13 @@ class ChooseUpgradeCardAction(Action):
         if not game_state.player:
             return NoneResult()
         pile = self.pile
-        amount = self.amount
+        amount = self.amount if self.amount != -1 else len(game_state.player.card_manager.get_pile(pile))
 
         # * build SelecAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
-        # todo: 暂时只支持单选
+        # ? 暂时只支持单选
         for _ in range(amount):
             options = []
             cards_in_pile = card_manager.get_pile(pile)
@@ -288,7 +329,6 @@ class ChooseUpgradeCardAction(Action):
             # Return SelectAction to be added to caller's action_queue
             return SingleActionResult(select_action)
 
-        # todo: print upgrade info message
         return NoneResult()
         
 @register("action")      
@@ -340,9 +380,7 @@ class ChooseAddRandomCardAction(Action):
             options = options
         )
         # Return SelectAction to be added to caller's action_queue
-        return SingleActionResult(select_action)
-
-        # todo: print add card info message       
+        return SingleActionResult(select_action)   
         
 @register("action")   
 class AddRandomCardAction(Action):
@@ -377,4 +415,27 @@ class AddRandomCardAction(Action):
         # Return AddCardAction to be added to caller's action_queue
         return SingleActionResult(AddCardAction(card=random_card, dest_pile=self.pile))
 
-        # todo: print add card info message
+@register("action")
+class DrawCardsAction(Action):
+    """Draw cards from draw pile
+
+    Required:
+        count (int): Number of cards to draw
+
+    Optional:
+        None
+    """
+    def __init__(self, count: int):
+        self.count = count
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+
+        if game_state.player and hasattr(game_state.player, "card_manager"):
+            # Draw cards from draw pile to hand
+            cards: List[Card] = game_state.player.card_manager.draw_many(self.count)
+            
+            # The draw operation itself doesn't queue additional actions
+            return NoneResult()
+
+        return NoneResult()

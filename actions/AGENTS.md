@@ -33,12 +33,12 @@ class MyAction(Action):
 
 | Task | File | Key Actions |
 |------|-------|-------------|
-| Damage/block/status | `combat.py` | DealDamageAction, GainBlockAction, ApplyStatusAction |
+| Damage/block/status | `combat.py` | DealDamageAction, GainBlockAction |
 | Card play/energy | `combat.py` | PlayCardAction, GainEnergyAction, EndTurnAction |
 | Card manipulation | `card.py` | AddCardAction, RemoveCardAction, TransformCardAction, ExhaustCardAction |
 | User choices | `display.py` | SelectAction, DisplayTextAction |
 | Rewards | `reward.py` | AddRelicAction, AddGoldAction, AddRandomPotionAction |
-| Health | `health.py` | HealAction, LoseHPAction, GainMaxHPAction |
+| Health | `health.py` | HealAction, LoseHPAction |
 | Map navigation | `map_selection.py` | MoveToMapNodeAction, SelectMapNodeAction |
 | Shop | `shop.py` | BuyItemAction |
 | Events | `misc.py` | StartEventAction, EndEventAction |

@@ -3,9 +3,14 @@ Combat logic class - independent from rooms.
 Can be triggered by CombatRoom or Events.
 Uses global action queue for action management.
 """
-from actions.display import DisplayTextAction
-from utils.result_types import GameStateResult
-from localization import Localizable
+from typing import List
+from actions.base import Action
+from actions.card import DiscardCardAction
+from actions.combat import EndTurnAction
+from actions.display import DisplayTextAction, SelectAction
+from utils.option import Option
+from utils.result_types import BaseResult, GameStateResult, NoneResult
+from localization import LocalStr, Localizable
 
 
 class Combat(Localizable):
@@ -51,270 +56,184 @@ class Combat(Localizable):
             text_key="combat.enter"
         ))
 
-        # Combat main loop
-        while not self.combat_ended:
-            # Build turn actions
-            self._build_turn_actions()
-            
-            # Execute actions
-            result = self._execute_actions()
+        # Combat main loop (as per todo.md)
+        while True:
+            # Execute player phase
+            result = self.execute_player_phase()
+            if isinstance(result, GameStateResult) and result.state in ("COMBAT_WIN", "COMBAT_LOSE", "COMBAT_ESCAPE"):
+                break
 
-            # Check if we need to return immediately
-            if result in ("DEATH", "WIN"):
-                # Result is already GameStateResult from combat loop
-                if isinstance(result, str):
-                    if result == "WIN":
-                        return GameStateResult("COMBAT_WIN")
-                    elif result == "DEATH":
-                        return GameStateResult("GAME_LOSE")
-                    else:
-                        from utils.result_types import GameStateResult
-                        return GameStateResult(result)
-                else:
-                    return result
+            # Execute enemy phase
+            result = self.execute_enemy_phase()
+            if isinstance(result, GameStateResult) and result.state in ("COMBAT_WIN", "COMBAT_LOSE", "COMBAT_ESCAPE"):
+                break
+
+        return result
+
+    def execute_player_phase(self) -> BaseResult:
+        """
+        Execute player phase.
+
+        Returns:
+            GameStateResult if combat ends, NoneResult otherwise
+        """
+        from engine.game_state import game_state
+
+        # Start player phase: gain energy, draw cards, trigger start-of-turn effects
+        self._start_player_turn()
+
+        # Player action phase - wait for player to play cards, use potions, or end turn
+        game_state.combat_state.current_phase = "player_action"
+
+        while game_state.combat_state.current_phase == "player_action":
+            self._build_player_action()
+
+            result = game_state.execute_all_actions()
+            
+            if isinstance(result, GameStateResult) and result.state in ("COMBAT_WIN", "COMBAT_LOSE", "COMBAT_ESCAPE"):
+                return result
+
+        # End player phase: trigger end-of-turn effects, discard hand
+        return self._end_player_phase()
+    
+    def _build_player_action(self):
+        """Build available player actions during player phase"""
+        from engine.game_state import game_state
+        actions = []
+
+        # todo: 1. print combat information
         
-        return None
+        # 2. Build SelectAction for cards in hand
+        hand = game_state.player.card_manager.get_pile("hand")
+        options: List[Option] = []
+        for card in hand:
+            # can play
+            if card.can_play():
+                options.append(Option(
+                    name=card.info(),
+                    actions=card.on_play()
+                ))
+        
+        # 3. Build SelectAction for potions (if implemented)
+        # todo: Collection 数据结构
+        for potion in game_state.player.potions:
+            options.append(Option(
+                name=LocalStr(potion.idstr), # todo: 详细说明
+                actions=potion.on_use()
+            ))
+            
+        # 4. Add option to end turn
+        options.append(Option(
+            name=LocalStr("combat.end_turn"),
+            actions=[EndTurnAction()]
+        ))
+        
+        actions.append(SelectAction(
+            options=options,
+            prompt=LocalStr("combat.choose_action")
+        ))
+            
+        game_state.action_queue.add_actions(actions)
+
+    def _end_player_phase(self) -> BaseResult:
+        """
+        End player phase.
+
+        Returns:
+            GameStateResult if combat ends, None otherwise
+        """
+        from engine.game_state import game_state
+
+        # Trigger end-of-turn effects
+        self._trigger_end_of_turn_effects()
+
+        # Discard hand (cards in hand are shuffled into discard pile)
+        from actions.card import ExhaustCardAction
+        if game_state.player.card_manager:
+            hand = game_state.player.card_manager.get_pile("hand").copy()
+            for card in hand:
+                game_state.action_queue.add_action(DiscardCardAction(card=card, source_pile="hand"))
+
+        # Reset player block
+        game_state.player.block = 0
+
+        # todo: power tick_down
+
+        return game_state.execute_all_actions()
+
+    def execute_enemy_phase(self) -> BaseResult:
+        """
+        Execute enemy phase.
+
+        Returns:
+            GameStateResult if combat ends, None otherwise
+        """
+        from engine.game_state import game_state
+
+        game_state.combat_state.current_phase = "enemy_action"
+
+        # For each alive enemy, execute actions
+        for enemy in self.enemies:
+            if not enemy.is_dead():
+                game_state.action_queue.add_actions(enemy.act()) # todo: Enemy类
+
+        return game_state.execute_all_actions()
+    
+    def _remove_dead_enemies(self):
+        """Remove dead enemies from the list"""
+        self.enemies = [e for e in self.enemies if not e.is_dead()]
     
     def _init_combat(self):
         """Initialize combat state"""
         from engine.game_state import game_state
         # Reset and setup combat state
         game_state.combat_state.reset_combat_info()
-        game_state.combat_state.enemies = self.enemies
 
         # Reset combat flags
         self.combat_ended = False
         self.player_turn_ended = False
 
-        # Initialize enemies
-        for enemy in self.enemies:
-            enemy.current_hp = enemy.max_hp
-            # Initialize status effects for enemies
-            game_state.combat_state.get_entity_status(enemy)
-
-        # Initialize status effects for player
-        game_state.combat_state.get_entity_status(game_state.player)
-
-        # Start first turn
-        self._start_player_turn()
-    
-    def _build_turn_actions(self):
-        """
-        Build actions for current turn.
-
-        Combat loop: player_action_phase -> enemy_action_phase -> player_end_phase
-        """
-        from engine.game_state import game_state
-        combat_state = game_state.combat_state
-        current_phase = combat_state.current_phase
-
-        if current_phase == "player_action":
-            # Player action phase - let player play cards
-            pass  # Player actions are added externally via PlayCardAction, etc.
-
-        elif current_phase == "enemy_action":
-            # Enemy AI phase
-            self._enemy_action_phase()
-
-        elif current_phase == "player_end":
-            # End of player turn - cleanup
-            self._player_end_phase()
+        # todo: Trigger combat start effects (relics)
 
     def _start_player_turn(self):
-        """Start player turn - draw cards, reset energy"""
+        """Start player turn - draw cards, reset energy, trigger start-of-turn effects"""
         from engine.game_state import game_state
         # Draw cards
-        draw_count = game_state.player.max_energy  # Default: draw equal to energy
+        draw_count = 5  # todo: modified by relics/powers
         if draw_count > 0:
-            from actions.combat import DrawCardsAction
+            from actions.card import DrawCardsAction
             game_state.action_queue.add_action(DrawCardsAction(count=draw_count))
-        
+
         # Reset energy
         game_state.player.energy = game_state.player.max_energy
-        
+
         # Increment turn counter
-        game_state.combat_state.combat_turn +=1
+        game_state.combat_state.combat_turn += 1
         game_state.combat_state.current_phase = "player_action"
-        
-        # TODO: Trigger on_turn_start powers
 
-    def _player_action_phase(self):
-        """Handle player action phase"""
+        # Trigger start-of-turn effects
+        self._trigger_start_of_turn_effects()
+
+    def _trigger_start_of_turn_effects(self):
+        """Trigger start-of-turn effects for player and enemies"""
         from engine.game_state import game_state
-        # Check if player has no more energy
-        if game_state.player.energy <= 0:
-            # Transition to enemy action phase
-            game_state.combat_state.current_phase = "enemy_action"
-
-    def _enemy_action_phase(self):
-        """Handle enemy AI phase"""
-        from engine.game_state import game_state
-        # Simple AI: each enemy attacks a random valid target
-        for enemy in self.enemies:
-            if not enemy.is_dead():
-                target = self._select_enemy_target(enemy)
-                if target:
-                    self._enemy_attack(enemy, target)
-
-        # Transition to player end phase
-        game_state.combat_state.current_phase = "player_end"
-
-    def _select_enemy_target(self, enemy):
-        """Simple AI: select target based on priority"""
-        from engine.game_state import game_state
-        # Priority: Vulnerable > Normal > most damaged > weakest
-        # Default to player
-        targets = [game_state.player] + [e for e in self.enemies if not e.is_dead() and e != enemy]
-
-        if not targets:
-            return None
-
-        # Priority 1: Vulnerable targets
-        vulnerable_targets = [t for t in targets if game_state.combat_state.get_entity_status(t).get("vulnerable", 0) > 0]
-        if vulnerable_targets:
-            # Among vulnerable targets, pick the one with most damage (lowest HP)
-            return min(vulnerable_targets, key=lambda t: t.hp)
-
-        # Priority 2: Normal targets (no vulnerable)
-        normal_targets = [t for t in targets if game_state.combat_state.get_entity_status(t).get("vulnerable", 0) == 0]
-
-        if normal_targets:
-            # Priority 2a: Most damaged (lowest HP)
-            most_damaged = min(normal_targets, key=lambda t: t.hp)
-            # If player is to most damaged, attack player
-            if most_damaged is game_state.player:
-                return most_damaged
-
-            # Priority 2b: Weakest (lowest max HP among most damaged)
-            # Get targets with HP within 10% of most damaged
-            most_damaged_hp = most_damaged.hp
-            damaged_group = [t for t in normal_targets if t.hp <= most_damaged_hp + (most_damaged_hp * 0.1)]
-
-            if damaged_group:
-                # Among damaged group, pick the weakest (lowest max HP)
-                weakest = min(damaged_group, key=lambda t: t.max_hp)
-                return weakest
-
-            # Fallback to most damaged
-            return most_damaged
-
-        # Fallback: attack player
-        return game_state.player
-
-    def _enemy_attack(self, enemy, target):
-        """Execute enemy attack"""
-        from engine.game_state import game_state
-        # Simple attack: deal damage based on enemy strength
-        status = game_state.combat_state.get_entity_status(enemy)
-        strength = status.get("strength", 0)
-        base_damage = getattr(enemy, "damage", 6) + strength
-
-        # Apply weak if attacker has weak
-        attacker_status = game_state.combat_state.get_entity_status(enemy)
-        if attacker_status.get("weak", 0) > 0:
-            base_damage = int(base_damage * 0.75)
-            if base_damage < 1 and getattr(enemy, "damage", 6) > 0:
-                base_damage = 1
-
-        # Apply vulnerable (50% more damage to vulnerable targets)
-        target_status = game_state.combat_state.get_entity_status(target)
-        if target_status.get("vulnerable", 0) > 0:
-            base_damage = int(base_damage * 1.5)
-
-        # Deal damage
-        damage_dealt = target.take_damage(base_damage, source=enemy, damage_type="direct")
-
-    def _player_end_phase(self):
-        """End of player turn - cleanup"""
-        from engine.game_state import game_state
-        # Discard hand
-        from actions.card import ExhaustCardAction
-        if game_state.player.card_manager:
-            hand = game_state.player.card_manager.get_pile("hand").copy()
-            for card in hand:
-                game_state.action_queue.add_action(ExhaustCardAction(card=card, source_pile="hand"))
         
-        # Reset player block
-        game_state.player.block = 0
-        
-        # Reset status effects that tick down (weak, vulnerable, frail)
-        for entity_id, status in game_state.combat_state.status_effects.items():
-            for effect in ["weak", "vulnerable", "frail"]:
-                if status[effect] > 0:
-                    status[effect] -= 1
-        
-        # Check win/lose conditions
-        if game_state.player.is_dead():
-            return GameStateResult("GAME_LOSE")
-        if all(enemy.is_dead() for enemy in self.enemies):
-            return GameStateResult("COMBAT_WIN")
-        
-        # Start new player turn
-        self._start_player_turn()
-
-    def _execute_actions(self) -> str:
-        """
-        Execute all actions in global action queue.
-        
-        Returns:
-            Execution result if combat ended, None otherwise
-        """
-        from engine.game_state import game_state
-        while not game_state.action_queue.is_empty() and not self.combat_ended:
-            result = game_state.action_queue.execute_next()
-            
-            # Check for special return values
-            if result in ("DEATH", "WIN"):
-                self.combat_ended = True
-                if result == "WIN":
-                    return GameStateResult("COMBAT_WIN")
-                elif result == "DEATH":
-                    return GameStateResult("GAME_LOSE")
-                else:
-                    return result
-            
-            # Handle phase transitions
-            combat_state = game_state.combat_state
-            if combat_state.current_phase == "player_action":
-                # Check if player has no energy, trigger phase transition
-                if game_state.player.energy <= 0:
-                    combat_state.current_phase = "enemy_action"
-                    self._build_turn_actions()
-            
-            elif combat_state.current_phase == "player_end":
-                # After end phase actions execute, check win/lose
-                if game_state.player.is_dead():
-                    return GameStateResult("GAME_LOSE")
-                if all(enemy.is_dead() for enemy in self.enemies):
-                    return GameStateResult("COMBAT_WIN")
+        # relics - powers
+        for relic in game_state.player.relics:
+            game_state.action_queue.add_actions(relic.on_player_turn_start())
+        for power in game_state.player.powers:
+            game_state.action_queue.add_actions(power.on_player_turn_start())
                 
-                # Build actions for next phase
-                self._build_turn_actions()
+
+    def _trigger_end_of_turn_effects(self):
+        """Trigger end-of-turn effects for player and enemies"""
+        from engine.game_state import game_state
         
-        # If queue is empty but combat not ended, check win/lose conditions
-        if not self.combat_ended:
-            if game_state.player.is_dead():
-                return GameStateResult("GAME_LOSE")
-            if all(enemy.is_dead() for enemy in self.enemies):
-                return GameStateResult("COMBAT_WIN")
-            
-            # Build actions for next phase
-            self._build_turn_actions()
-        
-        return None
-    
-    def end_combat(self, result: str):
-        """
-        End combat with specified result.
-        
-        Args:
-            result: Combat result ("WIN" or "DEATH")
-        """
-        self.combat_ended = True
-        return result
-    
-    def handle_enemy_turn(self):
-        """Handle enemy turn actions"""
-        # Placeholder: enemy AI logic
-        # Add enemy intent actions to queue
-        pass
+        # relics - powers - cards in hand
+        for relic in game_state.player.relics:
+            game_state.action_queue.add_actions(relic.on_player_turn_end())
+        for power in game_state.player.powers:
+            game_state.action_queue.add_actions(power.on_player_turn_end())
+        hand = game_state.player.card_manager.get_pile("hand")
+        for card in hand:
+            game_state.action_queue.add_actions(card.on_end_of_turn())

@@ -1,52 +1,50 @@
 """
 Global relics package - relics available to all character classes.
+Organized by rarity.
 """
 
-# Import all global relics
-from .anchor import Anchor
-from .bag_of_preparation import BagOfPreparation
-from .burning_blood import BurningBlood
-from .vajra import Vajra
-from .black_star import BlackStar
-from .brass_lantern import BrassLantern
-from .ceramic_figurine import CeramicFigurine
-from .coffee_dripper import CoffeeDripper
-from .hook_and_rope import HookAndRope
-from .strange_spoon import StrangeSpoon
-from .sisyphus import Sisyphus
-from .red_mask import RedMask
-from .mummy_hand import MummyHand
+# Import all global relics from rarity-based files
+from .common import (
+    Anchor,
+    BagOfPreparation,
+    BurningBlood,
+    Vajra,
+    BlackStar
+)
 
-# Uncommon Relics (5)
-from .akara import Akara
-from .brass_lantern import BrassLantern
-from .ceramic_figurine import CeramicFigurine
-from .coffee_dripper import CoffeeDripper
-from .strange_spoon import StrangeSpoon
-from .hook_and_rope import HookAndRope
+from .uncommon import (
+    Akara,
+    BrassLantern,
+    CeramicFigurine,
+    CoffeeDripper,
+    HookAndRope,
+    StrangeSpoon,
+    Sisyphus
+)
 
-# Rare Relics (5)
-from .vajra_boss import VajraBoss
-from .red_mask import RedMask
-from .mummy_hand import MummyHand
-from .dagger import Dagger
-from .mutagenic_strength import MutagenicStrength
+from .rare import (
+    VajraBoss,
+    RedMask,
+    MummyHand,
+    Dagger,
+    MutagenicStrength
+)
 
-# Boss Relics (15)
-from .burning_blood_boss import BurningBloodBoss
-from .snecko_eye import SneckoEye
-from .champions_belt import ChampionsBelt
-from .frozen_core import FrozenCore
-from .dead_branch import DeadBranch
-from .maw_bank import MawBank
-from .the_courier import TheCourier
-from .blue_candle import BlueCandle
-from .rune_cube import RuneCube
-from .black_blood_boss import BlackBloodBoss
-from .the_heart import TheHeart
+from .boss import (
+    BurningBloodBoss,
+    SneckoEye,
+    ChampionsBelt,
+    FrozenCore,
+    DeadBranch,
+    MawBank,
+    TheCourier,
+    BlueCandle,
+    RuneCube,
+    BlackBloodBoss,
+    TheHeart
+)
 
-# Shop Relics (1)
-from .membership_card import MembershipCard
+from .shop import MembershipCard
 
 __all__ = [
     # Common (5)
@@ -56,23 +54,23 @@ __all__ = [
     'Vajra',
     'BlackStar',
 
-    # Uncommon (10)
+    # Uncommon (7)
+    'Akara',
     'BrassLantern',
     'CeramicFigurine',
     'CoffeeDripper',
-    'StrangeSpoon',
     'HookAndRope',
+    'StrangeSpoon',
     'Sisyphus',
-    'Akara',
-    'RedMask',
-    'MummyHand',
 
     # Rare (5)
     'VajraBoss',
+    'RedMask',
+    'MummyHand',
     'Dagger',
     'MutagenicStrength',
 
-    # Boss (15)
+    # Boss (11)
     'BurningBloodBoss',
     'SneckoEye',
     'ChampionsBelt',
@@ -88,4 +86,3 @@ __all__ = [
     # Shop (1)
     'MembershipCard',
 ]
-

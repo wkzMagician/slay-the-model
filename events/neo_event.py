@@ -6,7 +6,7 @@ from events.event_pool import register_event
 from actions.card import ChooseAddRandomCardAction, ChooseRemoveCardAction, ChooseTransformCardAction, ChooseUpgradeCardAction, AddRandomCardAction
 from actions.display import DisplayTextAction, SelectAction
 from actions.reward import AddGoldAction, AddRandomPotionAction, AddRandomRelicAction, AddRelicAction, LoseGoldAction, LoseRelicAction
-from actions.combat import LoseHpAction, ModifyMaxHpAction
+from actions.combat import ModifyMaxHpAction, LoseHPAction
 from engine.game_state import game_state
 from engine.game_stats import game_stats
 from events.base_event import Event

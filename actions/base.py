@@ -32,6 +32,20 @@ class Action(Localizable):
     def __str__(self):
         return f"{self.__class__.__name__}()"
 
+class LambdaAction(Action):
+    """Action that executes a provided function"""
+    def __init__(self, func, args=None, kwargs=None):
+        super().__init__()
+        self.func = func
+        self.args = args or []
+        self.kwargs = kwargs or {}
+        
+    def execute(self) -> 'BaseResult':
+        """Execute the provided function with arguments"""
+        result = self.func(*self.args, **self.kwargs)
+        if isinstance(result, BaseResult):
+            return result
+        return NoneResult()
 
 class ActionQueue:
     """Queue of actions to execute in loop"""

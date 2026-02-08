@@ -31,7 +31,6 @@ def test_registration():
         "Ironclad.Flex",
         # Uncommon
         "Ironclad.Clothesline",
-        "Ironclad.SevereStrike",
         "Ironclad.Inflame",
         "Ironclad.BodySlam",
         "Ironclad.Carnage",

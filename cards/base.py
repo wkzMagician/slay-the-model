@@ -1,7 +1,7 @@
 """
 Card base class - class-driven card system with namespace support
 """
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 from actions.base import Action
 from entities.creature import Creature
 # 延迟导入以避免循环导入
@@ -39,19 +39,19 @@ class Card(Localizable):
     base_retain = False
     base_innate = False
 
-    upgrade_cost = None
-    upgrade_damage = None
-    upgrade_block = None
-    upgrade_heal = None
-    upgrade_draw = None
-    upgrade_energy_gain = None
-    upgrade_attack_times = None
-    upgrade_magic = None
+    upgrade_cost: Optional[int] = None
+    upgrade_damage: Optional[int] = None
+    upgrade_block: Optional[int] = None
+    upgrade_heal: Optional[int] = None
+    upgrade_draw: Optional[int] = None
+    upgrade_energy_gain: Optional[int] = None
+    upgrade_attack_times: Optional[int] = None
+    upgrade_magic: Optional[Dict[str, Any]] = None
     
-    upgrade_exhaust = None
-    upgrade_ethereal = None
-    upgrade_retain = None
-    upgrade_innate = None
+    upgrade_exhaust: Optional[bool] = None
+    upgrade_ethereal: Optional[bool] = None
+    upgrade_retain: Optional[bool] = None
+    upgrade_innate: Optional[bool] = None
     
     # * card behavior
     upgradeable = True
@@ -60,6 +60,7 @@ class Card(Localizable):
     # * card triggers
     target_type = None
     
+    localization_prefix = "cards"
     localizable_fields = ("name", "description", "upgrade_description")
 
     def __init__(self):
@@ -98,15 +99,12 @@ class Card(Localizable):
         """Card ID with namespace, e.g. 'Base.Strike'"""
         return f"{self.namespace}.{self.__class__.__name__}"
  
-    def __str__(self):
-        """Display name for in-game use (without namespace)"""
-        # todo
-        pass
-    
-    def __repr__(self):
-        """Debug representation with namespace"""
-        # todo
-        pass
+    def info(self) -> BaseLocalStr:
+        """
+        Display name for in-game use (without namespace)
+        Includes: card name, cost, type, rarity, and description.
+        """
+        return self.display_name + f" (Cost: {self.get_temp_value('cost')}, Type: {self.card_type}, Rarity: {self.rarity.value})\n{self.description}"
     
     def _extract_base_values(self):
         """Extract base values from class attributes"""
@@ -117,13 +115,18 @@ class Card(Localizable):
             'heal': self.base_heal,
             'draw': self.base_draw,
             'energy_gain': self.base_energy_gain,
-            'magic': dict(getattr(self, "base_magic", {}) or {}),
             'attack_times': int(getattr(self, "base_attack_times", 1)),
             'retain': bool(getattr(self, "retain", False)),
             'exhaust': bool(getattr(self, "exhaust", False)),
             'ethereal': bool(getattr(self, "ethereal", False)),
             'innate': bool(getattr(self, "innate", False)),
         }
+        
+        # 展开魔法字段：magic.xxx -> magic_xxx
+        magic_dict = dict(getattr(self, "base_magic", {}) or {})
+        for key, value in magic_dict.items():
+            base_values[f'magic_{key}'] = value
+        
         return base_values
 
     def _resolve_target(self):
@@ -168,15 +171,13 @@ class Card(Localizable):
         """卡牌被打出时触发，默认返回 Action 列表。"""
         # Import actions here to avoid circular imports
         try:
-            # todo: Card Actions
             from actions.combat import (
                 DealDamageAction,
                 GainBlockAction,
                 HealAction,
-                DrawCardsAction,
                 GainEnergyAction,
             )
-            from actions.card import ExhaustCardAction
+            from actions.card import ExhaustCardAction, DrawCardsAction
             
             actions = []
             if self.base_values.get('block', 0) > 0:
@@ -215,6 +216,10 @@ class Card(Localizable):
 
     def on_exhaust(self):
         """卡牌被消耗（放逐）时触发，默认返回 Action 列表。"""
+        return []
+    
+    def on_end_of_turn(self):
+        """卡牌在回合结束时触发，默认返回 Action 列表。"""
         return []
 
     def can_play(self, ignore_energy=False):
@@ -262,7 +267,6 @@ class Card(Localizable):
         # Regenerate description with new values
         self.update_description()
 
-        # todo：打印信息
         return True
 
     def apply_upgrade(self):
@@ -286,8 +290,10 @@ class Card(Localizable):
             self.combat_values['cost'] += self.upgrade_cost - self.base_cost
             self.base_values['cost'] = self.upgrade_cost
         if self.upgrade_magic:
-            self.combat_values['magic'] = self.upgrade_magic
-            self.base_values['magic'] = self.upgrade_magic
+            # 展开魔法字段：magic.xxx -> magic_xxx
+            for key, value in self.upgrade_magic.items():
+                self.combat_values[f'magic_{key}'] = value
+                self.base_values[f'magic_{key}'] = value
         if self.upgrade_attack_times is not None:
             self.combat_values['attack_times'] += self.upgrade_attack_times - self.base_attack_times
             self.base_values['attack_times'] = self.upgrade_attack_times

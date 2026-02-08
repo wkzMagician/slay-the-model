@@ -6,7 +6,7 @@ from actions.card import AddCardAction, ChooseRemoveCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
 from actions.shop import BuyItemAction
-from actions.room import TriggerRelicAction, LeaveRoomAction
+from actions.room import LeaveRoomAction
 from utils.result_types import GameStateResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr, t
@@ -15,6 +15,7 @@ from utils.random import get_random_card, get_random_relic, get_random_potion
 from utils.registry import register
 from utils.types import RarityType, CardType, RoomType
 from rooms.base import Room, BaseResult
+from actions.combat import HealAction, TriggerRelicAction
 
 
 class ShopItem:

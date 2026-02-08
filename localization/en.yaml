@@ -147,10 +147,6 @@ cards:
       name: "Clothesline"
       description: "Deal {damage} damage. Apply {magic[weak]} Weak."
       upgrade_description: "Deal {damage} damage. Apply {magic[weak]} Weak."
-    SevereStrike:
-      name: "Severe Strike"
-      description: "Deal {damage} damage."
-      upgrade_description: "Deal {damage} damage."
     Inflame:
       name: "Inflame"
       description: "Gain {magic[strength]} Strength."

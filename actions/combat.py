@@ -26,11 +26,11 @@ class ModifyMaxHpAction(Action):
         return NoneResult()
 
 @register("action")
-class LoseHpAction(Action):
-    """Modify player's HP
+class HealAction(Action):
+    """Heal the player for a specified amount
 
     Required:
-        amount (int): HP change amount
+        amount (int): Amount to heal
 
     Optional:
         None
@@ -41,12 +41,45 @@ class LoseHpAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
+            old_hp = game_state.player.hp
+            game_state.player.hp = min(game_state.player.hp + self.amount, game_state.player.max_hp)
+            healed = game_state.player.hp - old_hp
+            print(t("ui.healed", default=f"Healed for {healed} HP.", amount=healed))
+        return NoneResult()
+
+@register("action")
+class LoseHPAction(Action):
+    """Deal damage to player
+
+    Required:
+        amount (int): Amount to lose
+
+    Optional:
+        None
+    """
+    def __init__(self, amount: int):
+        self.amount = amount
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if game_state.player:
+            old_hp = game_state.player.hp
             game_state.player.hp -= self.amount
+            lost = old_hp - game_state.player.hp
+            print(t("ui.lost_hp", default=f"Lost {lost} HP.", amount=lost))
         return NoneResult()
 
 @register("action")
 class DealDamageAction(Action):
-    """Deal damage to a target
+    """Deal damage to a target (basic damage action)
+
+    This action performs the core damage operation:
+    - Calculate damage value (handles callable)
+    - Reduce target HP (via Creature.take_damage which triggers power hooks)
+    - Trigger relic damage hooks
+
+    Complex damage modifiers (strength, weak, vulnerable, artifact, etc.)
+    should be handled by AttackAction or similar higher-level actions.
 
     Required:
         damage (int or callable): Damage amount to deal
@@ -57,71 +90,42 @@ class DealDamageAction(Action):
         card (Card): Card that caused the damage (for power triggers)
         source (Creature): Source of the damage
     """
-    def __init__(self, name: str, damage, target: Creature,
+    def __init__(self, name: str, damage: int, target: Creature,
                  damage_type: str = "direct", card=None, source=None):
         self.name = name
-        self._damage = damage
+        self.damage = damage
         self.target = target
         self.damage_type = damage_type
         self.card = card
         self.source = source
 
-    @property
-    def damage(self) -> int:
-        """Get damage amount (handles callable)"""
-        if callable(self._damage):
-            return self._damage()
-        return int(self._damage)
-
     def execute(self):
         from engine.game_state import game_state
 
-        # Get source status (for strength)
-        source_strength = 0
-        if self.source:
-            source_status = game_state.combat_state.get_entity_status(self.source)
-            source_strength = source_status.get("strength", 0)
+        if not self.target or self.target.is_dead():
+            return NoneResult()
 
-        # Apply strength to damage
-        base_damage = self.damage
-        if source_strength != 0:
-            base_damage = max(0, base_damage + source_strength)
+        # Calculate damage value
+        damage_amount = self.damage
 
-        # Apply weak modifier to damage
-        final_damage = base_damage
-        if self.target and not self.target.is_dead():
-            target_status = game_state.combat_state.get_entity_status(self.target)
-
-            # Check for artifact (prevents status effects)
-            artifact_count = target_status.get("artifact", 0)
-
-            if target_status.get("weak", 0) > 0 and self.damage_type == "direct":
-                # Weak: 25% damage reduction
-                # If artifact > 0, block the debuff
-                if artifact_count > 0:
-                    # Prevent weak from being applied
-                    final_damage = base_damage
-                else:
-                    final_damage = int(base_damage * 0.75)
-                    if final_damage < 1 and base_damage > 0:
-                        final_damage = 1
-
-        # Deal damage
-        if self.target:
-            damage_dealt = self.target.take_damage(
-                final_damage,
-                source=self.source,
-                card=self.card,
-                damage_type=self.damage_type
-            )
-
-            # Apply vulnerable (makes next attack deal more damage)
-            if damage_dealt > 0:
-                status = game_state.combat_state.get_entity_status(self.target)
-                if status.get("vulnerable", 0) > 0:
-                    # Vulnerable: next attack deals 50% more damage
-                    # This is handled in the attacker's next damage calculation
-                    pass
+        # Deal damage (this triggers power hooks via Creature.take_damage)
+        damage_dealt = self.target.take_damage(
+            damage_amount,
+            source=self.source,
+            card=self.card,
+            damage_type=self.damage_type
+        )
+        
+        # Trigger relic hooks before damage (on_damage_dealt)
+        for relic in game_state.player.relics:
+            if hasattr(relic, "on_damage_dealt"):
+                actions = relic.on_damage_dealt(
+                    damage=damage_amount,
+                    target=self.target,
+                    player=game_state.player,
+                )
+                if actions:
+                    game_state.action_queue.add_actions(actions)
 
         return NoneResult()
 
@@ -131,119 +135,38 @@ class GainBlockAction(Action):
 
     Required:
         block (int or callable): Block amount to gain
-
-    Optional:
         target (Creature): Target to gain block (defaults to player)
-        card (Card): Card that caused the block gain
-        source (Creature): Source of the block
     """
-    def __init__(self, block, target: Optional[Creature] = None, card=None, source=None):
-        self._block = block
+    def __init__(self, block, target: Creature):
+        self.block = block
         self.target = target
-        self.card = card
-        self.source = source
-
-    @property
-    def block(self) -> int:
-        """Get block amount (handles callable)"""
-        if callable(self._block):
-            return self._block()
-        return int(self._block)
 
     def execute(self):
         from engine.game_state import game_state
 
-        # Determine target
-        target = self.target or game_state.player
-        if not target or target.is_dead():
-            return NoneResult()
-
-        # Apply frail modifier to block
-        final_block = self.block
-        if target is game_state.player:
-            status = game_state.combat_state.get_entity_status(target)
-
-            # Check for artifact (prevents status effects)
-            artifact_count = status.get("artifact", 0)
-
-            if status.get("frail", 0) > 0:
-                # Frail: 25% block reduction
-                # If artifact > 0, block the debuff
-                if artifact_count > 0:
-                    # Prevent frail from being applied
-                    final_block = self.block
-                else:
-                    final_block = int(self.block * 0.75)
-                    if final_block < 1 and self.block > 0:
-                        final_block = 1
-
-        # Gain block
-        target.gain_block(final_block, source=self.source, card=self.card)
-
-        # Trigger on_block powers
-        if hasattr(target, 'powers'):
-            for power in list(target.powers):
-                if hasattr(power, "on_gain_block"):
-                    power.on_gain_block(final_block, player=target, source=self.source, card=self.card)
+        self.target.gain_block(self.block, source=None, card=None)
 
         return NoneResult()
-
-@register("action")
-class DrawCardsAction(Action):
-    """Draw cards from draw pile
-
-    Required:
-        count (int or callable): Number of cards to draw
-
-    Optional:
-        None
-    """
-    def __init__(self, count):
-        self._count = count
-
-    @property
-    def count(self) -> int:
-        """Get count (handles callable)"""
-        if callable(self._count):
-            return self._count()
-        return int(self._count)
-
-    def execute(self) -> 'BaseResult':
-        from engine.game_state import game_state
-
-        if game_state.player and hasattr(game_state.player, "card_manager"):
-            cards = game_state.player.card_manager.draw(self.count)
-            return MultipleActionsResult(cards)
-
-        return MultipleActionsResult([])
 
 @register("action")
 class GainEnergyAction(Action):
     """Gain energy for player
 
     Required:
-        energy (int or callable): Energy amount to gain
+        energy (int): Energy amount to gain
 
     Optional:
         None
     """
     def __init__(self, energy):
-        self._energy = energy
-
-    @property
-    def energy(self) -> int:
-        """Get energy (handles callable)"""
-        if callable(self._energy):
-            return self._energy()
-        return int(self._energy)
+        self.energy = energy
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         if game_state.player:
             game_state.player.gain_energy(self.energy)
-            return SingleActionResult(game_state.player.energy)
-
+            
         return NoneResult()
 
 @register("action")
@@ -328,60 +251,79 @@ class EndTurnAction(Action):
 
         # This will be handled by Combat._build_turn_actions()
         return NoneResult()
-
+    
 @register("action")
-class HealAction(Action):
-    """Heal a creature
+class ApplyPowerAction(Action):
+    """Apply a power to a target creature
 
     Required:
-        heal (int or callable): Heal amount
+        power (str or Power): Power name string or Power instance
+        target (Creature): Target creature to apply power to
+        amount (int): Power amount
 
     Optional:
-        target (Creature): Target to heal (defaults to player)
+        duration (int): Power duration (0 for permanent)
     """
-    def __init__(self, heal, target: Optional[Creature] = None):
-        self._heal = heal
+    def __init__(self, power, target: Creature, amount: int, duration: int = 0):
+        self.power = power
         self.target = target
-
-    @property
-    def heal(self) -> int:
-        """Get heal amount (handles callable)"""
-        if callable(self._heal):
-            return self._heal()
-        return int(self._heal)
+        self.amount = amount
+        self.duration = duration
 
     def execute(self) -> 'BaseResult':
-        from engine.game_state import game_state
+        """Apply the power to the target creature"""
+        from utils.registry import get_registered
+        
+        if not self.target:
+            return NoneResult()
 
-        target = self.target or game_state.player
-        if target:
-            target.heal(self.heal)
-            return SingleActionResult(target.hp)
+        # If power is a string, get the registered power class
+        if isinstance(self.power, str):
+            power_class = get_registered("power", self.power)
+            if not power_class:
+                print(f"Power {self.power} not found")
+                return NoneResult()
+            power_instance = power_class(amount=self.amount, duration=self.duration)
+        else:
+            # Already a Power instance
+            power_instance = self.power
 
+        # Apply the power to the target
+        self.target.add_power(power_instance)
+        
         return NoneResult()
 
 @register("action")
-class ApplyStatusAction(Action):
-    """Apply status effect to a creature
+class TriggerRelicAction(Action):
+    """Trigger a relic's passive or active effect
 
     Required:
-        status_type (str): Type of status ("weak", "vulnerable", "frail", "strength")
-        amount (int): Amount to apply
+        relic_name (str): Name of the relic to trigger
 
     Optional:
-        target (Creature): Target creature (defaults to player)
+        None
     """
-    def __init__(self, status_type: str, amount: int, target: Optional[Creature] = None):
-        self.status_type = status_type
-        self.amount = amount
-        self.target = target
+    def __init__(self, relic_name: str):
+        self.relic_name = relic_name
 
     def execute(self) -> 'BaseResult':
+        """Trigger a relic's effect"""
         from engine.game_state import game_state
 
-        target = self.target or game_state.player
-        if target:
-            game_state.combat_state.apply_status(target, self.status_type, self.amount)
+        if not game_state.player:
             return NoneResult()
+
+        # Find relic
+        from utils.registry import get_registered
+        relic = get_registered("relic", self.relic_name)
+        if not relic:
+            return NoneResult()
+
+        # Trigger the relic's effect
+        # Relics implement their own trigger logic
+        if hasattr(relic, "on_trigger"):
+            relic.on_trigger()
+        elif hasattr(relic, "passive"):
+            relic.passive()
 
         return NoneResult()

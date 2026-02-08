@@ -8,7 +8,7 @@ Global action queue architecture:
 """
 import random as rd
 from typing import Optional
-from utils.result_types import BaseResult, CombatStateResult
+from utils.result_types import BaseResult, GameStateResult
 from config.game_config import GameConfig
 import os
 import time
@@ -33,6 +33,9 @@ class GameState:
 
         # Run history for Neo blessings
         self.run_history = {"reached_exordium_boss": False}
+
+        # Track obtained relics (global, even if removed later)
+        self.obtained_relics: set = set()
 
         # Neo blessing effects
         self.neow_blessing_active = False
@@ -120,7 +123,7 @@ class GameState:
                     self.action_queue.add_action(result.action, to_front=True)
                 elif isinstance(result, MultipleActionsResult):
                     self.action_queue.add_actions(result.actions, to_front=True)
-                elif isinstance(result, GameStateResult) or isinstance(result, CombatStateResult):
+                elif isinstance(result, GameStateResult):
                     return result
                 # NoneResult: nothing to queue, continue loop
                 elif isinstance(result, NoneResult):

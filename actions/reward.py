@@ -28,6 +28,8 @@ class AddRelicAction(Action):
             relic = get_registered_instance("relic", self.relic)
             if relic:
                 game_state.player.relics.append(relic)
+                # Track relic as obtained (even if removed later)
+                game_state.obtained_relics.add(self.relic)
                 print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
         return NoneResult()
             
@@ -50,6 +52,8 @@ class AddRandomRelicAction(Action):
             relic = get_random_relic(rarities=self.rarities)
             if relic:
                 game_state.player.relics.append(relic)
+                # Track relic as obtained (even if removed later)
+                game_state.obtained_relics.add(relic.idstr)
                 print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
         return NoneResult()
             

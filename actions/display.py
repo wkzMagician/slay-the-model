@@ -66,9 +66,8 @@ class SelectAction(Action):
         if len(self.options) == 0:
             return MultipleActionsResult([])
 
-        # 2) 若为人类玩家，追加"返回菜单"选项
-        # menu_action 内部可选择 return，将当前 SelectAction 插回队首
-        # todo
+        # todo: 2) 若为人类玩家，追加"返回菜单"选项
+        # * menu_action 内部可选择 return，将当前 SelectAction 插回队首
         from actions.menu import add_menu_option_if_human
         effective_options = add_menu_option_if_human(
             self.options,

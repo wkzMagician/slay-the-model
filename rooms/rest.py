@@ -3,9 +3,8 @@ Rest room implementation.
 """
 from actions.card import ChooseRemoveCardAction, ChooseUpgradeCardAction
 from actions.display import SelectAction, DisplayTextAction
-from actions.health import HealAction
 from actions.reward import AddRelicAction, AddRandomRelicAction
-from actions.room import TriggerRelicAction, LeaveRoomAction
+from actions.room import LeaveRoomAction
 from utils.result_types import GameStateResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr
@@ -13,6 +12,7 @@ from rooms.base import Room, BaseResult
 from utils.option import Option
 from utils.registry import register
 from utils.types import RarityType, RoomType
+from actions.combat import HealAction, TriggerRelicAction
 
 
 def _has_relic(relic_name: str) -> bool:
@@ -81,9 +81,11 @@ class RestRoom(Room):
         super().leave()
         # Handle Ancient Tea Set - add energy next turn
         if _has_relic("AncientTeaSet"):
-            # Add 2 energy for next combat
-            # todo: Would need to track this in game state
-            pass
+            # set relic available for next combat
+            for relic in game_state.player.relics:
+                if getattr(relic, "idstr", "").lower() == "AncientTeaSet":
+                    relic.is_rest_last_room = True
+                    break
     
     def _build_rest_menu(self):
         """Build the rest site menu options"""
@@ -126,7 +128,7 @@ class RestRoom(Room):
         if _has_relic("Girya"):
             options.append(Option(
                 name=self.local("RestRoom.lift"),
-                actions=[TriggerRelicAction(relic_name="Lift")], # todo
+                actions=[TriggerRelicAction(relic_name="Lift")],
             ))
         
         if _has_relic("PeacePipe"):

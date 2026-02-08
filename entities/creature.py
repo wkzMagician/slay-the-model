@@ -91,7 +91,10 @@ class Creature(Localizable):
         self.block += amount
         for power in list(self.powers):
             if hasattr(power, "on_gain_block"):
-                power.on_gain_block(amount, player=self, source=source, card=card)
+                actions = power.on_gain_block(amount, player=self, source=source, card=card)
+                if actions and isinstance(actions, list):
+                    from engine.game_state import game_state
+                    game_state.action_queue.add_actions(actions)
 
     def add_power(self, power) -> None:
         if not power:
