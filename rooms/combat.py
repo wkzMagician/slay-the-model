@@ -11,24 +11,26 @@ from utils.result_types import GameStateResult
 from engine.combat import Combat
 from rooms.base import Room, BaseResult
 from utils.registry import register
-from utils.types import RoomType, RarityType, CardType
+from utils.types import RoomType, RarityType, CardType, CombatType
 
 @register("room")
 class CombatRoom(Room):
     """Combat room - manages the creation and execution of Combat"""
 
-    def __init__(self, enemies=None, is_elite=False, is_boss=False, **kwargs):
+    def __init__(self, enemies=None, room_type=RoomType.MONSTER, **kwargs):
         super().__init__(**kwargs)
-        self.room_type = RoomType.BOSS if is_boss else RoomType.ELITE if is_elite else RoomType.MONSTER
+        self.room_type = room_type
         self.enemies = enemies or []
-        self.is_elite = is_elite
-        self.is_boss = is_boss
         self.combat = None
     
     def init(self):
         """Initialize the combat instance"""
+        # Determine combat type based on room type
+        combat_type = CombatType.BOSS if self.room_type == RoomType.BOSS else CombatType.ELITE if self.room_type == RoomType.ELITE else CombatType.NORMAL
+        
         self.combat = Combat(
             enemies=self.enemies,
+            combat_type=combat_type
         )
     
     def enter(self) -> BaseResult:
@@ -36,11 +38,11 @@ class CombatRoom(Room):
         from engine.game_state import game_state
 
         # Display room entry message
-        if self.is_boss:
+        if self.room_type == RoomType.BOSS:
             game_state.action_queue.add_action(DisplayTextAction(
                 text_key="rooms.combat.boss_enter"
             ))
-        elif self.is_elite:
+        elif self.room_type == RoomType.ELITE:
             game_state.action_queue.add_action(DisplayTextAction(
                 text_key="rooms.combat.elite_enter"
             ))
@@ -80,7 +82,7 @@ class CombatRoom(Room):
             game_state.action_queue.add_action(AddGoldAction(amount=gold_amount))
 
         # Add card reward (non-boss)
-        if not self.is_boss:
+        if self.room_type != RoomType.BOSS:
             game_state.action_queue.add_action(AddRandomCardAction(
                 pile="hand",
                 card_type=CardType.ATTACK,
@@ -88,7 +90,7 @@ class CombatRoom(Room):
             ))
 
         # Add potion reward (elites and bosses)
-        if self.is_elite or self.is_boss:
+        if self.room_type in (RoomType.ELITE, RoomType.BOSS):
             game_state.action_queue.add_action(AddRandomPotionAction(
                 character=game_state.player.character
             ))
@@ -106,9 +108,9 @@ class CombatRoom(Room):
             Gold amount to award
         """
         # todo: 价格波动
-        if self.is_boss:
+        if self.room_type == RoomType.BOSS:
             return 150  # Base boss gold
-        elif self.is_elite:
+        elif self.room_type == RoomType.ELITE:
             return 50  # Base elite gold
         else:
             # Normal enemy gold

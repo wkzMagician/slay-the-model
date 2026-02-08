@@ -1,32 +1,32 @@
 """
 Enemies package initialization
 """
-# Common Enemies
-from .cultist import Cultist
-from .jaw_worm import JawWorm
-from .fungi_beast import FungiBeast
+from .base import Enemy
 
-# Elite Enemies
-from .fungi_beast import FungiBeast
-
-# Boss Enemies
-from .the_guardian import TheGuardian
-from .slime_boss import SlimeBoss
-from .the_hexaghost import TheHexaghost
+# Act 1 Enemies
+from .act1 import Cultist, JawWorm, FungiBeast, LouseSlaver
+from .act1 import TheGuardian, SlimeBoss, TheHexaghost
+from .act1 import SpikeSlime, SpikeSlimeM
 
 # Export all enemies
 __all__ = [
-    # Common (2)
+    # Base class
+    'Enemy',
+    
+    # Act 1 Common
     'Cultist',
     'JawWorm',
+    'LouseSlaver',
+    'SpikeSlime',
+    'SpikeSlimeM',
     
-    # Elite (1)
+    # Act 1 Elite
     'FungiBeast',
     
-    # Boss (2)
+    # Act 1 Boss
     'TheGuardian',
     'SlimeBoss',
     'TheHexaghost',
 ]
 
-__all_names__ = [enemy.__name__ for enemy in __all__]
+__all_names__ = __all__

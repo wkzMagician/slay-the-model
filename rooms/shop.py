@@ -5,8 +5,7 @@ import random
 from actions.card import AddCardAction, ChooseRemoveCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
-from actions.shop import BuyItemAction
-from actions.room import LeaveRoomAction
+from actions.misc import BuyItemAction, LeaveRoomAction, _has_relic
 from utils.result_types import GameStateResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr, t
@@ -56,28 +55,6 @@ class ShopItem:
 
         return final_price
 
-
-def _has_relic(relic_key: str, game_state=None) -> bool:
-    """Check if player has a specific relic"""
-    if not game_state:
-        return False
-    if not game_state.player:
-        return False
-
-    target = relic_key.strip().lower().replace(" ", "").replace("_", "").replace("-", "")
-
-    for relic in game_state.player.relics:
-        relic_id = getattr(relic, "idstr", None)
-        if relic_id and relic_id.strip().lower().replace(" ", "").replace("_", "").replace("-", "") == target:
-            return True
-        relic_name = getattr(relic, "name", None)
-        if relic_name and relic_name.strip().lower().replace(" ", "").replace("_", "").replace("-", "") == target:
-            return True
-
-    return False
-
-
-@register("room")
 class ShopRoom(Room):
     """Shop room where player can buy cards, relics, potions, and card removal"""
 

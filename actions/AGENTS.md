@@ -41,7 +41,6 @@ class MyAction(Action):
 | Health | `health.py` | HealAction, LoseHPAction |
 | Map navigation | `map_selection.py` | MoveToMapNodeAction, SelectMapNodeAction |
 | Shop | `shop.py` | BuyItemAction |
-| Events | `misc.py` | StartEventAction, EndEventAction |
 
 ## CONVENTIONS
 

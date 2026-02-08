@@ -10,6 +10,7 @@ from actions.combat import EndTurnAction
 from actions.display import DisplayTextAction, SelectAction
 from utils.option import Option
 from utils.result_types import BaseResult, GameStateResult, NoneResult
+from utils.types import CombatType
 from localization import LocalStr, Localizable
 
 
@@ -23,14 +24,16 @@ class Combat(Localizable):
     Uses global action queue from game_state for action management.
     """
 
-    def __init__(self, enemies: list):
+    def __init__(self, enemies: list, combat_type: CombatType = CombatType.NORMAL):
         """
         Initialize combat.
 
         Args:
             enemies: List of enemy instances
+            combat_type: Type of combat (Normal/Elite/Boss), used for relic effects
         """
         self.enemies = enemies or []
+        self.combat_type = combat_type
         
         # Combat control flags
         self.combat_ended = False

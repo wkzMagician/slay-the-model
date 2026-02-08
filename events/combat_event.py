@@ -5,6 +5,7 @@ Events use global action queue - they represent random encounters in Unknown Roo
 from events.base_event import Event
 from utils.result_types import BaseResult
 from engine.game_state import game_state
+from utils.types import CombatType
 from localization import Localizable
 
 class CombatEvent(Event):
@@ -15,10 +16,10 @@ class CombatEvent(Event):
     return to normal gameplay.
     """
     
-    def __init__(self, enemies=None, is_elite=False, **kwargs):
+    def __init__(self, enemies=None, combat_type=CombatType.NORMAL, **kwargs):
         super().__init__(**kwargs)
         self.enemies = enemies or []
-        self.is_elite = is_elite
+        self.combat_type = combat_type
     
     def trigger(self) -> 'BaseResult':
         """Trigger combat event"""
@@ -34,6 +35,7 @@ class CombatEvent(Event):
         # Create and start combat
         combat = Combat(
             enemies=self.enemies,
+            combat_type=self.combat_type
         )
 
         result = combat.start()

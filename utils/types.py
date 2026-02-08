@@ -47,3 +47,13 @@ class RoomType(str, Enum):
     TREASURE = "Treasure"
     BOSS = "Boss"
     EVENT = "Event"
+
+class CombatType(str, Enum):
+    NORMAL = "Normal"
+    ELITE = "Elite"
+    BOSS = "Boss"
+
+class EnemyType(str, Enum):
+    NORMAL = "Normal"
+    ELITE = "Elite"
+    BOSS = "Boss"

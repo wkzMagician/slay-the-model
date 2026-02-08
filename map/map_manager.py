@@ -331,8 +331,8 @@ class MapManager:
         
         elif room_type == RoomType.ELITE:
             # TODO: Get elite encounter from game state
-            # For now, returning empty enemy list with elite flag
-            return CombatRoom(enemies=[], is_elite=True)
+            # For now, returning empty enemy list
+            return CombatRoom(enemies=[], room_type=RoomType.ELITE)
         
         elif room_type == RoomType.BOSS:
             # TODO: Get boss encounter from game state

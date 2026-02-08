@@ -26,13 +26,8 @@ from utils.result_types import (
 
 # Import commonly used actions
 from actions.display import DisplayTextAction, SelectAction
-from actions.misc import (
-    StartEventAction,
-)
 from actions.card import RemoveCardAction
-from actions.shop import BuyItemAction
-from actions.treasure import OpenChestAction
-from actions.room import LeaveRoomAction
+from actions.misc import BuyItemAction, OpenChestAction, LeaveRoomAction
 from actions.combat import TriggerRelicAction
 
 __all__ = [
@@ -48,9 +43,6 @@ __all__ = [
 
     # Display actions
     'DisplayTextAction', 'SelectAction',
-
-    # Misc actions
-    'StartEventAction',
 
     # Card actions
     'RemoveCardAction',

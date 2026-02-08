@@ -1,6 +1,7 @@
-"""Core entity types used by the game."""
+"""Core entity types used by game."""
 
 from .creature import Creature
-from .enemy import Enemy
+# Enemy moved to enemies package - import from enemies package instead
+# from enemies.base import Enemy  # Removed to avoid circular import
 
-__all__ = ["Creature", "Enemy"]
+__all__ = ["Creature"]

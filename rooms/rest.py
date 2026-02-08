@@ -4,7 +4,7 @@ Rest room implementation.
 from actions.card import ChooseRemoveCardAction, ChooseUpgradeCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddRandomRelicAction
-from actions.room import LeaveRoomAction
+from actions.misc import LeaveRoomAction, _has_relic
 from utils.result_types import GameStateResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr
@@ -13,25 +13,6 @@ from utils.option import Option
 from utils.registry import register
 from utils.types import RarityType, RoomType
 from actions.combat import HealAction, TriggerRelicAction
-
-
-def _has_relic(relic_name: str) -> bool:
-    """Check if player has a specific relic"""
-    if not game_state.player:
-        return False
-    
-    target = relic_name.strip().lower().replace(" ", "").replace("_", "").replace("-", "")
-    
-    for relic in game_state.player.relics:
-        relic_id = getattr(relic, "idstr", None)
-        if relic_id and relic_id.strip().lower().replace(" ", "").replace("_", "").replace("-", "") == target:
-            return True
-        relic_name_attr = getattr(relic, "name", None)
-        if relic_name_attr and relic_name_attr.strip().lower().replace(" ", "").replace("_", "").replace("-", "") == target:
-            return True
-    
-    return False
-
 
 @register("room")
 class RestRoom(Room):

@@ -1,9 +1,12 @@
 from actions.base import Action
-from typing import Optional, Callable, Any, List
+from typing import Optional, Callable, Any, List, TYPE_CHECKING
 from utils.result_types import BaseResult, BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import t
 from utils.registry import register
 from entities.creature import Creature
+
+if TYPE_CHECKING:
+    from enemies.base import Enemy
 
 @register("action")
 class ModifyMaxHpAction(Action):
@@ -23,6 +26,52 @@ class ModifyMaxHpAction(Action):
         if game_state.player:
             game_state.player.max_hp += self.amount
             print(t("ui.max_hp_changed", default=f"Max HP changed by {self.amount}!", amount=self.amount))
+        return NoneResult()
+
+
+@register("action")
+class RemoveEnemyAction(Action):
+    """Remove an enemy from combat
+
+    Required:
+        enemy (Enemy): Enemy to remove
+
+    Optional:
+        None
+    """
+    def __init__(self, enemy: 'Enemy'):
+        self.enemy = enemy
+
+    def execute(self) -> 'BaseResult':
+        """Remove enemy from combat state"""
+        from engine.game_state import game_state
+        
+        if game_state.combat_state:
+            game_state.combat_state.remove_enemy(self.enemy)
+        
+        return NoneResult()
+
+
+@register("action")
+class AddEnemyAction(Action):
+    """Add an enemy to combat
+
+    Required:
+        enemy (Enemy): Enemy to add
+
+    Optional:
+        None
+    """
+    def __init__(self, enemy: 'Enemy'):
+        self.enemy = enemy
+
+    def execute(self) -> 'BaseResult':
+        """Add enemy to combat state"""
+        from engine.game_state import game_state
+        
+        if game_state.combat_state:
+            game_state.combat_state.add_enemy(self.enemy)
+        
         return NoneResult()
 
 @register("action")

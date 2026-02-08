@@ -3,7 +3,7 @@ Treasure room implementation.
 """
 import random
 from actions.display import SelectAction, DisplayTextAction
-from actions.treasure import OpenChestAction
+from actions.misc import OpenChestAction
 from utils.result_types import GameStateResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr
