@@ -158,7 +158,7 @@ def test_ai_mode_simulation():
     print("="*60)
     
     # Initialize game state with AI mode
-    config = GameConfig(mode="ai", language="en", seed=12345, debug=True, debug=False)
+    config = GameConfig(mode="ai", language="en", seed=12345, debug=True)
     game_state.config = config
     
     # Initialize map

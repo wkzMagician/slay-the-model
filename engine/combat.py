@@ -178,7 +178,7 @@ class Combat(Localizable):
         # For each alive enemy, execute actions
         for enemy in self.enemies:
             if not enemy.is_dead():
-                game_state.action_queue.add_actions(enemy.act()) # todo: Enemy类
+                game_state.action_queue.add_actions(enemy.execute_intentions())
 
         return game_state.execute_all_actions()
     
@@ -191,12 +191,25 @@ class Combat(Localizable):
         from engine.game_state import game_state
         # Reset and setup combat state
         game_state.combat_state.reset_combat_info()
-
+        
         # Reset combat flags
         self.combat_ended = False
         self.player_turn_ended = False
-
-        # todo: Trigger combat start effects (relics)
+        
+        # Trigger combat start effects (relics)
+        for relic in game_state.player.relics:
+            game_state.action_queue.add_actions(relic.on_combat_start(
+                player=game_state.player,
+                entities=self.enemies
+            ))
+        
+        # Trigger combat start effects for enemies
+        for enemy in self.enemies:
+            enemy.on_combat_start(floor=game_state.current_floor)
+        
+        # Reset combat flags
+        self.combat_ended = False
+        self.player_turn_ended = False
 
     def _start_player_turn(self):
         """Start player turn - draw cards, reset energy, trigger start-of-turn effects"""

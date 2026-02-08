@@ -1,9 +1,14 @@
+from typing import TYPE_CHECKING, List
+
 from entities import Creature
 from player.card_manager import CardManager
 from player.orb_manager import OrbManager
 from player.status_manager import StatusManager
 from entities.collection import Collection
 from utils.types import StatusType
+
+if TYPE_CHECKING:
+    from actions.base import Action
 
 
 class Player(Creature):
@@ -36,17 +41,10 @@ class Player(Creature):
         self.max_energy = self.__class__.base_energy
         self._energy = self.__class__.base_energy
 
-        self.set_on_death(self._handle_death)
-
-    def _handle_death(self, _creature=None):
-        try:
-            from engine.game_state import game_state
-            if hasattr(game_state, "handle_creature_death"):
-                game_state.handle_creature_death(self)
-            elif getattr(game_state, "combat_state", None):
-                game_state.game_phase = "game_over"
-        except Exception:
-            pass
+    def on_death(self) -> List['Action']:
+        """Handle player death by setting game over phase."""
+        from actions import GameOverAction
+        return [GameOverAction()]
 
     @property
     def gold(self) -> int:

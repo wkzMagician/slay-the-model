@@ -6,7 +6,6 @@ from events.base_event import Event
 from actions.card import AddCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.reward import AddRandomRelicAction, AddRelicAction, AddGoldAction
-from actions.health import HealAction
 from events.event_pool import register_event
 from localization import LocalStr
 from utils.option import Option

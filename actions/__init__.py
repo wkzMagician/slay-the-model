@@ -29,6 +29,7 @@ from actions.display import DisplayTextAction, SelectAction
 from actions.card import RemoveCardAction
 from actions.misc import BuyItemAction, OpenChestAction, LeaveRoomAction
 from actions.combat import TriggerRelicAction
+from actions.game_over import GameOverAction
 
 __all__ = [
     # Base classes
@@ -55,4 +56,7 @@ __all__ = [
 
     # Room actions
     'TriggerRelicAction', 'LeaveRoomAction',
+
+    # Game state actions
+    'GameOverAction',
 ]

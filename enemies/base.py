@@ -111,8 +111,8 @@ class Enemy(Creature):
         """
         pass
     
-    def on_turn_start(self) -> None:
-        """Called at the start of enemy's turn.
+    def on_player_turn_start(self) -> None:
+        """Called at the start of player's turn.
         
         Determines the next intention to use.
         """
@@ -127,8 +127,8 @@ class Enemy(Creature):
         
         Args:
             damage: Amount of damage being taken
-            source: Source of the damage
-            card: Card that caused the damage
+            source: Source of damage
+            card: Card that caused damage
             damage_type: Type of damage
             
         Returns:
@@ -137,7 +137,12 @@ class Enemy(Creature):
         # Override in subclasses for special behaviors
         return damage
     
-    def on_death(self) -> None:
-        """Called when enemy dies."""
-        super().on_death()
-        # Override in subclasses for special death behaviors
+    def on_death(self) -> List['Action']:
+        """Called when enemy dies.
+        
+        Subclasses can override this to return actions to execute after death.
+        
+        Returns:
+            List of actions to queue after death
+        """
+        return super().on_death()

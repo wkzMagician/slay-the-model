@@ -7,6 +7,7 @@ from localization import t
 from utils.types import RoomType
 from .map_node import MapNode
 from .map_data import MapData
+from .encounter_pool import EncounterPool
 
 # Avoid circular import - use TYPE_CHECKING for type hints
 if TYPE_CHECKING:
@@ -48,6 +49,9 @@ class MapManager:
         self.rng = random.Random(seed)
         self.map_data = MapData(act_id)
         self.deadly_events = deadly_events
+        
+        # Initialize encounter pool system
+        self.encounter_pool = EncounterPool(seed)
         
         # Track visits to each ? room type for "bad luck protection"
         # Each increment represents a visit that didn't result in that type
@@ -325,18 +329,26 @@ class MapManager:
         from rooms.treasure import TreasureRoom
         
         if room_type == RoomType.MONSTER:
-            # TODO: Get monster encounter from game state
-            # For now, returning empty enemy list - requires encounter pool system
-            return CombatRoom(enemies=[])
+            # Get monster encounter from encounter pool
+            enemies = self.encounter_pool.get_normal_encounter(
+                floor=self.map_data.current_floor,
+                count=1
+            )
+            return CombatRoom(enemies=enemies)
         
         elif room_type == RoomType.ELITE:
-            # TODO: Get elite encounter from game state
-            # For now, returning empty enemy list
-            return CombatRoom(enemies=[], room_type=RoomType.ELITE)
+            # Get elite encounter from encounter pool
+            enemies = self.encounter_pool.get_elite_encounter(
+                floor=self.map_data.current_floor
+            )
+            return CombatRoom(enemies=enemies, room_type=RoomType.ELITE)
         
         elif room_type == RoomType.BOSS:
-            # TODO: Get boss encounter from game state
-            return TreasureRoom(is_boss=True)
+            # Get boss encounter from encounter pool
+            enemies = self.encounter_pool.get_boss_encounter(
+                floor=self.map_data.current_floor
+            )
+            return CombatRoom(enemies=enemies, room_type=RoomType.BOSS)
         
         elif room_type == RoomType.REST:
             return RestRoom()

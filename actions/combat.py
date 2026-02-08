@@ -24,7 +24,15 @@ class ModifyMaxHpAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
+            old_max = game_state.player.max_hp
             game_state.player.max_hp += self.amount
+            new_max = game_state.player.max_hp
+            
+            # Trigger on_max_hp_changed hook
+            actions = game_state.player.on_max_hp_changed(old_max, new_max)
+            if actions:
+                game_state.action_queue.add_actions(actions)
+            
             print(t("ui.max_hp_changed", default=f"Max HP changed by {self.amount}!", amount=self.amount))
         return NoneResult()
 
@@ -90,6 +98,23 @@ class HealAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
+            # Trigger on_heal hook
+            actions = game_state.player.on_heal(self.amount)
+            if actions:
+                game_state.action_queue.add_actions(actions)
+
+            # Trigger relic on_heal hooks
+            for relic in game_state.player.relics:
+                if hasattr(relic, "on_heal"):
+                    relic_actions = relic.on_heal(
+                        heal_amount=self.amount,
+                        player=game_state.player,
+                        entities=game_state.combat_state.enemies if game_state.combat_state else [],
+                    )
+                    if relic_actions:
+                        game_state.action_queue.add_actions(relic_actions)
+
+            # Actually heal (only numerical changes)
             old_hp = game_state.player.hp
             game_state.player.hp = min(game_state.player.hp + self.amount, game_state.player.max_hp)
             healed = game_state.player.hp - old_hp
@@ -112,6 +137,12 @@ class LoseHPAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
+            # Trigger on_lose_hp hook
+            actions = game_state.player.on_lose_hp(self.amount)
+            if actions:
+                game_state.action_queue.add_actions(actions)
+
+            # Actually lose HP (only numerical changes)
             old_hp = game_state.player.hp
             game_state.player.hp -= self.amount
             lost = old_hp - game_state.player.hp
@@ -124,8 +155,9 @@ class DealDamageAction(Action):
 
     This action performs the core damage operation:
     - Calculate damage value (handles callable)
-    - Reduce target HP (via Creature.take_damage which triggers power hooks)
-    - Trigger relic damage hooks
+    - Trigger creature hooks (on_damage_dealt, on_damage_taken)
+    - Trigger relic hooks (on_damage_dealt)
+    - Reduce target HP (via Creature.take_damage)
 
     Complex damage modifiers (strength, weak, vulnerable, artifact, etc.)
     should be handled by AttackAction or similar higher-level actions.
@@ -157,24 +189,47 @@ class DealDamageAction(Action):
         # Calculate damage value
         damage_amount = self.damage
 
-        # Deal damage (this triggers power hooks via Creature.take_damage)
-        damage_dealt = self.target.take_damage(
-            damage_amount,
-            source=self.source,
-            card=self.card,
-            damage_type=self.damage_type
-        )
-        
-        # Trigger relic hooks before damage (on_damage_dealt)
+        # Trigger target's on_damage_taken hook before applying damage
+        if self.target:
+            target_actions = self.target.on_damage_taken(
+                damage_amount,
+                source=self.source,
+                card=self.card,
+                damage_type=self.damage_type
+            )
+            if target_actions:
+                game_state.action_queue.add_actions(target_actions)
+
+        # Trigger source's on_damage_dealt hook before dealing damage
+        if self.source:
+            source_actions = self.source.on_damage_dealt(
+                damage_amount,
+                target=self.target,
+                card=self.card,
+                damage_type=self.damage_type
+            )
+            if source_actions:
+                game_state.action_queue.add_actions(source_actions)
+
+        # Trigger relic hooks (on_damage_dealt)
         for relic in game_state.player.relics:
             if hasattr(relic, "on_damage_dealt"):
                 actions = relic.on_damage_dealt(
                     damage=damage_amount,
                     target=self.target,
                     player=game_state.player,
+                    entities=game_state.combat_state.enemies if game_state.combat_state else [],
                 )
                 if actions:
                     game_state.action_queue.add_actions(actions)
+
+        # Actually deal damage (Creature.take_damage only handles numerical changes)
+        damage_dealt = self.target.take_damage(
+            damage_amount,
+            source=self.source,
+            card=self.card,
+            damage_type=self.damage_type
+        )
 
         return NoneResult()
 
@@ -186,14 +241,39 @@ class GainBlockAction(Action):
         block (int or callable): Block amount to gain
         target (Creature): Target to gain block (defaults to player)
     """
-    def __init__(self, block, target: Creature):
+    def __init__(self, block, target: Creature, source=None, card=None):
         self.block = block
         self.target = target
+        self.source = source
+        self.card = card
 
     def execute(self):
         from engine.game_state import game_state
 
-        self.target.gain_block(self.block, source=None, card=None)
+        # Trigger target's on_gain_block hook
+        if self.target:
+            actions = self.target.on_gain_block(
+                self.block,
+                source=self.source,
+                card=self.card
+            )
+            if actions:
+                game_state.action_queue.add_actions(actions)
+
+        # Trigger power hooks for on_gain_block
+        for power in list(self.target.powers):
+            if hasattr(power, "on_gain_block"):
+                power_actions = power.on_gain_block(
+                    self.block,
+                    player=self.target,
+                    source=self.source,
+                    card=self.card
+                )
+                if power_actions:
+                    game_state.action_queue.add_actions(power_actions)
+
+        # Actually gain block (Creature.gain_block only handles numerical changes)
+        self.target.gain_block(self.block, source=self.source, card=self.card)
 
         return NoneResult()
 
@@ -324,6 +404,7 @@ class ApplyPowerAction(Action):
     def execute(self) -> 'BaseResult':
         """Apply the power to the target creature"""
         from utils.registry import get_registered
+        from engine.game_state import game_state
         
         if not self.target:
             return NoneResult()
@@ -339,7 +420,12 @@ class ApplyPowerAction(Action):
             # Already a Power instance
             power_instance = self.power
 
-        # Apply the power to the target
+        # Trigger on_power_added hook before adding
+        actions = self.target.on_power_added(power_instance)
+        if actions:
+            game_state.action_queue.add_actions(actions)
+
+        # Apply the power to the target (only numerical changes)
         self.target.add_power(power_instance)
         
         return NoneResult()

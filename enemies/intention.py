@@ -22,7 +22,7 @@ class Intention(ABC):
     @abstractmethod
     def execute(self) -> List['Action']:
         """Execute this intention and return list of actions to perform.
-        
+
         Returns:
             List of Action objects to queue for execution
         """

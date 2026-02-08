@@ -1,0 +1,230 @@
+"""Encounter pool system for selecting enemies based on floor.
+
+This system manages:
+- Normal encounters (common enemies)
+- Elite encounters (elite enemies)
+- Boss encounters (boss enemies)
+Encounters are selected based on floor number and enemy availability.
+"""
+
+from typing import List, Dict, Tuple
+import random
+
+# Import enemy classes (avoid circular imports at module level)
+_ENEMY_CLASSES = None
+
+
+def _get_enemy_classes():
+    """Lazy import of enemy classes to avoid circular dependencies."""
+    global _ENEMY_CLASSES
+    if _ENEMY_CLASSES is None:
+        from enemies import __all__ as enemy_names
+        from enemies import __dict__ as enemy_module
+
+        _ENEMY_CLASSES = {
+            name: enemy_module[name]
+            for name in enemy_names
+            if name in enemy_module and name != 'Enemy'
+        }
+    return _ENEMY_CLASSES
+
+
+class EncounterPool:
+    """
+    Manages enemy encounter pools for different room types.
+
+    Pools are organized by:
+    - Enemy type (normal, elite, boss)
+    - Floor ranges (early, mid, late game)
+    """
+
+    # Floor ranges for encounter selection
+    FLOOR_RANGES = {
+        'early': (0, 6),      # Floors 0-5
+        'mid': (6, 12),        # Floors 6-11
+        'late': (12, 17)       # Floors 12-16
+    }
+
+    def __init__(self, seed: int):
+        """
+        Initialize encounter pool.
+
+        Args:
+            seed: Random seed for deterministic selection
+        """
+        self.seed = seed
+        self.rng = random.Random(seed)
+
+        # Build encounter pools
+        self.normal_pools = self._build_normal_pools()
+        self.elite_pools = self._build_elite_pools()
+        self.boss_pools = self._build_boss_pools()
+
+    def _build_normal_pools(self) -> Dict[str, List[str]]:
+        """Build normal encounter pools by floor range."""
+        enemy_classes = _get_enemy_classes()
+
+        # Categorize enemies by type
+        common_enemies = [
+            name for name, cls in enemy_classes.items()
+            if hasattr(cls, 'enemy_type') and cls.enemy_type.value == 'Normal'
+        ]
+
+        # Organize by floor range
+        # For now, all normal enemies available on all floors
+        # In full implementation, this would be more sophisticated
+        pools = {
+            'early': common_enemies.copy(),
+            'mid': common_enemies.copy(),
+            'late': common_enemies.copy(),
+        }
+
+        return pools
+
+    def _build_elite_pools(self) -> Dict[str, List[str]]:
+        """Build elite encounter pools by floor range."""
+        enemy_classes = _get_enemy_classes()
+
+        # Categorize elite enemies
+        elite_enemies = [
+            name for name, cls in enemy_classes.items()
+            if hasattr(cls, 'enemy_type') and cls.enemy_type.value == 'Elite'
+        ]
+
+        # Elites appear from floor 3+
+        pools = {
+            'early': [],  # No elites early game
+            'mid': elite_enemies.copy(),
+            'late': elite_enemies.copy(),
+        }
+
+        return pools
+
+    def _build_boss_pools(self) -> Dict[int, str]:
+        """
+        Build boss encounter pool by boss floor.
+
+        Returns:
+            Dict mapping floor number to boss class name
+        """
+        enemy_classes = _get_enemy_classes()
+
+        # Categorize boss enemies
+        boss_enemies = {
+            name: cls for name, cls in enemy_classes.items()
+            if hasattr(cls, 'enemy_type') and cls.enemy_type.value == 'Boss'
+        }
+
+        # Map bosses to floors
+        # Based on todo.md and AGENTS.md:
+        # - Floor 3: TheGuardian
+        # - Floor 8: SlimeBoss
+        # - Floor 16: TheHexaghost (final boss)
+        boss_pools = {}
+
+        # Find bosses by name pattern
+        for name, cls in boss_enemies.items():
+            if 'TheGuardian' in name or 'Guardian' in name:
+                boss_pools[3] = name
+            elif 'SlimeBoss' in name or 'Slime' in name and 'Boss' in name:
+                boss_pools[8] = name
+            elif 'TheHexaghost' in name or 'Hexaghost' in name:
+                boss_pools[16] = name
+
+        return boss_pools
+
+    def get_floor_range(self, floor: int) -> str:
+        """
+        Get floor range category for given floor.
+
+        Args:
+            floor: Floor number
+
+        Returns:
+            'early', 'mid', or 'late'
+        """
+        for range_name, (min_floor, max_floor) in self.FLOOR_RANGES.items():
+            if min_floor <= floor < max_floor:
+                return range_name
+        return 'late'  # Fallback
+
+    def get_normal_encounter(self, floor: int, count: int = 1) -> List:
+        """
+        Get normal enemies for given floor.
+
+        Args:
+            floor: Current floor number
+            count: Number of enemies to return (default: 1)
+
+        Returns:
+            List of instantiated enemy objects
+        """
+        enemy_classes = _get_enemy_classes()
+        range_name = self.get_floor_range(floor)
+        pool = self.normal_pools.get(range_name, [])
+
+        if not pool:
+            return []
+
+        # Randomly select enemies from pool
+        selected_names = self.rng.choices(pool, k=min(count, len(pool)))
+
+        # Instantiate enemies
+        enemies = []
+        for name in selected_names:
+            if name in enemy_classes:
+                enemy = enemy_classes[name]()
+                enemies.append(enemy)
+
+        return enemies
+
+    def get_elite_encounter(self, floor: int) -> List:
+        """
+        Get elite enemy for given floor.
+
+        Args:
+            floor: Current floor number
+
+        Returns:
+            List with single elite enemy object
+        """
+        # Elites only available from floor 3+
+        if floor < 3:
+            return []
+
+        enemy_classes = _get_enemy_classes()
+        range_name = self.get_floor_range(floor)
+        pool = self.elite_pools.get(range_name, [])
+
+        if not pool:
+            return []
+
+        # Select and instantiate elite enemy
+        selected_name = self.rng.choice(pool)
+        if selected_name in enemy_classes:
+            enemy = enemy_classes[selected_name]()
+            return [enemy]
+
+        return []
+
+    def get_boss_encounter(self, floor: int) -> List:
+        """
+        Get boss enemy for given floor.
+
+        Args:
+            floor: Boss floor number
+
+        Returns:
+            List with single boss enemy object
+        """
+        if floor not in self.boss_pools:
+            return []
+
+        enemy_classes = _get_enemy_classes()
+        boss_name = self.boss_pools[floor]
+
+        if boss_name in enemy_classes:
+            boss = enemy_classes[boss_name]()
+            return [boss]
+
+        return []
