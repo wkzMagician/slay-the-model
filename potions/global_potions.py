@@ -1,9 +1,11 @@
 # Global Potions - Available to all characters
 from typing import List
-from actions.base import Action
-from actions.card import ChooseAddRandomCardAction, DiscardCardAction, DrawCardsAction, UpgradeCardAction, RemoveCardAction, AddCardAction
-from actions.combat import DealDamageAction, GainBlockAction, GainEnergyAction, ApplyPowerAction, HealAction, ModifyMaxHpAction, PlayCardAction
+from actions.base import Action, LambdaAction
+from actions.card import ChooseAddRandomCardAction, ChooseReplaceCardAction, DiscardCardAction, DrawCardsAction
+from actions.combat import DealDamageAction, GainBlockAction, GainEnergyAction, ApplyPowerAction, HealAction
 from actions.display import SelectAction
+from actions.misc import EscapeAction
+from actions.reward import AddRandomPotionAction
 from potions.base import Potion
 from utils.types import CardType, RarityType
 from utils.option import Option
@@ -342,8 +344,7 @@ class DistilledChaos(Potion):
                 card = draw_pile.pop()
                 # Play card automatically
                 actions.extend([
-                    RemoveCardAction(card=card, src_pile="draw"),
-                    PlayCardAction(card=card, target=target)
+                    PlayCardAction(card=card, is_auto=True, ignore_energy=True)
                 ])
         
         return actions
@@ -390,35 +391,7 @@ class GamblersBrew(Potion):
         super().__init__()
 
     def on_use(self, target) -> List[Action]:
-        from actions.card import DiscardCardAction
-        from actions.card import DrawCardsAction
-        from actions.display import SelectAction
-        from engine.game_state import game_state
-        from localization import LocalStr
-        
-        # Build options for cards to discard
-        hand_cards = list(game_state.player.card_manager.get_pile("hand"))
-        options = []
-        for card in hand_cards:
-            options.append(Option(
-                name=card.display_name,
-                actions=[DiscardCardAction(card=card, source_pile="hand")]
-            ))
-        
-        # Add a "Done" option to skip discarding
-        options.append(Option(
-            name=LocalStr("ui.done"),
-            actions=[]
-        ))
-        
-        # Let player choose which cards to discard (multi-select mode)
-        # Use max_select=-1 to allow selecting all hand cards
-        return [SelectAction(
-            title=LocalStr("ui.choose_cards_to_discard"),
-            options=options,
-            max_select=-1,  # Allow selecting all options
-            must_select=False  # Allow stopping selection early
-        )]
+        return [ChooseReplaceCardAction(must_select=False)]
 
 @register("potion")
 class LiquidBronze(Potion):
@@ -497,7 +470,7 @@ class SmokeBomb(Potion):
         super().__init__()
 
     def on_use(self, target) -> List[Action]:
-        return []  # TODO: Implement proper escape action
+        return [EscapeAction()]
 
 # Rare Potions
 @register("potion")
@@ -546,13 +519,18 @@ class SneckoOil(Potion):
         from engine.game_state import game_state
         
         # Draw cards
-        actions = [DrawCardsAction(count=self.amount)]
-        
-        # Randomize costs of all cards in hand
-        # This needs to be done as a follow-up action or modify directly
-        # For now, just return draw action
-        # TODO: Implement card cost randomization
+        actions = [
+            DrawCardsAction(count=self.amount),
+            LambdaAction(func=lambda: self.randomize_costs(game_state))
+        ]
         return actions
+    
+    def randomize_costs(self, game_state):
+        import random as rd
+        # Randomize costs of cards in hand (including newly drawn cards)
+        for card in game_state.player.card_manager.get_pile("hand"):
+            # random: [0, 3]
+            card.cost = rd.randint(0, 3)
 
 @register("potion")
 class CultistPotion(Potion):
@@ -580,7 +558,12 @@ class EntropicBrew(Potion):
         super().__init__()
 
     def on_use(self, target) -> List[Action]:
-        # Find empty potion slots and fill with random potions
-        # Note: This needs potion system to be refactored to track slots
-        # For now, return empty list
-        return []  # TODO: Implement potion slot filling logic
+        from engine.game_state import game_state
+        
+        actions = []
+        
+        # reuse AddRandomPotionAction for each empty slot
+        for _ in range(game_state.player.potions.limit - len(game_state.player.potions)):
+            actions.append(AddRandomPotionAction(game_state.player.character))
+            
+        return actions

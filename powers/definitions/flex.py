@@ -34,9 +34,3 @@ class FlexPower(Power):
         # Flex adds temporary Strength that lasts this turn
         # The combat system reads self.amount directly
         return []
-    
-    def on_player_turn_end(self, player, entities) -> List:
-        """Remove Flex power at end of player's turn."""
-        # Mark for removal - the combat system will handle actual removal
-        self.duration = 0
-        return []

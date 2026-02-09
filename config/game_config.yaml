@@ -3,7 +3,7 @@ language: en
 seed: -1
 character: Ironclad
 
-# todo
+# todo: 现在程序中很多字段和配置中对不上，待检查
 debug: 
   enable: False
   log_path: logs/debug.log

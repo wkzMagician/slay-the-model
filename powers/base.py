@@ -73,35 +73,19 @@ class Power(Localizable):
             return self.duration <= 0
         return False
     
-    def on_player_turn_start(self, player, entities) -> List[Action]:
-        """Called at start of player's turn.
+    def on_turn_start(self) -> List[Action]:
+        """Called at start of turn.
         
         Returns:
             List of actions to execute at turn start
         """
         return []
     
-    def on_player_turn_end(self, player, entities) -> List[Action]:
-        """Called at end of player's turn.
+    def on_turn_end(self) -> List[Action]:
+        """Called at end of turn.
         
         Returns:
             List of actions to execute at turn end
-        """
-        return []
-    
-    def on_enemy_turn_start(self, enemy, player, entities) -> List[Action]:
-        """Called at start of enemy's turn.
-        
-        Returns:
-            List of actions to execute at enemy turn start
-        """
-        return []
-    
-    def on_enemy_turn_end(self, enemy, player, entities) -> List[Action]:
-        """Called at end of enemy's turn.
-        
-        Returns:
-            List of actions to execute at enemy turn end
         """
         return []
     

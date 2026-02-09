@@ -120,6 +120,9 @@ class Card(Localizable):
     @property
     def cost(self) -> int:
         """获取消耗能量"""
+        if self._cost == COST_X:
+            from engine.game_state import game_state
+            return game_state.player.energy
         if self.temp_cost is not None:
             return self.temp_cost
         return self._cost
@@ -259,6 +262,11 @@ class Card(Localizable):
         from utils.dynamic_values import resolve_card_value
         
         cost = resolve_card_value(self, 'cost')
+        cost_str = str(cost)
+        if self._cost == COST_X:
+            cost_str = "X"
+        elif self._cost == COST_UNPLAYABLE:
+            cost_str = "#"
         
         # 获取战斗描述（如果有的话）
         if self.has_local("combat_description"):
@@ -267,7 +275,7 @@ class Card(Localizable):
             desc = self.description
         
         # 使用ConcatLocalStr拼接各个部分
-        return self.local("name") + f" (Cost: {cost}, Type: {self.card_type}, Rarity: {self.rarity.value})\n" + desc
+        return self.local("name") + f" (Cost: {cost_str}, Type: {self.card_type}, Rarity: {self.rarity.value})\n" + desc
     
 
     def _resolve_target(self):
@@ -368,12 +376,12 @@ class Card(Localizable):
 
     def can_play(self, ignore_energy=False) -> tuple[bool, Optional[str]]:
         """Check if this card can be played."""
-        from utils.dynamic_values import resolve_card_value
         from engine.game_state import game_state
         
-        cost = resolve_card_value(self, 'cost')
+        cost = self.cost
         
         if cost == COST_UNPLAYABLE:
+            # feture: 状态、诅咒牌在有特定遗物的情况下可以打出
             return False, "Unplayable card."
 
         if not ignore_energy and game_state.player:

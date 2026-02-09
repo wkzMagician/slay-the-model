@@ -31,6 +31,9 @@ from actions.misc import BuyItemAction, OpenChestAction, LeaveRoomAction
 from actions.combat import TriggerRelicAction
 from actions.game_over import GameOverAction
 
+# Note: Orb actions are imported on-demand to avoid circular imports
+# Import them directly: from actions.orb import OrbPassiveAction, etc.
+
 __all__ = [
     # Base classes
     'Action', 'ActionQueue',

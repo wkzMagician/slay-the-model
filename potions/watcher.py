@@ -1,9 +1,13 @@
 # Watcher Potions - Character-specific potions for Watcher
 from typing import List
-from actions.base import Action
+from actions.base import Action, LambdaAction
 from actions.card import AddCardAction
+from actions.display import SelectAction
+from localization import LocalStr
+from player.player import Player
 from potions.base import Potion
-from utils.types import RarityType
+from utils.option import Option
+from utils.types import RarityType, StatusType
 from utils.random import get_random_card
 from utils.registry import get_registered_instance, register
 
@@ -45,9 +49,19 @@ class StancePotion(Potion):
 
     def on_use(self, target) -> List[Action]:
         # Let player choose between Calm and Wrath
-        # Note: This needs stance system implementation
-        # TODO: Implement stance selection
-        return []
+        if not isinstance(target, Player):
+            return []
+        options = [
+            Option(
+                name=LocalStr("stance.calm"),
+                actions=[LambdaAction(func=lambda: target.status_manager.change_to_status(StatusType.CALM))]
+            ),
+            Option(
+                name=LocalStr("stance.wrath"),
+                actions=[LambdaAction(func=lambda: target.status_manager.change_to_status(StatusType.WRATH))]
+            )
+        ]
+        return [SelectAction(options=options, prompt=LocalStr("stance.choose_stance"))]
 
 # Rare Potions
 @register("potion")
@@ -62,6 +76,6 @@ class Ambrosia(Potion):
 
     def on_use(self, target) -> List[Action]:
         # Enter Divinity stance
-        # Note: This needs stance system implementation
-        # TODO: Implement Divinity stance entry
+        assert isinstance(target, Player), "Ambrosia can only be used by the player"
+        target.status_manager.change_to_status(StatusType.DIVINITY)
         return []

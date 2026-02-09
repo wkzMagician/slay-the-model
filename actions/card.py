@@ -161,6 +161,7 @@ class DiscardCardAction(Action):
             return MultipleActionsResult(card_actions + power_actions)
         return NoneResult()
     
+@register("action")
 class UpgradeCardAction(Action):
     """Upgrade a specific card.
     
@@ -201,7 +202,6 @@ class ChooseRemoveCardAction(Action):
         pile = self.pile
         amount = self.amount
 
-        # build SelectAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
@@ -224,7 +224,6 @@ class ChooseRemoveCardAction(Action):
             max_select = amount,
             must_select = True
         )
-        # Return SelectAction to be added to caller's action_queue
         return SingleActionResult(select_action)
 
 @register("action")         
@@ -249,7 +248,6 @@ class ChooseTransformCardAction(Action):
         pile = self.pile
         amount = self.amount
         
-        # build SelectAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
@@ -272,7 +270,6 @@ class ChooseTransformCardAction(Action):
             max_select = amount,
             must_select = True
         )
-        # Return SelectAction to be added to caller's action_queue
         return SingleActionResult(select_action)
       
 @register("action")     
@@ -297,7 +294,6 @@ class ChooseUpgradeCardAction(Action):
         pile = self.pile
         amount = self.amount
         
-        # build SelectAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
@@ -322,7 +318,6 @@ class ChooseUpgradeCardAction(Action):
             max_select = amount,
             must_select = True
         )
-        # Return SelectAction to be added to caller's action_queue
         return SingleActionResult(select_action)
         
 @register("action")      
@@ -354,7 +349,6 @@ class ChooseAddRandomCardAction(Action):
         if not game_state.player:
             return NoneResult()
 
-        # 构造 SelectAction options
         from actions.display import SelectAction
 
         options = []
@@ -381,8 +375,9 @@ class ChooseAddRandomCardAction(Action):
         select_action = SelectAction(
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options,
+            max_select = 1,
+            must_select = False, # ? 是否全部都是，可以跳过
         )
-        # Return SelectAction to be added to caller's action_queue
         return SingleActionResult(select_action)   
         
 @register("action")   
@@ -442,3 +437,63 @@ class DrawCardsAction(Action):
             return NoneResult()
 
         return NoneResult()
+    
+@register("action")
+class ReplaceCardAction(Action):
+    """Discard the card and draw one
+    
+    Required:
+        card (Card): the card to replcae
+        
+    Optional:
+        None
+    """
+    def __init__(self, card: Card):
+        self.card = card
+        
+    def execute(self) -> 'BaseResult':
+        return MultipleActionsResult([
+            DiscardCardAction(self.card),
+            DrawCardsAction(count=1)
+        ])
+        
+@register("action")
+class ChooseReplaceCardAction(Action):
+    """
+    Choose a card to be replaced.
+    
+    Required:
+        pile (str): Card location ('deck' or 'hand')
+        amount (int): Amount of cards to remove
+        
+    Optional:
+        None
+    """
+    
+    def __init__(self, pile: str = 'hand', amount: int = -1, must_select: bool = False):
+        self.pile = pile
+        self.amount = amount
+        self.must_select = must_select
+    
+    def execute(self) -> 'BaseResult':
+        options = []
+        from engine.game_state import game_state
+        from actions.display import SelectAction
+        hand = game_state.player.card_manager.get_pile('hand')
+        for card in hand:
+            option_name = card.display_name
+            options.append(
+                Option(
+                    name = option_name,
+                    actions = [
+                        ReplaceCardAction(card),
+                    ]
+                )
+            )
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_random_card_to_add"),
+            options = options,
+            max_select = self.amount,
+            must_select = self.must_select
+        )
+        return SingleActionResult(select_action)   

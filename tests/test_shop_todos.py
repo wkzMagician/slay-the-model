@@ -1,5 +1,5 @@
 """
-Unit tests for shop-related features: TheCourier, MawBank, Ssserpent Head, and node selection.
+Unit tests for shop-related: TheCourier, MawBank, Ssserpent Head, and node selection.
 """
 import unittest
 from unittest.mock import Mock, patch

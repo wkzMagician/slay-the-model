@@ -3,11 +3,14 @@ Dynamic value resolution system for cards and enemies.
 Handles combat value calculations with powers, stances, and other modifiers.
 """
 
-from typing import Optional, Any
-from cards.base import Card
+from typing import Optional, Any, TYPE_CHECKING
 from entities.creature import Creature
-from player.player import Player
 from utils.types import StatusType
+
+# Type hints only (avoid circular imports)
+if TYPE_CHECKING:
+    from cards.base import Card
+    from player.player import Player
 
 
 # ============ Card Value Resolution ============
@@ -54,7 +57,7 @@ def resolve_card_value(card, value_type: str) -> int:
                 return 0
 
 
-def resolve_card_damage(card: Card) -> int:
+def resolve_card_damage(card: 'Card') -> int:
     """
     Resolve damage value (only considers attacker's abilities, not defender)
     
@@ -137,7 +140,7 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
     if vulnerable_power:
         damage = int(damage * 1.5)
     # 5. Target's other powers (e.g. Slow)
-    # todo: SLowPower
+    # feature: SLowPower
     # 6. Target's stance multiplier
     if isinstance(target, Player):
         target_status = target.status_manager.status
@@ -147,7 +150,7 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
     return max(0, damage)
 
 
-def resolve_card_block(card: Card) -> int:
+def resolve_card_block(card: 'Card') -> int:
     """Resolve block value"""
     block = card.block
     from engine.game_state import game_state
@@ -157,6 +160,17 @@ def resolve_card_block(card: Card) -> int:
     if frail_power:
         block = int(block * 0.75)
     return int(block)
+
+
+# 充能球的魔法值获取
+def resolve_orb_value(value: int) -> int:
+    """Resolve orb value considering Focus power"""
+    from engine.game_state import game_state
+    player = game_state.player
+    focus_power = player.get_power('focus')
+    if focus_power:
+        value += focus_power.amount
+    return max(0, value)
 
 
 def get_magic_value(card, magic_key: str, default: Any = 0) -> Any:

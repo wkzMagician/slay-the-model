@@ -1,5 +1,7 @@
 from actions.base import Action
 from typing import Optional, Callable, Any, List, TYPE_CHECKING
+from actions.card import DiscardCardAction
+from cards.base import COST_X
 from utils.result_types import BaseResult, BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import t
 from utils.registry import register
@@ -325,66 +327,126 @@ class GainEnergyAction(Action):
             
         return NoneResult()
 
-# todo: 支持从抽牌堆打出牌
-# todo: 支持打出时无视费用
 @register("action")
 class PlayCardAction(Action):
-    """Play a card from hand
+    """Play a card
 
     Required:
         card (Card): Card to play
-        target (Creature): Target creature (optional for self-targeting cards)
+        is_auto (bool): whether auto playing the card without choosing target
+        ignore_energy (bool): whether player the card without consuming energy
 
     Optional:
         None
     """
-    def __init__(self, card, target: Optional[Creature] = None):
+    if TYPE_CHECKING:
+        from cards.base import Card
+    def __init__(self, card: 'Card', is_auto: bool = False, ignore_energy: bool = False): 
         self.card = card
-        self.target = target
+        self.is_auto = is_auto
+        self.ignore_energy = ignore_energy
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
+        player = game_state.player
+        enemies = game_state.combat_state.enemies
 
         if not self.card:
             return NoneResult()
 
         # Check if card can be played
-        can_play, reason = self.card.can_play()
+        can_play, reason = self.card.can_play(self.ignore_energy)
         if not can_play:
             print(f"Cannot play card: {reason}")
-            return NoneResult()
+            return SingleActionResult(DiscardCardAction(card=self.card))
+        
+        # determine target
+        from utils.types import CardType
+        if self.card.card_type != CardType.ATTACK:
+            target = player
+            return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
+        else:
+            if self.is_auto:
+                from utils.combat import resolve_target
+                target_type = self.card.target_type
+                assert target_type is not None
+                target = resolve_target(target_type)
+                return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
+            else:
+                from utils.option import Option
+                from localization import LocalStr
+                options = []
+                for enemy in enemies:
+                    options.append(Option(
+                        name=LocalStr("ui.select_enemy"),
+                        actions=[PlayCardBHAction(card=self.card, target=enemy, ignore_energy=self.ignore_energy)]
+                    ))
+                
+        return NoneResult()
+    
+        
+    
+@register("action")
+class PlayCardBHAction(Action):
+    """
+    Finish playing card
+    
+    Required:
+        card (Card): Card to play
+        target (Creature): card's target
+        ignore_energy (bool): whether player the card without consuming energy
 
+    Optional:
+        None
+    """    
+    
+    if TYPE_CHECKING:
+        from cards.base import Card
+        from entities.creature import Creature
+    def __init__(self, card: 'Card', target: 'Creature', ignore_energy: bool = False):
+        self.card = card
+        self.target = target
+        self.ignore_energy = ignore_energy
+        
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        player = game_state.player
+        enemies = game_state.combat_state.enemies
+        
         # Spend energy
-        cost = self.card.get_temp_value('cost')
-        from actions.combat import GainEnergyAction
-        if cost > 0:
+        cost = self.card.cost
+        if cost > 0 and not self.ignore_energy:
             game_state.player.gain_energy(-cost)
             game_state.combat_state.player_energy_spent_this_turn += cost
+        
+        actions = []
+        # 1. Trigger card's on_play
+        actions.extend(self.card.on_play())
+        
+        # 2. Trigger powers
+        for power in player.powers:
+            if hasattr(power, 'on_play_card'):
+                actions.extend(power.on_play_card())
+        for power in enemies.powers:
+            if hasattr(power, 'on_play_card'):
+                actions.extend(power.on_play_card())
+        
+        # 3. Trigger relics
+        for relic in player.relics:
+            if hasattr(relic, 'on_play_card'):
+                actions.extend(relic.on_play_card())
 
         # Update turn tracking
         game_state.combat_state.turn_cards_played += 1
         game_state.combat_state.player_actions_this_turn += 1
 
-        # Trigger on_play_card powers
-        if hasattr(game_state.player, 'powers'):
-            for power in list(game_state.player.powers):
-                if hasattr(power, "on_play_card"):
-                    result = power.on_play_card(self.card)
-                    if result and isinstance(result, list):
-                        return MultipleActionsResult(result)
-
-        # Get card actions
-        actions = self.card.on_play(self.target)
-
         # Remove card from hand
         from actions.card import ExhaustCardAction
-        if self.card.get_temp_value('exhaust'):
-            actions.insert(0, ExhaustCardAction(card=self.card, source_pile="hand"))
+        if self.card.get_value('exhaust'):
+            actions.append(ExhaustCardAction(card=self.card))
         else:
             # Move to discard pile
-            from actions.card import RemoveCardAction, AddCardAction
-            actions.insert(0, RemoveCardAction(card=self.card, src_pile="hand"))
-            actions.append(AddCardAction(card=self.card, dest_pile="discard"))
+            actions.append(DiscardCardAction(card=self.card))
 
         return MultipleActionsResult(actions)
 

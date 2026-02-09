@@ -98,7 +98,7 @@ class RestRoom(Room):
                 actions=[ChooseUpgradeCardAction(pile="deck")]
             ))
         
-        # todo: Recall option (Ruby Key) - disabled for now
+        # feature: Recall option (Ruby Key) - disabled for now
         # if _can_recall():
         #     options.append(Option(
         #         name=self.local("RestRoom.recall"),

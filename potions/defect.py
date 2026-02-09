@@ -1,7 +1,9 @@
 # Defect Potions - Character-specific potions for Defect
 from typing import List
-from actions.base import Action
+from actions.base import Action, LambdaAction
 from actions.combat import ApplyPowerAction
+from orbs.dark import DarkOrb
+from player.player import Player
 from potions.base import Potion
 from utils.types import RarityType
 from utils.registry import register
@@ -36,24 +38,22 @@ class EssenceOfDarkness(Potion):
     def on_use(self, target) -> List[Action]:
         from engine.game_state import game_state
         # Channel Dark orbs for each orb slot
-        # Note: This needs to use channel_orb action
-        # TODO: Implement proper channel orb action
-        return []
+        return [LambdaAction(func=lambda: [game_state.player.orb_manager.add_orb(orb=DarkOrb()) \
+            for _ in range(game_state.player.orb_manager.max_orb_slots)])]
 
 # Uncommon Potions
 @register("potion")
 class PotionOfCapacity(Potion):
-    """Gain 2 Orb slots (4 with Sacred Bark) - Defect only"""
+    """Gain 3 Orb slots (6 with Sacred Bark) - Defect only"""
     rarity = RarityType.UNCOMMON
     category = "Defect"
     name = "Potion of Capacity"
 
     def __init__(self):
         super().__init__()
-        self._amount = 2  # Sacred Bark doubles to 4
+        self._amount = 3  # Sacred Bark doubles to 6
 
     def on_use(self, target) -> List[Action]:
         # Gain orb slots
-        # Note: This needs orb slot modification action
-        # TODO: Implement orb slot gain action
-        return []
+        assert isinstance(target, Player), "Potion of Capacity can only be used by the player"
+        return [LambdaAction(func=lambda: setattr(target.orb_manager, "max_slots", target.orb_manager.max_orb_slots + self.amount))]

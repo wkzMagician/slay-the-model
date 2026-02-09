@@ -118,7 +118,6 @@ class Combat(Localizable):
                 ))
         
         # 3. Build SelectAction for potions (if implemented)
-        # todo: Collection 数据结构
         for potion in game_state.player.potions:
             options.append(Option(
                 name=LocalStr(potion.idstr), # todo: 详细说明
@@ -148,7 +147,14 @@ class Combat(Localizable):
         from engine.game_state import game_state
 
         # Trigger end-of-turn effects
-        self._trigger_end_of_turn_effects()
+        # relics - powers - cards in hand
+        for relic in game_state.player.relics:
+            game_state.action_queue.add_actions(relic.on_player_turn_end())
+        for power in game_state.player.powers:
+            game_state.action_queue.add_actions(power.on_turn_end()) # todo: power tick_down should be called by on_turn_end
+        hand = game_state.player.card_manager.get_pile("hand")
+        for card in hand:
+            game_state.action_queue.add_actions(card.on_end_of_turn())
 
         # Discard hand (cards in hand are shuffled into discard pile)
         from actions.card import ExhaustCardAction
@@ -159,8 +165,6 @@ class Combat(Localizable):
 
         # Reset player block
         game_state.player.block = 0
-
-        # todo: power tick_down
 
         return game_state.execute_all_actions()
 
@@ -226,30 +230,12 @@ class Combat(Localizable):
         # Increment turn counter
         game_state.combat_state.combat_turn += 1
         game_state.combat_state.current_phase = "player_action"
-
-        # Trigger start-of-turn effects
-        self._trigger_start_of_turn_effects()
-
-    def _trigger_start_of_turn_effects(self):
-        """Trigger start-of-turn effects for player and enemies"""
-        from engine.game_state import game_state
         
         # relics - powers
         for relic in game_state.player.relics:
             game_state.action_queue.add_actions(relic.on_player_turn_start())
         for power in game_state.player.powers:
-            game_state.action_queue.add_actions(power.on_player_turn_start())
-                
-
-    def _trigger_end_of_turn_effects(self):
-        """Trigger end-of-turn effects for player and enemies"""
-        from engine.game_state import game_state
-        
-        # relics - powers - cards in hand
-        for relic in game_state.player.relics:
-            game_state.action_queue.add_actions(relic.on_player_turn_end())
-        for power in game_state.player.powers:
-            game_state.action_queue.add_actions(power.on_player_turn_end())
-        hand = game_state.player.card_manager.get_pile("hand")
-        for card in hand:
-            game_state.action_queue.add_actions(card.on_end_of_turn())
+            game_state.action_queue.add_actions(power.on_turn_start())
+        # enemies
+        for enemy in game_state.combat_state.enemies:
+            enemy.on_player_turn_start()

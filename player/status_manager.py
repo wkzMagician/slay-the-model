@@ -32,4 +32,3 @@ class StatusManager:
             player = get_game_state().player
             player.energy += 3
         self._status = new_status
-        # todo: 重新更新一系列数据，比如玩家手牌的攻击力，怪物的攻击力

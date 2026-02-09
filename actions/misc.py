@@ -7,7 +7,7 @@ from actions.base import Action
 from actions.card import AddCardAction
 from actions.display import SelectAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
-from utils.result_types import BaseResult, NoneResult, SingleActionResult
+from utils.result_types import BaseResult, GameStateResult, NoneResult, SingleActionResult
 from localization import LocalStr, t
 from utils.option import Option
 from utils.random import get_random_relic
@@ -65,7 +65,23 @@ class LeaveRoomAction(Action):
             game_state.current_room.should_leave = True
 
         return NoneResult()
+    
+@register("action")
+class EscapeAction(Action):
+    """Escape from combat and return to map state
 
+    Required:
+        None
+
+    Optional:
+        None
+    """
+    def __init__(self):
+        pass
+
+    def execute(self) -> 'BaseResult':
+        """Escape from combat and return to map state"""
+        return GameStateResult(state="COMBAT_ESCAPE")
 
 # ============================================================================
 # Shop Actions
@@ -108,7 +124,7 @@ class BuyItemAction(Action):
 
         print(t("ui.shop_bought_item", default=f"Bought {self.shop_item.item.name} for {final_price} gold!"))
 
-        # todo: MawBank的逻辑
+        # feature: MawBank的逻辑
         # MawBank effect: track gold spent
         if _has_relic("MawBank", game_state):
             game_state.gold_spent_in_shop = getattr(game_state, "gold_spent_in_shop", 0) + gold_spent
