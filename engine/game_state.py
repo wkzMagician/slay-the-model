@@ -103,8 +103,6 @@ class GameState:
             BaseResult, SingleActionResult, MultipleActionsResult,
             GameStateResult, NoneResult
         )
-        from actions.base import Action
-        from actions.display import SelectAction
 
         result = None
         while not self.action_queue.is_empty():

@@ -201,34 +201,31 @@ class ChooseRemoveCardAction(Action):
         pile = self.pile
         amount = self.amount
 
-        # * build SelecAction options
-
+        # build SelectAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
-        # ? 暂时只支持单选
-        for _ in range(amount):
-            options = []
-            cards_in_pile = card_manager.get_pile(pile)
+        options = []
+        cards_in_pile = card_manager.get_pile(pile)
 
-            for card in cards_in_pile:
-                option = card.display_name
-                options.append(
-                    Option(
-                        name = option,
-                        actions = [
-                            RemoveCardAction(card=card, src_pile=pile),
-                        ]
-                    )
+        for card in cards_in_pile:
+            option = card.display_name
+            options.append(
+                Option(
+                    name = option,
+                    actions = [
+                        RemoveCardAction(card=card, src_pile=pile),
+                    ]
                 )
-            select_action = SelectAction(
-                title = LocalStr("ui.choose_cards_to_remove"),
-                options = options
             )
-            # Return SelectAction to be added to caller's action_queue
-            return SingleActionResult(select_action)
-
-        return NoneResult()
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_cards_to_remove"),
+            options = options,
+            max_select = amount,
+            must_select = True
+        )
+        # Return SelectAction to be added to caller's action_queue
+        return SingleActionResult(select_action)
 
 @register("action")         
 class ChooseTransformCardAction(Action):
@@ -251,33 +248,32 @@ class ChooseTransformCardAction(Action):
             return NoneResult()
         pile = self.pile
         amount = self.amount
-        # * build SelecAction options
+        
+        # build SelectAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
-        # ? 暂时只支持单选
-        for _ in range(amount):
-            options = []
-            cards_in_pile = card_manager.get_pile(pile)
+        options = []
+        cards_in_pile = card_manager.get_pile(pile)
 
-            for card in cards_in_pile:
-                option = card.display_name
-                options.append(
-                    Option(
-                        name = option,
-                        actions = [
-                            TransformCardAction(card=card, pile=pile),
-                        ]
-                    )
+        for card in cards_in_pile:
+            option = card.display_name
+            options.append(
+                Option(
+                    name = option,
+                    actions = [
+                        TransformCardAction(card=card, pile=pile),
+                    ]
                 )
-            select_action = SelectAction(
-                title = LocalStr("ui.choose_cards_to_transform"),
-                options = options
             )
-            # Return SelectAction to be added to caller's action_queue
-            return SingleActionResult(select_action)
-
-        return NoneResult()
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_cards_to_transform"),
+            options = options,
+            max_select = amount,
+            must_select = True
+        )
+        # Return SelectAction to be added to caller's action_queue
+        return SingleActionResult(select_action)
       
 @register("action")     
 class ChooseUpgradeCardAction(Action):
@@ -285,7 +281,7 @@ class ChooseUpgradeCardAction(Action):
     
     Required:
         pile (str): Card location ('deck' or 'hand')
-        amount (int): Amount of cards to upgrade
+        amount (int): Amount of cards to upgrade (-1 to upgrade all)
         
     Optional:
         None
@@ -299,37 +295,35 @@ class ChooseUpgradeCardAction(Action):
         if not game_state.player:
             return NoneResult()
         pile = self.pile
-        amount = self.amount if self.amount != -1 else len(game_state.player.card_manager.get_pile(pile))
-
-        # * build SelecAction options
+        amount = self.amount
+        
+        # build SelectAction options
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
-        # ? 暂时只支持单选
-        for _ in range(amount):
-            options = []
-            cards_in_pile = card_manager.get_pile(pile)
+        options = []
+        cards_in_pile = card_manager.get_pile(pile)
 
-            for card in cards_in_pile:
-                if not card.can_upgrade():
-                    continue
-                option = card.display_name
-                options.append(
-                    Option(
-                        name = option,
-                        actions = [
-                            UpgradeCardAction(card)
-                        ]
-                    )
+        for card in cards_in_pile:
+            if not card.can_upgrade():
+                continue
+            option = card.display_name
+            options.append(
+                Option(
+                    name = option,
+                    actions = [
+                        UpgradeCardAction(card)
+                    ]
                 )
-            select_action = SelectAction(
-                title = LocalStr("ui.choose_cards_to_upgrade"),
-                options = options
             )
-            # Return SelectAction to be added to caller's action_queue
-            return SingleActionResult(select_action)
-
-        return NoneResult()
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_cards_to_upgrade"),
+            options = options,
+            max_select = amount,
+            must_select = True
+        )
+        # Return SelectAction to be added to caller's action_queue
+        return SingleActionResult(select_action)
         
 @register("action")      
 class ChooseAddRandomCardAction(Action):
@@ -386,7 +380,7 @@ class ChooseAddRandomCardAction(Action):
             )
         select_action = SelectAction(
             title = LocalStr("ui.choose_random_card_to_add"),
-            options = options
+            options = options,
         )
         # Return SelectAction to be added to caller's action_queue
         return SingleActionResult(select_action)   

@@ -43,8 +43,7 @@ class Elixir(Potion):
         from actions.card import ExhaustCardAction
         from actions.display import SelectAction
         from engine.game_state import game_state
-        
-        # todo: 当且Select只能单选，必须重复调用直到玩家选择Done
+        from localization import LocalStr
         
         # Build options for each card in hand
         options = []
@@ -55,14 +54,19 @@ class Elixir(Potion):
             ))
         
         # Add a "Done" option
-        from localization import LocalStr
         options.append(Option(
             name=LocalStr("ui.done"),
             actions=[]
         ))
         
-        # Let player choose which cards to exhaust
-        return [SelectAction(title="Elixir", options=options)]
+        # Let player choose which cards to exhaust (multi-select mode)
+        # Use max_select=-1 to allow selecting all hand cards
+        return [SelectAction(
+            title="Elixir",
+            options=options,
+            max_select=-1,  # Allow selecting all options
+            must_select=False  # Allow stopping selection early
+        )]
 
 # Rare Potions
 @register("potion")

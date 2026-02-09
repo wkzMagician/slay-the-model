@@ -397,24 +397,28 @@ class GamblersBrew(Potion):
         from localization import LocalStr
         
         # Build options for cards to discard
+        hand_cards = list(game_state.player.card_manager.get_pile("hand"))
         options = []
-        for card in list(game_state.player.card_manager.get_pile("hand")):
+        for card in hand_cards:
             options.append(Option(
                 name=card.display_name,
                 actions=[DiscardCardAction(card=card, source_pile="hand")]
             ))
         
-        # Add a "Done" option
+        # Add a "Done" option to skip discarding
         options.append(Option(
             name=LocalStr("ui.done"),
             actions=[]
         ))
         
-        # Let player choose which cards to discard
-        # Then draw equal amount
-        # Note: This needs to be implemented as a multi-step action
-        # For now, return empty list
-        return []  # TODO: Implement proper 2-step process (discard selection -> draw)
+        # Let player choose which cards to discard (multi-select mode)
+        # Use max_select=-1 to allow selecting all hand cards
+        return [SelectAction(
+            title=LocalStr("ui.choose_cards_to_discard"),
+            options=options,
+            max_select=-1,  # Allow selecting all options
+            must_select=False  # Allow stopping selection early
+        )]
 
 @register("potion")
 class LiquidBronze(Potion):

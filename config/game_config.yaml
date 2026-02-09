@@ -2,5 +2,9 @@ mode: human
 language: en
 seed: -1
 character: Ironclad
-debug: True
-debug_log_path: logs/debug.log
+
+# todo
+debug: 
+  enable: False
+  log_path: logs/debug.log
+  select_type: random # random, first, last
