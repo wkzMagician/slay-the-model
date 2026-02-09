@@ -22,8 +22,6 @@ class Akabeko(Relic):
     def on_combat_start(self, player, entities) -> List[Action]:
         """Reset first attack tracker at start of combat"""
         return [LambdaAction(func=lambda: setattr(self, 'first_attack_played', False))]
-    
-    # todo: 怎么应用攻击加成
 
 @register("relic")
 class Anchor(Relic):

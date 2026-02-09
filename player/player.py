@@ -26,7 +26,7 @@ class Player(Creature):
 
         # Initialize Creature base class
         super().__init__(max_hp=self.__class__.base_max_hp)
-        
+
         # Initialize managers
         self.card_manager = CardManager(self.__class__.starting_deck)
         self.orb_manager = OrbManager(getattr(self.__class__, "orb_slots", 1))
@@ -40,6 +40,17 @@ class Player(Creature):
         # Combat-related properties
         self.max_energy = self.__class__.base_energy
         self._energy = self.__class__.base_energy
+
+        # Draw count (base, can be modified by relics/powers)
+        self.base_draw_count = 5
+
+    @property
+    def draw_count(self) -> int:
+        """Get current draw count (base + modifiers)."""
+        return self.base_draw_count
+
+        # Draw count (base, can be modified by relics/powers)
+        self.base_draw_count = 5
 
     def on_death(self) -> List['Action']:
         """Handle player death by setting game over phase."""

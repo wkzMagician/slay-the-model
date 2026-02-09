@@ -219,7 +219,7 @@ class Combat(Localizable):
         """Start player turn - draw cards, reset energy, trigger start-of-turn effects"""
         from engine.game_state import game_state
         # Draw cards
-        draw_count = 5  # todo: modified by relics/powers
+        draw_count = game_state.player.draw_count  # todo: modified by relics/powers
         if draw_count > 0:
             from actions.card import DrawCardsAction
             game_state.action_queue.add_action(DrawCardsAction(count=draw_count))
