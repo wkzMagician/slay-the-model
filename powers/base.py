@@ -81,12 +81,11 @@ class Power(Localizable):
         """
         return []
     
-    def on_turn_end(self) -> List[Action]:
-        """Called at end of turn.
+     def on_turn_end(self) -> List[Action]:
+        """Called at end of turn."""
+        # tick_down should be called by on_turn_end - decrease duration
+        self.tick()
         
-        Returns:
-            List of actions to execute at turn end
-        """
         return []
     
     def on_card_play(self, card, player, entities) -> List[Action]:

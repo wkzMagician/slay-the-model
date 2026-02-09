@@ -167,12 +167,13 @@ class Combat(Localizable):
         """
         from engine.game_state import game_state
 
-        # Trigger end-of-turn effects
+         # Trigger end-of-turn effects
         # relics - powers - cards in hand
         for relic in game_state.player.relics:
             game_state.action_queue.add_actions(relic.on_player_turn_end())
         for power in game_state.player.powers:
-            game_state.action_queue.add_actions(power.on_turn_end()) # todo: power tick_down should be called by on_turn_end
+            game_state.action_queue.add_actions(power.on_turn_end())
+        
         hand = game_state.player.card_manager.get_pile("hand")
         for card in hand:
             game_state.action_queue.add_actions(card.on_end_of_turn())
