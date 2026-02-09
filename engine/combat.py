@@ -104,7 +104,28 @@ class Combat(Localizable):
         from engine.game_state import game_state
         actions = []
 
-        # todo: 1. print combat information
+        # 1. Display combat information
+        from localization import t, LocalStr
+        from utils.types import CombatType
+
+        # Get player info
+        player = game_state.player
+        enemies = game_state.combat_state.enemies
+
+        # Build status string
+        status_parts = []
+        status_parts.append(f"{t('ui.player_hp', default='Player HP')}: {player.hp}/{player.max_hp}")
+        status_parts.append(f"{t('ui.player_block', default='Block')}: {player.block}")
+        status_parts.append(f"{t('ui.player_energy', default='Energy')}: {player.energy}/{player.max_energy}")
+
+        # Get enemy info
+        for enemy in enemies:
+            status_parts.append(f"{t('ui.enemy_hp', default='Enemy HP')}: {enemy.hp}/{enemy.max_hp}")
+            status_parts.append(f"{t('ui.enemy_block', default='Block')}: {enemy.block}")
+
+        actions.append(DisplayTextAction(text_key="combat.display"))
+
+        # 2. Build SelectAction for cards in hand
         
         # 2. Build SelectAction for cards in hand
         hand = game_state.player.card_manager.get_pile("hand")
