@@ -43,21 +43,22 @@ class MyEvent(Event):
 ```
 
 ### Event Flow Pattern
-1. Add `DisplayTextAction` for description (optional)
-2. Build `Option` list with actions to execute
-3. Add `SelectAction` to queue (title + options)
-4. Call `self.end_event()` to mark complete
-5. Return `NoneResult()` or appropriate result type
+1. Create actions list to collect all actions
+2. Add `DisplayTextAction` to actions list (optional)
+3. Build `Option` list with actions to execute
+4. Add `SelectAction` to actions list (title + options)
+5. Call `self.end_event()` to mark complete (if applicable)
+6. Return `MultipleActionsResult(actions)` or `SingleActionResult(action)`
 
 ### Action Queue Usage
-Events queue actions via `game_state.action_queue.add_action()`, then execute with `game_state.execute_all_actions()`.
+Events should NOT directly call `game_state.action_queue.add_action()`. Instead, collect all actions in a list and return them via `MultipleActionsResult(actions)`. The GameFlow will handle execution.
 
 ## ANTI-PATTERNS
 
 **NEVER do these:**
 - Return strings ("WIN", "DEATH") from trigger() → use ResultType
 - Directly modify game state without actions → use action queue
-- Call `game_state.execute_all_actions()` inside trigger() → let GameFlow handle
+- Call `game_state.action_queue.add_action()` or `execute_all_actions()` inside trigger() → return MultipleActionsResult instead
 - Import event files directly in tests → use `event_pool.get_event_by_id()`
 
 **ALWAYS do these:**

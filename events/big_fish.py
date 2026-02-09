@@ -20,11 +20,13 @@ class BigFishEvent(Event):
     
     def trigger(self) -> 'BaseResult':
         """Trigger big fish blessing event"""
-        from utils.result_types import NoneResult
+        from utils.result_types import MultipleActionsResult
+        # Collect all actions
+        actions = []
+
         # Display event description
-        from engine.game_state import game_state
         from actions.display import DisplayTextAction
-        game_state.action_queue.add_action(DisplayTextAction(
+        actions.append(DisplayTextAction(
             text_key="events.big_fish.description"
         ))
 
@@ -59,9 +61,9 @@ class BigFishEvent(Event):
             ))
 
         # Display options and wait for selection
-        game_state.action_queue.add_action(SelectAction(
+        actions.append(SelectAction(
             title=LocalStr("events.big_fish.title"),
             options=options
         ))
 
-        return NoneResult()
+        return MultipleActionsResult(actions)

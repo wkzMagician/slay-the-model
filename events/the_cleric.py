@@ -22,11 +22,13 @@ class TheClericEvent(Event):
     
     def trigger(self) -> 'BaseResult':
         """Trigger clerics encounter event"""
-        from utils.result_types import NoneResult
+        from utils.result_types import MultipleActionsResult
+        # Collect all actions
+        actions = []
+
         # Display event description
-        from engine.game_state import game_state
         from actions.display import DisplayTextAction
-        game_state.action_queue.add_action(DisplayTextAction(
+        actions.append(DisplayTextAction(
             text_key="events.the_cleric.description"
         ))
 
@@ -58,9 +60,9 @@ class TheClericEvent(Event):
         ))
 
         # Display options and wait for selection
-        game_state.action_queue.add_action(SelectAction(
+        actions.append(SelectAction(
             title=LocalStr("events.the_cleric.title"),
             options=options
         ))
 
-        return NoneResult()
+        return MultipleActionsResult(actions)

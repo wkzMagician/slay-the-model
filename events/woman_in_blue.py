@@ -22,11 +22,13 @@ class WomanInBlueEvent(Event):
     
     def trigger(self) -> 'BaseResult':
         """Trigger woman in blue encounter"""
-        from utils.result_types import NoneResult
+        from utils.result_types import MultipleActionsResult
+        # Collect all actions
+        actions = []
+
         # Display event description
-        from engine.game_state import game_state
         from actions.display import DisplayTextAction
-        game_state.action_queue.add_action(DisplayTextAction(
+        actions.append(DisplayTextAction(
             text_key="events.woman_in_blue.description"
         ))
 
@@ -58,9 +60,9 @@ class WomanInBlueEvent(Event):
         ))
 
         # Display options and wait for selection
-        game_state.action_queue.add_action(SelectAction(
+        actions.append(SelectAction(
             title=LocalStr("events.woman_in_blue.title"),
             options=options
         ))
 
-        return NoneResult()
+        return MultipleActionsResult(actions)

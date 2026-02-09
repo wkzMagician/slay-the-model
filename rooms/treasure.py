@@ -4,7 +4,7 @@ Treasure room implementation.
 import random
 from actions.display import SelectAction, DisplayTextAction
 from actions.misc import OpenChestAction
-from utils.result_types import GameStateResult, NoneResult
+from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult
 from engine.game_state import game_state
 from localization import LocalStr
 from rooms.base import Room, BaseResult
@@ -37,31 +37,32 @@ class TreasureRoom(Room):
     def enter(self) -> BaseResult:
         """Enter treasure room and handle chest opening"""
         # Display entry message
-        game_state.action_queue.add_action(DisplayTextAction(
-            text_key="rooms.treasure.enter"
-        ))
+        entry_action = DisplayTextAction(text_key="rooms.treasure.enter")
 
         # Main treasure loop
         while not self.should_leave:
             # Build treasure menu
-            self._build_treasure_menu()
+            select_action = self._build_treasure_menu()
 
-            # Execute actions
-            result = game_state.execute_all_actions()
+            if select_action:
+                # Return entry message on first iteration, then select action
+                if entry_action:
+                    actions = [entry_action, select_action]
+                    entry_action = None  # Only show entry message once
+                else:
+                    actions = [select_action]
 
-            if isinstance(result, GameStateResult):
-                return result
-
-            # Rebuild menu if not leaving and chest not opened
-            if not self.should_leave and not self.chest_opened:
-                game_state.action_queue.clear()
+                return MultipleActionsResult(actions)
+            else:
+                # No actions to return, break loop
+                break
 
         return NoneResult()
     
     def _build_treasure_menu(self):
-        """Build the treasure room menu"""
+        """Build treasure room menu and return SelectAction"""
         options = []
-        
+
         # Open chest option
         if not self.chest_opened:
             if self.is_boss:
@@ -78,9 +79,9 @@ class TreasureRoom(Room):
                 name=self.local("TreasureRoom.leave"),
                 actions=[]
             ))
-        
-        # Add selection action to global queue
-        game_state.action_queue.add_action(SelectAction(
+
+        # Return SelectAction instead of adding to queue
+        return SelectAction(
             title=self.local("TreasureRoom.boss_title") if self.is_boss else self.local("TreasureRoom.title"),
             options=options
-        ))
+        )

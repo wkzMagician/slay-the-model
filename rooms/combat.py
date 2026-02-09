@@ -1,10 +1,11 @@
 """
 Combat room implementation - manages Combat instance execution.
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
+from actions.base import Action
 from actions.display import DisplayTextAction
-from utils.result_types import NoneResult
+from utils.result_types import MultipleActionsResult, NoneResult
 from actions.reward import AddGoldAction, AddRandomPotionAction
 from actions.card import AddCardAction, AddRandomCardAction
 from utils.result_types import GameStateResult
@@ -36,20 +37,15 @@ class CombatRoom(Room):
     def enter(self) -> BaseResult:
         """Enter combat room and execute combat"""
         from engine.game_state import game_state
+        actions = []
 
         # Display room entry message
         if self.room_type == RoomType.BOSS:
-            game_state.action_queue.add_action(DisplayTextAction(
-                text_key="rooms.combat.boss_enter"
-            ))
+            actions.append(DisplayTextAction(text_key="rooms.combat.boss_enter"))
         elif self.room_type == RoomType.ELITE:
-            game_state.action_queue.add_action(DisplayTextAction(
-                text_key="rooms.combat.elite_enter"
-            ))
+            actions.append(DisplayTextAction(text_key="rooms.combat.elite_enter"))
         else:
-            game_state.action_queue.add_action(DisplayTextAction(
-                text_key="rooms.combat.enter"
-            ))
+            actions.append(DisplayTextAction(text_key="rooms.combat.enter"))
 
         # Execute combat
         assert self.combat is not None
@@ -57,13 +53,17 @@ class CombatRoom(Room):
         
         # Handle combat result
         if result.state == "COMBAT_WIN":
-            self._handle_victory()
+            victory_actions = self._handle_victory()
+            if victory_actions:
+                actions.extend(victory_actions)
         # ESCAPE：没有reward
         
         if result.state == "GAME_LOSE":
             return result
         else:
-            return game_state.execute_all_actions()
+            if actions:
+                return MultipleActionsResult(actions)
+            return NoneResult()
     
     def leave(self):
         """Leave the combat room"""
@@ -72,18 +72,19 @@ class CombatRoom(Room):
         if self.combat:
             self.combat = None
     
-    def _handle_victory(self):
+    def _handle_victory(self) -> List['Action']:
         """Handle combat victory - add rewards"""
         from engine.game_state import game_state
+        actions = []
 
         # Calculate gold reward
         gold_amount = self._calculate_gold_reward()
         if gold_amount > 0:
-            game_state.action_queue.add_action(AddGoldAction(amount=gold_amount))
+            actions.append(AddGoldAction(amount=gold_amount))
 
         # Add card reward (non-boss)
         if self.room_type != RoomType.BOSS:
-            game_state.action_queue.add_action(AddRandomCardAction(
+            actions.append(AddRandomCardAction(
                 pile="hand",
                 card_type=CardType.ATTACK,
                 rarity=RarityType.COMMON
@@ -91,14 +92,14 @@ class CombatRoom(Room):
 
         # Add potion reward (elites and bosses)
         if self.room_type in (RoomType.ELITE, RoomType.BOSS):
-            game_state.action_queue.add_action(AddRandomPotionAction(
+            actions.append(AddRandomPotionAction(
                 character=game_state.player.character
             ))
 
         # Display victory message
-        game_state.action_queue.add_action(DisplayTextAction(
-            text_key="rooms.combat.victory"
-        ))
+        actions.append(DisplayTextAction(text_key="rooms.combat.victory"))
+
+        return actions
     
     def _calculate_gold_reward(self) -> int:
         """

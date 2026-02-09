@@ -4,7 +4,6 @@ Events use global action queue - they represent random encounters in Unknown Roo
 """
 from events.base_event import Event
 from utils.result_types import BaseResult
-from engine.game_state import game_state
 from utils.types import CombatType
 from localization import Localizable
 
@@ -25,10 +24,13 @@ class CombatEvent(Event):
         """Trigger combat event"""
         from engine.combat import Combat
         from actions.display import DisplayTextAction
-        from utils.result_types import GameStateResult
+        from utils.result_types import GameStateResult, MultipleActionsResult
+
+        # Collect all actions
+        actions = []
 
         # Display event description
-        game_state.action_queue.add_action(DisplayTextAction(
+        actions.append(DisplayTextAction(
             text_key=f"events.{self.__class__.__name__}.description"
         ))
 
@@ -48,7 +50,7 @@ class CombatEvent(Event):
         if result.state == "GAME_LOSE":
             return result
         else:
-            return game_state.execute_all_actions()
+            return MultipleActionsResult(actions)
     
     def _handle_victory(self):
         """Handle combat victory - add event-specific rewards"""

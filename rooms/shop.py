@@ -6,7 +6,7 @@ from actions.card import AddCardAction, ChooseRemoveCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
 from actions.misc import BuyItemAction, LeaveRoomAction, _has_relic
-from utils.result_types import GameStateResult, NoneResult
+from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult, SingleActionResult
 from engine.game_state import game_state
 from localization import LocalStr, t
 from utils.option import Option
@@ -73,32 +73,30 @@ class ShopRoom(Room):
     def enter(self) -> BaseResult:
         """Enter shop room and handle purchasing loop"""
         # Display shop entry message
-        game_state.action_queue.add_action(DisplayTextAction(
-            text_key="rooms.shop.enter"
-        ))
+        entry_action = DisplayTextAction(text_key="rooms.shop.enter")
 
         # Main shop loop
         while not self.should_leave:
             # Build and display shop menu
-            self._build_shop_menu()
+            select_action = self._build_shop_menu()
 
-            # Execute actions
-            result = game_state.execute_all_actions()
+            if select_action:
+                # Return entry message on first iteration, then select action
+                if entry_action:
+                    actions = [entry_action, select_action]
+                    entry_action = None  # Only show entry message once
+                else:
+                    actions = [select_action]
 
-            if isinstance(result, GameStateResult):
-                return result
-
-            # Rebuild menu for next iteration (if not leaving)
-            if not self.should_leave:
-                game_state.action_queue.clear()
+                return MultipleActionsResult(actions)
+            else:
+                # No actions to return, break loop
+                break
 
         # Display leaving message
-        game_state.action_queue.add_action(DisplayTextAction(
-            text_key="rooms.shop.leave"
-        ))
-
-        # Execute final message
-        game_state.execute_all_actions()
+        if not self.should_leave:
+            # This shouldn't normally happen, but handle it
+            pass
 
         return NoneResult()
     
@@ -301,7 +299,7 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
         return items
     
     def _build_shop_menu(self):
-        """Build shop selection menu"""
+        """Build shop selection menu and return SelectAction"""
         options = []
         ascension = getattr(game_state, 'ascension_level', 0)
 
@@ -342,8 +340,8 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
             actions=[LeaveRoomAction(room=self)]
         ))
 
-        # Add to global action queue
-        game_state.action_queue.add_action(SelectAction(
+        # Return SelectAction instead of adding to queue
+        return SelectAction(
             title=self.local("ShopRoom.title"),
             options=options
-        ))
+        )

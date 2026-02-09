@@ -1,7 +1,7 @@
 """
 Neo blessing event.
 """
-from utils.result_types import BaseResult, GameStateResult, NoneResult
+from utils.result_types import BaseResult, GameStateResult, MultipleActionsResult, NoneResult
 from events.event_pool import register_event
 from actions.card import ChooseAddRandomCardAction, ChooseRemoveCardAction, ChooseTransformCardAction, ChooseUpgradeCardAction, AddRandomCardAction
 from actions.display import DisplayTextAction, SelectAction
@@ -26,16 +26,22 @@ class NeoEvent(Event):
 
     def trigger(self) -> 'BaseResult':
         """Trigger Neo blessing selection"""
+        actions = []
+
         # Display welcome message
-        game_state.action_queue.add_action(DisplayTextAction(
+        actions.append(DisplayTextAction(
             text_key="events.neo.welcome"
         ))
 
         # Check if player has reached boss before
         if game_state.run_history.get("reached_exordium_boss", False):
-            self._show_four_blessings()
+            four_blessing_actions = self._show_four_blessings()
+            if four_blessing_actions:
+                actions.extend(four_blessing_actions)
         else:
-            self._show_basic_blessings()
+            basic_blessing_actions = self._show_basic_blessings()
+            if basic_blessing_actions:
+                actions.extend(basic_blessing_actions)
 
         # Execute actions using global queue
         result = game_state.execute_all_actions()
@@ -44,7 +50,9 @@ class NeoEvent(Event):
 
         # End event after selection
         self.end_event()
-        
+
+        if actions:
+            return MultipleActionsResult(actions)
         return NoneResult()
     
     def _show_basic_blessings(self):
@@ -139,7 +147,7 @@ class NeoEvent(Event):
             ),
             Option(
                 name=LocalStr("blessing.take_damage_option"),
-                actions=[LoseHpAction(amount=damage_taken)]
+                actions=[LoseHPAction(amount=damage_taken)]
             ),
             Option(
                 name=LocalStr("blessing.obtain_curse_option"),

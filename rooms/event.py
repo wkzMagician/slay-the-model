@@ -6,7 +6,7 @@ Events can offer choices, rewards, or challenges based on game state.
 """
 from typing import List, Optional
 from rooms.base import Room
-from utils.result_types import BaseResult, NoneResult
+from utils.result_types import BaseResult, NoneResult, GameStateResult, MultipleActionsResult, SingleActionResult
 from utils.types import RoomType
 from utils.random import get_random_events
 from actions.display import DisplayTextAction
@@ -64,29 +64,43 @@ class EventRoom(Room):
     def enter(self) -> BaseResult:
         """
         Enter event room and directly trigger a random event.
-        
+
         Returns:
             Execution result from event or NoneResult
         """
         from engine.game_state import game_state
         from localization import t
+        from utils.result_types import MultipleActionsResult
         import random
-        
+
         # Display room description
-        game_state.action_queue.add_action(
-            DisplayTextAction(text=t("rooms.event.enter", default="You encounter a mysterious event..."))
-        )
-        
+        display_action = DisplayTextAction(text=t("rooms.event.enter", default="You encounter a mysterious event..."))
+
         # Check if we have available events
         if not self.available_events:
-            # No events available, just leave
-            return NoneResult()
-        
+            # No events available, just return the display action
+            return SingleActionResult(display_action)
+
         # Randomly select one event to trigger
         selected_event = random.choice(self.available_events)
-        
-        # Trigger the selected event
-        return self._trigger_event(selected_event)
+
+        # Trigger selected event
+        event_result = self._trigger_event(selected_event)
+
+        # If event returned a GameStateResult, return it directly
+        if isinstance(event_result, GameStateResult):
+            return event_result
+
+        # If event returned a SingleActionResult, combine with display action
+        if isinstance(event_result, SingleActionResult):
+            return MultipleActionsResult([display_action, event_result.action])
+
+        # If event returned a MultipleActionsResult, combine with display action
+        if isinstance(event_result, MultipleActionsResult):
+            return MultipleActionsResult([display_action] + event_result.actions)
+
+        # If event returned NoneResult, just return the display action
+        return SingleActionResult(display_action)
     
     def _get_event_count(self, floor: int) -> int:
         """
@@ -156,27 +170,25 @@ class EventRoom(Room):
     def _create_fallback_event(self):
         """
         Create a fallback event when no events are available.
-        
-        This ensures the room always has something to offer.
+
+        This ensures that room always has something to offer.
         """
         # Create a simple fallback event that just gives some gold
         from events.base_event import Event
-        
+        from utils.result_types import SingleActionResult
+
         class FallbackEvent(Event):
             def trigger(self):
                 from engine.game_state import game_state
                 from localization import t
                 from actions.display import DisplayTextAction
-                
+
                 gold_gain = 10 + (game_state.current_floor * 5)
                 game_state.player.gold += gold_gain
-                
-                game_state.action_queue.add_action(
-                    DisplayTextAction(text=t("rooms.event.fallback", 
+
+                return SingleActionResult(
+                    DisplayTextAction(text=t("rooms.event.fallback",
                                          default=f"You found {gold_gain} gold!"))
                 )
-                
-                from utils.result_types import NoneResult
-                return NoneResult()
-        
+
         self.available_events = [FallbackEvent()]

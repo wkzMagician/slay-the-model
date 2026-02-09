@@ -21,11 +21,13 @@ class ShrineEvent(Event):
     
     def trigger(self) -> 'BaseResult':
         """Trigger shrine event"""
-        from utils.result_types import NoneResult
+        from utils.result_types import MultipleActionsResult
+        # Collect all actions
+        actions = []
+
         # Display event description
-        from engine.game_state import game_state
         from actions.display import DisplayTextAction
-        game_state.action_queue.add_action(DisplayTextAction(
+        actions.append(DisplayTextAction(
             text_key="events.the_shrine.description"
         ))
 
@@ -58,7 +60,7 @@ class ShrineEvent(Event):
         ))
 
         # Display options and wait for selection
-        game_state.action_queue.add_action(SelectAction(
+        actions.append(SelectAction(
             title=LocalStr("events.the_shrine.title"),
             options=options
         ))
@@ -66,4 +68,4 @@ class ShrineEvent(Event):
         # End event after selection
         self.end_event()
 
-        return NoneResult()
+        return MultipleActionsResult(actions)

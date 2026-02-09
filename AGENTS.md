@@ -1,32 +1,35 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-02-07T12:33:51Z
-**Commit:** ea66759
+**Generated:** 2026-02-09T02:53:33Z
+**Commit:** 2a9687a
 **Branch:** main
 
 ## OVERVIEW
-Python deck-building roguelike "Slay the Spire" clone with 100+ files across 20+ game systems.
+Python deck-building roguelike (117 Python files, 13,876 lines, 20 game systems). NOT a proper package - direct execution only.
 
 ## STRUCTURE
 ```
 slay-the-model/
-├── actions/      # Game actions (card play, combat, reward, room transitions)
-├── cards/        # Card definitions by character (Ironclad only)
+├── actions/      # Game actions (10 files)
+├── ai/           # AI modules (2 files)
+├── ai_tools/      # AI utilities (2 files)
+├── cards/        # Card definitions by character (Ironclad only, 2 files)
 ├── config/       # Game configuration (YAML)
-├── enemies/       # Enemy definitions
-├── engine/        # Core engine (GameFlow, GameState, CombatState)
-├── entities/      # Base classes (Card, Enemy, Player)
-├── events/        # Random events
-├── localization/  # i18n (en.yaml, zh.yaml)
-├── map/          # Map generation & placement
-├── orbs/         # Orb mechanics
-├── player/        # Player character classes
-├── potions/       # Potions
-├── powers/        # Status effects (poison, vulnerable, etc.)
-├── relics/        # Relics (global + Ironclad)
-├── rooms/         # Room types (monster, elite, boss, rest, merchant)
-├── utils/         # Utilities (ResultTypes, localization helpers)
-└── tests/         # 113 tests (pytest + unittest hybrid)
+├── enemies/       # Enemy definitions (3 files + act1/ subdirectory)
+├── engine/        # Core engine (GameFlow, GameState, CombatState, 5 files)
+├── entities/      # Base classes (Card, Enemy, Player, 3 files)
+├── events/        # Random events (10 files)
+├── localization/  # i18n (en.yaml, zh.yaml, 1 file)
+├── logs/          # Debug log output
+├── map/          # Map generation & placement (5 files)
+├── orbs/         # Orb mechanics (1 file)
+├── player/        # Player character classes (6 files)
+├── potions/       # Potions (7 files)
+├── powers/        # Status effects (2 files)
+├── relics/        # Relics (global + character, 2 files)
+├── rooms/         # Room types (8 files)
+├── tests/         # 113 tests (pytest + unittest hybrid, 17 files)
+└── utils/         # Utilities (5 files)
 ```
 
 ## WHERE TO LOOK
@@ -47,72 +50,34 @@ slay-the-model/
 
 ## CONVENTIONS
 
-### Critical Architectural Patterns
-
-**Action Execution Flow:**
-1. All actions/events/rooms inherit from `actions.base.ActionQueue`
-2. Actions return `ResultType` from `utils.result_types.BaseResult`
-3. Game state processes actions via `game_state.execute_all_actions()`
-4. Single `game_state` singleton instance manages ALL persistent data
+**Critical Architectural Patterns:**
+- Action Execution: All actions/events/rooms inherit from `actions.base.ActionQueue`
+- Actions return `ResultType` from `utils.result_types.BaseResult`
+- Game state processes actions via `game_state.execute_all_actions()`
+- Single `game_state` singleton manages ALL persistent data
 
 **Localization System:**
-- Use `{variable}` placeholders in YAML templates
-- Load at runtime via `localization/`
-- Both English (`en.yaml`) and Chinese (`zh.yaml`) supported
+- Template-based i18n with `{variable}` placeholders
+- Runtime loading via `localization/` (en.yaml, zh.yaml)
 - Apply via `localize()` helper function
 
 **Game Loop:**
 - Floors 0-16 (MAX_FLOOR constant)
-- Each floor: map generation → enter rooms → events → rest
-- Victory: Floor 16 with no DEATH event triggered
-- Defeat: Player HP ≤ 0 (any time) or 3 DEATH events
+- Per floor: map generation → enter rooms → events → rest
+- Victory: Floor 16 with no DEATH event
+- Defeat: HP ≤ 0 OR 3 DEATH events
 
 **Return Types (from `utils/result_types.py`):**
 - `BaseResult`: Base class for all actions
-- `SingleActionResult`: Returns one ResultType + next room/event
-- `MultipleActionsResult`: Queues multiple actions for same turn
+- `SingleActionResult`: One ResultType + next room/event
+- `MultipleActionsResult`: Queue multiple actions for same turn
 - `GameStateResult`: Win/Death/end-game
-- `NoneResult`: No state change (e.g., invalid card play)
+- `NoneResult`: No state change
 
-### Development Standards
-
-**Entry Point:**
-- `__main__.py` imports `GameFlow` from `engine.game_flow`
-- Creates global `game_state` singleton on module import
-- Handles KeyboardInterrupt with localized messages
-- TeeStream logging (duplicates stdout to both console AND `logs/debug.log`)
-
-**Dependencies:**
-- **CRITICAL**: No `requirements.txt`, `pyproject.toml`, or dependency tracking
-- Direct module imports only (no formal packaging)
-- Install dependencies manually, run via `python -m slay-the-model`
-
-**Code Style (per `pyguide.md` - Google Python Style Guide):**
-- Imports: `import package` for libraries, `from package import module` for internals
-- Type annotations recommended for public APIs
-- 80-char line limit
-- Constants: `ALL_CAPS_WITH_UNDERSCORES`
-- Internal modules: `_leading_underscore`
-
-### Anti-Patterns (THIS PROJECT)
-
-**NEVER do these:**
-- Add `requirements.txt`, `pyproject.toml`, or any dependency management
-- Modify `engine.game_state` import pattern (singleton is intentional)
-- Remove debug logging from `__main__.py` (essential for game development)
-- Break `game_state` singleton (it's intentional for game design)
-
-**ALWAYS do these:**
-- Return `ResultType` from actions (not strings like "WIN"/"DEATH")
-- Load config from `config/game_config.yaml` at startup
-- Use `localize()` for all user-facing text
-- Inherit from `ActionQueue` when creating new actions
-- Import from `engine.game_state` (not create new instances)
-
-**Deprecated Patterns (avoid or replace):**
-- Legacy return strings: "WIN", "DEATH", "LOSE" → use `ResultType.VICTORY`, `ResultType.DEATH`
-- `cards/ironclad/` hardcoded character class → parameterize
-- Direct English strings in code → use localization system
+**Development Standards:**
+- **Entry Point:** `__main__.py` creates GameFlow, starts game loop, handles KeyboardInterrupt, TeeStream logging
+- **Dependencies:** NO `requirements.txt`/`pyproject.toml` - manual installation, direct execution via `python __main__.py`
+- **Code Style (Google Python Style Guide):** `import package` for libs, `from package import module` for internals, 80-char limit, `ALL_CAPS` constants, `_leading_underscore` for internal modules
 
 ## COMMANDS
 
