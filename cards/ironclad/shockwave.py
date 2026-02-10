@@ -32,7 +32,11 @@ class Shockwave(Card):
         vulnerable_amount = self.get_magic_value("vulnerable")
         weak_amount = self.get_magic_value("weak")
 
-        actions.append(ApplyPowerAction(target=target, power="vulnerable", amount=vulnerable_amount))
-        actions.append(ApplyPowerAction(target=target, power="weak", amount=weak_amount))
+        # Apply Vulnerable and Weak to ALL enemies
+        if game_state.current_combat:
+            for enemy in game_state.current_combat.enemies:
+                if enemy.hp > 0:
+                    actions.append(ApplyPowerAction(target=enemy, power="Vulnerable", amount=vulnerable_amount))
+                    actions.append(ApplyPowerAction(target=enemy, power="Weak", amount=weak_amount))
 
         return actions

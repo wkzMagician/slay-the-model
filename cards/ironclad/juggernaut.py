@@ -2,7 +2,11 @@
 Ironclad Rare Power card - Juggernaut
 """
 
+from typing import List
+from actions.base import Action
+from actions.combat import ApplyPowerAction
 from cards.base import Card
+from entities.creature import Creature
 from utils.registry import register
 from utils.types import CardType, RarityType
 
@@ -19,4 +23,13 @@ class Juggernaut(Card):
 
     upgrade_magic = {"damage_per_block": 7}
 
-    # todo: ApplyPowerAction: JuggernautPower
+    def on_play(self, target: Creature | None = None) -> List[Action]:
+        from engine.game_state import game_state
+
+        actions = super().on_play(target)
+
+        # Apply JuggernautPower
+        damage_per_block = self.get_magic_value("damage_per_block")
+        actions.append(ApplyPowerAction(power="JuggernautPower", target=game_state.player, amount=damage_per_block, duration=0))
+
+        return actions

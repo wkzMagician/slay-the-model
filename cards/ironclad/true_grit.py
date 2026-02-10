@@ -5,7 +5,7 @@ Ironclad Common Skill card - True Grit
 from typing import List
 from actions.base import Action
 from actions.combat import GainBlockAction
-from actions.card import ChooseExhaustCardAction, ExhaustCardAction
+from actions.card import ChooseExhaustCardAction, ExhaustCardAction, ExhaustRandomCardAction
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
@@ -29,10 +29,9 @@ class TrueGrit(Card):
 
         actions = super().on_play(target)
 
-        # Exhaust random card
+        # Exhaust random card (base) or choose card (upgraded)
         if self.upgrade_level == 0:
-            # todo: ExhaustRandomCardAction(pile="hand", amount=1)
-            pass
+            actions.append(ExhaustRandomCardAction(pile="hand", amount=1))
         else:
             actions.append(ChooseExhaustCardAction(pile='hand', amount=1))
 

@@ -28,10 +28,11 @@ class Havoc(Card):
 
         actions = super().on_play(target)
 
-        # Play top card of draw pile
+        # Play top card of draw pile (index 0 is the top)
         draw_pile = game_state.player.card_manager.get_pile('draw_pile')
-        card_to_play = draw_pile[0] # ? 堆顶是0还是-1
-        actions.append(PlayCardAction(card=card_to_play))
-        actions.append(ExhaustCardAction(card=card_to_play))
+        if draw_pile:
+            card_to_play = draw_pile[0]  # Top of pile is index 0
+            actions.append(PlayCardAction(card=card_to_play))
+            actions.append(ExhaustCardAction(card=card_to_play))
 
         return actions

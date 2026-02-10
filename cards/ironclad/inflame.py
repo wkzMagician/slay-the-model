@@ -28,8 +28,8 @@ class Inflame(Card):
 
         actions = super().on_play(target)
 
-        # Gain temporary Strength
-        strength_amount = self.get_magic_value("temp_strength")
+        # Gain Strength (permanent)
+        strength_amount = self.get_magic_value("strength")
         actions.extend([
             ApplyPowerAction(power="Strength", target=game_state.player, amount=strength_amount),
         ])

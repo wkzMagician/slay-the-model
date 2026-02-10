@@ -29,4 +29,4 @@ class InfernalBlade(Card):
 
         namespace = game_state.player.namespace
 
-        return super().on_play(target) + ChooseAddRandomCardAction(namespace=namespace, card_type=CardType.ATTACK, temp_cost=0)
+        return super().on_play(target) + [ChooseAddRandomCardAction(namespace=namespace, card_type=CardType.ATTACK, temp_cost=0)]

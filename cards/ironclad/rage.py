@@ -19,18 +19,18 @@ class Rage(Card):
     rarity = RarityType.UNCOMMON
 
     base_cost = 0
-    
+
     base_magic = {"block_per_attack": 3}
     upgrade_magic = {"block_per_attack": 5}
-    
+
     def on_play(self, target: Creature | None = None) -> List[Action]:
         from engine.game_state import game_state
 
         actions = super().on_play(target)
 
-        # Apply weak debuff to all enemies
-        amount = self.get_magic_value("block_per_attack")
-        actions.append(ApplyPowerAction(target=game_state.player, power="RagePower", amount=amount)) # todo： RagePower
+        # Apply RagePower
+        block_per_attack = self.get_magic_value("block_per_attack")
+        actions.append(ApplyPowerAction(target=game_state.player, power="RagePower", amount=block_per_attack))
 
         return actions
 

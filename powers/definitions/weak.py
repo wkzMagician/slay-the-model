@@ -24,16 +24,3 @@ class WeakPower(Power):
             duration: Duration in turns (default 2)
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
-    
-    def on_damage_dealt(self, damage: int, target: Any = None,
-                      source: Any = None, card: Any = None) -> List:
-        """Handle weak damage modification.
-        
-        Note: The actual damage reduction (to 75%) is handled by
-        the combat system checking for this power on the attacker.
-        This method returns empty list as the damage calculation is done
-        by the combat system directly.
-        """
-        # Weak reduces damage to 75%
-        # The actual calculation is handled in combat.py
-        return []

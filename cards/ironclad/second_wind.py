@@ -28,17 +28,16 @@ class SecondWind(Card):
     def on_play(self, target: Creature | None = None) -> List[Action]:
         from engine.game_state import game_state
         player = game_state.player
-        
+
         block = get_magic_value(self, "block_for_exhaust")
 
         actions = super().on_play(target)
 
-        # Exhaust all cards in hand
-        # todo: 获得的block也会收到脆弱的影响，不知道怎么解决
+        # Exhaust all cards in hand and gain block for each
         hand = game_state.player.card_manager.get_pile('hand')
         for card in hand:
             if card.card_type != CardType.ATTACK:
                 actions.append(ExhaustCardAction(card=card, source_pile="hand"))
-                actions.append(GainBlockAction(block=block, target=target, source=player, card=card))
+                actions.append(GainBlockAction(block=block, target=player, source=player, card=card))
 
         return actions

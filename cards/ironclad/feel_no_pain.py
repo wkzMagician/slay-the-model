@@ -2,7 +2,11 @@
 Ironclad Uncommon Power card - Feel No Pain
 """
 
+from typing import List
+from actions.base import Action
+from actions.combat import ApplyPowerAction
 from cards.base import Card
+from entities.creature import Creature
 from utils.registry import register
 from utils.types import CardType, RarityType
 
@@ -18,5 +22,14 @@ class FeelNoPain(Card):
     base_magic = {"block_per_exhaust": 3}
 
     upgrade_magic = {"block_per_exhaust": 4}
-    
-    # todo: ApplyPowerAction: DarkEmbracePower
+
+    def on_play(self, target: Creature | None = None) -> List[Action]:
+        from engine.game_state import game_state
+
+        actions = super().on_play(target)
+
+        # Apply FeelNoPainPower
+        block_per_exhaust = self.get_magic_value("block_per_exhaust")
+        actions.append(ApplyPowerAction(power="FeelNoPainPower", target=game_state.player, amount=block_per_exhaust))
+
+        return actions

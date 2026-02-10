@@ -563,4 +563,188 @@ class ChooseReplaceCardAction(Action):
             max_select = self.amount,
             must_select = self.must_select
         )
-        return SingleActionResult(select_action)   
+        return SingleActionResult(select_action)  
+
+@register("action")
+class ChooseMoveCardAction(Action):
+    """Choose a card to move from one pile to another
+
+    Required:
+        src (str): Source pile name
+        dst (str): Destination pile name
+        amount (int): Amount of cards to move
+
+    Optional:
+        None
+    """
+    def __init__(self, src: str, dst: str, amount: int = 1):
+        self.src = src
+        self.dst = dst
+        self.amount = amount
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if not game_state.player:
+            return NoneResult()
+
+        src_pile = self.src
+        dst_pile = self.dst
+        amount = self.amount
+
+        card_manager = game_state.player.card_manager
+        from actions.display import SelectAction
+
+        options = []
+        cards_in_pile = card_manager.get_pile(src_pile)
+
+        for card in cards_in_pile:
+            option = card.display_name
+            options.append(
+                Option(
+                    name = option,
+                    actions = [
+                        MoveCardAction(card=card, src_pile=src_pile, dst_pile=dst_pile),
+                    ]
+                )
+            )
+
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_cards_to_move"),
+            options = options,
+            max_select = amount,
+            must_select = True
+        )
+        return SingleActionResult(select_action)
+
+@register("action")
+class ChooseCopyCardAction(Action):
+    """Choose a card to copy and add to hand
+
+    Required:
+        pile (str): Source pile name ('hand' or 'deck')
+        copies (int): Number of copies to make
+
+    Optional:
+        None
+    """
+    def __init__(self, pile: str = 'hand', copies: int = 1):
+        self.pile = pile
+        self.copies = copies
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if not game_state.player:
+            return NoneResult()
+
+        pile = self.pile
+        copies = self.copies
+
+        card_manager = game_state.player.card_manager
+        from actions.display import SelectAction
+
+        options = []
+        cards_in_pile = card_manager.get_pile(pile)
+
+        for card in cards_in_pile:
+            option = card.display_name
+            options.append(
+                Option(
+                    name = option,
+                    actions = [
+                        CopyCardAction(card=card),
+                    ]
+                )
+            )
+
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_cards_to_copy"),
+            options = options,
+            max_select = copies,
+            must_select = True
+        )
+        return SingleActionResult(select_action)
+
+@register("action")
+class MoveCardAction(Action):
+    """Move a specific card from one pile to another
+
+    Required:
+        card (Card): Card to move
+        src_pile (str): Source pile name
+        dst_pile (str): Destination pile name
+
+    Optional:
+        None
+    """
+    def __init__(self, card, src_pile: str, dst_pile: str):
+        self.card = card
+        self.src_pile = src_pile
+        self.dst_pile = dst_pile
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if self.card and game_state.player:
+            if hasattr(game_state.player, "card_manager"):
+                game_state.player.card_manager.remove_from_pile(self.card, self.src_pile)
+                game_state.player.card_manager.add_to_pile(self.card, self.dst_pile, pos=PilePosType.TOP)
+        return NoneResult()
+
+@register("action")
+class CopyCardAction(Action):
+    """Copy a card and add to hand
+
+    Required:
+        card (Card): Card to copy
+
+    Optional:
+        None
+    """
+    def __init__(self, card):
+        self.card = card
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if self.card and game_state.player:
+            if hasattr(game_state.player, "card_manager"):
+                from utils.types import PilePosType
+                game_state.player.card_manager.add_to_pile(self.card, "hand", pos=PilePosType.TOP)
+        return NoneResult()
+
+@register("action")
+class ExhaustRandomCardAction(Action):
+    """Exhaust random cards from a pile
+
+    Required:
+        pile (str): Source pile name
+        amount (int): Number of cards to exhaust
+
+    Optional:
+        None
+    """
+    def __init__(self, pile: str = 'hand', amount: int = 1):
+        self.pile = pile
+        self.amount = amount
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        import random
+
+        if not game_state.player:
+            return NoneResult()
+
+        card_manager = game_state.player.card_manager
+        cards_in_pile = list(card_manager.get_pile(self.pile))
+
+        if not cards_in_pile:
+            return NoneResult()
+
+        amount_to_exhaust = min(self.amount, len(cards_in_pile))
+        cards_to_exhaust = random.sample(cards_in_pile, amount_to_exhaust)
+
+        actions = []
+        for card in cards_to_exhaust:
+            actions.append(ExhaustCardAction(card=card, source_pile=self.pile))
+
+        if actions:
+            return MultipleActionsResult(actions)
+        return NoneResult()   

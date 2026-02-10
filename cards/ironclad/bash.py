@@ -26,6 +26,12 @@ class Bash(Card):
     upgrade_magic = {"vulnerable": 3}
 
     def on_play(self, target: Creature | None = None) -> List[Action]:
-        return super().on_play(target) + [
-            # todo: ApplyPowerAction
-        ]
+        from actions.combat import ApplyPowerAction
+        actions = super().on_play(target)
+
+        # Apply Vulnerable to target
+        if target:
+            vulnerable_amount = self.get_magic_value("vulnerable")
+            actions.append(ApplyPowerAction(power="Vulnerable", target=target, amount=vulnerable_amount))
+
+        return actions

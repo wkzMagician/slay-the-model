@@ -116,6 +116,10 @@ class Creature(Localizable):
                 return power
         return None
 
+    def has_power(self, power_name: str) -> bool:
+        """Check if this creature has a specific power"""
+        return self.get_power(power_name) is not None
+
     def on_death(self) -> List['Action']:
         """Called when creature dies. Subclasses can override to return actions.
         
