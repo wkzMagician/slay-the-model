@@ -1,20 +1,26 @@
 from typing import Any, List, Optional, TYPE_CHECKING
-from cards.base import Card
-from relics.base import Relic
 from utils.registry import get_registered, list_registered
 from utils.types import CardType, RarityType
 import random
 
 # Type hinting only, avoid circular import
 if TYPE_CHECKING:
+    from cards.base import Card
+    from relics.base import Relic
     from potions.base import Potion
+else:
+    Card = Any  # Runtime placeholder
+    Relic = Any  # Runtime placeholder
+    Potion = Any  # Runtime placeholder
+
 
 # todo: 对于没有指定稀有度的情况，考虑根据权重选择稀有度
 def get_random_card(namespaces: Optional[List[str]] = None, 
-                    rarities: Optional[List[RarityType]] = None, 
-                    card_types: Optional[List[CardType]] = None, 
-                    target_set: Optional[List[str]] = None, 
-                    exclude_set: Optional[List[str]] = None) -> Optional[Card]:
+                     encounter_type: str = "any", 
+                     rarities: Optional[List[RarityType]] = None, 
+                     card_types: Optional[List[CardType]] = None, 
+                     target_set: Optional[List[str]] = None, 
+                     exclude_set: Optional[List[str]] = None) -> Optional[Card]:
     """
     Get a random card from the registry based on criteria.
     
@@ -55,11 +61,125 @@ def get_random_card(namespaces: Optional[List[str]] = None,
         
     if not filtered_card_idstrs:
         return None
-    
+
     selected_card_idstr = random.choice(filtered_card_idstrs)
     selected_card_cls = get_registered("card", selected_card_idstr)
     return selected_card_cls() if selected_card_cls else None
-    
+
+
+# 基础概率配置（按百分比）
+CARD_RARITY_PROBABILITIES = {
+    "normal": {RarityType.COMMON: 60, RarityType.UNCOMMON: 37, RarityType.RARE: 3},
+    "elite": {RarityType.COMMON: 50, RarityType.UNCOMMON: 40, RarityType.RARE: 10},
+    "shop": {RarityType.COMMON: 54, RarityType.UNCOMMON: 37, RarityType.RARE: 9},
+}
+
+def get_random_card_reward(namespaces: Optional[List[str]] = None,
+                         encounter_type: str = "normal",
+                         card_types: Optional[List[CardType]] = None,
+                         exclude_set: Optional[List[str]] = None,
+                         use_rolling_offset: bool = False) -> Optional[Card]:
+    """
+    Get a random card from registry with rarity weights based on encounter type.
+
+    args:
+        namespaces (Optional[List[str]]): List of namespaces to filter cards.
+        encounter_type (str): Type of encounter for rarity weights ("normal", "elite", "shop").
+        card_types (Optional[List[CardType]]): List of card types to filter cards.
+        exclude_set (Optional[List[str]]): List of card names to exclude.
+        use_rolling_offset (bool): If True, adjust rare chance based on common cards gained.
+
+    returns:
+        Optional[Card]: A random card matching criteria with weighted rarity, or None if none found.
+    """
+    # Get base probabilities for this encounter type
+    base_probs = CARD_RARITY_PROBABILITIES.get(encounter_type, CARD_RARITY_PROBABILITIES["normal"]).copy()
+
+    # Apply rolling offset if enabled
+    if use_rolling_offset:
+        from engine.game_state import game_state
+        # Each common card gained adds 1% to rare chance, capped at +47% (max 50% rare)
+        offset = min(game_state.card_chance_common_counter, 47)
+        base_probs[RarityType.RARE] += offset
+        # Decrease common chance proportionally
+        base_probs[RarityType.COMMON] -= offset
+
+    # Filter available cards
+    all_card_idstrs = list_registered("card")
+    cards_by_rarity = {
+        RarityType.COMMON: [],
+        RarityType.UNCOMMON: [],
+        RarityType.RARE: []
+    }
+
+    for card_idstr in all_card_idstrs:
+        card_cls = get_registered("card", card_idstr)
+        if not card_cls:
+            continue
+        card_instance = card_cls()
+
+        # Filter by namespace
+        if namespaces and card_instance.namespace not in namespaces:
+            continue
+
+        # Filter by card type
+        if card_types and card_instance.card_type not in card_types:
+            continue
+
+        # Filter by exclude set
+        if exclude_set and card_instance.set in exclude_set:
+            continue
+
+        # Group cards by rarity
+        if card_instance.rarity in cards_by_rarity:
+            cards_by_rarity[card_instance.rarity].append(card_idstr)
+
+    # Check if any cards available for each rarity
+    available_rarities = [
+        (rarity, cards_by_rarity[rarity])
+        for rarity in [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]
+        if cards_by_rarity[rarity]
+    ]
+
+    if not available_rarities:
+        return None
+
+    # Calculate weights based on available rarities and base probabilities
+    total_prob = sum(base_probs[rarity] for rarity, _ in available_rarities)
+    weights = [base_probs[rarity] / total_prob for rarity, _ in available_rarities]
+
+    # Randomly select rarity based on weights
+    selected_rarity, card_list = random.choices(available_rarities, weights=weights, k=1)[0]
+
+    # Randomly select a card from the chosen rarity
+    selected_card_idstr = random.choice(card_list)
+    selected_card_cls = get_registered("card", selected_card_idstr)
+    selected_card = selected_card_cls() if selected_card_cls else None
+
+    # Store selected rarity in the card instance for caller reference
+    if selected_card:
+        selected_card.selected_rarity = selected_rarity
+
+    return selected_card
+
+
+def increment_card_chance_common_counter():
+    """
+    Increment the common card counter for rolling offset.
+    Call this when a common card is taken as a reward.
+    """
+    from engine.game_state import game_state
+    game_state.card_chance_common_counter += 1
+
+
+def reset_card_chance_common_counter():
+    """
+    Reset the common card counter for rolling offset.
+    Call this when a rare card is taken as a reward.
+    """
+    from engine.game_state import game_state
+    game_state.card_chance_common_counter = 0
+
 
 def get_random_relic(characters: Optional[List[str]] = None, 
                      rarities: Optional[List[RarityType]] = None) -> Optional[Relic]:

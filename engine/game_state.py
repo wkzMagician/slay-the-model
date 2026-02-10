@@ -50,6 +50,9 @@ class GameState:
         # Gold spending tracking for MawBank relic
         self.gold_spent_in_shop = 0
 
+        # Card chance rolling offset (each common card gained increases rare chance)
+        self.card_chance_common_counter = 0
+
         # Current room and event tracking
         self.current_room: Optional[Room] = None
         self.event_stack = []
