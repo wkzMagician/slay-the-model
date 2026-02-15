@@ -188,9 +188,10 @@ class TheAbacus(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.SHOP
-        self.shuffle_count = 0
 
-    # todo: on_shuffle
+    def on_shuffle(self) -> List[Action]:
+        """Gain 6 Block when shuffling draw pile."""
+        return [GainBlockAction(amount=6)]
 
 @register("relic")
 class TwistedFunnel(Relic):

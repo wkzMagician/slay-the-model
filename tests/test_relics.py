@@ -1,10 +1,160 @@
 """Basic tests for relic implementations."""
 import pytest
-from relics.global_relics.common import Akabeko, Anchor, BagOfMarbles, BronzeScales
-from relics.global_relics.uncommon import BlueCandle, BottledFlame, BottledLightning
-from relics.global_relics.rare import DeadBranch, Ginger
-from relics.global_relics.boss import SneckoEye, BustedCrown
-from relics.character.ironclad import BurningBlood, RedSkull, BlackBlood
+from relics.base import Relic
+from powers.definitions import BufferPower
+from actions.card import UpgradeRandomCardAction
+from actions.combat import GainBlockAction, GainEnergyAction, ApplyPowerAction, RemovePowerAction
+
+class TestNewRelicFeatures:
+        
+        # Mock game state
+        game_state = GameState()
+        player = Player(max_hp=70)
+        game_state.player = player
+        
+        # Add relics
+        champion_belt = ChampionBelt()
+        game_state.player.relics = [champion_belt]
+        
+        # Mock enemy with Vulnerable
+        enemy = Player(max_hp=50)
+        enemy.powers = []
+        
+        # Apply Vulnerable to enemy
+        apply_vulnerable = ApplyPowerAction(power="Vulnerable", target=enemy, amount=1, duration=2)
+        
+        # Get relic response when Vulnerable is applied
+        actions = champion_belt.on_apply_power(
+            power=VulnerablePower(amount=1, duration=2),
+            target=enemy,
+            player=player,
+            entities=[]
+        )
+        
+        # Should return two actions: Apply Weak to player and Apply Weak to player
+        assert len(actions) == 2
+        assert any(isinstance(a, ApplyPowerAction) for a in actions)
+        
+        # Check that Weak is applied to player
+        weak_to_player = [a for a in actions if a.power == "Weak"]
+        assert len(weak_to_player) == 1
+        assert isinstance(weak_to_player[0], ApplyPowerAction)
+        assert weak_to_player[0].amount == 1
+    
+    def test_orange_pellets_removes_debuffs(self):
+        """OrangePellets should remove all debuffs when Power/Attack/Skill played in same turn"""
+        from relics.character.ironclad import OrangePellets
+        from entities.player import Player
+        from actions.combat import RemovePowerAction
+        from utils.types import CardType
+        from powers.definitions import WeakPower
+        
+        # Mock game state
+        game_state = GameState()
+        player = Player(max_hp=70)
+        game_state.player = player
+        
+        # Add relic
+        orange_pellets = OrangePellets()
+        game_state.player.relics = [orange_pellets]
+        
+        # Add debuffs to player
+        weak = WeakPower(amount=1, duration=2)
+        vulnerable = VulnerablePower(amount=1, duration=2)
+        player.powers.extend([weak, vulnerable])
+        
+        # Play a Power card (should trigger relic)
+        orange_pellets.on_card_play(None, player, [])
+        
+        # Play an Attack card (should trigger relic but not complete yet)
+        orange_pellets.on_card_play(None, player, [])
+        
+        # Play a Skill card - this should remove all debuffs
+        orange_pellets.on_card_play(None, player, [])
+        
+        # Should return 2 RemovePowerActions (Weak and Vulnerable)
+        actions = orange_pellets.on_card_play(None, player, [])
+        
+        assert len(actions) == 2
+        assert all(isinstance(a, RemovePowerAction) for a in actions)
+        
+        # Verify debuffs were removed
+        for power in player.powers:
+            assert power.__class__.__name__ not in ["WeakPower", "VulnerablePower"]
+    
+    def test_pantograph_heals_on_boss_combat_start(self):
+        """Pantograph should heal 25 HP at start of boss combat"""
+        from relics.global_relics.uncommon import Pantograph
+        from entities.player import Player
+        from actions.combat import HealAction, ApplyPowerAction
+        from utils.types import CombatType
+        from engine.game_state import GameState
+        
+        # Mock game state with boss combat
+        game_state = GameState()
+        player = Player(max_hp=70)
+        game_state.player = player
+        
+        # Add relic
+        pantograph = Pantograph()
+        game_state.player.relics = [pantograph]
+        
+        # Create mock boss combat
+        from engine.combat import CombatState
+        combat_state = CombatState()
+        combat_state.combat_type = CombatType.BOSS
+        game_state.current_combat = combat_state
+        
+        # Get combat start actions
+        actions = pantograph.on_combat_start(player, [])
+        
+        # Should return one action: Apply Regeneration for 25 HP
+        assert len(actions) == 1
+        from actions.combat import ApplyPowerAction
+        assert isinstance(actions[0], ApplyPowerAction)
+        assert actions[0].power == "Regeneration"
+        assert actions[0].amount == 25
+    
+    def test_sundial_gains_energy_on_shuffle(self):
+        """Sundial should gain 2 energy every 3 shuffles"""
+        from relics.global_relics.uncommon import Sundial
+        from entities.player import Player
+        from actions.combat import GainEnergyAction
+        from engine.game_state import GameState
+        
+        # Mock game state
+        game_state = GameState()
+        player = Player(max_hp=70, max_energy=3)
+        game_state.player = player
+        
+        # Add relic
+        sundial = Sundial()
+        game_state.player.relics = [sundial]
+        
+        # Trigger on_shuffle 3 times
+        actions = []
+        for _ in range(3):
+            actions.extend(sundial.on_shuffle())
+            assert actions  # Should be empty first 2 times
+            assert len(actions) == 0
+            assert sundial.shuffle_count == _ + 1
+        
+        # 3rd shuffle should gain 2 energy
+        actions.extend(sundial.on_shuffle())
+        
+        # Should have 1 action: GainEnergyAction(energy=2)
+        assert len(actions) == 1
+        assert isinstance(actions[0], GainEnergyAction)
+        assert actions[0].energy == 2
+        assert player.energy == 5  # 3 + 2
+    
+    def test_relic_hooks_exist(self):
+        """New relic hooks should exist in base Relic class"""
+        from relics.base import Relic
+        
+        assert hasattr(Relic, 'on_shuffle')
+        assert hasattr(Relic, 'on_use_potion')
+        assert hasattr(Relic, 'on_apply_power')
 
 
 class TestRelicImports:

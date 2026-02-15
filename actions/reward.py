@@ -1,38 +1,34 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional
+
 from actions.base import Action
 from utils.result_types import BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import LocalStr, t
-from relics.base import Relic
 from utils.option import Option
 from utils.registry import register, get_registered_instance
 from utils.random import get_random_relic, get_random_potion
 from utils.types import RarityType
+from relics.base import Relic
 
-# Type hinting only, avoid circular import
-if TYPE_CHECKING:
-    from potions.base import Potion
-
+# Reward actions
 @register("action")
 class AddRelicAction(Action):
     """Add a specific relic to player
     
     Required:
         relic (str): Relic name
-        
-    Optional:
-        None
     """
-    def __init__(self, relic: str):
+    def __init__(self, relic):
         self.relic = relic
     
-    def execute(self) -> 'BaseResult':
+    def execute(self) -> BaseResult:
+        """Execute: add relic to player"""
         from engine.game_state import game_state
         if self.relic and game_state.player:
             relic = get_registered_instance("relic", self.relic)
             if relic:
                 game_state.player.relics.append(relic)
                 # Track relic as obtained (even if removed later)
-                game_state.obtained_relics.add(self.relic)
+                game_state.obtained_relics.add(relic.idstr)
                 print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
         return NoneResult()
             

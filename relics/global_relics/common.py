@@ -344,15 +344,21 @@ class PenNib(Relic):
         super().__init__()
         self.rarity = RarityType.COMMON
         self.attacks_played = 0
+        self.double_damage_next_attack = False
     
-    def on_card_play(self, card, player, entities) -> List[Action]:
+    def on_combat_start(self, player, entities) -> List[Action]:
+        """Reset tracker at start of combat"""
+        return [LambdaAction(func=lambda: setattr(self, 'attacks_played', 0))]
+    
+    def on_card_play(self, card, player, entities):
         """Track attacks and apply double damage on 10th"""
         from utils.types import CardType
         if card.card_type == CardType.ATTACK:
             self.attacks_played += 1
-            if self.attacks_played % 10 == 9:
-                # todo: ApplyPowerAction, PenNibPower
-                pass
+            # Check if this is the 10th attack (10, 20, 30, etc.)
+            if self.attacks_played % 10 == 0:
+                # Apply PenNibPower to player for the next attack
+                return [ApplyPowerAction(power="PenNibPower", target=player, amount=1, duration=1)]
         return []
 
 @register("relic")
@@ -456,7 +462,8 @@ class WarPaint(Relic):
         self.rarity = RarityType.COMMON
     
     def on_obtain(self) -> List[Action]:
-        return [] # todo: UpgradeRandomCardAction
+        from actions.card import UpgradeRandomCardAction
+        return [UpgradeRandomCardAction(card_type="Skill", count=2)]
 
 @register("relic")
 class Whetstone(Relic):
@@ -467,4 +474,5 @@ class Whetstone(Relic):
         self.rarity = RarityType.COMMON
     
     def on_obtain(self) -> List[Action]:
-        return [] # todo: UpgradeRandomCardAction
+        from actions.card import UpgradeRandomCardAction
+        return [UpgradeRandomCardAction(card_type="Attack", count=2)]

@@ -150,13 +150,16 @@ class OrangePellets(Relic):
         self.power_count = 0
         self.attack_count = 0
         self.skill_count = 0
-
+    
     def on_combat_start(self, player, entities) -> List[Action]:
         """Reset counters at start of combat"""
         return [LambdaAction(func=lambda: self._reset_counters())]
-
+    
     def on_card_play(self, card, player, entities):
-        """Track cards played and remove all debuffs when all 3 types played"""
+        """Track cards played and remove debuffs when all 3 types played"""
+        from utils.types import CardType
+        from actions.combat import RemovePowerAction
+        
         if card.card_type == CardType.POWER:
             self.power_count += 1
         elif card.card_type == CardType.ATTACK:
@@ -164,14 +167,18 @@ class OrangePellets(Relic):
         elif card.card_type == CardType.SKILL:
             self.skill_count += 1
         
-        if self.power_count > 0 and self.attack_count > 0 and self.skill_count > 0:
-            # Remove all debuffs
-            self.power_count = 0
-            self.attack_count = 0
-            self.skill_count = 0
+        # Check if all 3 types have been played this turn
+        if (self.power_count > 0 and 
+            self.attack_count > 0 and 
+            self.skill_count > 0):
+            # Remove all debuffs from player
+            actions = []
+            for power in list(player.powers):
+                if not power.is_buff:  # is a debuff
+                    actions.append(RemovePowerAction(power=power.idstr, target=player, is_buff=False))
             
-            # todo: Implement RemovePowerAction
-            return [RemovePowerAction(target=player, is_buff=False)]
+            self._reset_counters()
+            return actions
         return []
 
     def _reset_counters(self):

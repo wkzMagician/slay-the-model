@@ -11,7 +11,7 @@ from utils.types import CardType
 
 
 @register("power")
-class FireBreathingPower(Power):
+class FireBreathing(Power):
     """Whenever you draw a status card, deal damage to all enemies."""
 
     name = "Fire Breathing"

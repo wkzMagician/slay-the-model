@@ -47,13 +47,17 @@ class BottledFlame(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
-        self.selected_card = None  # Would be set on pickup
+        self.selected_card = None  # Set on pickup (not implemented yet)
     
-    # todo: combat 中卡牌的机制没有完全实现
-    # 1. 先把deck copy一份到draw_pile
-    # 2. 第一回合，抽5张牌。
-    # 2.1 首先在draw_pile中找到selected_card，move到hand。
-    # 2.2 其次在draw_pile中找到innate的卡牌，move到hand。剩下的空缺再抽牌
+    def on_combat_start(self, player, entities):
+        """Move selected card to hand at start of combat"""
+        from actions.card import MoveCardAction
+        
+        # Simplified: just move selected card to hand if set
+        # Note: Full implementation would also: copy deck to draw_pile, draw 5 cards
+        if self.selected_card:
+            return [MoveCardAction(card=self.selected_card, src_pile="draw_pile", dst_pile="hand")]
+        return []
 
 @register("relic")
 class BottledLightning(Relic):
@@ -62,13 +66,15 @@ class BottledLightning(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
-        self.selected_card = None  # Would be set on pickup
+        self.selected_card = None
     
-    # todo: combat 中卡牌的机制没有完全实现
-    # 1. 先把deck copy一份到draw_pile
-    # 2. 第一回合，抽5张牌。
-    # 2.1 首先在draw_pile中找到selected_card，move到hand。
-    # 2.2 其次在draw_pile中找到innate的卡牌，move到hand。剩下的空缺再抽牌
+    def on_combat_start(self, player, entities):
+        """Move selected card to hand at start of combat"""
+        from actions.card import MoveCardAction
+        
+        if self.selected_card:
+            return [MoveCardAction(card=self.selected_card, src_pile="draw_pile", dst_pile="hand")]
+        return []
 
 @register("relic")
 class BottledTornado(Relic):
@@ -77,13 +83,15 @@ class BottledTornado(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
-        self.selected_card = None  # Would be set on pickup
+        self.selected_card = None
     
-    # todo: combat 中卡牌的机制没有完全实现
-    # 1. 先把deck copy一份到draw_pile
-    # 2. 第一回合，抽5张牌。
-    # 2.1 首先在draw_pile中找到selected_card，move到hand。
-    # 2.2 其次在draw_pile中找到innate的卡牌，move到hand。剩下的空缺再抽牌
+    def on_combat_start(self, player, entities):
+        """Move selected card to hand at start of combat"""
+        from actions.card import MoveCardAction
+        
+        if self.selected_card:
+            return [MoveCardAction(card=self.selected_card, src_pile="draw_pile", dst_pile="hand")]
+        return []
 
 @register("relic")
 class DarkstonePeriapt(Relic):
@@ -305,13 +313,21 @@ class OrnamentalFan(Relic):
 
 @register("relic")
 class Pantograph(Relic):
-    """At the start of Boss combats, heal 25 HP."""
+    """At start of Boss combats, heal 25 HP."""
     
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    # todo:on_combat_start, then check current_room's type
+    def on_combat_start(self, player, entities):
+        """Heal 25 HP at start of boss combat"""
+        from engine.game_state import game_state
+        from utils.types import CombatType
+        
+        if game_state.current_combat is not None:
+            if game_state.current_combat.combat_type != CombatType.NORMAL:
+                return [ApplyPowerAction(power="Regeneration", target=player, amount=25, duration=1)]
+        return []
 
 @register("relic")
 class PaperKrane(Relic):
@@ -435,9 +451,13 @@ class Sundial(Relic):
         self.rarity = RarityType.UNCOMMON
         self.shuffle_count = 0
     
-    # This would need to hook into shuffle events
-    # For now, implemented as a passive effect description
-    # todo: on_shuffle
+    def on_shuffle(self) -> List[Action]:
+        """Gain 2 energy every 3 shuffles"""
+        self.shuffle_count += 1
+        if self.shuffle_count % 3 == 0:
+            from actions.combat import GainEnergyAction
+            return [GainEnergyAction(energy=2)]
+        return []
 
 @register("relic")
 class TheCourier(Relic):

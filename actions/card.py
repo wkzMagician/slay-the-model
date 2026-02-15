@@ -1,5 +1,6 @@
 from actions.base import Action
 from typing import Optional, Union, List
+from actions.display import SelectAction
 from cards.base import Card
 from localization import LocalStr, t
 from utils.option import Option
@@ -802,5 +803,102 @@ class ShuffleAction(Action):
         # Combine and shuffle
         draw_cards = card_manager.get_pile("draw_pile")
         random.shuffle(draw_cards)
-
+        
+        # Trigger on_shuffle relics
+        relic_actions = []
+        if hasattr(game_state.player, 'relics'):
+            for relic in list(game_state.player.relics):
+                if hasattr(relic, "on_shuffle"):
+                    result = relic.on_shuffle()
+                    if result:
+                        relic_actions.extend(result if isinstance(result, list) else [result])
+        
+        # If there are any actions from relic callbacks, queue them
+        if relic_actions:
+            return MultipleActionsResult(relic_actions)
+        
         return NoneResult()
+
+@register("action")
+class UpgradeRandomCardAction(Action):
+    """Upgrade a random card from player's deck.
+    
+    Required:
+        card_type (CardType): Type of cards to choose from (Attack/Skill/Power)
+        count (int): Number of cards to upgrade
+    
+    Optional:
+        namespace (str): Card namespace (default: player's character)
+    """
+    def __init__(self, card_type: Optional[str] = None, count: int = 1, 
+                 namespace: Optional[str] = None):
+        self.card_type = card_type
+        self.count = count
+        self.namespace = namespace
+    
+    def execute(self) -> 'BaseResult':
+        """Execute: choose random cards to upgrade"""
+        from engine.game_state import game_state
+        if not game_state.player:
+            return NoneResult()
+        
+        from utils.types import CardType
+        
+        # Get deck
+        deck = game_state.player.card_manager.get_pile('deck')
+        
+        if not deck:
+            return NoneResult()
+        
+        # Filter cards by type (if specified) and that can be upgraded
+        cards_to_choose = []
+        for card in deck:
+            if not card.can_upgrade():
+                continue
+            if self.card_type is not None:
+                # Match card type
+                if self.card_type == "Attack" and card.card_type != CardType.ATTACK:
+                    continue
+                elif self.card_type == "Skill" and card.card_type != CardType.SKILL:
+                    continue
+                elif self.card_type == "Power" and card.card_type != CardType.POWER:
+                    continue
+            
+            cards_to_choose.append(card)
+        
+        # Use specified namespace or default to player's character
+        card_namespace = self.namespace if self.namespace else game_state.player.namespace
+        
+        # Filter cards by namespace if specified
+        if self.namespace is not None:
+            cards_to_choose = [c for c in cards_to_choose if c.namespace == card_namespace]
+        
+        if not cards_to_choose:
+            print(t("ui.no_upgradeable_cards", default="No upgradeable cards found"))
+            return NoneResult()
+        
+        # If requesting more than available, reduce to available
+        actual_count = min(self.count, len(cards_to_choose))
+        
+        if actual_count == 1:
+            # Auto-upgrade if only 1 requested
+            return SingleActionResult(UpgradeCardAction(card=cards_to_choose[0]))
+        else:
+            # Import for use in option actions
+            from actions.card import UpgradeCardAction as _UpgradeCardAction
+            # Let player choose from multiple cards
+            options = []
+            for card in cards_to_choose[:actual_count]:
+                options.append(Option(
+                    name=card.display_name,
+                    actions=[UpgradeCardAction(card=card)]
+                ))
+            
+            select_action = SelectAction(
+                title=LocalStr("ui.choose_card_to_upgrade"),
+                options=options,
+                max_select=actual_count,
+                must_select=False
+            )
+            
+            return SingleActionResult(select_action)

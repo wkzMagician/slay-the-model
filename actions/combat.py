@@ -571,6 +571,41 @@ class ApplyPowerAction(Action):
         return NoneResult()
 
 @register("action")
+class RemovePowerAction(Action):
+    """Remove a power from a target creature
+
+    Required:
+        power (str): Power name string to remove
+        target (Creature): Target creature to remove power from
+
+    Optional:
+        is_buff (bool): Whether to filter by buff/debuff type (True=buff, False=debuff, None=any)
+    """
+    def __init__(self, power: str, target: Creature, is_buff: Optional[bool] = None):
+        self.power = power
+        self.target = target
+        self.is_buff = is_buff
+
+    def execute(self) -> 'BaseResult':
+        """Remove the power from the target creature"""
+        from engine.game_state import game_state
+        
+        if not self.target:
+            return NoneResult()
+
+        # If is_buff is specified, check if power matches the type before removing
+        if self.is_buff is not None:
+            power_to_remove = self.target.get_power(self.power)
+            if power_to_remove and power_to_remove.is_buff != self.is_buff:
+                # Power type doesn't match, don't remove
+                return NoneResult()
+
+        # Remove the power (only numerical changes)
+        self.target.remove_power(self.power)
+        
+        return NoneResult()
+
+@register("action")
 class TriggerRelicAction(Action):
     """Trigger a relic's passive or active effect
     

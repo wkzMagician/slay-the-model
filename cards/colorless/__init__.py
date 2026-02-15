@@ -53,7 +53,7 @@ from .pain import Pain
 from .writhe import Writhe
 from .normality import Normality
 from .curse_of_the_bell import CurseOfTheBell
-from .ecronomicurse import Necronomicurse
+from .necronomicurse import Necronomicurse
 from .ascenders_bane import AscendersBane
 
 __all__ = [

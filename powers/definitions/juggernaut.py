@@ -3,6 +3,7 @@ Juggernaut power for Ironclad.
 Whenever you gain Block, deal damage to all enemies.
 """
 from typing import List, Any
+from actions.base import Action
 from powers.base import Power
 from actions.combat import DealDamageAction
 from utils.combat import resolve_target

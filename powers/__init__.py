@@ -1,7 +1,6 @@
 
 """Power system for temporary and permanent combat effects.
-Powers modify creature stats, damage, and combat flow.
-"""
+Powers modify creature stats, damage, and combat flow."""
 from powers.definitions import (
     StrengthPower,
     VulnerablePower,
@@ -17,7 +16,7 @@ from powers.definitions import (
     DemonFormPower,
     DoubleTapPower,
     EvolvePower,
-    FireBreathingPower,
+    FireBreathing,
     FlameBarrierPower,
     FeelNoPainPower,
     JuggernautPower,
@@ -26,6 +25,8 @@ from powers.definitions import (
     RupturePower,
     BattleTranceDrawPower,
     SentinelPower,
+    BufferPower,
+    PenNibPower,
 )
 
 __all__ = [
@@ -43,11 +44,15 @@ __all__ = [
     "DemonFormPower",
     "DoubleTapPower",
     "EvolvePower",
-    "FireBreathingPower",
+    "FireBreathing",
     "FlameBarrierPower",
     "FeelNoPainPower",
     "JuggernautPower",
     "MetallicizePower",
     "RagePower",
     "RupturePower",
+    "BattleTranceDrawPower",
+    "SentinelPower",
+    "BufferPower",
+    "PenNibPower",
 ]

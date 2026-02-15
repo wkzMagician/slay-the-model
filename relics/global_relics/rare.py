@@ -92,8 +92,10 @@ class FossilizedHelix(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
-        
-    # todo: ApplyPowerAction: BufferPower
+    
+    def on_combat_start(self, player, entities):
+        """Apply Buffer power at combat start"""
+        return [ApplyPowerAction(power="Buffer", target=player, amount=1, duration=0)]
 
 @register("relic")
 class Ginger(Relic):

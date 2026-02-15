@@ -145,7 +145,42 @@ class Relic(Localizable):
             List of actions to execute when healing occurs
         """
         return []
-
+    
+    def on_shuffle(self) -> List[Action]:
+        """Called when draw pile is shuffled.
+        
+        Returns:
+            List of actions to execute when shuffling occurs
+        """
+        return []
+    
+    def on_use_potion(self, potion, player, entities) -> List[Action]:
+        """Called when a potion is used.
+        
+        Args:
+            potion: The potion being used
+            player: Player instance
+            entities: All entities in combat
+            
+        Returns:
+            List of actions to execute when potion is used
+        """
+        return []
+    
+    def on_apply_power(self, power, target, player, entities) -> List[Action]:
+        """Called when a power is applied to a target.
+        
+        Args:
+            power: The power being applied
+            target: The creature receiving the power
+            player: Player instance
+            entities: All entities in combat
+            
+        Returns:
+            List of actions to execute when power is applied
+        """
+        return []
+ 
     # ==================== Active Trigger ====================
     
     def on_trigger(self, **kwargs) -> List[Action]:
