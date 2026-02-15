@@ -1,7 +1,11 @@
 """Tests for enemy intention system."""
 
 import unittest
-from enemies import JawWorm, Cultist, SpikeSlime, SpikeSlimeM
+from enemies import (
+    JawWorm, Cultist, SpikeSlime, SpikeSlimeM,
+    FungiBeast, RedLouse, GreenLouse, BlueSlaver, RedSlaver,
+    TheGuardian, SlimeBoss, TheHexaghost
+)
 
 
 class TestJawWormIntention(unittest.TestCase):
@@ -192,6 +196,285 @@ class TestSpikeSlimeMIntention(unittest.TestCase):
         # Lick should be more common (~70%)
         self.assertGreater(lick_count, 50)
         self.assertGreater(flame_tackle_count, 10)
+
+
+class TestFungiBeastIntention(unittest.TestCase):
+    """Test FungiBeast intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = FungiBeast()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("bite", self.enemy.intentions)
+        self.assertIn("grow", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn has valid intention."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertIn(intention.name, ["bite", "grow"])
+    
+    def test_no_three_bites_in_row(self):
+        """Test that Bite cannot be used 3 times in a row."""
+        self.enemy.history_intentions = ["bite", "bite"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "grow")
+    
+    def test_no_two_grows_in_row(self):
+        """Test that Grow cannot be used 2 times in a row."""
+        self.enemy.history_intentions = ["grow"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "bite")
+    
+    def test_hp_range(self):
+        """Test HP is in expected range."""
+        self.assertGreaterEqual(self.enemy.max_hp, 22)
+        self.assertLessEqual(self.enemy.max_hp, 28)
+
+
+class TestRedLouseIntention(unittest.TestCase):
+    """Test RedLouse intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = RedLouse()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("bite", self.enemy.intentions)
+        self.assertIn("grow", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn has valid intention."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertIn(intention.name, ["bite", "grow"])
+    
+    def test_no_three_same_moves(self):
+        """Test that same move cannot be used 3 times in a row."""
+        # Test bite
+        self.enemy.history_intentions = ["bite", "bite"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "grow")
+        
+        # Test grow
+        self.enemy.history_intentions = ["grow", "grow"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "bite")
+    
+    def test_curl_up_attribute(self):
+        """Test Curl Up attribute exists."""
+        self.assertTrue(hasattr(self.enemy, '_curl_up'))
+        self.assertGreaterEqual(self.enemy._curl_up, 3)
+        self.assertLessEqual(self.enemy._curl_up, 7)
+
+
+class TestGreenLouseIntention(unittest.TestCase):
+    """Test GreenLouse intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = GreenLouse()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("bite", self.enemy.intentions)
+        self.assertIn("spit_web", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn has valid intention."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertIn(intention.name, ["bite", "spit_web"])
+    
+    def test_no_three_same_moves(self):
+        """Test that same move cannot be used 3 times in a row."""
+        # Test bite
+        self.enemy.history_intentions = ["bite", "bite"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "spit_web")
+        
+        # Test spit_web
+        self.enemy.history_intentions = ["spit_web", "spit_web"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "bite")
+
+
+class TestBlueSlaverIntention(unittest.TestCase):
+    """Test BlueSlaver intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = BlueSlaver()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("stab", self.enemy.intentions)
+        self.assertIn("rake", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn has valid intention."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertIn(intention.name, ["stab", "rake"])
+    
+    def test_no_three_same_moves(self):
+        """Test that same move cannot be used 3 times in a row."""
+        self.enemy.history_intentions = ["stab", "stab"]
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "rake")
+
+
+class TestRedSlaverIntention(unittest.TestCase):
+    """Test RedSlaver intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = RedSlaver()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("stab", self.enemy.intentions)
+        self.assertIn("scrape", self.enemy.intentions)
+        self.assertIn("entangle", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn is always Stab."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "stab")
+    
+    def test_entangle_once_only(self):
+        """Test that Entangle can only be used once."""
+        # Force entangle use
+        self.enemy._entangle_used = True
+        # Run many turns
+        for _ in range(50):
+            intention = self.enemy.determine_next_intention(floor=1)
+            self.enemy.history_intentions.append(intention.name)
+        
+        # Entangle should never appear after being used
+        self.assertNotIn("entangle", self.enemy.history_intentions)
+
+
+class TestTheGuardianIntention(unittest.TestCase):
+    """Test TheGuardian (Boss) intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = TheGuardian()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("charging_up", self.enemy.intentions)
+        self.assertIn("fierce_bash", self.enemy.intentions)
+        self.assertIn("vent_steam", self.enemy.intentions)
+        self.assertIn("whirlwind", self.enemy.intentions)
+        self.assertIn("defensive_mode", self.enemy.intentions)
+        self.assertIn("roll_attack", self.enemy.intentions)
+        self.assertIn("twin_slam", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn is Charging Up."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "charging_up")
+    
+    def test_main_pattern(self):
+        """Test main attack pattern."""
+        expected = ["charging_up", "fierce_bash", "vent_steam", "whirlwind"]
+        for i, exp in enumerate(expected):
+            intention = self.enemy.determine_next_intention(floor=1)
+            self.assertEqual(intention.name, exp, f"Turn {i+1} should be {exp}")
+    
+    def test_fixed_hp(self):
+        """Test boss has fixed HP."""
+        self.assertEqual(self.enemy.max_hp, 240)
+    
+    def test_boss_flag(self):
+        """Test boss flag is set."""
+        from utils.types import EnemyType
+        self.assertEqual(self.enemy.enemy_type, EnemyType.BOSS)
+
+
+class TestSlimeBossIntention(unittest.TestCase):
+    """Test SlimeBoss intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = SlimeBoss()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("goop_spray", self.enemy.intentions)
+        self.assertIn("preparing", self.enemy.intentions)
+        self.assertIn("slam", self.enemy.intentions)
+        self.assertIn("split", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn is Goop Spray."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "goop_spray")
+    
+    def test_pattern(self):
+        """Test attack pattern."""
+        expected = ["goop_spray", "preparing", "slam"]
+        for i, exp in enumerate(expected):
+            intention = self.enemy.determine_next_intention(floor=1)
+            self.assertEqual(intention.name, exp, f"Turn {i+1} should be {exp}")
+    
+    def test_fixed_hp(self):
+        """Test boss has fixed HP."""
+        self.assertEqual(self.enemy.max_hp, 140)
+    
+    def test_boss_flag(self):
+        """Test boss flag is set."""
+        from utils.types import EnemyType
+        self.assertEqual(self.enemy.enemy_type, EnemyType.BOSS)
+
+
+class TestTheHexaghostIntention(unittest.TestCase):
+    """Test TheHexaghost (Final Boss) intention system."""
+    
+    def setUp(self):
+        """Set up test fixtures."""
+        self.enemy = TheHexaghost()
+    
+    def test_intentions_registered(self):
+        """Test that all intentions are registered."""
+        self.assertIn("activate", self.enemy.intentions)
+        self.assertIn("divider", self.enemy.intentions)
+        self.assertIn("sear", self.enemy.intentions)
+        self.assertIn("tackle", self.enemy.intentions)
+        self.assertIn("inflame", self.enemy.intentions)
+        self.assertIn("inferno", self.enemy.intentions)
+    
+    def test_first_turn(self):
+        """Test first turn is Activate."""
+        intention = self.enemy.determine_next_intention(floor=1)
+        self.assertEqual(intention.name, "activate")
+    
+    def test_second_turn(self):
+        """Test second turn is Divider."""
+        self.enemy.determine_next_intention(floor=1)  # Turn 1: Activate
+        intention = self.enemy.determine_next_intention(floor=1)  # Turn 2
+        self.assertEqual(intention.name, "divider")
+    
+    def test_main_pattern(self):
+        """Test main attack pattern after first two turns."""
+        # Skip first two turns
+        self.enemy.determine_next_intention(floor=1)
+        self.enemy.determine_next_intention(floor=1)
+        
+        expected = ["sear", "tackle", "sear", "inflame", "tackle", "sear", "inferno"]
+        for exp in expected:
+            intention = self.enemy.determine_next_intention(floor=1)
+            self.assertEqual(intention.name, exp)
+    
+    def test_fixed_hp(self):
+        """Test boss has fixed HP."""
+        self.assertEqual(self.enemy.max_hp, 250)
+    
+    def test_boss_flag(self):
+        """Test boss flag is set."""
+        from utils.types import EnemyType
+        self.assertEqual(self.enemy.enemy_type, EnemyType.BOSS)
 
 
 if __name__ == '__main__':

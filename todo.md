@@ -9,6 +9,10 @@ Hint:
 3. 子智能体2负责搜索游戏项目中，游戏机制相关的代码，进行总结，并返回主智能体。
 4. 子智能体3负责写这个遗物对应的测试代码，并负责运行测试代码，并把结果反馈给主智能体。
 
-/ulw-loop 参考 @enemies\todo.md ，实现所有还没有实现的, act1怪物的类的相应意图。参考能力的定义在 @powers\buff.md @powers\debuff.md
+/ulw-loop 参考 @enemies\todo.md ，实现所有还没有实现的, act1怪物的类的相应意图。部分怪物已经实现，在enemies\act1下。 参考能力的定义在 @powers\buff.md @powers\debuff.md
+Hint:
+1. 主智能体负责实现怪物和相应意图的代码。并向子智能体分配任务
+2. 子智能体1负责搜索游戏项目中，游戏机制相关的代码，进行总结，并返回主智能体。
+3. 子智能体2负责写这个遗物对应的测试代码，并负责运行测试代码，并把结果反馈给主智能体。
 
 /ulw-loop 参考 @powers\buff.md @powers\debuff.md，实现所有能力

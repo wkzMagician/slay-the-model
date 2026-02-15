@@ -4,7 +4,12 @@ Enemies package initialization
 from .base import Enemy
 
 # Act 1 Enemies
-from .act1 import Cultist, JawWorm, SpikeSlime, SpikeSlimeM
+from .act1 import (
+    Cultist, JawWorm, SpikeSlime, SpikeSlimeM,
+    FungiBeast, RedLouse, GreenLouse,
+    BlueSlaver, RedSlaver,
+    TheGuardian, SlimeBoss, TheHexaghost
+)
 
 # Export all enemies
 __all__ = [
@@ -16,6 +21,18 @@ __all__ = [
     'JawWorm',
     'SpikeSlime',
     'SpikeSlimeM',
+    'RedLouse',
+    'GreenLouse',
+    'BlueSlaver',
+    'RedSlaver',
+    
+    # Act 1 Elite
+    'FungiBeast',
+    
+    # Act 1 Boss
+    'TheGuardian',
+    'SlimeBoss',
+    'TheHexaghost',
 ]
 
 __all_names__ = __all__
