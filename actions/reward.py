@@ -95,6 +95,7 @@ class AddGoldAction(Action):
         from engine.game_state import game_state
         if game_state.player:
             game_state.player.gold += self.amount
+            print(t("rewards.gold", default="Gained {amount} gold", amount=self.amount))
         return NoneResult()
             
 @register("action")

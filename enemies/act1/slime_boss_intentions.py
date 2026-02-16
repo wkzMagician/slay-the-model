@@ -49,7 +49,7 @@ class SlamIntention(Intention):
     """Slam - Deals 35 damage (38 on A4+)."""
     
     def __init__(self, enemy: 'Enemy'):
-        super().__init__("slam", enemy)
+        super().__init__("slime_boss_slam", enemy)
         self.base_damage = 35
     
     def execute(self) -> List['Action']:

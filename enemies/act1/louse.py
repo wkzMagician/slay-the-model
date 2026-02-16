@@ -49,9 +49,9 @@ class RedLouse(Enemy):
         if not self.history_intentions:
             roll = random.random()
             if roll < 0.75:
-                return self.intentions["bite"]
+                return self.intentions["louse_bite"]
             else:
-                return self.intentions["grow"]
+                return self.intentions["red_louse_grow"]
         
         # Count consecutive uses
         last = self.history_intentions[-1]
@@ -64,17 +64,17 @@ class RedLouse(Enemy):
         
         # Cannot use same move 3 times in a row
         if consecutive_count >= 2:
-            if last == "bite":
-                return self.intentions["grow"]
+            if last == "louse_bite":
+                return self.intentions["red_louse_grow"]
             else:
-                return self.intentions["bite"]
+                return self.intentions["louse_bite"]
         
         # Normal pattern: 75% Bite, 25% Grow
         roll = random.random()
         if roll < 0.75:
-            return self.intentions["bite"]
+            return self.intentions["louse_bite"]
         else:
-            return self.intentions["grow"]
+            return self.intentions["red_louse_grow"]
     
     def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> List['Action']:
         """Trigger Curl Up on first attack damage."""
@@ -127,9 +127,9 @@ class GreenLouse(Enemy):
         if not self.history_intentions:
             roll = random.random()
             if roll < 0.75:
-                return self.intentions["bite"]
+                return self.intentions["louse_bite"]
             else:
-                return self.intentions["spit_web"]
+                return self.intentions["green_louse_spit_web"]
         
         # Count consecutive uses
         last = self.history_intentions[-1]
@@ -142,17 +142,17 @@ class GreenLouse(Enemy):
         
         # Cannot use same move 3 times in a row
         if consecutive_count >= 2:
-            if last == "bite":
-                return self.intentions["spit_web"]
+            if last == "louse_bite":
+                return self.intentions["green_louse_spit_web"]
             else:
-                return self.intentions["bite"]
+                return self.intentions["louse_bite"]
         
         # Normal pattern: 75% Bite, 25% Spit Web
         roll = random.random()
         if roll < 0.75:
-            return self.intentions["bite"]
+            return self.intentions["louse_bite"]
         else:
-            return self.intentions["spit_web"]
+            return self.intentions["green_louse_spit_web"]
     
     def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> List['Action']:
         """Trigger Curl Up on first attack damage."""

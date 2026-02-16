@@ -95,19 +95,25 @@ class MapManager:
         """
         floor_sizes = []
         
-        for floor in range(17):  # 17 floors (0-16)
+        for floor in range(18):  # 18 floors (0-17), Floor 17 is hidden TreasureRoom after boss
             if floor == 0:
-                # Floor 0: 3 nodes (player can start at any)
+                floor_sizes.append(1)  # Neo
+            elif floor == 1:
+                # Floor 1: 3 nodes (player can start at any)
                 floor_sizes.append(3)
-            elif floor == 15:
-                # Floor 15: 1 node (boss)
-                floor_sizes.append(1)
+            elif floor == 9: # ? 是否写死Treasure有3个
+                floor_sizes.append(3)
+            elif floor == 15: # ? 是否写死Campfire有3个
+                floor_sizes.append(3)
             elif floor == 16:
-                # Floor 16: 0 nodes (boss chest is invisible)
-                floor_sizes.append(0)
+                # Floor 16: 1 node (boss)
+                floor_sizes.append(1)
+            elif floor == 17:
+                # Floor 17: Hidden TreasureRoom after boss (invisible in original game)
+                floor_sizes.append(1)
             else:
                 # Other floors: 2-5 nodes
-                floor_sizes.append(self.rng.randint(2, 5))
+                floor_sizes.append(self.rng.randint(3, 5))
         
         return floor_sizes
     
@@ -140,42 +146,30 @@ class MapManager:
             if not current_floor_nodes or not next_floor_nodes:
                 continue
             
-            # Track used positions to prevent multiple connections to same node
-            used_positions = set()
+            # Step 1: Ensure every source node has at least one outgoing connection
+            # Map each source node to at least one destination (using relative positions)
+            for src_pos, src_node in enumerate(current_floor_nodes):
+                dest_pos = min(src_pos * len(next_floor_nodes) // len(current_floor_nodes),
+                              len(next_floor_nodes) - 1)
+                src_node.add_connection_up(dest_pos)
             
-            # Track the minimum position that can be connected to prevent line crossing
-            # This ensures that if node A (at position i) connects to position j,
-            # no node to the right of A (position > i) can connect to any position <= j
-            min_allowed_position = 0
+            # Step 2: Ensure every destination node has at least one incoming connection
+            # (may already be satisfied by Step 1, but verify and fix if not)
+            for dest_pos in range(len(next_floor_nodes)):
+                has_incoming = any(dest_pos in node.connections_up for node in current_floor_nodes)
+                if not has_incoming:
+                    src_pos = min(dest_pos * len(current_floor_nodes) // len(next_floor_nodes),
+                                 len(current_floor_nodes) - 1)
+                    current_floor_nodes[src_pos].add_connection_up(dest_pos)
             
-            # Process nodes from left to right
-            for current_node in current_floor_nodes:
-                # Calculate available positions (from min_allowed to end, excluding used)
-                available_positions = [
-                    pos for pos in range(min_allowed_position, len(next_floor_nodes))
-                    if pos not in used_positions
-                ]
-                
-                if not available_positions:
-                    break
-                
-                # Determine number of connections (1-3, but limited by available positions)
-                max_connections = min(3, len(available_positions))
-                num_connections = self.rng.randint(1, max_connections)
-                
-                # Randomly select nodes to connect to from available range
-                connected_positions = self.rng.sample(available_positions, num_connections)
-                
-                for pos in connected_positions:
-                    current_node.add_connection_up(pos)
-                    used_positions.add(pos)
-                
-                # Update min_allowed_position to prevent line crossing
-                # Next node (to the right) can only connect to positions > max connected position
-                # This ensures lines don't cross: if left node connects to position i,
-                # right node can only connect to positions > i
-                if connected_positions:
-                    min_allowed_position = max(connected_positions) + 1
+            # Step 3: Add additional connections for variety (30% chance per node)
+            if len(current_floor_nodes) > 1:
+                for src_node in current_floor_nodes:
+                    if self.rng.random() < 0.3:
+                        available = [p for p in range(len(next_floor_nodes)) 
+                                    if p not in src_node.connections_up]
+                        if available:
+                            src_node.add_connection_up(self.rng.choice(available))
         
         return nodes
     
@@ -188,18 +182,23 @@ class MapManager:
         """
         for floor in range(len(nodes)):
             for node in nodes[floor]:
-                if floor == 0:
-                    # Floor 0: All monsters (easy pool)
+                if floor == 0: # Neo - starter room
+                    node.room_type = RoomType.NEO
+                elif floor == 1:
+                    # Floor 1: All monsters (easy pool)
                     node.room_type = RoomType.MONSTER
-                elif floor == 8:
+                elif floor == 9:
                     # Floor 8: All treasure
                     node.room_type = RoomType.TREASURE
-                elif floor == 14:
+                elif floor == 15:
                     # Floor 14: All rest
                     node.room_type = RoomType.REST
-                elif floor == 15:
+                elif floor == 16:
                     # Floor 15: Boss
                     node.room_type = RoomType.BOSS
+                # Floor 17: Hidden TreasureRoom after boss (invisible in original game)
+                elif floor == 17:
+                    node.room_type = RoomType.TREASURE
                 else:
                     # Other floors: Random based on weights
                     node.room_type = self._get_random_room_type()
@@ -376,12 +375,10 @@ class MapManager:
         """
         Display the map in a human-friendly format.
         
-        Shows the complete map with:
-        - * for current position
-        - > for available next moves
-        - X for visited nodes
-        - Room type symbols (M, E, $, ?, R, T, B)
-        - Connection lines (/, |, \)
+        Design principles:
+        - Fixed node width: [?M] (4 chars) for consistent alignment
+        - Each node shows outgoing connections below: / (left), | (center), \\ (right)
+        - Max 3 outgoing and 3 incoming connections per node
         """
         print("\n" + "="*60)
         print("MAP VIEW")
@@ -395,8 +392,7 @@ class MapManager:
         current_floor = self.map_data.current_floor
         current_position = self.map_data.current_position
         
-        # Get visited nodes (we need to track this separately)
-        # For now, assume nodes before current floor are visited
+        # Get visited nodes
         visited_positions = set()
         for floor in range(current_floor):
             for pos in range(len(self.map_data.nodes[floor])):
@@ -404,9 +400,10 @@ class MapManager:
         
         # Legend
         print("\nLegend:")
-        print("  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Unknown")
-        print("  [R]=Rest     [T]=Treasure  [B]=Boss")
-        print("  *=Current   >=Available  X=Visited")
+        print("  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Event")
+        print("  [R]=Rest     [T]=Treasure  [B]=Boss  [N]=Neo")
+        print("  *=Current   >=Available   ^=Visited")
+        print("  Connections: /=left  |=center  \\=right")
         print()
         
         # Display map floor by floor
@@ -415,55 +412,94 @@ class MapManager:
             if not floor_nodes:
                 continue
             
-            # Display floor nodes
+            next_floor_nodes = self.map_data.nodes[floor + 1] if floor + 1 < len(self.map_data.nodes) else []
+            num_srcs = len(floor_nodes)
+            num_dests = len(next_floor_nodes)
+            
+            # Display floor nodes with fixed width (5 chars total)
+            # Format: [ M ] normal, [*M ] current, [>M ] available, [^M ] visited
             line = f"Floor {floor:2d}: "
             for pos, node in enumerate(floor_nodes):
-                # Determine symbol and prefix
                 symbol = self._get_room_symbol(node.room_type)
-                prefix = ""
                 
                 if floor == current_floor and pos == current_position:
-                    prefix = "*"
+                    # Current position: [*M ]
+                    node_str = f"[*{symbol} ]"
                 elif (floor, pos) in available_positions:
-                    prefix = ">"
+                    # Available: [>M ]
+                    node_str = f"[>{symbol} ]"
                 elif (floor, pos) in visited_positions:
-                    symbol = "X"
+                    # Visited: [^M ] - shows visited status and room type
+                    node_str = f"[^{symbol} ]"
+                else:
+                    # Normal unvisited: [ M ]
+                    node_str = f"[ {symbol} ]"
                 
-                line += f"[{prefix}{symbol}] "
+                line += node_str
             
             print(line)
             
             # Display connection lines to next floor
-            if floor < len(self.map_data.nodes) - 1:
-                connection_line = "        "
-                for pos, node in enumerate(floor_nodes):
-                    if not node.connections_up:
-                        connection_line += "    "
-                    else:
-                        # Sort connections for proper display
-                        sorted_connections = sorted(node.connections_up)
-                        # Determine connector based on relative position
-                        next_floor_nodes = self.map_data.nodes[floor + 1]
-                        if len(next_floor_nodes) == 0:
-                            connection_line += "    "
-                        else:
-                            min_conn = sorted_connections[0]
-                            max_conn = sorted_connections[-1]
-                            
-                            if min_conn == max_conn:
-                                # Single vertical connection
-                                connection_line += " |  "
-                            elif min_conn == pos:
-                                # Connection to right
-                                connection_line += " /  "
-                            elif max_conn == pos:
-                                # Connection to left
-                                connection_line += " \\  "
-                            else:
-                                # Multiple connections
-                                connection_line += " |  "
+            if next_floor_nodes:
+                # Build connection display: 5 chars per source node
+                # Position connectors to align with the room symbol (position 2 in [?M ])
+                conn_line = "           "  # Match "Floor XX: " prefix
                 
-                print(connection_line)
+                for src_idx, src_node in enumerate(floor_nodes):
+                    if not src_node.connections_up:
+                        # No connections - add empty space (5 chars)
+                        conn_line += "     "
+                        continue
+                    
+                    # Determine which directions this node connects to
+                    # based on relative positions
+                    connects_left = False
+                    connects_center = False
+                    connects_right = False
+                    
+                    for dest_pos in src_node.connections_up:
+                        # Find the array index for this destination
+                        dest_idx = None
+                        for i, n in enumerate(next_floor_nodes):
+                            if n.position == dest_pos:
+                                dest_idx = i
+                                break
+                        
+                        if dest_idx is not None:
+                            # Calculate relative position
+                            src_rel = src_idx / max(num_srcs - 1, 1) if num_srcs > 1 else 0.5
+                            dest_rel = dest_idx / max(num_dests - 1, 1) if num_dests > 1 else 0.5
+                            
+                            diff = dest_rel - src_rel
+                            if diff < -0.15:
+                                connects_left = True
+                            elif diff > 0.15:
+                                connects_right = True
+                            else:
+                                connects_center = True
+                    
+                    # Build connection display for this node (5 chars)
+                    # Connectors at positions 1-3 to align with room symbol
+                    if connects_left and connects_center and connects_right:
+                        conn_line += "/|\\  "
+                    elif connects_left and connects_center:
+                        conn_line += "/|   "
+                    elif connects_center and connects_right:
+                        conn_line += " |\\  "
+                    elif connects_left and connects_right:
+                        conn_line += "/ \\  "
+                    elif connects_left:
+                        conn_line += "/    "
+                    elif connects_center:
+                        conn_line += " |   "
+                    elif connects_right:
+                        conn_line += "  \\  "
+                    else:
+                        conn_line += "     "
+                
+                # Only print connection line if there are actual connections
+                if any(c != " " for c in conn_line[11:]):
+                    print(conn_line)
         
         print("\n" + "="*60)
         print()
@@ -537,6 +573,7 @@ class MapManager:
             RoomType.REST: "R",
             RoomType.MERCHANT: "$",
             RoomType.TREASURE: "T",
+            RoomType.NEO: "N",
             RoomType.UNKNOWN: "?"
         }
         return symbols.get(room_type, "?")

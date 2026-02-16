@@ -41,13 +41,15 @@ class MoveToMapNodeAction(Action):
 
         # Move to specified node
         new_room = map_manager.move_to_node(self.floor, self.position)
-
+        
         # Update game state
         game_state.current_room = new_room
         game_state.current_floor = self.floor
-
-        # Note: Room enter() is called by GameFlow, not here
-        # This action just prepares state for next room
+        
+        # Print which room player moved to
+        from localization import t
+        print(t("ui.room_entered").format(room_type=new_room.room_type.value, floor=self.floor, position=self.position))
+        
         return NoneResult()
 
 @register("action")
@@ -93,11 +95,10 @@ class SelectMapNodeAction(Action):
         if game_state.config.mode == "ai":
             # AI mode: Call AI decision engine and execute via action
             choice_index = self._make_ai_decision(map_manager)
-            self._execute_move_via_action(available_moves[choice_index])
+            return self._execute_move_via_action(available_moves[choice_index])
         else:
             # Human mode: Display map and present options via SelectAction
-            self._make_human_decision(map_manager, available_moves)
-        return NoneResult()
+            return self._make_human_decision(map_manager, available_moves)
     
     def _make_human_decision(self, map_manager, available_moves: List):
         """

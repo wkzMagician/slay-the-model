@@ -72,18 +72,14 @@ class RestRoom(Room):
         """Build the rest site menu options"""
         options = []
         
-        # Rest option
-        can_rest = not (_has_relic("CoffeeDripper") or _has_relic("MarkOfTheBloom"))
-        if can_rest:
-            heal_amount = int(game_state.player.max_hp * 0.30)
-            if _has_relic("RegalPillow"):
-                heal_amount += 15
-            options.append(Option(
-                name=self.local("RestRoom.rest", amount=heal_amount),
-                actions=[HealAction(amount=heal_amount)]
-            ))
-        
-        # Smith option (upgrade card)
+        # Rest option - heal 30% of max HP
+        heal_amount = game_state.player.max_hp // 10 * 3
+        options.append(Option(
+            name=self.local("RestRoom.rest"),
+            actions=[HealAction(amount=heal_amount), LeaveRoomAction(room=self)]
+        ))
+
+
         can_smith = not _has_relic("FusionHammer")
         if can_smith:
             can_smith = False
@@ -95,7 +91,7 @@ class RestRoom(Room):
         if can_smith:
             options.append(Option(
                 name=self.local("RestRoom.smith"),
-                actions=[ChooseUpgradeCardAction(pile="deck")]
+                actions=[ChooseUpgradeCardAction(pile="deck"), LeaveRoomAction(room=self)]
             ))
         
         # feature: Recall option (Ruby Key) - disabled for now
@@ -109,25 +105,25 @@ class RestRoom(Room):
         if _has_relic("Girya"):
             options.append(Option(
                 name=self.local("RestRoom.lift"),
-                actions=[TriggerRelicAction(relic_name="Lift")],
+                actions=[TriggerRelicAction(relic_name="Lift"), LeaveRoomAction(room=self)],
             ))
         
         if _has_relic("PeacePipe"):
             options.append(Option(
                 name=self.local("RestRoom.toke"),
-                actions=[ChooseRemoveCardAction(pile="deck")]
+                actions=[ChooseRemoveCardAction(pile="deck"), LeaveRoomAction(room=self)]
             ))
         
         if _has_relic("Shovel"):
             options.append(Option(
                 name=self.local("RestRoom.dig"),
-                actions=[AddRandomRelicAction(rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE])]
+                actions=[AddRandomRelicAction(rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]), LeaveRoomAction(room=self)]
             ))
         
         # Skip option
         options.append(Option(
             name=self.local("RestRoom.skip"),
-            actions=[]
+            actions=[LeaveRoomAction(room=self)]
         ))
         
         # Add selection action to global queue
@@ -135,6 +131,4 @@ class RestRoom(Room):
             title=self.local("RestRoom.title"),
             options=options
         ))
-        game_state.action_queue.add_action(
-            LeaveRoomAction(room=self)
-        )
+        # LeaveRoomAction is now part of each option's actions

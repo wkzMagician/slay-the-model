@@ -105,7 +105,12 @@ class Localizable:
     
     def _get_localized_key(self, field: str) -> str:
         """构建字段对应的本地化 key。"""
-        return f"{self.localization_prefix}.{self.idstr}.{field}"
+        # Prefer self.name if available as a direct attribute (not a property).
+        # This is for classes like Intention that set self.name = "stab" in __init__.
+        # Enemy.name is a property that calls local(), so we must avoid it here.
+        name = self.__dict__.get('name') if 'name' in self.__dict__ else None
+        identifier = name or self.idstr
+        return f"{self.localization_prefix}.{identifier}.{field}"
 
     def local(self, field: str, **kwargs: Any) -> LocalStr:
         """返回字段对应的本地化字符串对象。"""

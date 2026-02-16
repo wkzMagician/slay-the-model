@@ -208,8 +208,22 @@ class DealDamageAction(Action):
         if not self.target or self.target.is_dead():
             return NoneResult()
 
-        # ! damage must be int! If error occurs, search other implementation
+        # Get base damage
         damage_amount = self.damage
+        
+        # Defensive fix: handle case where damage is accidentally a list
+        if isinstance(damage_amount, list):
+            print(f"[DEBUG] Converting damage list to int: {damage_amount} -> {damage_amount[0] if damage_amount else 0}")
+            damage_amount = damage_amount[0] if damage_amount else 0
+
+        # Apply attacker's damage modifiers (Strength, Weakness)
+        if self.source and hasattr(self.source, 'get_damage_dealt_modifier'):
+            damage_amount = self.source.get_damage_dealt_modifier(damage_amount)
+        
+        # Apply defender's damage taken multiplier (Vulnerable, Buffer)
+        if hasattr(self.target, 'get_damage_taken_multiplier'):
+            multiplier = self.target.get_damage_taken_multiplier()
+            damage_amount = int(damage_amount * multiplier)
 
         # Actually deal damage (Creature.take_damage only handles numerical changes)
         damage_dealt = self.target.take_damage(
@@ -228,6 +242,16 @@ class DealDamageAction(Action):
         )
         if target_actions:
             actions_to_return.extend(target_actions)
+        
+        # Print damage dealt
+        from localization import t, LocalStr
+        target_name = getattr(self.target, 'name', None)
+        if target_name is None:
+            target_name = getattr(self.target, 'character', 'Unknown')
+        # Resolve LocalStr if needed
+        if isinstance(target_name, LocalStr):
+            target_name = target_name.resolve()
+        print(t("combat.deal_damage_enemy", default="Deal {amount} damage to {target_name}!", amount=damage_dealt, target_name=target_name))
 
         # Trigger source's on_damage_dealt hook before dealing damage
         if self.source:
@@ -357,6 +381,10 @@ class GainBlockAction(Action):
 
         # Actually gain block (Creature.gain_block only handles numerical changes)
         self.target.gain_block(block_amount, source=self.source, card=self.card)
+        
+        # Print block gained for player feedback
+        target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Creature'))
+        print(t('combat.gain_block').format(name=target_name, amount=block_amount))
 
         if actions_to_return:
             return MultipleActionsResult(actions_to_return)
@@ -380,6 +408,9 @@ class GainEnergyAction(Action):
 
         if game_state.player:
             game_state.player.gain_energy(self.energy)
+            # Print energy change for player feedback
+            if self.energy != 0:
+                print(t('combat.gain_energy').format(amount=self.energy))
             
         return NoneResult()
 
@@ -496,6 +527,11 @@ class PlayCardBHAction(Action):
         # Update turn tracking
         game_state.current_combat.combat_state.turn_cards_played += 1
         game_state.current_combat.combat_state.player_actions_this_turn += 1
+        
+        # Print card played for player feedback
+        from localization import t
+        card_name = self.card.display_name.resolve() if hasattr(self.card, 'display_name') else str(self.card)
+        print(t('combat.play_card').format(card=card_name))
 
         # Remove card from hand
         from actions.card import ExhaustCardAction
@@ -525,6 +561,9 @@ class EndTurnAction(Action):
 
         # Transition to enemy action phase
         game_state.current_combat.combat_state.current_phase = "enemy_action"
+        
+        # Print turn ended for player feedback
+        print(t('combat.end_turn'))
 
         # This will be handled by Combat._build_turn_actions()
         return NoneResult()

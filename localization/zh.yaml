@@ -85,6 +85,14 @@ cards:
       combat_description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 层脆弱和 {magic.weak} 层虚弱。（造成{damage}点伤害，施加{magic.vulnerable}层脆弱和{magic.weak}层虚弱）
       upgrade_description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 层脆弱和 {magic.weak} 层虚弱。
 combat:
+  player_attacks: "玩家攻击 {target}，造成 {damage} 点伤害"
+  enemy_attacks_player: "{enemy} 攻击玩家，造成 {damage} 点伤害"
+  enemy_intends: "{enemy} 意图: {intent}"
+  turn_start: "=== 回合 {turn} 开始 ==="
+  turn_end: "=== 回合 {turn} 结束 ==="
+  combat_start: === 战斗开始 ===
+  combat_end: === 战斗结束 ===
+  enemy_defeated: "{enemy} 被击败！"
   add_card_to_pile: 将 {card} 添加到 {location}。
   add_strength: 力量改变 {amount}
   apply_mark: 对 {target} 施加 {amount} 标记
@@ -100,7 +108,7 @@ combat:
   deal_damage_all: 对所有敌人造成 {damage} 点伤害
   deal_damage_all_heal: 对所有敌人造成 {damage} 点伤害
   deal_damage_by_orb: 对 {target} 造成 {amount} 点伤害（{orb_count} 个 {orb_type}）。
-  deal_damage_enemy: 对敌人造成 {amount} 点伤害
+  deal_damage_enemy: 对 {target_name} 造成 {amount} 点伤害
   deal_damage_random: 对随机敌人造成 {amount} 点伤害
   deal_damage_self: 对自己造成 {damage} 点伤害
   discard_cards: 丢弃 {count} 张牌{random}
@@ -159,6 +167,23 @@ combat:
   upgrade_card: 升级这张牌
   white_noise_add: 将 {card}（本回合费用0）添加到你的手牌。
 powers:
+  # Universal powers (available to all characters)
+  StrengthPower:
+    name: 力量
+    description: 攻击伤害增加 {amount} 点。
+  VulnerablePower:
+    name: 脆弱
+    description: 受到的伤害增加50%。
+  WeakPower:
+    name: 虚弱
+    description: 攻击伤害减少25%。
+  DexterityPower:
+    name: 敏捷
+    description: 获得格挡时额外获得 {amount} 点格挡。
+  FrailPower:
+    name: 易伤
+    description: 获得格挡时减少25%格挡值。
+  # Character-specific powers
   ironclad:
     FlexPower:
       description: 获得 {amount} 点力量。在你的回合结束时，失去等量的力量。
@@ -312,6 +337,14 @@ relics:
       name: 腕刃
       description: 战斗结束时获得 3 点力量。
 enemies:
+  # Enemy names
+  Cultist:
+    name: "邪教徒"
+  Louse:
+    name: "虱子"
+  JawWorm:
+    name: "颚虫"
+  # Intention descriptions
   intentions:
     # Cultist
     ritual:
@@ -332,27 +365,30 @@ enemies:
       name: "甩尾"
       description: "造成{damage}点伤害并获得{block}点格挡。"
 ui:
-  card_removed: '移除卡牌: {card}！'
-  character_display: '角色: {character}'
   character_selected: '选择的角色: {character}'
   choose_blessings: 选择祝福
   choose_enemy: 选择敌人：
   floor_position: 第 {floor} 层，位置 {position}
   game_awaken: 你醒来在尖塔中，开始你的攀登...
-  game_over: 游戏结束！你已在尖塔中倒下。💀
+  game_over: 游戏结束！你已在尖塔中倒下。
   game_welcome: 欢迎来到杀戮尖塔！
-  game_won: 恭喜！你已征服尖塔！🎉
+  game_won: 恭喜！你已征服尖塔！
   invalid_number: 请输入有效数字
   invalid_option: 无效选择！
   map_generated: 为新章节生成地图！
   map_move_option: '{floor_pos} - {room_type}'
   neo_basic_blessings: '但Neo为你提供这些基本祝福:'
-  neo_blessing_header: '
-
-    --- Neo的祝福 ---'
   neo_failed: 你上次未能到达尖塔之心...
   neo_four_blessings: Neo为你提供四个祝福。明智选择！
   neo_proven: 你证明了自己是值得的...
+  card_played: "打出卡牌 {card}（费用: {cost}）"
+  block_gained: "获得 {amount} 点格挡"
+  cards_drawn: "抽了 {count} 张牌"
+  turn_ended: "回合结束"
+  energy_gained: "获得 {amount} 点能量"
+  player_take_damage: "玩家受到 {amount} 点伤害，剩余生命: {hp}/{max_hp}"
+  enemy_take_damage: "{enemy} 受到 {amount} 点伤害，剩余生命: {hp}/{max_hp}"
+  select_room: "选择了房间 [{room_type}] 第{floor}层位置{position}"
   no_character: 未指定角色
   potion_full_title: 药水已满
   random_seed: 使用随机种子
@@ -372,5 +408,16 @@ ui:
   seed_display: '种子: {seed}'
   seed_set: '种子设置为: {seed}'
   select_move: 选择你的下一步移动
+  room_entered: 进入了{room_type}房间（第{floor}层，位置{position}）
+  player_hp: "生命值"
+  player_block: "格挡"
+  player_energy: "能量"
+  hand: "手牌"
+  powers: "能力"
+  enemy: "敌人"
+  enemy_hp: "生命值"
+  enemy_block: "格挡"
+  intention: "意图"
+  player_turn: "玩家回合"
   select_prompt: '选择 (1-{count}): '
   skip_potion: 不拾取

@@ -23,3 +23,7 @@ class StrengthPower(Power):
             duration: 0 for permanent, positive for temporary turns
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
+
+    def modify_damage_dealt(self, base_damage: int) -> int:
+        """Increase damage dealt by strength amount."""
+        return base_damage + self.amount

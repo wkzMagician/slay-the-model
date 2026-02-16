@@ -82,7 +82,6 @@ class Player(Creature):
         self.potions.trim_to_limit(value)
 
     def gain_energy(self, amount=1):
-        if amount <= 0:
-            return self.energy
+        """Gain or lose energy. Positive amount gains energy, negative loses it."""
         self.energy += amount
         return self.energy

@@ -47,6 +47,7 @@ class RoomType(str, Enum):
     TREASURE = "Treasure"
     BOSS = "Boss"
     EVENT = "Event"
+    NEO = "Neo"
 
 class CombatType(str, Enum):
     NORMAL = "Normal"

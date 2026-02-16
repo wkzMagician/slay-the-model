@@ -236,7 +236,7 @@ def get_random_potion(characters: Optional[List[str]] = None,
             continue
         potion_instance = potion_cls()
         
-        if characters and potion_instance.namespace not in characters:
+        if characters and potion_instance.category not in characters:
             continue
         if rarities and potion_instance.rarity not in rarities:
             continue

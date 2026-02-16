@@ -43,11 +43,12 @@ class AddCardAction(Action):
         dest_pile (str): Destination pile
         
     Optional:
-        None
+        source (str): Source of card ("reward", "enemy", etc.)
     """
-    def __init__(self, card, dest_pile: str):
+    def __init__(self, card, dest_pile: str, source: str = "reward"):
         self.card = card
         self.dest_pile = dest_pile
+        self.source = source
         # todo: position argument, default to PilePosType.TOP
     
     def execute(self) -> 'BaseResult':
@@ -56,6 +57,13 @@ class AddCardAction(Action):
         if self.card and game_state.player:
             if hasattr(game_state.player, "card_manager"):
                 game_state.player.card_manager.add_to_pile(self.card, self.dest_pile, pos=PilePosType.TOP)
+                # Only show [Reward] for actual rewards, use appropriate prefix for others
+                if self.source == "reward":
+                    print(f"[Reward] Added {self.card.display_name.resolve()} to {self.dest_pile}")
+                elif self.source == "enemy":
+                    print(f"[Enemy] Added {self.card.display_name.resolve()} to {self.dest_pile}")
+                else:
+                    print(f"[{self.source.title()}] Added {self.card.display_name.resolve()} to {self.dest_pile}")
         return NoneResult()
                 
 @register("action")
@@ -470,7 +478,7 @@ class AddRandomCardAction(Action):
             return NoneResult()
 
         random_card = get_random_card(
-            namespaces=[self.namespace if self.namespace else game_state.player.character],
+            namespaces=[self.namespace if self.namespace else game_state.player.character.lower()],
             card_types=[self.card_type] if self.card_type else None,
             rarities=[self.rarity] if self.rarity else None
         )
@@ -506,6 +514,11 @@ class DrawCardsAction(Action):
         if game_state.player and hasattr(game_state.player, "card_manager"):
             # Draw cards from draw pile to hand
             cards: List[Card] = game_state.player.card_manager.draw_many(self.count)
+            
+            # Print cards drawn for player feedback
+            if cards:
+                from localization import t
+                print(t('combat.draw_cards').format(count=len(cards)))
             
             # Trigger on_card_draw powers for each drawn card
             power_actions = []

@@ -1,4 +1,4 @@
-mode: human # human | ai | debug
+mode: debug # human | ai | debug
 language: en
 seed: -1
 character: Ironclad
@@ -12,4 +12,6 @@ ai:
   # todo
 
 debug:
+  print: False
   select_type: random
+  god_mode: False  # If True, apply 999 BufferPower at combat start

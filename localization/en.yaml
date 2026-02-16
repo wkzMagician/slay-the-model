@@ -1,4 +1,5 @@
 ui:
+  room_entered: "Entered room"
   game_welcome: "Welcome to Slay the Spire!"
   game_awaken: "You awaken in Spire, ready to begin your ascent..."
   seed_display: "Seed: {seed}"
@@ -22,11 +23,29 @@ ui:
   potion_full_title: "Potion slots full"
   skip_potion: "Skip"
   replace_potion_option: "Replace {name}"
-  game_over: "Game Over! You have fallen in the Spire. =�"
-  game_won: "Congratulations! You have conquered the Spire! <�"
+  game_over: "Game Over! You have fallen in the Spire. ="
+  game_won: "Congratulations! You have conquered the Spire! <"
+  player_hp: "HP"
+  player_block: "Block"
+  player_energy: "Energy"
+  hand: "Hand"
+  powers: "Powers"
+  enemy: "Enemy"
+  enemy_hp: "HP"
+  enemy_block: "Block"
+  intention: "Intention"
+  player_turn: "=== Player Turn ==="
+  enemy_turn: "=== Enemy Turn ==="
+  end_turn: "End turn"
+  draw_cards: "Draw {count} cards"
 
 combat:
-  deal_damage_enemy: "Deal {amount} damage to enemy"
+  enter: "=== Combat Begins ==="
+  display: "--- Combat Status ---"
+  player_turn: "=== Player Turn ==="
+  enemy_turn: "=== Enemy Turn ==="
+  end_turn: "End turn"
+  deal_damage_enemy: "Deal {amount} damage to {target_name}"
   deal_damage_random: "Deal {amount} damage to a random enemy"
   deal_damage_all: "Deal {damage} damage to all enemies"
   deal_damage_self: "Deal {damage} damage to self"
@@ -191,23 +210,37 @@ cards:
       description: "Lose 6 HP. Gain {energy_gain} Energy. Gain 2 Strength. Draw {draw} cards."
       upgrade_description: "Gain {energy_gain} Energy. Gain 2 Strength. Draw {draw} cards."
 
-  powers:
-    ironclad:
-      StrengthPower:
-        name: "Strength"
-        description: "Increases attack damage by {amount}."
-      VulnerablePower:
-        name: "Vulnerable"
-        description: "Increases damage taken by 50% per stack."
-      FlexPower:
-        name: "Flex"
-        description: "Gain {amount} Strength. Lose equal amount at end of turn."
-      HeavyBladePower:
-        name: "Heavy Blade"
-        description: "Gain {amount} Strength. Lose equal amount at end of turn."
-      ConfusedPower:
-        name: "Confused"
-        description: "Randomize card costs at start of turn."
+  colorless:
+    Slimed:
+      name: "Slimed"
+      description: "Unplayable. Exhaust this card."
+      rarity: "special"
+
+powers:
+  StrengthPower:
+    name: "Strength"
+    description: "Increases attack damage by {amount}."
+  VulnerablePower:
+    name: "Vulnerable"
+    description: "Increases damage taken by 50% per stack."
+  FrailPower:
+    name: "Frail"
+    description: "Block from cards is reduced by 25% per stack."
+  WeakPower:
+    name: "Weak"
+    description: "Deals 25% less attack damage per stack."
+  FlexPower:
+    name: "Flex"
+    description: "Gain {amount} Strength. Lose equal amount at end of turn."
+  HeavyBladePower:
+    name: "Heavy Blade"
+    description: "Gain {amount} Strength. Lose equal amount at end of turn."
+  ConfusedPower:
+    name: "Confused"
+    description: "Randomize card costs at start of turn."
+  EntangledPower:
+    name: "Entangled"
+    description: "Cannot play Attack cards this turn."
 
 relics:
   # Common Global Relics
@@ -699,3 +732,188 @@ relics:
   orange_pellets:
     name: "Orange Pellets"
     description: "Whenever you play a Power, Attack, and Skill in same turn, remove all of your Debuffs."
+
+enemies:
+  Cultist:
+    name: "Cultist"
+    intentions:
+      ritual:
+        name: "Ritual"
+        description: "Gain 3 Ritual."
+      cultist_attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+  
+  JawWorm:
+    name: "Jaw Worm"
+    intentions:
+      chomp:
+        name: "Chomp"
+        description: "Deal {damage} damage."
+      bellow:
+        name: "Bellow"
+        description: "Gain {strength_gain} Strength and {block} Block."
+      thrash:
+        name: "Thrash"
+        description: "Deal {damage} damage. Gain {block} Block."
+  
+  FungiBeast:
+    name: "Fungi Beast"
+    intentions:
+      bite:
+        name: "Bite"
+        description: "Deal {damage} damage."
+      grow:
+        name: "Grow"
+        description: "Gain {strength_gain} Strength."
+  
+  RedLouse:
+    name: "Red Louse"
+    intentions:
+      louse_bite:
+        name: "Bite"
+        description: "Deal {damage} damage."
+      red_louse_grow:
+        name: "Grow"
+        description: "Gain {strength_gain} Strength."
+  
+  GreenLouse:
+    name: "Green Louse"
+    intentions:
+      louse_bite:
+        name: "Bite"
+        description: "Deal {damage} damage."
+      green_louse_spit_web:
+        name: "Spit Web"
+        description: "Apply 1 Weak to you."
+  
+  BlueSlaver:
+    name: "Blue Slaver"
+    intentions:
+      stab:
+        name: "Stab"
+        description: "Deal {damage} damage."
+      rake:
+        name: "Rake"
+        description: "Deal {damage} damage. Apply 1 Vulnerable and 1 Weak to you."
+  
+  RedSlaver:
+    name: "Red Slaver"
+    intentions:
+      stab:
+        name: "Stab"
+        description: "Deal {damage} damage."
+      scrape:
+        name: "Scrape"
+        description: "Deal {damage} damage."
+      entangle:
+        name: "Entangle"
+        description: "Apply 1 Entangle to you."
+  
+  SpikeSlime:
+    name: "Spike Slime"
+    intentions:
+      lick:
+        name: "Lick"
+        description: "Apply {amount} Frail to you."
+      flame_tackle:
+        name: "Flame Tackle"
+        description: "Deal {damage} damage. Add 2 Slimed to your discard pile."
+      split:
+        name: "Split"
+        description: "Split into two smaller slimes."
+  
+  SpikeSlimeM:
+    name: "Spike Slime (M)"
+    intentions:
+      lick:
+        name: "Lick"
+        description: "Apply {amount} Frail to you."
+      flame_tackle:
+        name: "Flame Tackle"
+        description: "Deal {damage} damage. Add 2 Slimed to your discard pile."
+      split:
+        name: "Split"
+        description: "Split into two smaller slimes."
+  
+  SpikeSlimeS:
+    name: "Spike Slime (S)"
+    intentions:
+      lick:
+        name: "Lick"
+        description: "Apply {amount} Frail to you."
+      flame_tackle:
+        name: "Flame Tackle"
+        description: "Deal {damage} damage. Add 2 Slimed to your discard pile."
+  
+  TheGuardian:
+    name: "The Guardian"
+    intentions:
+      charging_up:
+        name: "Charging Up"
+        description: "Gain {block} Block."
+      fierce_bash:
+        name: "Fierce Bash"
+        description: "Deal {damage} damage."
+      vent_steam:
+        name: "Vent Steam"
+        description: "Apply 1 Weak and 1 Vulnerable to you."
+      whirlwind:
+        name: "Whirlwind"
+        description: "Deal {damage} damage to ALL characters."
+      defensive_mode:
+        name: "Defensive Mode"
+        description: "Gain {block} Block."
+      roll_attack:
+        name: "Roll Attack"
+        description: "Deal {damage} damage."
+      twin_slam:
+        name: "Twin Slam"
+        description: "Deal {damage} damage twice."
+  
+  SlimeBoss:
+    name: "Slime Boss"
+    intentions:
+      goop_spray:
+        name: "Goop Spray"
+        description: "Add 2 Slimed to your discard pile."
+      preparing:
+        name: "Preparing"
+        description: "Preparing to split next turn."
+      slime_boss_slam:
+        name: "Slam"
+        description: "Deal {damage} damage."
+  
+  TheHexaghost:
+    name: "The Hexaghost"
+    intentions:
+      activate:
+        name: "Activate"
+        description: "Charging up..."
+      divider:
+        name: "Divider"
+        description: "Deal {damage} damage divided among all targets."
+      sear:
+        name: "Sear"
+        description: "Deal {damage} damage. Add a Burn to your discard pile."
+      tackle:
+        name: "Tackle"
+        description: "Deal {damage} damage twice."
+      inflame:
+        name: "Inflame"
+        description: "Gain {strength_gain} Strength."
+      inferno:
+        name: "Inferno"
+        description: "Deal {damage} damage. Exhaust all Burns in your hand and discard pile."
+  
+  Louse:
+    name: "Louse"
+
+
+rooms:
+  combat:
+    victory: "Victory! All enemies defeated!"
+    rewards:
+      gold: "Gained {amount} gold"
+      card: "Added {card_name} to deck"
+

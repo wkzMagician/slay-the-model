@@ -16,8 +16,8 @@ class Intention(ABC, Localizable):
     to execute when triggered.
     """
     
-    # 本地化
-    localization_prefix = "enemies.intentions"
+    # 本地化 - intentions are now nested under owner enemy
+    localization_prefix = "enemies"
     localizable_fields = ("name", "description")
     
     def __init__(self, name: str, enemy: 'Enemy'):
@@ -39,6 +39,18 @@ class Intention(ABC, Localizable):
         """
         pass
     
+    def _get_localized_key(self, field: str) -> str:
+        """构建字段对应的本地化 key。
+        
+        Keys are structured as: enemies.{EnemyClass}.intentions.{intention_name}.{field}
+        e.g., enemies.Cultist.intentions.ritual.name
+        """
+        # Get intention name from __dict__ to avoid property recursion
+        intention_name = self.__dict__.get('name', 'unknown')
+        # Get owner's class name (e.g., "Cultist")
+        owner_class = self.enemy.__class__.__name__
+        return f"{self.localization_prefix}.{owner_class}.intentions.{intention_name}.{field}"
+    
     @property
     def description(self) -> 'BaseLocalStr':
         """获取意图描述（动态替换{damage}等变量）"""    
@@ -50,7 +62,7 @@ class Intention(ABC, Localizable):
             from utils.dynamic_values import resolve_potential_damage
             from engine.game_state import game_state
             player = game_state.player
-            variables['damage'] = resolve_potential_damage(self.base_damage, self.enemy, player, None)
+            variables['damage'] = resolve_potential_damage(self.base_damage, self.enemy, player)
         
         # 其他数值
         if self.base_block > 0:

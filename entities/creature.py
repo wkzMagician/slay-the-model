@@ -53,27 +53,43 @@ class Creature(Localizable):
         self._hp = max(0, min(self.max_hp, int(value)))
 
     def take_damage(self, amount: int, source=None, card=None, damage_type: str = "direct") -> int:
+        """Take damage after block absorption. Returns actual damage dealt to HP."""
         if amount <= 0:
             return 0
+        
         damage = amount
-        for power in list(self.powers):
-            if hasattr(power, "on_damage_taken"):
-                damage = power.on_damage_taken(
-                    damage,
-                    source=source,
-                    card=card,
-                    player=self,
-                    damage_type=damage_type,
-                )
-        if damage <= 0:
-            return 0
-
+        
+        # Apply block
         absorbed = min(self.block, damage)
         self.block -= absorbed
         remaining = damage - absorbed
+        
         if remaining > 0:
             self.hp -= remaining
+        
         return remaining
+
+    def get_damage_dealt_modifier(self, base_damage: int) -> int:
+        """Calculate modified damage when this creature deals damage.
+        
+        Applies Strength, Weakness, etc.
+        """
+        damage = base_damage
+        for power in self.powers:
+            if hasattr(power, 'modify_damage_dealt'):
+                damage = power.modify_damage_dealt(damage)
+        return max(0, damage)
+
+    def get_damage_taken_multiplier(self) -> float:
+        """Get damage multiplier when this creature takes damage.
+        
+        Applies Vulnerable (1.5x), Buffer, etc.
+        """
+        multiplier = 1.0
+        for power in self.powers:
+            if hasattr(power, 'get_damage_taken_multiplier'):
+                multiplier *= power.get_damage_taken_multiplier()
+        return multiplier
 
     def heal(self, amount: int) -> int:
         if amount <= 0:

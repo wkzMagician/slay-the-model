@@ -76,7 +76,7 @@ class ActionQueue:
             action = self.queue.pop(0)
             try:
                 from engine.game_state import game_state
-                if game_state.config.debug:
+                if game_state.config.mode == "debug" and game_state.config.debug["print"]:
                     print(f"Executing action: {action}")
             except ImportError:
                 pass  # Debug mode not available

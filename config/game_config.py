@@ -19,6 +19,7 @@ class GameConfig:
             },
             "debug": {
                 "select_type": "random",
+                "god_mode": False,
             },
         }
 

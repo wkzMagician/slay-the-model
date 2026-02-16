@@ -43,6 +43,11 @@ class Combat(Localizable):
         self.combat_ended = False
         self.player_turn_ended = False
 
+    def add_enemy(self, enemy: Enemy):
+        """Add an enemy to combat."""
+        if enemy not in self.enemies:
+            self.enemies.append(enemy)
+
     def remove_enemy(self, enemy: Enemy):
         """Remove an enemy from combat (e.g., when killed)."""
         if enemy in self.enemies:
@@ -109,6 +114,9 @@ class Combat(Localizable):
         self.combat_state.current_phase = "player_action"
 
         while self.combat_state.current_phase == "player_action":
+            # Print detailed combat state for player feedback
+            self._print_combat_state()
+
             self._build_player_action()
 
             result = game_state.execute_all_actions()
@@ -186,6 +194,60 @@ class Combat(Localizable):
             
         game_state.action_queue.add_actions(actions)
 
+    def _print_combat_state(self):
+        """Print detailed combat state for player feedback"""
+        from engine.game_state import game_state
+        from localization import t
+        
+        player = game_state.player
+        hand = game_state.player.card_manager.get_pile("hand")
+        
+        # Print player state
+        print(f"\n=== {t('ui.player_turn', default='Player Turn')} ===")
+        print(f"{t('ui.player_hp', default='HP')}: {player.hp}/{player.max_hp}")
+        print(f"{t('ui.player_block', default='Block')}: {player.block}")
+        print(f"{t('ui.player_energy', default='Energy')}: {player.energy}/{player.max_energy}")
+        
+        # Print hand
+        print(f"\n{t('ui.hand', default='Hand')} ({len(hand)}):")
+        for i, card in enumerate(hand):
+            print(f"  [{i+1}] {card.info()}")
+        
+        # Print player powers
+        if player.powers:
+            print(f"\n{t('ui.powers', default='Powers')}:")
+            for power in player.powers:
+                power_name = power.local("name").resolve()
+                if power.amount > 0:
+                    print(f"  {power_name} x{power.amount}")
+                else:
+                    print(f"  {power_name}")
+        
+        # Print enemies state
+        print(f"\n=== {t('combat.enemies', default='Enemies')} ===")
+        for i, enemy in enumerate(self.enemies):
+            print(f"\n{t('ui.enemy', default='Enemy')} {i+1}:") # todo: 显示 name
+            print(f"  {t('ui.enemy_hp', default='HP')}: {enemy.hp}/{enemy.max_hp}")
+            print(f"  {t('ui.enemy_block', default='Block')}: {enemy.block}")
+            
+            # Print enemy powers
+            if enemy.powers:
+                print(f"  {t('ui.powers', default='Powers')}:")
+                for power in enemy.powers:
+                    power_name = power.local("name").resolve()
+                    if power.amount > 0:
+                        print(f"    {power_name} x{power.amount}")
+                    else:
+                        print(f"    {power_name}")
+            
+            # Print enemy intention
+            if enemy.current_intention:
+                intention = enemy.current_intention
+                intention_text = intention.description.resolve()
+                print(f"  {t('ui.intention', default='Intention')}: {intention_text}")
+        
+        print()  # Empty line for readability
+
     def _end_player_phase(self) -> BaseResult:
         """
         End player phase.
@@ -228,13 +290,28 @@ class Combat(Localizable):
         from engine.game_state import game_state
 
         # DEBUG: Print combat state at start of enemy phase
-        _debug_print_combat_state("ENEMY_PHASE_START", self.enemies)
+        # _debug_print_combat_state("ENEMY_PHASE_START", self.enemies)
 
         self.combat_state.current_phase = "enemy_action"
 
         # For each alive enemy, execute actions
         for enemy in self.enemies:
             if not enemy.is_dead():
+                # Print enemy intention before executing
+                enemy_name_raw = enemy.local("name").resolve() if hasattr(enemy, 'local') else 'Enemy'
+                # Extract readable name from localization key (e.g., "Cultist" from "enemies.Cultist.name")
+                if enemy_name_raw.startswith("enemies."):
+                    enemy_name = enemy_name_raw.split(".")[1] if len(enemy_name_raw.split(".")) > 1 else enemy_name_raw
+                else:
+                    enemy_name = enemy_name_raw
+                intent_desc_raw = enemy.current_intention.description.resolve() if hasattr(enemy, 'current_intention') and hasattr(enemy.current_intention, 'description') else ''
+                # Extract readable description from localization key
+                if intent_desc_raw.startswith("enemies."):
+                    intent_desc = intent_desc_raw.split(".")[-1] if "." in intent_desc_raw else intent_desc_raw
+                else:
+                    intent_desc = intent_desc_raw
+                if intent_desc:
+                    print(f">> Enemy [{enemy_name}] intends to: {intent_desc}")
                 game_state.action_queue.add_actions(enemy.execute_intention())
 
         return game_state.execute_all_actions()
@@ -296,6 +373,11 @@ class Combat(Localizable):
         # Trigger combat start effects for enemies
         for enemy in self.enemies:
             enemy.on_combat_start(floor=game_state.current_floor)
+        
+        # God mode: apply 999 BufferPower if enabled
+        if game_state.config.get("debug.god_mode", False):
+            from powers.definitions.buffer import BufferPower
+            game_state.player.add_power(BufferPower(amount=999, owner=game_state.player))
         
         # Reset combat flags
         self.combat_ended = False

@@ -102,19 +102,19 @@ def resolve_card_damage(card: 'Card') -> int:
     elif status == StatusType.DIVINITY:
         damage = int(damage * 3)
     
-    # 5. Akabeko relic bonus: first attack deals 8 additional damage
+    # 5. Akabeko relic bonus: first attack deals 8 additional damage (only in combat)
     if hasattr(card, 'card_type') and card.card_type == "Attack":
-        # Check for Akabeko relic and first attack tracking
-        assert game_state.current_combat is not None
-        first_attack_played = game_state.current_combat.combat_state.turn_attack_cards_played == 0
-        
-        # Check if player has Akabeko relic
-        has_akabeko = any(r.__class__.__name__ == 'Akabeko' for r in player.relics)
-        
-        if has_akabeko and first_attack_played:
-            damage += 8
-            # Mark that first attack has been played
-            game_state.current_combat.combat_state.turn_attack_cards_played += 1
+        # Only apply combat-specific bonuses when in combat
+        if game_state.current_combat is not None:
+            first_attack_played = game_state.current_combat.combat_state.turn_attack_cards_played == 0
+            
+            # Check if player has Akabeko relic
+            has_akabeko = any(r.__class__.__name__ == 'Akabeko' for r in player.relics)
+            
+            if has_akabeko and first_attack_played:
+                damage += 8
+                # Mark that first attack has been played
+                game_state.current_combat.combat_state.turn_attack_cards_played += 1
     
     return max(0, damage)
 

@@ -3,6 +3,7 @@ Card base class - class-driven card system with namespace support
 """
 from typing import Any, Dict, List, Optional
 from actions.base import Action, LambdaAction
+from actions.combat import DealDamageAction
 from entities.creature import Creature
 # 延迟导入以避免循环导入
 def get_game_state():
@@ -240,7 +241,8 @@ class Card(Localizable):
             if fallback:
                 desc_key = fallback
             else:
-                return BaseLocalStr()
+                # Return empty LocalStr instead of raw BaseLocalStr
+                return LocalStr(key="")
         
         # 构建变量字典
         from utils.dynamic_values import resolve_card_value, get_magic_value
@@ -251,10 +253,10 @@ class Card(Localizable):
         for vt in value_types:
             variables[vt] = resolve_card_value(self, vt)
         
-        # magic变量
+        # magic变量 - create nested dict for format() to access via {magic.key}
         if hasattr(self, '_magic'):
-            for key, value in self._magic.items():
-                variables[f'magic.{key}'] = value
+            magic_dict = type('MagicDict', (), {k: v for k, v in self._magic.items()})()
+            variables['magic'] = magic_dict
         
         # 返回带有格式化变量的 LocalStr 对象
         return self.local(desc_key, **variables)
@@ -315,7 +317,6 @@ class Card(Localizable):
         """卡牌被打出时触发，返回 Action 列表"""
         try:
             from actions.combat import (
-                AttackAction,
                 GainBlockAction,
                 HealAction,
                 GainEnergyAction,
@@ -337,13 +338,12 @@ class Card(Localizable):
             if self.damage > 0:
                 hits = max(1, resolve_card_value(self, 'attack_times'))
                 for _ in range(hits):
-                    action = AttackAction(
+                    action = DealDamageAction(
                         damage=self.damage,
                         target=target,
-                        source=source,
-                        damage_type="direct",
+                        damage_type="attack",
+                        card=self,
                     )
-                    action.card = self
                     actions.append(action)
             
             # 治疗

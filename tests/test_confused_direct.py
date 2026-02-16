@@ -24,6 +24,5 @@ assert hasattr(power, 'on_turn_start'), "should have on_turn_start method"
 assert callable(power.on_turn_start), "on_turn_start should be callable"
 print("Test 3 PASSED: on_turn_start method")
 
-print("
-=== All ConfusedPower unit tests PASSED ===")
+print("\n=== All ConfusedPower unit tests PASSED ===")
 sys.exit(0)

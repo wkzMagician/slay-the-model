@@ -60,6 +60,14 @@ class GameFlow:
             elif result == "WIN":
                 self._handle_game_won()
                 break
+            
+            # Handle MultipleActionsResult from rooms (e.g., combat rewards)
+            from utils.result_types import MultipleActionsResult
+            if isinstance(result, MultipleActionsResult):
+                # Execute the reward actions
+                game_state.action_queue.add_actions(result.actions)
+                game_state.execute_all_actions()
+            
             # Leave the room (cleanup)
             cur_room.leave()
 
@@ -119,12 +127,12 @@ class GameFlow:
     
     def _handle_game_over(self):
         """Handle player death"""
-        print(f"\n💀 {t('ui.game_over', default='Game Over! You have fallen in the Spire. 💀')}")
+        print(f"\n[X] {t('ui.game_over', default='Game Over! You have fallen in the Spire.')}")
     
     def _handle_game_won(self):
         """Handle player victory"""
-        print(f"\n🎉 {t('ui.game_won', default='Congratulations! You have conquered the Spire! 🎉')}")
+        print(f"\n[WIN] {t('ui.game_won', default='Congratulations! You have conquered the Spire!')}")
     
     def _handle_game_exit(self):
         """Handle game exit from menu"""
-        print(f"\n👋 {t('ui.game_exit', default='Thanks for playing! Goodbye! 👋')}")
+        print(f"\n[BYE] {t('ui.game_exit', default='Thanks for playing! Goodbye!')}")

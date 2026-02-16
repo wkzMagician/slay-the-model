@@ -24,3 +24,7 @@ class VulnerablePower(Power):
             duration: Duration in turns (default 2)
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
+
+    def get_damage_taken_multiplier(self) -> float:
+        """Return damage multiplier. Vulnerable increases damage taken by 50%."""
+        return 1.5

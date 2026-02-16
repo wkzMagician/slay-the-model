@@ -39,6 +39,7 @@ class FlameTackleIntention(Intention):
     
     def __init__(self, enemy: 'Enemy'):
         super().__init__("flame_tackle", enemy)
+        self.base_damage = 16
     
     def execute(self) -> List['Action']:
         """Execute Flame Tackle: deals 16 damage and adds Slimed cards."""
@@ -64,8 +65,8 @@ class FlameTackleIntention(Intention):
             from utils.registry import get_registered
             SlimedCard = get_registered("card", "Slimed")
             if SlimedCard:
-                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard"))
-                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard"))
+                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard", source="enemy"))
+                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard", source="enemy"))
         except:
             # If Slimed card doesn't exist, just deal damage
             pass
