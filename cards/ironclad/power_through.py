@@ -30,7 +30,7 @@ class PowerThrough(Card):
         actions = super().on_play(target)
 
         # Add 2 Wound(Status Card) to hand
-        from cards.colorsless.definitions import Wound # todo: Wound Card
+        from cards.colorless import Wound
         for _ in range(2):
             actions.append(AddCardAction(card=Wound(), dest_pile="hand"))
         return actions
