@@ -37,26 +37,27 @@ class RemoveCardAction(Action):
 @register("action")
 class AddCardAction(Action):
     """Add a specific card to a pile
-    
+
     Required:
         card (Card): Card to add
         dest_pile (str): Destination pile
-        
+
     Optional:
         source (str): Source of card ("reward", "enemy", etc.)
+        position (PilePosType): Position in pile (TOP or BOTTOM), default TOP
     """
-    def __init__(self, card, dest_pile: str, source: str = "reward"):
+    def __init__(self, card, dest_pile: str, source: str = "reward", position: PilePosType = PilePosType.TOP):
         self.card = card
         self.dest_pile = dest_pile
         self.source = source
-        # todo: position argument, default to PilePosType.TOP
-    
+        self.position = position
+
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
         if self.card and game_state.player:
             if hasattr(game_state.player, "card_manager"):
-                game_state.player.card_manager.add_to_pile(self.card, self.dest_pile, pos=PilePosType.TOP)
+                game_state.player.card_manager.add_to_pile(self.card, self.dest_pile, pos=self.position)
                 # Only show [Reward] for actual rewards, use appropriate prefix for others
                 if self.source == "reward":
                     print(f"[Reward] Added {self.card.display_name.resolve()} to {self.dest_pile}")
