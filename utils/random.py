@@ -34,7 +34,7 @@ def get_random_card(namespaces: Optional[List[str]] = None,
         Optional[Card]: A random card matching the criteria, or None if none found.
     """
     
-    if target_set is not None:
+    if target_set:
         target_card_idstr = random.choices(target_set, k=1)[0]
         card_cls = get_registered("card", target_card_idstr)
         return card_cls() if card_cls else None
