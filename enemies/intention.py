@@ -29,6 +29,7 @@ class Intention(ABC, Localizable):
         self.base_block = 0
         self.base_strength_gain = 0
         self.base_heal = 0
+        self.base_amount = 0  # Generic amount for status effects
     
     @abstractmethod
     def execute(self) -> List['Action']:
@@ -71,6 +72,8 @@ class Intention(ABC, Localizable):
             variables['strength_gain'] = self.base_strength_gain
         if self.base_heal > 0:
             variables['heal'] = self.base_heal
+        if self.base_amount > 0:
+            variables['amount'] = self.base_amount
         
         # 返回带变量的LocalStr对象
         return self.local("description", **variables)

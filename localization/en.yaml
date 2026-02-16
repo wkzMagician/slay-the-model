@@ -241,6 +241,9 @@ powers:
   EntangledPower:
     name: "Entangled"
     description: "Cannot play Attack cards this turn."
+  BufferPower:
+    name: "Buffer"
+    description: "Prevents the next {amount} times you would lose HP."
 
 relics:
   # Common Global Relics

@@ -14,4 +14,4 @@ ai:
 debug:
   print: False
   select_type: random
-  god_mode: False  # If True, apply 999 BufferPower at combat start
+  god_mode: True  # If True, apply 999 BufferPower at combat start
