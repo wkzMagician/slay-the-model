@@ -16,6 +16,14 @@ class BufferPower(Power):
     
     def __init__(self, amount: int = 0, duration: int = 0, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
-        self.can_prevent = True  # Can prevent damage once
     
-    # TODO: 在DealDamageAction里判断。或者增加 on_attack
+    def try_prevent_damage(self) -> bool:
+        """Attempt to prevent damage. Returns True if damage is prevented.
+        
+        Decrements the buffer count and returns True if there was a buffer
+        charge available.
+        """
+        if self.amount > 0:
+            self.amount -= 1
+            return True
+        return False

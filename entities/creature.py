@@ -90,6 +90,16 @@ class Creature(Localizable):
             if hasattr(power, 'get_damage_taken_multiplier'):
                 multiplier *= power.get_damage_taken_multiplier()
         return multiplier
+    
+    def try_prevent_damage(self) -> bool:
+        """Check if any power can prevent damage (e.g., BufferPower).
+        
+        Returns True if damage was prevented, False otherwise.
+        """
+        for power in list(self.powers):
+            if hasattr(power, 'try_prevent_damage') and power.try_prevent_damage():
+                return True
+        return False
 
     def heal(self, amount: int) -> int:
         if amount <= 0:

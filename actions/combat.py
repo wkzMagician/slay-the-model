@@ -225,6 +225,13 @@ class DealDamageAction(Action):
             multiplier = self.target.get_damage_taken_multiplier()
             damage_amount = int(damage_amount * multiplier)
 
+        # Check for BufferPower damage prevention
+        if hasattr(self.target, 'try_prevent_damage') and self.target.try_prevent_damage():
+            from localization import t
+            target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Unknown'))
+            print(t("combat.buffer_prevented", default="{target_name}'s Buffer prevented the damage!", target_name=target_name))
+            return NoneResult()
+
         # Actually deal damage (Creature.take_damage only handles numerical changes)
         damage_dealt = self.target.take_damage(
             damage_amount,
