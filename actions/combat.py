@@ -93,44 +93,47 @@ class AddEnemyAction(Action):
 
 @register("action")
 class HealAction(Action):
-    """Heal the player for a specified amount
+    """Heal a creature for a specified amount
 
     Required:
         amount (int): Amount to heal
 
     Optional:
-        None
+        target (Creature): Target to heal (defaults to player)
     """
-    # todo: new parameter: target
-    # reason: enemky can also heal
-    def __init__(self, amount: int):
+    def __init__(self, amount: int, target: 'Creature' = None):
         self.amount = amount
+        self.target = target
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         actions_to_return = []
         
-        if game_state.player:
+        # Default to player if no target specified
+        heal_target = self.target if self.target else game_state.player
+        
+        if heal_target:
             # Trigger on_heal hook
-            actions = game_state.player.on_heal(self.amount)
+            actions = heal_target.on_heal(self.amount)
             if actions:
                 actions_to_return.extend(actions)
 
-            # Trigger relic on_heal hooks
-            for relic in game_state.player.relics:
-                if hasattr(relic, "on_heal"):
-                    relic_actions = relic.on_heal(
-                        heal_amount=self.amount,
-                        player=game_state.player,
-                        entities=game_state.current_combat.enemies if game_state.current_combat else [],
-                    )
-                    if relic_actions:
-                        actions_to_return.extend(relic_actions)
+            # Trigger relic on_heal hooks (only for player)
+            if heal_target == game_state.player:
+                for relic in game_state.player.relics:
+                    if hasattr(relic, "on_heal"):
+                        relic_actions = relic.on_heal(
+                            heal_amount=self.amount,
+                            player=game_state.player,
+                            entities=game_state.current_combat.enemies if game_state.current_combat else [],
+                        )
+                        if relic_actions:
+                            actions_to_return.extend(relic_actions)
 
             # Actually heal (only numerical changes)
-            old_hp = game_state.player.hp
-            game_state.player.hp = min(game_state.player.hp + self.amount, game_state.player.max_hp)
-            healed = game_state.player.hp - old_hp
+            old_hp = heal_target.hp
+            heal_target.hp = min(heal_target.hp + self.amount, heal_target.max_hp)
+            healed = heal_target.hp - old_hp
             print(t("ui.healed", default=f"Healed for {healed} HP.", amount=healed))
         
         if actions_to_return:
