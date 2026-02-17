@@ -18,10 +18,11 @@ from utils.types import RoomType, RarityType, CardType, CombatType
 class CombatRoom(Room):
     """Combat room - manages the creation and execution of Combat"""
 
-    def __init__(self, enemies=None, room_type=RoomType.MONSTER, **kwargs):
+    def __init__(self, enemies=None, room_type=RoomType.MONSTER, encounter_name: str = "", **kwargs):
         super().__init__(**kwargs)
         self.room_type = room_type
         self.enemies = enemies or []
+        self.encounter_name = encounter_name  # Track encounter name for history
         self.combat = None
     
     def init(self):
@@ -77,9 +78,16 @@ class CombatRoom(Room):
         from engine.game_state import game_state
         actions = []
 
-        # Increment normal encounter counter (only for normal monsters, not elites/bosses)
+        # Increment normal encounter counter and track history (only for normal monsters, not elites/bosses)
         if self.room_type == RoomType.MONSTER:
             game_state.normal_encounters_fought += 1
+            if self.encounter_name:
+                game_state.encounter_history.append(self.encounter_name)
+
+        # Track elite history
+        if self.room_type == RoomType.ELITE:
+            if self.encounter_name:
+                game_state.elite_history.append(self.encounter_name)
 
         # Calculate gold reward
         gold_amount = self._calculate_gold_reward()

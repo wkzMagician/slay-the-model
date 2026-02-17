@@ -332,18 +332,21 @@ class MapManager:
         if room_type == RoomType.MONSTER:
             # Get monster encounter from encounter pool
             from engine.game_state import game_state
-            enemies = self.encounter_pool.get_normal_encounter(
+            enemies, encounter_name = self.encounter_pool.get_normal_encounter(
                 floor=self.map_data.current_floor,
                 encounter_count=game_state.normal_encounters_fought,
+                encounter_history=game_state.encounter_history,
             )
-            return CombatRoom(enemies=enemies)
+            return CombatRoom(enemies=enemies, encounter_name=encounter_name)
         
         elif room_type == RoomType.ELITE:
             # Get elite encounter from encounter pool
-            enemies = self.encounter_pool.get_elite_encounter(
-                floor=self.map_data.current_floor
+            from engine.game_state import game_state
+            enemies, encounter_name = self.encounter_pool.get_elite_encounter(
+                floor=self.map_data.current_floor,
+                last_elite=game_state.elite_history[-1] if game_state.elite_history else None
             )
-            return CombatRoom(enemies=enemies, room_type=RoomType.ELITE)
+            return CombatRoom(enemies=enemies, room_type=RoomType.ELITE, encounter_name=encounter_name)
         
         elif room_type == RoomType.BOSS:
             # Get boss encounter from encounter pool

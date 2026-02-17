@@ -7,7 +7,7 @@ Global action queue architecture:
 - No individual action queues in rooms/events/combat
 """
 import random as rd
-from typing import Optional
+from typing import Optional, List
 from utils.result_types import BaseResult, GameStateResult
 from config.game_config import GameConfig
 import os
@@ -58,8 +58,16 @@ class GameState:
         self.card_chance_common_counter = 0
 
         # Normal encounter counter for encounter pool selection
-        # First 3 encounters use weak pool, rest use strong pool
+        # First 3 encounters use easy pool, rest use hard pool
         self.normal_encounters_fought = 0
+        
+        # Encounter history for constraint rules
+        # Same encounter cannot appear in next 2 encounters
+        self.encounter_history: List[str] = []
+        
+        # Elite history for elite constraint rules
+        # Same elite cannot appear twice in a row
+        self.elite_history: List[str] = []
 
         # Current room tracking
         self.current_room: Optional[Room] = None
