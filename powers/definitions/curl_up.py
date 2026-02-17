@@ -26,7 +26,7 @@ class CurlUpPower(Power):
         self.localization_key = "powers.curl_up"
         self.triggered = False
         
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type=None):
+    def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type="direct"):
         """
         Called when owner takes damage.
         Gains block equal to amount, then marks itself for removal.
@@ -35,6 +35,7 @@ class CurlUpPower(Power):
             damage: Amount of damage taken
             source: Source of the damage (optional)
             card: Card that caused damage (optional)
+            player: Player taking damage (optional)
             damage_type: Type of damage (optional)
             
         Returns:
@@ -50,19 +51,19 @@ class CurlUpPower(Power):
         """Return True if this power should be removed after triggering."""
         return self.triggered
         
-    def local(self, key: str, **kwargs) -> LocalStr:
+    def local(self, field: str, **kwargs) -> LocalStr:
         """Get localized string for this power
         
         Args:
-            key: The localization key ('name' or 'description')
+            field: The localization field ('name' or 'description')
             **kwargs: Optional arguments (e.g., amount from combat.py)
         """
-        if key == "name":
+        if field == "name":
             return LocalStr(f"{self.localization_key}.name", default=self.name)
-        elif key == "description":
+        elif field == "description":
             # Use passed amount or fall back to self.amount
             amount = kwargs.get('amount', self.amount)
             return LocalStr(f"{self.localization_key}.description", 
                           default=f"On damage, gains {amount} Block.",
                           amount=amount)
-        return super().local(key)
+        return super().local(field)

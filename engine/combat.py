@@ -72,6 +72,7 @@ class Combat(Localizable):
         game_state.action_queue.add_action(DisplayTextAction(
             text_key="combat.enter"
         ))
+        game_state.execute_all_actions()
 
         # Combat main loop (as per todo.md)
         while True:
@@ -96,9 +97,6 @@ class Combat(Localizable):
         """
         from engine.game_state import game_state
 
-        # Print combat state BEFORE drawing cards
-        self._print_combat_state()
-
         # Start player phase: gain energy, draw cards, trigger start-of-turn effects
         self._start_player_turn()
 
@@ -117,6 +115,8 @@ class Combat(Localizable):
         self.combat_state.current_phase = "player_action"
 
         while self.combat_state.current_phase == "player_action":
+            self._print_combat_state()
+            
             self._build_player_action()
 
             result = game_state.execute_all_actions()
@@ -201,9 +201,6 @@ class Combat(Localizable):
 
         player = game_state.player
         hand = game_state.player.card_manager.get_pile("hand")
-
-        # Print player turn header
-        print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
 
         # Print combat status
         print(f"\n{t('combat.display', default='--- Combat Status ---')}")
@@ -408,6 +405,9 @@ class Combat(Localizable):
         """Start player turn - draw cards, reset energy, trigger start-of-turn effects"""
         from engine.game_state import game_state
         from localization import t
+        
+        # Print player turn header
+        print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
 
         # Draw cards
         draw_count = game_state.player.draw_count  # todo: modified by relics/powers

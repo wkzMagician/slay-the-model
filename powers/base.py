@@ -153,6 +153,17 @@ class Power(Localizable):
         """
         return []
     
+    def should_remove(self) -> bool:
+        """Return True if this power should be removed.
+        
+        Override this method in subclasses for powers that need to be
+        removed based on custom conditions (e.g., after triggering once).
+        
+        Returns:
+            False by default (power stays until duration expires)
+        """
+        return False
+        
     def info(self):
         """
         获取力量的完整信息显示

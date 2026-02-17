@@ -344,6 +344,12 @@ enemies:
     name: "虱子"
   JawWorm:
     name: "颚虫"
+  Lagavulin:
+    name: "拉格瓦林"
+  GremlinNob:
+    name: "地精贵族"
+  Sentry:
+    name: "哨兵"
   # Intention descriptions
   intentions:
     # Cultist

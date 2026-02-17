@@ -44,6 +44,7 @@ from powers.definitions.battle_trance_draw_power import BattleTranceDrawPower
 from powers.definitions.sentinel import SentinelPower
 from powers.definitions.buffer import BufferPower
 from powers.definitions.rupture import RupturePower
+from powers.definitions.enrage import EnragePower
 
 __all__ = [
     "StrengthPower",
@@ -88,4 +89,5 @@ __all__ = [
     "SentinelPower",
     "BufferPower",
     "RupturePower",
+    "EnragePower",
 ]

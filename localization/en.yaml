@@ -940,6 +940,45 @@ enemies:
   
   Louse:
     name: "Louse"
+  
+  Lagavulin:
+    name: "Lagavulin"
+    intentions:
+      sleep:
+        name: "Sleep"
+        description: "Does nothing while regenerating 8 Block at end of turn."
+      stunned:
+        name: "Stunned"
+        description: "Does nothing."
+      attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+      siphon_soul:
+        name: "Siphon Soul"
+        description: "You lose {amount} Dexterity. Lagavulin gains {amount} Strength."
+  
+  GremlinNob:
+    name: "Gremlin Nob"
+    intentions:
+      bellow:
+        name: "Bellow"
+        description: "Gain 2 Enrage."
+      skull_bash:
+        name: "Skull Bash"
+        description: "Deal {damage} damage. Apply 2 Vulnerable to you."
+      bull_rush:
+        name: "Bull Rush"
+        description: "Deal {damage} damage."
+  
+  Sentry:
+    name: "Sentry"
+    intentions:
+      bolt:
+        name: "Bolt"
+        description: "Add 2 Dazed to your discard pile."
+      beam:
+        name: "Beam"
+        description: "Deal {damage} damage."
 
 
 rooms:

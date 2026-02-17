@@ -9,7 +9,7 @@ class GameConfig:
             "language": "en",
             "seed": -1,
             "character": "Ironclad",
-            "selection_mode": "single",
+            "select_overflow": "truncate",
             "human": {
                 "auto_select": False,
                 "show_menu_option": True,
@@ -35,7 +35,7 @@ class GameConfig:
         self.language = defaults["language"]
         self.seed = defaults["seed"]
         self.character = defaults["character"]
-        self.selection_mode = defaults["selection_mode"]
+        self.select_overflow = defaults["select_overflow"]
         self.human = defaults["human"]
         self.ai = defaults["ai"]
         self.debug = defaults["debug"]

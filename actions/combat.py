@@ -447,6 +447,12 @@ class PlayCardAction(Action):
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
+        from utils.combat import resolve_target
+        from utils.types import CardType
+        from utils.option import Option
+        from localization import LocalStr
+        from actions.display import SelectAction
+        
         player = game_state.player
         enemies = game_state.current_combat.enemies
 
@@ -460,20 +466,22 @@ class PlayCardAction(Action):
             return SingleActionResult(DiscardCardAction(card=self.card))
         
         # determine target
-        from utils.types import CardType
         if self.card.card_type != CardType.ATTACK:
             target = player
             return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
         else:
             if self.is_auto:
-                from utils.combat import resolve_target
                 target_type = self.card.target_type
                 assert target_type is not None
-                target = resolve_target(target_type)
-                return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
+                target_or_action = resolve_target(target_type, card=self.card, ignore_energy=self.ignore_energy)
+                
+                # Handle case where resolve_target returns a SelectAction (for target selection)
+                if isinstance(target_or_action, SelectAction):
+                    return SingleActionResult(target_or_action)
+                else:
+                    target = target_or_action
+                    return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
             else:
-                from utils.option import Option
-                from localization import LocalStr
                 options = []
                 for enemy in enemies:
                     options.append(Option(

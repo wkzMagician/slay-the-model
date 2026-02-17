@@ -230,20 +230,6 @@ class Creature(Localizable):
         """
         return []
 
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> List['Action']:
-        """Called when this creature takes damage.
-        
-        Args:
-            damage: Damage amount taken
-            source: Source of damage
-            card: Card that caused the damage (if applicable)
-            damage_type: Type of damage
-            
-        Returns:
-            List of actions to queue after taking damage
-        """
-        return []
-
     def on_gain_block(self, amount: int, source=None, card=None) -> List['Action']:
         """Called when this creature gains block.
         

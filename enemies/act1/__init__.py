@@ -9,6 +9,9 @@ from .slaver import BlueSlaver, RedSlaver
 from .the_guardian import TheGuardian
 from .slime_boss import SlimeBoss
 from .the_hexaghost import TheHexaghost
+from .lagavulin import Lagavulin
+from .gremlin_nob import GremlinNob
+from .sentry import Sentry
 
 __all__ = [
     # Common enemies
@@ -22,6 +25,9 @@ __all__ = [
     'RedSlaver',
     # Elite enemies
     'FungiBeast',
+    'Lagavulin',
+    'GremlinNob',
+    'Sentry',
     # Boss enemies
     'TheGuardian',
     'SlimeBoss',

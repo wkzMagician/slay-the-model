@@ -2,7 +2,7 @@ mode: debug # human | ai | debug
 language: en
 seed: -1
 character: Ironclad
-selection_mode: "single"
+select_overflow: truncate # truncate | reselect
 
 human:
   auto_select: False
