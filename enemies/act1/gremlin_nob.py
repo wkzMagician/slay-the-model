@@ -33,8 +33,8 @@ class GremlinNob(Enemy):
         self._skull = SkullBashIntention(self, skull_damage)
         self._bull = BullRushIntention(self, bull_damage)
         
-        from powers.definitions.enrage import Enrage
-        self.add_power(Enrage(2))
+        from powers.definitions.enrage import EnragePower
+        self.add_power(EnragePower(2, owner=self))
     
     def get_current_intention(self):
         if self.turn_count == 0:

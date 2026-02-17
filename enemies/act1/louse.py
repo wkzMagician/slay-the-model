@@ -35,11 +35,10 @@ class RedLouse(Enemy):
         
         # Curl Up: Gains X Block when first receiving attack damage
         self._curl_up = random.randint(3, 7)
-        self._curl_up_triggered = False
         
-        # Add CurlUpPower to display ability
+        # Add CurlUpPower to display ability and handle curl up logic
         from powers.definitions.curl_up import CurlUpPower
-        self.add_power(CurlUpPower(self._curl_up))
+        self.add_power(CurlUpPower(self._curl_up, owner=self))
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on history.
@@ -79,23 +78,6 @@ class RedLouse(Enemy):
             return self.intentions["louse_bite"]
         else:
             return self.intentions["red_louse_grow"]
-    
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> List['Action']:
-        """Trigger Curl Up on first attack damage."""
-        actions = super().on_damage_taken(damage, source, card, damage_type)
-        
-        # Only trigger on attack damage and only once
-        if damage_type == "attack" and not self._curl_up_triggered:
-            self._curl_up_triggered = True
-            from actions.combat import GainBlockAction
-            actions.append(
-                GainBlockAction(
-                    block=self._curl_up,
-                    target=self
-                )
-            )
-        
-        return actions
 
 
 class GreenLouse(Enemy):
@@ -117,11 +99,10 @@ class GreenLouse(Enemy):
         
         # Curl Up: Gains X Block when first receiving attack damage
         self._curl_up = random.randint(3, 7)
-        self._curl_up_triggered = False
         
-        # Add CurlUpPower to display ability
+        # Add CurlUpPower to display ability and handle curl up logic
         from powers.definitions.curl_up import CurlUpPower
-        self.add_power(CurlUpPower(self._curl_up))
+        self.add_power(CurlUpPower(self._curl_up, owner=self))
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on history.
@@ -161,20 +142,3 @@ class GreenLouse(Enemy):
             return self.intentions["louse_bite"]
         else:
             return self.intentions["green_louse_spit_web"]
-    
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> List['Action']:
-        """Trigger Curl Up on first attack damage."""
-        actions = super().on_damage_taken(damage, source, card, damage_type)
-        
-        # Only trigger on attack damage and only once
-        if damage_type == "attack" and not self._curl_up_triggered:
-            self._curl_up_triggered = True
-            from actions.combat import GainBlockAction
-            actions.append(
-                GainBlockAction(
-                    block=self._curl_up,
-                    target=self
-                )
-            )
-        
-        return actions

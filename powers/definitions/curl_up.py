@@ -17,12 +17,35 @@ class CurlUpPower(Power):
     This power is triggered by the enemy's on_damage_taken method.
     """
     
-    def __init__(self, amount: int = 4):
+    def __init__(self, amount: int = 4, owner=None):
         super().__init__()
         self.amount = amount
+        self.owner = owner
         self.name = "Curl Up"
         self.power_type = "ability"
         self.localization_key = "powers.curl_up"
+        self.triggered = False
+        
+    def on_damage_taken(self, damage: int) -> int:
+        """
+        Called when owner takes damage.
+        Gains block equal to amount, then marks itself for removal.
+        
+        Args:
+            damage: Amount of damage taken
+            
+        Returns:
+            The damage (unchanged)
+        """
+        if not self.triggered and damage > 0:
+            self.triggered = True
+            if self.owner:
+                self.owner.gain_block(self.amount)
+        return damage
+    
+    def should_remove(self) -> bool:
+        """Return True if this power should be removed after triggering."""
+        return self.triggered
         
     def local(self, key: str, **kwargs) -> LocalStr:
         """Get localized string for this power
