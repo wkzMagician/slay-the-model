@@ -28,8 +28,8 @@ class Lagavulin(Enemy):
         self.turns_without_damage = 0
         self.attack_pattern_index = 0
         
-        from powers.definitions.metallicize import Metallicize
-        self.add_power(Metallicize(8))
+        from powers.definitions.metallicize import MetallicizePower
+        self.add_power(MetallicizePower(8, owner=self))
         
         damage = 20 if ascension >= 3 else 18
         dex_loss = 2 if ascension >= 3 else 1
@@ -59,7 +59,7 @@ class Lagavulin(Enemy):
             intention.execute()
         self.attack_pattern_index = 1 - self.attack_pattern_index
     
-    def on_damage_taken(self, amount: int):
+    def on_damage_taken(self, amount: int, source=None, card=None, damage_type=None):
         if self.is_sleeping and amount > 0:
             self.is_sleeping = False
             self.is_stunned = True
