@@ -99,11 +99,18 @@ class Combat(Localizable):
         # Start player phase: gain energy, draw cards, trigger start-of-turn effects
         self._start_player_turn()
         
+        # Track cards drawn for display
+        hand_size_before = len(game_state.player.card_manager.get_pile("hand"))
+        
         # Execute draw cards and start-of-turn effects immediately
         # This ensures hand is populated before building player actions
         result = game_state.execute_all_actions()
         if isinstance(result, GameStateResult) and result.state in ("COMBAT_WIN", "GAME_LOSE", "COMBAT_ESCAPE"):
             return result
+        
+        # Calculate cards drawn
+        hand_size_after = len(game_state.player.card_manager.get_pile("hand"))
+        cards_drawn = max(0, hand_size_after - hand_size_before)
                 
         # Check for combat end (e.g., all enemies dead from start-of-turn effects)
         result = self._check_combat_end()
@@ -115,7 +122,8 @@ class Combat(Localizable):
 
         while self.combat_state.current_phase == "player_action":
             # Print detailed combat state for player feedback
-            self._print_combat_state()
+            self._print_combat_state(cards_drawn)
+            cards_drawn = 0  # Reset after first print to avoid repeating "Draw X cards"
 
             self._build_player_action()
 
@@ -194,16 +202,27 @@ class Combat(Localizable):
             
         game_state.action_queue.add_actions(actions)
 
-    def _print_combat_state(self):
-        """Print detailed combat state for player feedback"""
+    def _print_combat_state(self, cards_drawn: int = 0):
+        """Print detailed combat state for player feedback
+        
+        Args:
+            cards_drawn: Number of cards drawn this turn (to display after Player Turn)
+        """
         from engine.game_state import game_state
         from localization import t
         
         player = game_state.player
         hand = game_state.player.card_manager.get_pile("hand")
         
-        # Print player state
-        print(f"\n=== {t('ui.player_turn', default='Player Turn')} ===")
+        # Print player turn header
+        print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
+        
+        # Print draw cards message after Player Turn header
+        if cards_drawn > 0:
+            print(t('combat.draw_cards').format(count=cards_drawn))
+        
+        # Print combat status
+        print(f"\n{t('combat.display', default='--- Combat Status ---')}")
         print(f"{t('ui.player_hp', default='HP')}: {player.hp}/{player.max_hp}")
         print(f"{t('ui.player_block', default='Block')}: {player.block}")
         print(f"{t('ui.player_energy', default='Energy')}: {player.energy}/{player.max_energy}")
@@ -213,32 +232,41 @@ class Combat(Localizable):
         for i, card in enumerate(hand):
             print(f"  [{i+1}] {card.info()}")
         
-        # Print player powers
+        # Print player powers with descriptions
         if player.powers:
             print(f"\n{t('ui.powers', default='Powers')}:")
             for power in player.powers:
                 power_name = power.local("name").resolve()
+                power_desc = power.local("description", amount=power.amount).resolve() if hasattr(power, 'local') else ""
                 if power.amount > 0:
                     print(f"  {power_name} x{power.amount}")
                 else:
                     print(f"  {power_name}")
+                # Print description on new line if available and not a raw key
+                if power_desc and not power_desc.startswith(power.localization_prefix if hasattr(power, 'localization_prefix') else ""):
+                    print(f"    {power_desc}")
         
         # Print enemies state
-        print(f"\n=== {t('combat.enemies', default='Enemies')} ===")
+        print(f"\n{t('combat.enemies', default='=== Enemies ===')}")
         for i, enemy in enumerate(self.enemies):
-            print(f"\n{t('ui.enemy', default='Enemy')} {i+1}:") # todo: 显示 name
+            enemy_name = enemy.local("name").resolve()
+            print(f"\n{enemy_name}:")  # Show enemy name instead of "Enemy 1:"
             print(f"  {t('ui.enemy_hp', default='HP')}: {enemy.hp}/{enemy.max_hp}")
             print(f"  {t('ui.enemy_block', default='Block')}: {enemy.block}")
             
-            # Print enemy powers
+            # Print enemy powers with descriptions
             if enemy.powers:
                 print(f"  {t('ui.powers', default='Powers')}:")
                 for power in enemy.powers:
                     power_name = power.local("name").resolve()
+                    power_desc = power.local("description", amount=power.amount).resolve() if hasattr(power, 'local') else ""
                     if power.amount > 0:
                         print(f"    {power_name} x{power.amount}")
                     else:
                         print(f"    {power_name}")
+                    # Print description on new line if available and not a raw key
+                    if power_desc and not power_desc.startswith(power.localization_prefix if hasattr(power, 'localization_prefix') else ""):
+                        print(f"      {power_desc}")
             
             # Print enemy intention
             if enemy.current_intention:
@@ -288,6 +316,10 @@ class Combat(Localizable):
             GameStateResult if combat ends, None otherwise
         """
         from engine.game_state import game_state
+        from localization import t
+
+        # Print enemy turn header
+        print(f"\n=== {t('ui.enemy_turn', default='Enemy Turn')} ===")
 
         # DEBUG: Print combat state at start of enemy phase
         # _debug_print_combat_state("ENEMY_PHASE_START", self.enemies)
@@ -373,6 +405,9 @@ class Combat(Localizable):
         # Trigger combat start effects for enemies
         for enemy in self.enemies:
             enemy.on_combat_start(floor=game_state.current_floor)
+        
+        # Clear player powers at start of each combat (powers don't persist between combats)
+        game_state.player.powers = []
         
         # God mode: apply 999 BufferPower if enabled
         if game_state.config.get("debug.god_mode", False):

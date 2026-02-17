@@ -22,13 +22,14 @@ class NeoRewardRoom(Room):
         """Enter Neo room and trigger blessing selection"""
         from engine.game_state import game_state
         from utils.result_types import MultipleActionsResult
+        from localization import t
         actions = []
 
-        # Display welcome message
-        actions.append(DisplayTextAction(
-            text_key="ui.neo_welcome",
-            default="Welcome, traveler. I am Neow. I shall grant you a blessing to begin your journey."
-        ))
+        # Display welcome message directly
+        print("\n" + "=" * 60)
+        print(t("ui.neo_welcome", default="Welcome, traveler. I am Neow."))
+        print(t("ui.neo_intro", default="I shall grant you a blessing to begin your journey."))
+        print("=" * 60 + "\n")
 
         # Create and trigger Neo event
         from events.neo_event import NeoEvent
@@ -40,11 +41,9 @@ class NeoRewardRoom(Room):
         if isinstance(result, GameStateResult):
             return result
 
-        # Display goodbye message
-        actions.append(DisplayTextAction(
-            text_key="ui.neo_goodbye",
-            default="Your journey begins now. Good luck!"
-        ))
+        # Display goodbye message directly
+        print("\n" + t("ui.neo_goodbye", default="Your journey begins now. Good luck!"))
+        print("=" * 60 + "\n")
 
         # Neo room is done, player should leave
         self.should_leave = True

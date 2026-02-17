@@ -42,6 +42,7 @@ ui:
 combat:
   enter: "=== Combat Begins ==="
   display: "--- Combat Status ---"
+  enemies: "=== Enemies ==="
   player_turn: "=== Player Turn ==="
   enemy_turn: "=== Enemy Turn ==="
   end_turn: "End turn"

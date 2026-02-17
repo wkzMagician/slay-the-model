@@ -73,8 +73,57 @@ class SelectAction(Action):
         assert len(self.options) > 0, "SelectAction requires at least one option"
         
         mode = get_game_state().config.get("mode", "debug")
+        
+        if mode == 'human':
+            return self.execute_human()
+        elif mode == 'ai':
+            return self.execute_ai()
+        elif mode == 'debug':
+            return self.execute_debug()
+        else:
+            raise ValueError("Invalid Mode!")
+        
+    def show_info(self):
+        # 展示标题与选项（翻译 name）
+        print(f"\n=== {self.title} ===")
+        for i, option in enumerate(self.options):
+            print(f"{i+1}. {option.name}")
+        
+        
+    def execute_human(self) -> 'BaseResult':
         human_module = get_game_state().config.get("human")
+        
+        if human_module.get("show_menu_option", True):
+            menu_option = Option(
+                name=LocalStr("ui.open_menu"),
+                actions=[MenuAction(self)]
+            )
+            self.options.append(menu_option)
+        self.show_info()
+        
+        # [1] 全选
+        if self.max_select == -1 and self.must_select:
+            all_actions = []
+            for option in self.options[:-1]: # 除了菜单
+                all_actions.extend(option.actions)
+            return MultipleActionsResult(all_actions)
+        
+         # [1-2] 必须选择的数量>=选择数量时，如果自动选择为True，那么就全选
+        if self.must_select and human_module.get("auto_select", False) \
+                and self.max_select >= len(self.options) - 1: # 除了菜单
+            all_actions = []
+            for option in self.options[:self.max_select]:
+                all_actions.extend(option.actions)
+            return MultipleActionsResult(all_actions)
+        
+    def execute_ai(self) -> 'BaseResult':
+        ai_module = get_game_state().config.get("ai")
+        ...
+        
+    def execute_debug(self) -> 'BaseResult':
         debug_module = get_game_state().config.get("debug")
+        mode = get_game_state().config.get("mode", "human")
+        human_module = get_game_state().config.get("human", {})
         
         # [1] 自动选择情况 
         # [1-1] must_select=True && max_select=-1 （全选，自动）

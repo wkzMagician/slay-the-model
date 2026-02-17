@@ -286,7 +286,7 @@ class Card(Localizable):
             desc = self.description
         
         # 使用ConcatLocalStr拼接各个部分
-        return self.local("name") + f" (Cost: {cost_str}, Type: {self.card_type}, Rarity: {self.rarity.value})\n" + desc
+        return self.local("name") + f" (Cost: {cost_str}, Type: {self.card_type.value}, Rarity: {self.rarity.value})\n" + desc
     
 
     def _resolve_target(self):

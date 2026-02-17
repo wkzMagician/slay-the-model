@@ -29,6 +29,16 @@ class Action(Localizable):
         """
         raise NotImplementedError
 
+    def _get_localized_key(self, field: str) -> str:
+        """构建字段对应的本地化 key。"""
+        return f"actions.{self.__class__.__name__}.{field}"
+
+
+def _get_none_result():
+    """Lazy import to avoid circular dependency"""
+    from utils.result_types import NoneResult
+    return NoneResult()
+
     def __str__(self):
         return f"{self.__class__.__name__}()"
 
@@ -87,8 +97,8 @@ class ActionQueue:
                 if hasattr(result, 'result_type'):
                     return result
 
-            return NoneResult()
-        return NoneResult()
+            return _get_none_result()
+        return _get_none_result()
 
     def is_empty(self):
         """Check if queue is empty"""

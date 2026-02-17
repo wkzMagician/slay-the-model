@@ -518,10 +518,8 @@ class DrawCardsAction(Action):
             # Draw cards from draw pile to hand
             cards: List[Card] = game_state.player.card_manager.draw_many(count)
             
-            # Print cards drawn for player feedback
-            if cards:
-                from localization import t
-                print(t('combat.draw_cards').format(count=len(cards)))
+            # Note: Draw message is now printed in CombatState._print_combat_state()
+            # after "Player Turn" header for better display order
             
             # Trigger on_card_draw powers for each drawn card
             power_actions = []
