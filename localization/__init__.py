@@ -54,6 +54,12 @@ def t(key: str, default: Any = None, **kwargs) -> str:
     trans = translations.get(current_language, {}).get(key)
     if trans is None:
         trans = default or key
+    # Resolve BaseLocalStr first
+    if isinstance(trans, BaseLocalStr):
+        trans = trans.resolve()
+    # Ensure trans is a string
+    if not isinstance(trans, str):
+        trans = str(trans)
     # Format with kwargs
     try:
         trans = trans.format(**kwargs)

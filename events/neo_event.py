@@ -61,7 +61,7 @@ class NeoEvent(Event):
         
         options = [
             Option(
-                name=LocalStr("blessing.max_hp_option"),
+                name=LocalStr("blessing.max_hp_option", amount=max_hp_small_increase),
                 actions=[ModifyMaxHpAction(amount=max_hp_small_increase)]
             ),
             Option(
@@ -115,7 +115,7 @@ class NeoEvent(Event):
         # Non-card blessings
         non_card_blessings = [
             Option(
-                name=LocalStr("blessing.max_hp_option"),
+                name=LocalStr("blessing.max_hp_option", amount=max_hp_small_increase),
                 actions=[ModifyMaxHpAction(amount=max_hp_small_increase)]
             ),
             Option(
@@ -142,11 +142,11 @@ class NeoEvent(Event):
         # Disadvantage blessings
         disadvantage_blessings = [
             Option(
-                name=LocalStr("blessing.lose_max_hp_option"),
+                name=LocalStr("blessing.lose_max_hp_option", amount=max_hp_small_decrease),
                 actions=[ModifyMaxHpAction(amount=-max_hp_small_decrease)]
             ),
             Option(
-                name=LocalStr("blessing.take_damage_option"),
+                name=LocalStr("blessing.take_damage_option", amount=damage_taken),
                 actions=[LoseHPAction(amount=damage_taken)]
             ),
             Option(
@@ -186,7 +186,7 @@ class NeoEvent(Event):
                 actions=[AddRandomRelicAction(rarities=[RarityType.RARE])]
             ),
             Option(
-                name=LocalStr("blessing.big_max_hp_option"),
+                name=LocalStr("blessing.big_max_hp_option", amount=max_hp_large_increase),
                 actions=[ModifyMaxHpAction(amount=max_hp_large_increase)]
             )
         ]
