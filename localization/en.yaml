@@ -62,6 +62,10 @@ blessing:
   random_rare_relic_option: "Obtain a random Rare relic"
   big_max_hp_option: "Gain {amount} Max HP"
 
+events:
+  neo:
+    welcome: "Before you stands a dark shrine to Neow, the enigmatic spirit of the Spire."
+
 combat:
   title: "Combat"
   choose_action: "Choose an action"
@@ -75,7 +79,7 @@ combat:
   deal_damage_random: "Deal {amount} damage to a random enemy"
   deal_damage_all: "Deal {damage} damage to all enemies"
   deal_damage_self: "Deal {damage} damage to self"
-  gain_block: "Gain {amount} block"
+  gain_block: "{source} gains {amount} block"
   gain_block_per_energy: "Gain {block_value} Block {count} times ({total} total)."
   gain_block_no_block: "Gain {amount} Block because you had no Block."
   remove_enemy_block: "Remove all Block from {target}."
@@ -273,6 +277,14 @@ powers:
   CurlUpPower:
     name: "Curl Up"
     description: "On damage, gains {amount} Block."
+  MetallicizePower:
+    name: "Metallicize"
+    description: "At the end of your turn, gain {amount} Block."
+
+potions:
+  HeartOfIron:
+    name: "Heart of Iron"
+    description: "Gain 1 Strength."
 
 relics:
   # Common Global Relics
@@ -999,6 +1011,12 @@ rooms:
       dig: "Dig (Obtain a random relic)"
       skip: "Skip"
   
+  TreasureRoom:
+    treasure:
+      title: "Treasure Room"
+      open_chest: "Open chest"
+      skip: "Skip"
+
   rest:
     enter: "You enter a peaceful rest site."
     rest: "You rest and recover {amount} HP."

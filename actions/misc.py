@@ -10,7 +10,7 @@ from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
 from utils.result_types import BaseResult, GameStateResult, NoneResult, SingleActionResult
 from localization import LocalStr, t
 from utils.option import Option
-from utils.random import get_random_relic
+from utils.random import get_random_relic, get_random_relic_with_fallback
 from utils.registry import register
 from utils.types import RarityType
 
@@ -189,11 +189,9 @@ class OpenChestAction(Action):
                 AddGoldAction(amount=gold).execute()
                 print(t("ui.found_gold", default=f"Found {gold} gold!"))
             else:
-                rarity = RarityType.COMMON if random.random() < 0.75 else RarityType.UNCOMMON
-                relic = get_random_relic(rarities=[rarity])
-                if relic is None:
-                    print(f"Failed to get a random relic with rarity {rarity.value}")
-                else:
+                rarity = 'common' if random.random() < 0.75 else 'uncommon'
+                relic = get_random_relic_with_fallback(preferred_rarity=rarity)
+                if relic:
                     AddRelicAction(relic=relic.idstr).execute()
                     print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
             return NoneResult()
@@ -206,11 +204,9 @@ class OpenChestAction(Action):
                 print(t("ui.found_gold", default=f"Found {gold} gold!"))
             else:
                 roll = random.random()
-                rarity = RarityType.COMMON if roll < 0.35 else RarityType.UNCOMMON if roll < 0.85 else RarityType.RARE
-                relic = get_random_relic(rarities=[rarity])
-                if relic is None:
-                    print(f"Failed to get a random relic with rarity {rarity.value}")
-                else:
+                rarity = 'common' if roll < 0.35 else 'uncommon' if roll < 0.85 else 'rare'
+                relic = get_random_relic_with_fallback(preferred_rarity=rarity)
+                if relic:
                     AddRelicAction(relic=relic.idstr).execute()
                     print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
             return NoneResult()
@@ -222,11 +218,9 @@ class OpenChestAction(Action):
                 AddGoldAction(amount=gold).execute()
                 print(t("ui.found_gold", default=f"Found {gold} gold!"))
             else:
-                rarity = RarityType.UNCOMMON if random.random() < 0.75 else RarityType.RARE
-                relic = get_random_relic(rarities=[rarity])
-                if relic is None:
-                    print(f"Failed to get a random relic with rarity {rarity.value}")
-                else:
+                rarity = 'uncommon' if random.random() < 0.75 else 'rare'
+                relic = get_random_relic_with_fallback(preferred_rarity=rarity)
+                if relic:
                     AddRelicAction(relic=relic.idstr).execute()
                     print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
             return NoneResult()

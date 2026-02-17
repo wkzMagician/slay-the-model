@@ -29,6 +29,10 @@ class Sentry(Enemy):
         # Register intentions with keys
         self.add_intention(BoltIntention(self, dazed_count))
         self.add_intention(BeamIntention(self, beam_damage))
+        
+        # Add Artifact power (negates 1 debuff)
+        from powers.definitions.artifact import ArtifactPower
+        self.add_power(ArtifactPower(1, owner=self))
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on position (side/middle)."""

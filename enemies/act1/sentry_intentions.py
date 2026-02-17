@@ -29,7 +29,7 @@ class BoltIntention(Intention):
                 actions.append(
                     AddCardAction(
                         card=Dazed(),
-                        dest_pile="discard",
+                        dest_pile="discard_pile",
                         source="enemy"
                     )
                 )

@@ -394,7 +394,7 @@ class GainBlockAction(Action):
         
         # Print block gained for player feedback
         target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Creature'))
-        print(t('combat.gain_block').format(name=target_name, amount=block_amount))
+        print(t('combat.gain_block').format(source=target_name, amount=block_amount))
 
         if actions_to_return:
             return MultipleActionsResult(actions_to_return)

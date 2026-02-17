@@ -66,8 +66,8 @@ class FlameTackleIntention(Intention):
             from utils.registry import get_registered
             SlimedCard = get_registered("card", "Slimed")
             if SlimedCard:
-                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard", source="enemy"))
-                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard", source="enemy"))
+                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard_pile", source="enemy"))
+                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard_pile", source="enemy"))
         except Exception:
             # If Slimed card doesn't exist, just deal damage
             pass
