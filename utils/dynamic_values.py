@@ -90,10 +90,10 @@ def resolve_card_damage(card: 'Card') -> int:
         if strength_mult and strength_power:
             damage += (strength_mult - 1) * strength_power.amount
     
-    # 3. Weak effect (50% damage reduction)
+    # 3. Weak effect (25% damage reduction)
     weak_power = player.get_power('weak')
     if weak_power:
-        damage = int(damage * 0.5)
+        damage = int(damage * 0.75)
     
     # 4. Stance multiplier (Rage/Divine)
     status = player.status_manager.status
@@ -152,10 +152,10 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
             damage *= 2
         elif attacker_status == StatusType.DIVINITY:
             damage = int(damage * 3)
-    # 3. Attacker's Weak
+    # 3. Attacker's Weak (25% damage reduction)
     weak_power = attacker.get_power('weak')
     if weak_power:
-        damage = int(damage * 0.5)
+        damage = int(damage * 0.75)
     # 4. Target's Vulnerable
     if target is not None:
         vulnerable_power = target.get_power('vulnerable')

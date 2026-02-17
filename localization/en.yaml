@@ -270,6 +270,9 @@ powers:
   BufferPower:
     name: "Buffer"
     description: "Prevents the next {amount} times you would lose HP."
+  CurlUpPower:
+    name: "Curl Up"
+    description: "On damage, gains {amount} Block."
 
 relics:
   # Common Global Relics

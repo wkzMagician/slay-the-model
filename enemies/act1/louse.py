@@ -36,6 +36,10 @@ class RedLouse(Enemy):
         # Curl Up: Gains X Block when first receiving attack damage
         self._curl_up = random.randint(3, 7)
         self._curl_up_triggered = False
+        
+        # Add CurlUpPower to display ability
+        from powers.definitions.curl_up import CurlUpPower
+        self.add_power(CurlUpPower(self._curl_up))
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on history.
@@ -114,6 +118,10 @@ class GreenLouse(Enemy):
         # Curl Up: Gains X Block when first receiving attack damage
         self._curl_up = random.randint(3, 7)
         self._curl_up_triggered = False
+        
+        # Add CurlUpPower to display ability
+        from powers.definitions.curl_up import CurlUpPower
+        self.add_power(CurlUpPower(self._curl_up))
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on history.
