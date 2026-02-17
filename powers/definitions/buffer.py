@@ -14,6 +14,11 @@ class BufferPower(Power):
     this relic prevents that damage instead.
     """
     
+    name = "Buffer"
+    description = "Prevents the next {amount} times you would lose HP."
+    stackable = True
+    is_buff = True
+    
     def __init__(self, amount: int = 0, duration: int = 0, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
     
