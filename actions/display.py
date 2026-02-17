@@ -65,6 +65,7 @@ class SelectAction(Action):
         self.options = options if options is not None else []
         self.max_select = max_select
         self.must_select = must_select
+        self.has_menu = False
 
     def execute(self) -> 'BaseResult':
         """执行选择流程，返回需要执行的动作列表。"""
@@ -88,197 +89,72 @@ class SelectAction(Action):
         print(f"\n=== {self.title} ===")
         for i, option in enumerate(self.options):
             print(f"{i+1}. {option.name}")
+            
+    def show_choose(self, options_chosen):
+        """Print the selected options
+        
+        Args:
+            options_chosen: List of Option objects that were selected
+        """
+        if not options_chosen:
+            return
+        
+        # Print selection header
+        print(f"\n{t('ui.selected', default='Selected:')}")
+        for i, option in enumerate(options_chosen, 1):
+            print(f"  {i}. {option.name}")
         
         
     def execute_human(self) -> 'BaseResult':
         human_module = get_game_state().config.get("human")
         
+        options = self.options.copy()
+            
+        # [option] 如果不是必须选满，允许用户提前停止选择
+        if not self.must_select:
+            # 插入到第一个位置，方便用户输入0停止选择
+            options.insert(0, Option(name=LocalStr("ui.stop_selection", default="Stop selection"), actions=[]))
+            
+        options_no_menu = options
+            
+        # [option] 是否有菜单选项
         if human_module.get("show_menu_option", True):
             menu_option = Option(
                 name=LocalStr("ui.open_menu"),
                 actions=[MenuAction(self)]
             )
-            self.options.append(menu_option)
+            options.append(menu_option)
+            options_no_menu = options[:-1]
+            self.has_menu = True
+            
+        # print
         self.show_info()
         
-        # [1] 全选
+        # [auto] 全选
         if self.max_select == -1 and self.must_select:
             all_actions = []
-            for option in self.options[:-1]: # 除了菜单
+            
+            # Print selected options
+            self.show_choose(options_no_menu)
+            
+            for option in options_no_menu: # 除了菜单
                 all_actions.extend(option.actions)
             return MultipleActionsResult(all_actions)
         
-         # [1-2] 必须选择的数量>=选择数量时，如果自动选择为True，那么就全选
+         # [auto] 必须选择的数量>=选择数量时，如果自动选择为True，那么就全选
         if self.must_select and human_module.get("auto_select", False) \
-                and self.max_select >= len(self.options) - 1: # 除了菜单
+                and self.max_select >= len(options_no_menu): # 除了菜单
             all_actions = []
-            for option in self.options[:self.max_select]:
+            selected_options = options_no_menu[:self.max_select]
+            
+            # Print selected options
+            self.show_choose(selected_options)
+            
+            for option in selected_options:
                 all_actions.extend(option.actions)
             return MultipleActionsResult(all_actions)
         
-    def execute_ai(self) -> 'BaseResult':
-        ai_module = get_game_state().config.get("ai")
-        ...
-        
-    def execute_debug(self) -> 'BaseResult':
-        debug_module = get_game_state().config.get("debug")
-        mode = get_game_state().config.get("mode", "human")
-        human_module = get_game_state().config.get("human", {})
-        
-        # [1] 自动选择情况 
-        # [1-1] must_select=True && max_select=-1 （全选，自动）
-        if self.max_select == -1 and self.must_select:
-            # 收集所有选项的动作
-            all_actions = []
-            for option in self.options:
-                all_actions.extend(option.actions)
-            return MultipleActionsResult(all_actions)
-        
-        # [1-2] must_select=True && max_select<=len(options) （自动选择所有选项）
-        if self.must_select:
-            auto_select = human_module.get("auto_select", False)
-            
-            # 非人类模式或auto_select=True时自动选择
-            if mode != "human" or auto_select:
-                if self.max_select > 0 and self.max_select >= len(self.options):
-                    all_actions = []
-                    for option in self.options[:self.max_select]:
-                        all_actions.extend(option.actions)
-                    return MultipleActionsResult(all_actions)
-        
-        # [1-3] debug模式开启时自动选择前max_select项
-        if mode == "debug":
-            select_idxs = []
-            # 确定要选择的数量
-            if self.max_select == -1:
-                # max_select=-1时选择所有选项（不包含菜单选项）
-                num_to_select = len(self.options)
-                select_idxs = list(range(num_to_select))
-            else:
-                num_to_select = min(self.max_select, len(self.options))
-                
-                select_type = debug_module.get("select_type", "random")
-                if select_type == "random":
-                    import random
-                    select_idxs = random.sample(range(len(self.options)), num_to_select)
-                elif select_type == "first":
-                    select_idxs = list(range(num_to_select))
-                elif select_type == "last":
-                    select_idxs = list(range(len(self.options) - num_to_select, len(self.options)))
-                else:
-                    raise ValueError(f"Invalid debug select_type: {select_type}")
-            
-            # 收集前num_to_select个选项的动作
-            all_actions = []
-            for i in select_idxs:
-                all_actions.extend(self.options[i].actions)
-            return MultipleActionsResult(all_actions)
-        
-        # [2] 交互选择
-        effective_options = self.options.copy()
-
-        # - 若为人类玩家，追加"打开菜单"选项（仅在must_select=True时）
-        effective_options = self.options.copy()
-        if mode == "human" and human_module.get("show_menu_option", True):
-            menu_option = Option(
-                name=LocalStr("ui.open_menu"),
-                actions=[MenuAction(self)]
-            )
-            effective_options.append(menu_option)
-
-        # 7) 根据max_select决定选择模式
-        selection_mode = get_game_state().config.get("selection_mode", "single")
-        
-        if self.max_select == 1 or selection_mode == "single":
-            # 单选模式
-            return self._single_select(effective_options)
-        elif selection_mode == "multi":
-            # 多选模式：一次性选择多个
-            return self._multi_select(effective_options)
-        else:
-            # 默认使用单选模式
-            return self._single_select(effective_options)
-    
-    def _single_select(self, effective_options: List[Option]) -> 'BaseResult':
-        """单选模式：一次选择一项，循环直到达到max_select数量。"""
-        selected_indices = []
-        selected_actions = []
-        
-        # 如果不是必须选满，允许用户提前停止选择
-        if not self.must_select:
-            # 插入到第一个位置，方便用户输入0停止选择
-            effective_options.insert(0, Option(name=LocalStr("ui.stop_selection", default="Stop selection"), actions=[]))
-            
-        actual_max_select = self.max_select if self.max_select != -1 else len(effective_options)
-        
-        # 如果是单选模式，循环选择直到达到max_select或用户选择停止
-        while len(selected_indices) < actual_max_select:
-            try:
-                # 构造提示信息
-                if self.must_select:
-                    prompt_text = t(
-                        "ui.select_prompt",
-                        default=f"Choose (1-{len(effective_options)}): ",
-                        count=len(effective_options),
-                    )
-                else:
-                    prompt_text = t(
-                        "ui.select_optional_prompt",
-                        default=f"Choose (1-{len(effective_options)}), or 0 to stop: ",
-                        count=len(effective_options),
-                    )
-                
-                # 展示标题与选项（翻译 name）
-                print(f"\n=== {self.title} ===")
-                for i, option in enumerate(effective_options):
-                    print(f"{i+1}. {option.name}")
-                
-                option = int(input(prompt_text)) - 1
-                                
-                # 处理"停止选择"选项（仅当must_select=False时）
-                if not self.must_select and option == 0:
-                    if selected_indices:
-                        # 收集所有选择的动作
-                        for idx in selected_indices:
-                            selected_actions.extend(effective_options[idx].actions)
-                        return MultipleActionsResult(selected_actions)
-                    else:
-                        print(t("ui.no_option_selected", default="No option selected"))
-                        continue
-                    
-                # 如果选中了菜单选项，直接返回菜单动作， 不返回其它已选动作
-                # ! 当从菜单返回时，之前的选择会全部被清除，用户需要重新选择
-                menu_idx = len(effective_options) - 1 
-                if option == menu_idx:
-                    return MultipleActionsResult(effective_options[option].actions)
-                
-                # 验证选项
-                if 0 <= option < len(effective_options) - 1:
-                    selected_indices.append(option)
-                    # 在effective_options中，删除已选择的选项，继续选择
-                    effective_options.pop(option)
-                else:
-                    print(t("ui.invalid_option", default="Invalid option!"))
-                    
-            except (ValueError, EOFError):
-                print(t("ui.invalid_number", default="Please enter a valid number"))
-        
-        for idx in selected_indices:
-            selected_actions.extend(effective_options[idx].actions)
-        return MultipleActionsResult(selected_actions)
-    
-    def _multi_select(self, effective_options: List[Option]) -> 'BaseResult':
-        """多选模式：一次性选择多个选项（用逗号分隔）。"""
-        menu_idx = len(effective_options) - 1
-        is_human = get_game_state().config.get("mode") == "human"
-        show_menu_option = bool(get_game_state().config.get("show_menu_option", True))
-        
-        # 如果不是必须选满，允许用户提前停止选择
-        if not self.must_select:
-            # 插入到第一个位置，方便用户输入0停止选择
-            effective_options.insert(0, Option(name=LocalStr("ui.stop_selection", default="Stop selection"), actions=[]))
-            
-        actual_max_select = self.max_select if self.max_select != -1 else len(effective_options)
+        actual_max_select = self.max_select if self.max_select != -1 else len(options)
         
         while True:
             try:
@@ -308,7 +184,7 @@ class SelectAction(Action):
                 # 验证选择
                 valid_indices = []
                 for idx in selected_indices:
-                    if 0 <= idx < len(effective_options):
+                    if 0 <= idx < len(options):
                         valid_indices.append(idx)
                     else:
                         print(t("ui.invalid_option", default=f"Invalid option: {idx+1}"))
@@ -319,60 +195,114 @@ class SelectAction(Action):
                 if len(valid_indices) != len(selected_indices):
                     continue
                 
-                # 只允许选择一次提前停止选项（仅当must_select=False时）
-                if not self.must_select:
-                    stop_option_count = valid_indices.count(0)
-                    if stop_option_count > 1:
-                        print(t("ui.invalid_stop_option", default="Stop selection option can only be selected once."))
+                # 只允许stop_option被单选
+                if not self.must_select and valid_indices.count(0) == 1:
+                    if len(valid_indices) > 1:
+                        print(t("ui.stop_option_mixed", default="WARNING: Cannot select stop option with other options. Please select again."))
                         continue
-                    elif stop_option_count == 1:
-                        # 返回空动作列表，表示用户选择停止选择
+                    else: # 返回空动作列表，表示用户选择停止选择
                         return NoneResult()
                 
-                # 在人类模式下检查菜单选项
-                if is_human and show_menu_option:
-                    # 如果菜单选项和其他选项同时被选择，警告并重新选择
-                    if menu_idx in valid_indices:
+                # 如果菜单选项和其他选项同时被选择，警告并重新选择
+                if self.has_menu:
+                    menu_idx = len(options) - 1
+                    if valid_indices.count(menu_idx) == 1:
                         if len(valid_indices) > 1:
                             print(t("ui.menu_option_mixed", default="WARNING: Cannot select menu option with other options. Please select again."))
                             continue
                         else: # 选择了菜单选项，直接返回菜单动作
-                            return MultipleActionsResult(effective_options[menu_idx].actions)
+                            return MultipleActionsResult(options[menu_idx].actions)
                 
                 if len(valid_indices) > actual_max_select:
                     # 从config读取处理方式：truncate或reselect
-                    overflow_handling = get_game_state().config.get("overflow_handling", "truncate")
+                    overflow_handling = get_game_state().config.get("select_overflow", "truncate")
                     
                     if overflow_handling == "truncate":
                         print(t("ui.too_many_options_truncated", default=f"Too many options selected (max {actual_max_select}), truncating to first {actual_max_select}"))
                         # 截断前max_select个选项
-                        actual_indices = [idx for idx in valid_indices if idx < len(effective_options)]
+                        actual_indices = [idx for idx in valid_indices if idx < len(options)]
                         actual_indices = actual_indices[:actual_max_select]
+                        
+                        # Print selected options
+                        selected_options = [options[idx] for idx in actual_indices]
+                        self.show_choose(selected_options)
                         
                         # 收集动作
                         selected_actions = []
                         for idx in actual_indices:
-                            selected_actions.extend(effective_options[idx].actions)
+                            selected_actions.extend(options[idx].actions)
                         return MultipleActionsResult(selected_actions)
                     else:  # reselect
                         print(t("ui.too_many_options", default=f"Too many options selected (max {self.max_select})"))
                         continue
                 
-                # 如果是必须选满且未选满，继续选择
+                # 如果是必须选满且未选满，重新选择
                 if self.must_select and len(valid_indices) < actual_max_select:
                     print(f"Selected {len(valid_indices)} options, but {actual_max_select} required.")
                     continue
                 
+                # Print selected options
+                selected_options = [options[idx] for idx in valid_indices]
+                self.show_choose(selected_options)
+                
                 # 收集所有选择的动作
                 selected_actions = []
                 for idx in valid_indices:
-                    selected_actions.extend(effective_options[idx].actions)
-                
+                    selected_actions.extend(options[idx].actions)
                 return MultipleActionsResult(selected_actions)
                     
             except (ValueError, EOFError):
                 print(t("ui.invalid_input", default="Invalid input format. Use comma-separated numbers."))
-
+        
+    def execute_ai(self) -> 'BaseResult':
+        ai_module = get_game_state().config.get("ai")
+        options = self.options.copy()
+        # 如果不是必须选满，允许用户提前停止选择
+        if not self.must_select:
+            # 插入到第一个位置，方便用户输入0停止选择
+            options.insert(0, Option(name=LocalStr("ui.stop_selection", default="Stop selection"), actions=[]))
+            
+        self.show_info()
+        # todo: 和human模式基本一致，但把input改为调用接口，获得返回数据
+        return NoneResult()
+        
+    def execute_debug(self) -> 'BaseResult':
+        debug_module = get_game_state().config.get("debug")
+        
+        options = self.options.copy()
+        
+        self.show_info()
+        
+        select_idxs = []
+        # 确定要选择的数量
+        if self.max_select == -1:
+            # max_select=-1时选择所有选项（不包含菜单选项）
+            num_to_select = len(options)
+            select_idxs = list(range(num_to_select))
+        else:
+            num_to_select = min(self.max_select, len(options))
+            
+            select_type = debug_module.get("select_type", "random")
+            if select_type == "random":
+                import random
+                select_idxs = random.sample(range(len(options)), num_to_select)
+            elif select_type == "first":
+                select_idxs = list(range(num_to_select))
+            elif select_type == "last":
+                select_idxs = list(range(len(options) - num_to_select, len(options)))
+            else:
+                raise ValueError(f"Invalid debug select_type: {select_type}")
+            
+        # Print selected options
+        selected_options = [options[i] for i in select_idxs]
+        self.show_choose(selected_options)
+        
+        # 收集前num_to_select个选项的动作
+        all_actions = []
+        for i in select_idxs:
+            all_actions.extend(options[i].actions)
+        return MultipleActionsResult(all_actions)
+    
 
 @register("action")
 class MenuAction(Action):
