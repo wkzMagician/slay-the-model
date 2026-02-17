@@ -26,16 +26,21 @@ class Sentry(Enemy):
         beam_damage = 10 if ascension >= 3 else 9
         dazed_count = 3 if ascension >= 3 else 2
         
-        self._bolt = BoltIntention(self, dazed_count)
-        self._beam = BeamIntention(self, beam_damage)
+        # Register intentions with keys
+        self.add_intention(BoltIntention(self, dazed_count))
+        self.add_intention(BeamIntention(self, beam_damage))
     
-    def get_current_intention(self):
+    def determine_next_intention(self, floor: int = 1):
+        """Determine next intention based on position (side/middle)."""
         if self.is_middle:
-            return self._beam if self.turn_count % 2 == 0 else self._bolt
-        return self._bolt if self.turn_count % 2 == 0 else self._beam
+            # Middle: Beam first, then Bolt
+            return self.intentions["beam"] if self.turn_count % 2 == 0 else self.intentions["bolt"]
+        else:
+            # Side: Bolt first, then Beam
+            return self.intentions["bolt"] if self.turn_count % 2 == 0 else self.intentions["beam"]
     
     def execute_turn(self):
-        intention = self.get_current_intention()
+        intention = self.determine_next_intention()
         self.turn_count += 1
         if intention:
             return intention.execute()

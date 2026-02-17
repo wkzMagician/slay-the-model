@@ -29,27 +29,38 @@ class GremlinNob(Enemy):
         skull_damage = 8 if ascension >= 9 else 6
         bull_damage = 18 if ascension >= 9 else 14
         
-        self._bellow = BellowIntention(self)
-        self._skull = SkullBashIntention(self, skull_damage)
-        self._bull = BullRushIntention(self, bull_damage)
+        # Register intentions with keys
+        self.add_intention(BellowIntention(self))
+        self.add_intention(SkullBashIntention(self, skull_damage))
+        self.add_intention(BullRushIntention(self, bull_damage))
         
         from powers.definitions.enrage import EnragePower
         self.add_power(EnragePower(2, owner=self))
     
-    def get_current_intention(self):
+    def determine_next_intention(self, floor: int = 1):
+        """Determine next intention based on turn count and ascension."""
         if self.turn_count == 0:
-            return self._bellow
+            return self.intentions["bellow"]
+        
         if self.ascension >= 18:
-            return self._skull if (self.turn_count - 1) % 3 == 0 else self._bull
+            # Fixed pattern: Skull Bash -> Bull Rush -> Bull Rush -> repeat
+            pattern_index = (self.turn_count - 1) % 3
+            if pattern_index == 0:
+                return self.intentions["skull_bash"]
+            return self.intentions["bull_rush"]
+        
+        # Normal: 33% Skull Bash, 67% Bull Rush (cannot do 3 Bull Rush in a row)
         if self.last_action == "bull" and self.bull_rush_count >= 2:
-            return self._skull
-        return self._skull if random.random() < 0.33 else self._bull
+            return self.intentions["skull_bash"]
+        
+        return self.intentions["skull_bash"] if random.random() < 0.33 else self.intentions["bull_rush"]
     
     def execute_turn(self):
-        intention = self.get_current_intention()
+        intention = self.determine_next_intention()
         self.turn_count += 1
         
-        if isinstance(intention, BullRushIntention):
+        # Track actions for pattern
+        if intention == self.intentions["bull_rush"]:
             self.bull_rush_count = self.bull_rush_count + 1 if self.last_action == "bull" else 1
             self.last_action = "bull"
         else:

@@ -35,17 +35,21 @@ class Lagavulin(Enemy):
         dex_loss = 2 if ascension >= 3 else 1
         str_gain = 2 if ascension >= 3 else 1
         
-        self._sleep = SleepIntention(self)
-        self._stunned = StunnedIntention(self)
-        self._attack = AttackIntention(self, damage)
-        self._siphon = SiphonSoulIntention(self, dex_loss, str_gain)
+        # Register intentions with keys
+        self.add_intention(SleepIntention(self))
+        self.add_intention(StunnedIntention(self))
+        self.add_intention(AttackIntention(self, damage))
+        self.add_intention(SiphonSoulIntention(self, dex_loss, str_gain))
     
-    def get_current_intention(self):
+    def determine_next_intention(self, floor: int = 1):
+        """Determine next intention based on state."""
         if self.is_sleeping:
-            return self._sleep
+            return self.intentions["sleep"]
         if self.is_stunned:
-            return self._stunned
-        return self._attack if self.attack_pattern_index == 0 else self._siphon
+            return self.intentions["stunned"]
+        if self.attack_pattern_index == 0:
+            return self.intentions["attack"]
+        return self.intentions["siphon_soul"]
     
     def execute_turn(self):
         if self.is_sleeping:
@@ -54,7 +58,7 @@ class Lagavulin(Enemy):
             self.is_stunned = False
             return None
         
-        intention = self.get_current_intention()
+        intention = self.determine_next_intention()
         if intention:
             intention.execute()
         self.attack_pattern_index = 1 - self.attack_pattern_index
