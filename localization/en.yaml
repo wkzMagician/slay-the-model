@@ -989,6 +989,16 @@ rooms:
       gold: "Gained {amount} gold"
       card: "Added {card_name} to deck"
   
+  RestRoom:
+    RestRoom:
+      title: "Rest Site"
+      rest: "Rest (Recover 30% HP)"
+      smith: "Smith (Upgrade a card)"
+      lift: "Lift (Gain 1 Strength)"
+      toke: "Toke (Remove a card)"
+      dig: "Dig (Obtain a random relic)"
+      skip: "Skip"
+  
   rest:
     enter: "You enter a peaceful rest site."
     rest: "You rest and recover {amount} HP."
