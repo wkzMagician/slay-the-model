@@ -178,7 +178,7 @@ class Combat(Localizable):
         for potion in game_state.player.potions:
             options.append(Option(
                 name=LocalStr(potion.info()),
-                actions=potion.on_use()
+                actions=potion.on_use(target=game_state.player)
             ))
             
         # 4. Add option to end turn
