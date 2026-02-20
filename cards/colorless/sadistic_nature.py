@@ -23,11 +23,12 @@ class SadisticNature(Card):
 
     upgrade_magic = {"damage_on_debuff": 7}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
         from actions.combat import ApplyPowerAction
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply Sadistic Nature power
         damage_amount = self.get_magic_value("damage_on_debuff")

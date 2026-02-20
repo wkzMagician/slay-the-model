@@ -22,8 +22,9 @@ class Exhume(Card):
     base_exhaust = True
     upgrade_cost = 0
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Choose a card from exhaust pile
         actions.append(ChooseMoveCardAction(src="exhaust_pile", dst="hand", amount=1))

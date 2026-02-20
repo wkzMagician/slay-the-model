@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive tests for Seeing Red card."""
 import unittest
 from tests.test_combat_utils import create_test_helper

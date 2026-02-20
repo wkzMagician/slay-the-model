@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Rampage - Damage increases each play."""
 import unittest
 from cards.ironclad.rampage import Rampage

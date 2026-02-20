@@ -81,7 +81,7 @@ class DuVuDoll(Relic):
         # Count curses in draw pile
         curses = 0
         if game_state.player:
-            for card in game_state.player.card_manager.get_pile('draw'):
+            for card in game_state.player.card_manager.get_pile('draw_pile'):
                 if card.card_type == CardType.CURSE:
                     curses += 1
         return [ApplyPowerAction(power="Strength", target=player, amount=curses)]

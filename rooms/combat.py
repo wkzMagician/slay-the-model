@@ -7,7 +7,7 @@ from actions.base import Action
 from actions.display import DisplayTextAction
 from utils.result_types import MultipleActionsResult, NoneResult
 from actions.reward import AddGoldAction, AddRandomPotionAction
-from actions.card import AddCardAction, AddRandomCardAction, ChooseAddRandomCardAction
+from actions.card import AddRandomCardAction, ChooseAddRandomCardAction, ChooseObtainCardAction
 from utils.result_types import GameStateResult
 from engine.combat import Combat
 from rooms.base import Room, BaseResult
@@ -97,10 +97,11 @@ class CombatRoom(Room):
         # Add card reward (non-boss)
         if self.room_type != RoomType.BOSS:
             # 3 choose 1, rarity determined by encounter type
-            actions.append(ChooseAddRandomCardAction(
-                pile='deck',
+            actions.append(ChooseObtainCardAction(
                 total=3,
-                namespace=game_state.player.namespace
+                namespace=game_state.player.namespace,
+                encounter_type="normal" if self.combat.combat_type==CombatType.NORMAL else "elite",
+                use_rolling_offset=True,
             ))
         else:  # boss - 3 rare cards
             actions.append(ChooseAddRandomCardAction(

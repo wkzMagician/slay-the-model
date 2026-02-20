@@ -1,6 +1,6 @@
 mode: debug # human | ai | debug
 language: en
-seed: -1
+seed: 1
 character: Ironclad
 select_overflow: truncate # truncate | reselect
 

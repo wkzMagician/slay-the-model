@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Body Slam - Damage equals block"""
 import unittest
 from cards.ironclad.body_slam import BodySlam

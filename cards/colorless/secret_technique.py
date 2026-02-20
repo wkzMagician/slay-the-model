@@ -24,10 +24,11 @@ class SecretTechnique(Card):
 
     # Note: Upgraded version removes Exhaust flag
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Move a Skill from draw pile to hand
         if game_state.player and hasattr(game_state.player, "card_manager"):

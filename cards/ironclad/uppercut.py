@@ -24,10 +24,11 @@ class Uppercut(Card):
 
     upgrade_magic = {"vulnerable": 2, "weak": 2}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
-        if target:
+        if targets:
             vulnerable_amount = self.get_magic_value("vulnerable")
             weak_amount = self.get_magic_value("weak")
 

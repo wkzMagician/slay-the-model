@@ -21,10 +21,11 @@ class Transmutation(Card):
     base_cost = -1  # COST_X
     base_exhaust = True
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Get X value (energy spent)
         x_value = self.cost  # This will be the actual energy spent

@@ -7,7 +7,7 @@ from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import SelectAction, DisplayTextAction
-from actions.card import AddRandomCardAction, UpgradeCardAction
+from actions.card import AddRandomCardAction, UpgradeCardAction, UpgradeAllCardsAction, AddCardAction
 from actions.reward import AddGoldAction, AddRandomRelicAction, AddRelicAction
 from actions.combat import HealAction, StartFightAction
 from localization import LocalStr
@@ -52,7 +52,7 @@ class MindBloom(Event):
                 name=LocalStr('events.mind_bloom.i_am_awake'),
                 actions=[
                     UpgradeAllCardsAction(),
-                    AddRelicAction(relic=MarkOfTheBloom())
+                    AddRelicAction(relic=MarkOfBloom())
                 ]
             ),
             Option(

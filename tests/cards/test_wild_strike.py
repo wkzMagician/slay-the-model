@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Test Wild Strike - Deals damage and adds Wound to draw pile"""
 import unittest
 from cards.ironclad.wild_strike import WildStrike

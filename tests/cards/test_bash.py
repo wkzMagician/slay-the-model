@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Test for Bash card - Ironclad Attack card.
 

@@ -2,6 +2,9 @@
 Ironclad Uncommon Attack card - Whirlwind
 """
 
+from actions.base import Action
+from entities.creature import Creature
+from typing import List
 from cards.base import Card
 from utils.registry import register
 from utils.types import CardType, RarityType
@@ -24,7 +27,8 @@ class Whirlwind(Card):
     def attack_times(self) -> int:
         return self.cost  # feature: X药，+2
 
-    def on_play(self, target=None) -> list:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         """Deal damage to ALL enemies X times."""
         from engine.game_state import game_state
         from actions.combat import DealDamageAction

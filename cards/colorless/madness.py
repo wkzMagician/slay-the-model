@@ -22,11 +22,12 @@ class Madness(Card):
 
     upgrade_cost = 0
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
         import random
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Reduce cost of a random card in hand to 0 for this combat
         if game_state.player and hasattr(game_state.player, "card_manager"):

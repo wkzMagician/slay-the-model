@@ -70,8 +70,9 @@ class SelectAction(Action):
     def execute(self) -> 'BaseResult':
         """执行选择流程，返回需要执行的动作列表。"""
         
-        # [0] 无选项时报错
-        assert len(self.options) > 0, "SelectAction requires at least one option"
+        # [0] 无选项时自动前进
+        if len(self.options) == 0:
+            return NoneResult()
         
         mode = get_game_state().config.get("mode", "debug")
         
@@ -86,7 +87,11 @@ class SelectAction(Action):
         
     def show_info(self):
         # 展示标题与选项（翻译 name）
-        print(f"\n=== {self.title} ===")
+        # If title is a plain string that looks like a localization key, localize it
+        if isinstance(self.title, str):
+            print(f"\n=== {t(self.title)} ===")
+        else:
+            print(f"\n=== {self.title} ===")
         for i, option in enumerate(self.options):
             print(f"{i+1}. {option.name}")
             

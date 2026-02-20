@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Entrench - Double current block."""
 import unittest
 from cards.ironclad.entrench import Entrench

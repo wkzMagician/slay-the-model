@@ -50,7 +50,7 @@ class ProtectIntention(Intention):
         # Check if Mystic is alive
         if game_state and game_state.combat:
             for enemy in game_state.combat.enemies:
-                if hasattr(enemy, 'name') and 'Mystic' in enemy.name and enemy.hp > 0:
+                if enemy.__class__.__name__ == 'Mystic' and enemy.is_alive:
                     return [GainBlockAction(block=self.base_block, target=enemy)]
         
         # If alone or no Mystic, give block to self

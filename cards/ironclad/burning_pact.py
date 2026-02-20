@@ -22,5 +22,5 @@ class BurningPact(Card):
     base_draw = 2
     upgrade_draw = 3
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        return [ChooseExhaustCardAction(pile='hand', amount=1)] + super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        return [ChooseExhaustCardAction(pile='hand', amount=1)] + super().on_play(targets)

@@ -8,7 +8,7 @@ from enemies.intention import Intention
 from powers.base import PowerType
 
 if TYPE_CHECKING:
-    from enemies.gremlin_leader import GremlinLeader
+    from enemies.act2.gremlin_leader import GremlinLeader
 
 
 class Encourage(Intention):
@@ -22,11 +22,16 @@ class Encourage(Intention):
     def execute(self) -> List:
         """Execute encourage - buff all allies."""
         from engine.game_state import game_state
+        enemies = (
+            game_state.current_combat.enemies
+            if game_state.current_combat is not None
+            else []
+        )
         
         actions = []
         
         # Apply strength to all enemies (including self)
-        for enemy in game_state.enemies:
+        for enemy in enemies:
             if enemy.is_alive:
                 actions.append(ApplyPowerAction(
                     power=PowerType.STRENGTH,
@@ -80,21 +85,35 @@ class Rally(Intention):
         """Execute rally - summon 2 random gremlins."""
         from engine.game_state import game_state
         from actions.combat import AddEnemyAction
+        enemies = (
+            game_state.current_combat.enemies
+            if game_state.current_combat is not None
+            else []
+        )
         
         # Import gremlin types from act1
-        from enemies.act1.gremlin_nob_intentions import GremlinTypes
+        from enemies.act1.gremlin import (
+            FatGremlin, SneakyGremlin, MadGremlin,
+            ShieldGremlin, GremlinWizard
+        )
+        
+        # Available gremlin types for summoning
+        GREMLIN_TYPES = [
+            FatGremlin, SneakyGremlin, MadGremlin,
+            ShieldGremlin, GremlinWizard
+        ]
         
         actions = []
         
         # Check how many gremlins are already present
-        gremlin_count = sum(1 for e in game_state.enemies 
+        gremlin_count = sum(1 for e in enemies
                           if e.is_alive and hasattr(e, '_is_gremlin'))
         
         # Can only have max 3 small gremlins
         to_summon = min(2, 3 - gremlin_count)
         
         for _ in range(to_summon):
-            gremlin_type = random.choice(GremlinTypes.ALL_TYPES)
-            actions.append(AddEnemyAction(gremlin_type))
+            gremlin_class = random.choice(GREMLIN_TYPES)
+            actions.append(AddEnemyAction(gremlin_class()))
         
         return actions

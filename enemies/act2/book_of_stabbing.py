@@ -59,9 +59,17 @@ class BookOfStabbing(Enemy):
                 self.current_intention = self.intentions["Big Stab"]
             else:
                 self.current_intention = self.intentions["Multi Stab"]
+
+        if self.current_intention is None:
+            self.current_intention = self.intentions["Multi Stab"]
+
+        return self.current_intention
     
     def execute_intention(self) -> List:
         """Execute current intention and update counter."""
+        if not self.current_intention:
+            return []
+
         if self.current_intention.name == "Multi Stab":
             self.multi_stab_count += 1
         return super().execute_intention()

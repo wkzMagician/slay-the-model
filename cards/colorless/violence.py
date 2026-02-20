@@ -25,11 +25,12 @@ class Violence(Card):
     
     upgrade_magic = {"draw_attack": 4}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
         from actions.card import MoveCardAction
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Draw 3/4 random Attacks from draw pile into hand
         draw_count = get_magic_value(self, "draw_attack")

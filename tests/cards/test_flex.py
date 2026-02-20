@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Flex - Temporary Strength."""
 import unittest
 from cards.ironclad.flex import Flex

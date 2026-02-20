@@ -3,13 +3,14 @@
 Repeatable HP for potion/gold/card trade.
 """
 
+from actions.combat import LoseHPAction
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import SelectAction, DisplayTextAction
 from actions.card import AddRandomCardAction
+from utils.types import RarityType
 from actions.reward import AddRandomPotionAction, AddGoldAction
-# TODO: Add LoseHPAction to actions.combat
 from localization import LocalStr
 from utils.option import Option
 from engine.game_state import game_state
@@ -60,7 +61,7 @@ class KnowingSkull(Event):
                 name=LocalStr('events.knowing_skull.success'),
                 actions=[
                     LoseHPAction(amount=hp_cost),
-                    AddRandomColorlessCardAction(rarity='uncommon')
+                    AddRandomCardAction(namespace='colorless', rarity=RarityType.UNCOMMON)
                 ]
             ),
             Option(

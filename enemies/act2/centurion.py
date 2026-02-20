@@ -33,7 +33,7 @@ class Centurion(Enemy):
         mystic_alive = False
         if game_state and game_state.combat:
             for enemy in game_state.combat.enemies:
-                if hasattr(enemy, 'name') and 'Mystic' in enemy.name and enemy.hp > 0:
+                if enemy.__class__.__name__ == 'Mystic' and enemy.is_alive:
                     mystic_alive = True
                     break
         

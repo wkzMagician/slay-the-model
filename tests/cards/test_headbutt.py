@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Headbutt - Damage and return card"""
 import unittest
 from cards.ironclad.headbutt import Headbutt

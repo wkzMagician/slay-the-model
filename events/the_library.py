@@ -7,7 +7,7 @@ from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import SelectAction, DisplayTextAction
-from actions.card import ChooseAddRandomCardAction
+from actions.card import ChooseAddRandomCardAction, ChooseObtainCardAction
 from actions.combat import HealAction
 from localization import LocalStr
 from utils.option import Option
@@ -38,7 +38,12 @@ class TheLibrary(Event):
         options = [
             Option(
                 name=LocalStr('events.the_library.read'),
-                actions=[ChooseAddRandomCardAction(pile='deck', total=20, namespace='ironclad')]
+                    actions=[ChooseObtainCardAction(
+                    total=20,
+                    namespace=game_state.player.namespace,
+                    encounter_type="shop",
+                    use_rolling_offset=False,
+                )]
             ),
             Option(
                 name=LocalStr('events.the_library.sleep'),

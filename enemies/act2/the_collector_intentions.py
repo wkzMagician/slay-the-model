@@ -8,7 +8,7 @@ from enemies.intention import Intention
 from powers.base import PowerType
 
 if TYPE_CHECKING:
-    from enemies.the_collector import TheCollector
+    from enemies.act2.the_collector import TheCollector
 
 
 class Spawn(Intention):
@@ -22,11 +22,16 @@ class Spawn(Intention):
         from engine.game_state import game_state
         from actions.combat import AddEnemyAction
         from enemies.act2.the_collector import TorchHead
+        enemies = (
+            game_state.current_combat.enemies
+            if game_state.current_combat is not None
+            else []
+        )
         
         actions = []
         
         # Count alive Torch Heads
-        torch_head_count = sum(1 for e in game_state.enemies 
+        torch_head_count = sum(1 for e in enemies
                              if e.is_alive and isinstance(e, TorchHead))
         
         # Can only have max 2 Torch Heads
@@ -69,11 +74,16 @@ class Buff(Intention):
     def execute(self) -> List:
         """Execute buff - strengthen all allies and gain block."""
         from engine.game_state import game_state
+        enemies = (
+            game_state.current_combat.enemies
+            if game_state.current_combat is not None
+            else []
+        )
         
         actions = []
         
         # Apply strength to all enemies
-        for enemy in game_state.enemies:
+        for enemy in enemies:
             if enemy.is_alive:
                 actions.append(ApplyPowerAction(
                     power=PowerType.STRENGTH,

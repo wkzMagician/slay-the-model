@@ -169,7 +169,7 @@ class Combat(Localizable):
                 from actions.combat import PlayCardAction
                 options.append(Option(
                     name=card.info(),
-                    actions=[PlayCardAction(card=card, is_auto=True)]
+                    actions=[PlayCardAction(card=card)]
                 ))
         
         # 3. Build SelectAction for potions
@@ -219,8 +219,10 @@ class Combat(Localizable):
             for power in player.powers:
                 power_name = power.local("name").resolve()
                 power_desc = power.local("description", amount=power.amount).resolve() if hasattr(power, 'local') else ""
-                if power.amount > 0:
-                    print(f"  {power_name} x{power.amount}")
+                # Show duration for powers with amount=None and valid duration
+                display_amount = power.amount if power.amount is not None else power.duration
+                if display_amount and display_amount > 0:
+                    print(f"  {power_name} x{display_amount}")
                 else:
                     print(f"  {power_name}")
                 # Print description on new line if available and not a raw key
@@ -241,8 +243,10 @@ class Combat(Localizable):
                 for power in enemy.powers:
                     power_name = power.local("name").resolve()
                     power_desc = power.local("description", amount=power.amount).resolve() if hasattr(power, 'local') else ""
-                    if power.amount > 0:
-                        print(f"    {power_name} x{power.amount}")
+                    # Show duration for powers with amount=None and valid duration
+                    display_amount = power.amount if power.amount is not None else power.duration
+                    if display_amount and display_amount > 0:
+                        print(f"    {power_name} x{display_amount}")
                     else:
                         print(f"    {power_name}")
                     # Print description on new line if available and not a raw key
@@ -274,20 +278,20 @@ class Combat(Localizable):
                 entities=self.enemies
             ))
         # Process player powers: call on_turn_end and remove expired ones
-        print(f"[DEBUG] End of player turn - current powers: {[p.name for p in game_state.player.powers]}")
+        # print(f"[DEBUG] End of player turn - current powers: {[p.name for p in game_state.player.powers]}")
         powers_to_remove = []
         for power in game_state.player.powers:
             game_state.action_queue.add_actions(power.on_turn_end())
-            print(f"[DEBUG] Power {power.name}: duration={power.duration}")
+            # print(f"[DEBUG] Power {power.name}: duration={power.duration}")
             # Check if power should be removed (duration reached 0)
             if power.duration == 0:
                 powers_to_remove.append(power.name)
-                print(f"[DEBUG] Marking power {power.name} for removal")
+                # print(f"[DEBUG] Marking power {power.name} for removal")
         
         # Remove expired powers
         for power_name in powers_to_remove:
             game_state.player.remove_power(power_name)
-        print(f"[DEBUG] After power removal - current powers: {[p.name for p in game_state.player.powers]}")
+        # print(f"[DEBUG] After power removal - current powers: {[p.name for p in game_state.player.powers]}")
         
         hand = game_state.player.card_manager.get_pile("hand")
         for card in hand:
@@ -433,11 +437,11 @@ class Combat(Localizable):
         
         # God mode: apply 999 BufferPower if enabled
         god_mode_enabled = game_state.config.get("debug.god_mode", False)
-        print(f"[DEBUG] god_mode enabled: {god_mode_enabled}")
+        # print(f"[DEBUG] god_mode enabled: {god_mode_enabled}")
         if god_mode_enabled:
             from powers.definitions.buffer import BufferPower
             game_state.player.add_power(BufferPower(amount=999, owner=game_state.player))
-            print(f"[DEBUG] Added BufferPower with 999 stacks to player")
+            # print(f"[DEBUG] Added BufferPower with 999 stacks to player")
         
         # todo: prepare innate cards to top of draw_pile
 

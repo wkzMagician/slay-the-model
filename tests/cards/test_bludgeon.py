@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Bludgeon - High damage attack"""
 import unittest
 from cards.ironclad.bludgeon import Bludgeon

@@ -272,3 +272,22 @@ Hexaghost is a Boss that can appear at the end of Act 1 or the Act 3 event ❓ M
 | Inferno | 🌀     | Deals 2×6 damage. Adds 3 🟢 Burns+ into your discard pile. Upgrades all 🟢 Burns. For the rest of combat, any 🟢 Burn created by 🐍 Sear will be upgraded.<br>Deals 3×6 🔥4 damage. Adds 3 🟢 Burns+ into your discard pile. Upgrades all 🟢 Burns. For the rest of combat, any 🟢 Burn created by 🐍 Sear will be upgraded. |
 
 Always starts with ??? Activate followed by 🗡️ Divider. For the rest of combat, repeats the following pattern:<br>1. 🐍 Sear<br>2. ⚔️ Tackle<br>3. 🐍 Sear<br>4. 🐍 Inflame<br>5. ⚔️ Tackle<br>6. 🐍 Sear<br>7. 🌀 Inferno
+
+
+# Spike Slime (S)
+Spike Slime (S) is a normal Enemy that is exclusively found in Act 1.
+## Pattern
+| Name   | Intent | Effect               |
+| :----- | :----- | :------------------- |
+| Tackle |        | Deals 5 damage.       |
+|        |        | Deals 6 ⚔️ 2 damage. |
+## Found With
+### Act 1
+Can be in the Easy Pool's Small Slimes encounter with an 🟢 Acid Slime (M).
+In the Lots of Slimes encounter with:
+- Two other 🟢 Spike Slimes (S)
+- Two 🟢 Small Acid Slimes
+## Stats
+- Health: 10-14 (11-15 ⚔️ 7)
+- Debuts In: Act 1
+- Powers: None

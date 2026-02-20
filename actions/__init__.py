@@ -54,6 +54,7 @@ __all__ = [
      'TransformCardAction',
      'ExhaustCardAction',
      'UpgradeCardAction',
+     'UpgradeAllCardsAction',
      'ChooseExhaustCardAction',
      'ChooseRemoveCardAction',
      'ChooseTransformCardAction',

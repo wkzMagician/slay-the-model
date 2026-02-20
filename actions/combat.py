@@ -94,28 +94,38 @@ class AddEnemyAction(Action):
 
 @register("action")
 class HealAction(Action):
-    """Heal a creature for a specified amount
+    """Heal a creature for a specified amount or percentage
 
-    Required:
+    Required (one of):
         amount (int): Amount to heal
+        percent (float): Percentage of max_hp to heal (0.0-1.0)
 
     Optional:
         target (Creature): Target to heal (defaults to player)
     """
-    def __init__(self, amount: int, target: 'Creature' = None):
+    def __init__(self, amount: int | None = None, percent: float | None = None, target: 'Creature' = None):
         self.amount = amount
+        self.percent = percent
         self.target = target
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         actions_to_return = []
-        
+
         # Default to player if no target specified
         heal_target = self.target if self.target else game_state.player
-        
+
         if heal_target:
+            # Calculate heal amount
+            if self.percent is not None:
+                heal_amount = int(heal_target.max_hp * self.percent)
+            else:
+                heal_amount = self.amount() if callable(self.amount) else (
+                    self.amount or 0
+                )
+
             # Trigger on_heal hook
-            actions = heal_target.on_heal(self.amount)
+            actions = heal_target.on_heal(heal_amount)
             if actions:
                 actions_to_return.extend(actions)
 
@@ -124,7 +134,7 @@ class HealAction(Action):
                 for relic in game_state.player.relics:
                     if hasattr(relic, "on_heal"):
                         relic_actions = relic.on_heal(
-                            heal_amount=self.amount,
+                            heal_amount=heal_amount,
                             player=game_state.player,
                             entities=game_state.current_combat.enemies if game_state.current_combat else [],
                         )
@@ -133,43 +143,60 @@ class HealAction(Action):
 
             # Actually heal (only numerical changes)
             old_hp = heal_target.hp
-            heal_target.hp = min(heal_target.hp + self.amount, heal_target.max_hp)
+            heal_target.hp = min(heal_target.hp + heal_amount, heal_target.max_hp)
             healed = heal_target.hp - old_hp
             print(t("ui.healed", default=f"Healed for {healed} HP.", amount=healed))
-        
+
         if actions_to_return:
             return MultipleActionsResult(actions_to_return)
         return NoneResult()
 
 @register("action")
 class LoseHPAction(Action):
-    """Deal damage to player
+    """Make a creature lose HP (not damage, bypasses block)
 
-    Required:
-        amount (int): Amount to lose
+    Required (one of):
+        amount (int): Amount of HP to lose
+        percent (float): Percentage of max_hp to lose (0.0-1.0)
 
     Optional:
-        None
+        target (Creature): Target to lose HP (defaults to player)
     """
-    def __init__(self, amount: int):
+    def __init__(self, amount: int | None = None, percent: float | None = None, target: 'Creature' = None):
         self.amount = amount
+        self.percent = percent
+        self.target = target
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         actions_to_return = []
-        
-        if game_state.player:
+
+        # Default to player if no target specified
+        lose_target = self.target if self.target else game_state.player
+
+        if lose_target:
+            # Calculate HP loss amount (handles callable)
+            if self.percent is not None:
+                hp_loss = int(lose_target.max_hp * self.percent)
+            else:
+                hp_loss = self.amount() if callable(self.amount) else (self.amount or 0)
+
+            # Check for damage prevention (e.g., BufferPower)
+            if lose_target.try_prevent_damage(hp_loss):
+                print(t("ui.hp_loss_prevented", default=f"HP loss prevented.", amount=hp_loss))
+                return NoneResult()
+
             # Trigger on_lose_hp hook
-            actions = game_state.player.on_lose_hp(self.amount)
+            actions = lose_target.on_lose_hp(hp_loss)
             if actions:
                 actions_to_return.extend(actions)
 
             # Actually lose HP (only numerical changes)
-            old_hp = game_state.player.hp
-            game_state.player.hp -= self.amount
-            lost = old_hp - game_state.player.hp
+            old_hp = lose_target.hp
+            lose_target.hp -= hp_loss
+            lost = old_hp - lose_target.hp
             print(t("ui.lost_hp", default=f"Lost {lost} HP.", amount=lost))
-        
+
         if actions_to_return:
             return MultipleActionsResult(actions_to_return)
         return NoneResult()
@@ -217,7 +244,7 @@ class DealDamageAction(Action):
         
         # Defensive fix: handle case where damage is accidentally a list
         if isinstance(damage_amount, list):
-            print(f"[DEBUG] Converting damage list to int: {damage_amount} -> {damage_amount[0] if damage_amount else 0}")
+            # print(f"[DEBUG] Converting damage list to int: {damage_amount} -> {damage_amount[0] if damage_amount else 0}")
             damage_amount = damage_amount[0] if damage_amount else 0
 
         # Apply attacker's damage modifiers (Strength, Weakness)
@@ -244,15 +271,26 @@ class DealDamageAction(Action):
             damage_type=self.damage_type
         )
 
-        # Trigger target's on_damage_taken hook
-        target_actions = self.target.on_damage_taken(
-            damage_dealt,
-            source=self.source,
-            card=self.card,
-            damage_type=self.damage_type
-        )
-        if target_actions:
-            actions_to_return.extend(target_actions)
+        # Trigger target's on_damage_taken hook.
+        # Keep backward compatibility with older enemy signatures.
+        if damage_dealt > 0:
+            try:
+                target_actions = self.target.on_damage_taken(
+                    damage_dealt,
+                    source=self.source,
+                    card=self.card,
+                    damage_type=self.damage_type
+                )
+            except TypeError:
+                try:
+                    target_actions = self.target.on_damage_taken(
+                        damage_dealt,
+                        source=self.source
+                    )
+                except TypeError:
+                    target_actions = self.target.on_damage_taken(damage_dealt)
+            if target_actions:
+                actions_to_return.extend(target_actions)
         
         # Print damage dealt
         from localization import t, LocalStr
@@ -290,6 +328,10 @@ class DealDamageAction(Action):
         if hasattr(self.target, 'is_intention') and self.target.is_dead():
             if self.card is not None:
                 actions_to_return.extend(self.card.on_fatal())
+            # Print enemy kill notification
+            from enemies.base import Enemy
+            if isinstance(self.target, Enemy):
+                print(t("combat.enemy_killed", default="Enemy {target_name} has been defeated!", target_name=target_name))
 
         # Trigger relic hooks (on_damage_dealt)
         for relic in game_state.player.relics:
@@ -340,12 +382,35 @@ class AttackAction(Action):
         
     def execute(self) -> 'BaseResult':
         from utils.dynamic_values import resolve_potential_damage
+        
+        actions_to_return = []
+        
+        # Trigger on_attack hooks for source's powers (e.g., ThieveryPower)
+        # This is called before damage is dealt, allowing effects that trigger on attack
+        if self.source and hasattr(self.source, 'powers'):
+            for power in self.source.powers:
+                if hasattr(power, 'on_attack'):
+                    power_actions = power.on_attack(
+                        target=self.target,
+                        source=self.source,
+                        card=self.card
+                    )
+                    if power_actions:
+                        actions_to_return.extend(power_actions)
+        
+        # Resolve damage and create DealDamageAction
         damage = resolve_potential_damage(self.damage, self.source, self.target)
-        return SingleActionResult(DealDamageAction(damage, 
+        damage_action = DealDamageAction(damage, 
                                     target=self.target, 
                                     damage_type=self.damage_type,
                                     card=self.card,
-                                    source=self.source))
+                                    source=self.source)
+        
+        # Return damage action along with any actions from on_attack hooks
+        if actions_to_return:
+            actions_to_return.append(damage_action)
+            return MultipleActionsResult(actions_to_return)
+        return SingleActionResult(damage_action)
 
 @register("action")
 class GainBlockAction(Action):
@@ -454,9 +519,6 @@ class PlayCardAction(Action):
         from localization import LocalStr
         from actions.display import SelectAction
         
-        player = game_state.player
-        enemies = game_state.current_combat.enemies
-
         if not self.card:
             return NoneResult()
 
@@ -494,7 +556,7 @@ class PlayCardBHAction(Action):
         from entities.creature import Creature
     def __init__(self, card: 'Card', targets: List[Optional['Creature']], ignore_energy: bool = False):
         self.card = card
-        self.target = targets
+        self.targets = targets
         self.ignore_energy = ignore_energy
         
     def execute(self) -> 'BaseResult':
@@ -580,9 +642,9 @@ class ApplyPowerAction(Action):
         amount (int): Power amount
 
     Optional:
-        duration (int): Power duration (0 for permanent)
+        duration (int): Power duration (None to use power's default, 0 for permanent)
     """
-    def __init__(self, power, target: Creature, amount: int, duration: int = 0):
+    def __init__(self, power, target: Creature, amount: int, duration: int = None):
         self.power = power
         self.target = target
         self.amount = amount
@@ -611,13 +673,23 @@ class ApplyPowerAction(Action):
             if not power_class:
                 print(f"Power {self.power} not found")
                 return NoneResult()
-            power_instance = power_class(amount=self.amount, duration=self.duration)
+            # Create power instance - only pass duration if specified, let power use its default otherwise
+            if self.duration is not None:
+                power_instance = power_class(amount=self.amount, duration=self.duration)
+            else:
+                power_instance = power_class(amount=self.amount)
         else:
             # Already a Power instance
             power_instance = self.power
 
         # Trigger on_power_added hook before adding
         actions = self.target.on_power_added(power_instance)
+
+        # Check if this is a debuff and target has Artifact to block it
+        if not getattr(power_instance, 'is_buff', True):
+            if self.target.try_prevent_debuff():
+                print(f"[Artifact] {self.target} blocked {power_instance.name}!")
+                return NoneResult()
 
         # Apply the power to the target (only numerical changes)
         self.target.add_power(power_instance)

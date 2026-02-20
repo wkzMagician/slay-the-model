@@ -4,7 +4,7 @@ Global relics available to all characters at uncommon rarity.
 """
 from typing import List
 from actions.base import Action, LambdaAction
-from actions.card import DrawCardsAction, AddCardAction, ExhaustCardAction
+from actions.card import DrawCardsAction
 from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDamageAction, ApplyPowerAction, ModifyMaxHpAction
 # GainGoldAction imported lazily when needed to avoid circular import
 from relics.base import Relic

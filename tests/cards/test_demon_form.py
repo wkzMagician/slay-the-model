@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Demon Form - Gain Strength each turn."""
 import unittest
 from cards.ironclad.demon_form import DemonForm

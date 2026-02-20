@@ -23,8 +23,9 @@ class Forethought(Card):
 
     upgrade_magic = {"put_bottom": -1}  # -1 means any number of cards
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         put_bottom = self.get_magic_value("put_bottom")
         temp_cost = 0

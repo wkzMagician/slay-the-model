@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Test suite for Clothesline card - Attack that applies Weak debuff.
 

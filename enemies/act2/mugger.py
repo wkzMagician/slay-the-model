@@ -4,6 +4,7 @@ Thief that steals gold and escapes.
 """
 import random
 from enemies.base import Enemy
+from powers.definitions.thievery import ThieveryPower
 from utils.types import EnemyType
 from enemies.act2.mugger_intentions import (
     MugIntention, LungeIntention, SmokeBombIntention, EscapeIntention
@@ -27,6 +28,15 @@ class Mugger(Enemy):
         self.add_intention(LungeIntention(self))
         self.add_intention(SmokeBombIntention(self))
         self.add_intention(EscapeIntention(self))
+        
+    def on_combat_start(self, floor: int = 1) -> None:
+        """Called when combat starts - apply Thievery power."""
+        super().on_combat_start(floor)
+        
+        # Apply Thievery power (15 gold on normal, 20 on Ascension 7+)
+        thievery_amount = 15  # Ascension 7+ value
+        thievery = ThieveryPower(amount=thievery_amount, owner=self)
+        self.add_power(thievery)
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on pattern (same as Looter)."""

@@ -24,9 +24,10 @@ class InfernalBlade(Card):
 
     upgrade_cost = 0
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
         namespace = game_state.player.namespace
 
-        return super().on_play(target) + [ChooseAddRandomCardAction(namespace=namespace, card_type=CardType.ATTACK, temp_cost=0)]
+        return super().on_play(targets) + [ChooseAddRandomCardAction(namespace=namespace, card_type=CardType.ATTACK, temp_cost=0)]

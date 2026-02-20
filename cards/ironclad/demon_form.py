@@ -23,13 +23,14 @@ class DemonForm(Card):
 
     upgrade_magic = {"strength_per_turn": 3}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply DemonFormPower
         strength_per_turn = self.get_magic_value("strength_per_turn")
-        actions.append(ApplyPowerAction(power="DemonFormPower", target=game_state.player, amount=strength_per_turn, duration=-1))
+        actions.append(ApplyPowerAction(power="DemonFormPower", target=target, amount=strength_per_turn, duration=-1))
 
         return actions

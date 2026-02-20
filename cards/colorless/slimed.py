@@ -1,6 +1,9 @@
 """
 Slimed status card.
 """
+from actions.base import Action
+from entities.creature import Creature
+from typing import List
 from cards.base import Card
 from utils.types import CardType, RarityType
 from utils.registry import register
@@ -17,7 +20,7 @@ class Slimed(Card):
     base_damage = 0
     base_magic = {}
     
-    def on_play(self, target=None):
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
         """Slimed exhausts when played."""
         from engine.game_state import game_state
         # Exhaust this card (move from hand to exhaust pile)

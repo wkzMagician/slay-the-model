@@ -30,9 +30,14 @@ class GremlinLeader(Enemy):
     def _count_gremlins(self) -> int:
         """Count alive gremlin minions in battle."""
         from engine.game_state import game_state
-        
+        enemies = (
+            game_state.current_combat.enemies
+            if game_state.current_combat is not None
+            else []
+        )
+
         count = 0
-        for enemy in game_state.enemies:
+        for enemy in enemies:
             if enemy.is_alive and enemy != self:
                 # Check if it's a small gremlin (not a Leader or Nob)
                 if hasattr(enemy, '_is_gremlin') and enemy._is_gremlin:

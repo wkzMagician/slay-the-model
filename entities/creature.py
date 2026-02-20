@@ -45,6 +45,10 @@ class Creature(Localizable):
         return self._hp <= 0
 
     @property
+    def is_alive(self) -> bool:
+        return not self.is_dead()
+
+    @property
     def hp(self) -> int:
         return self._hp
 
@@ -54,6 +58,10 @@ class Creature(Localizable):
 
     def take_damage(self, amount: int, source=None, card=None, damage_type: str = "direct") -> int:
         """Take damage after block absorption. Returns actual damage dealt to HP."""
+        # Defensive: handle case where amount is accidentally a list
+        if isinstance(amount, list):
+            print(f"[WARNING] take_damage received list instead of int: {amount}, taking first element")
+            amount = amount[0] if amount else 0
         if amount <= 0:
             return 0
         
@@ -79,6 +87,10 @@ class Creature(Localizable):
             if hasattr(power, 'modify_damage_dealt'):
                 damage = power.modify_damage_dealt(damage)
         return max(0, damage)
+
+    def calculate_damage(self, base_damage: int) -> int:
+        """Backward-compatible alias for outgoing damage calculation."""
+        return self.get_damage_dealt_modifier(base_damage)
 
     def get_damage_taken_multiplier(self) -> float:
         """Get damage multiplier when this creature takes damage.
@@ -107,6 +119,17 @@ class Creature(Localizable):
                     print(f"[DEBUG] Power {power.__class__.__name__} prevented damage!")
                     return True
         print(f"[DEBUG] No power prevented damage")
+        return False
+
+    def try_prevent_debuff(self) -> bool:
+        """Check if any power can prevent a debuff (e.g., ArtifactPower).
+        
+        Returns True if debuff was prevented, False otherwise.
+        """
+        for power in list(self.powers):
+            if hasattr(power, 'try_prevent_debuff') and callable(power.try_prevent_debuff):
+                if power.try_prevent_debuff():
+                    return True
         return False
 
     def heal(self, amount: int) -> int:

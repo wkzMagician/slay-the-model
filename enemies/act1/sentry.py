@@ -35,17 +35,18 @@ class Sentry(Enemy):
         self.add_power(ArtifactPower(1, owner=self))
     
     def determine_next_intention(self, floor: int = 1):
-        """Determine next intention based on position (side/middle)."""
+        """Determine next intention based on position (side/middle).
+        
+        Also updates turn count for next decision.
+        """
         if self.is_middle:
             # Middle: Beam first, then Bolt
-            return self.intentions["beam"] if self.turn_count % 2 == 0 else self.intentions["bolt"]
+            intention = self.intentions["beam"] if self.turn_count % 2 == 0 else self.intentions["bolt"]
         else:
             # Side: Bolt first, then Beam
-            return self.intentions["bolt"] if self.turn_count % 2 == 0 else self.intentions["beam"]
-    
-    def execute_turn(self):
-        intention = self.determine_next_intention()
+            intention = self.intentions["bolt"] if self.turn_count % 2 == 0 else self.intentions["beam"]
+        
+        # Increment turn count for next decision
         self.turn_count += 1
-        if intention:
-            return intention.execute()
-        return None
+        
+        return intention

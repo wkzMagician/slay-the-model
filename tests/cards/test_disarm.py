@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Disarm - Enemy loses Strength."""
 import unittest
 from cards.ironclad.disarm import Disarm

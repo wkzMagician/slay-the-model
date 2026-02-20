@@ -39,9 +39,6 @@ def _get_none_result():
     from utils.result_types import NoneResult
     return NoneResult()
 
-    def __str__(self):
-        return f"{self.__class__.__name__}()"
-
 class LambdaAction(Action):
     """Action that executes a provided function"""
     def __init__(self, func, args=None, kwargs=None):
@@ -52,10 +49,12 @@ class LambdaAction(Action):
         
     def execute(self) -> 'BaseResult':
         """Execute the provided function with arguments"""
+        from utils.result_types import BaseResult
+
         result = self.func(*self.args, **self.kwargs)
         if isinstance(result, BaseResult):
             return result
-        return NoneResult()
+        return _get_none_result()
 
 class ActionQueue:
     """Queue of actions to execute in loop"""

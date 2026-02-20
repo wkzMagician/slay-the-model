@@ -98,9 +98,6 @@ class MultipleActionsResult(BaseResult):
 
     Attributes:
         actions (List[Action]): List of actions to queue sequentially
-
-    Example:
-        TransformCardAction, PlayCardAction
     """
 
     def __init__(self, actions: List['Action']):

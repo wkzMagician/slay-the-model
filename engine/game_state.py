@@ -107,6 +107,15 @@ class GameState:
     def current_floor(self) -> int:
         """Total floor count across all acts (for backward compatibility and display)."""
         return (self.current_act - 1) * FLOORS_PER_ACT + self.floor_in_act
+
+    @property
+    def combat(self) -> Optional[Combat]:
+        """Backward-compatible alias for current combat instance."""
+        return self.current_combat
+
+    @combat.setter
+    def combat(self, value: Optional[Combat]):
+        self.current_combat = value
     
     @current_floor.setter
     def current_floor(self, value: int):

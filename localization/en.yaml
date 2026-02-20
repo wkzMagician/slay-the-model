@@ -41,6 +41,7 @@ ui:
   enemy_turn: "=== Enemy Turn ==="
   end_turn: "End turn"
   draw_cards: "Draw {count} cards"
+  choose_random_card_to_add: "Choose a random card to add to your deck"
 
 blessing:
   title: "Choose blessings"
@@ -71,10 +72,19 @@ events:
   upgrade_shrine:
     title: "Upgrade Shrine"
     description: "You discover a mysterious shrine that can upgrade one of your cards."
-    pray: "Upgrade a card (costs {gold_cost} Gold)"
+    pray: "Upgrade a card"
     leave: "Leave"
-    no_gold: "Not enough gold (need {gold_cost})"
     upgraded: "Your {card_name} has been upgraded!"
+  bonfire_spirits:
+    title: "Bonfire Spirits"
+    description: "You encounter friendly spirits gathered around a dying fire."
+    offer: "Offer a card to the spirits"
+    leave: "Leave"
+  lab:
+    title: "The Lab"
+    description: "You discover an abandoned laboratory filled with strange potions."
+    search: "Search the lab"
+    leave: "Leave"
 
 combat:
   title: "Combat"
@@ -158,6 +168,9 @@ combat:
   gain_block_next_turn: "Gain {block} block next turn"
   gain_block_next_turn_scheduled: "Scheduled gain of {block} block next turn (stored in player.pending_block)"
   reboot_shuffle: "Reboot shuffles your hand and discard pile into your draw pile."
+  thievery_steal: "{enemy} stole {amount} gold!"
+  thievery_return: "Recovered {amount} stolen gold!"
+  looter_escape: "{enemy} escapes with your gold!"
 
 cards:
   ironclad:
@@ -257,12 +270,16 @@ cards:
       rarity: "special"
     Dazed:
       name: "Dazed"
-      description: "Unplayable. Draws a replacement card when drawn."
+      description: "Unplayable. Ethereal."
       rarity: "common"
     Wound:
       name: "Wound"
       description: "Unplayable."
       rarity: "common"
+    Pain:
+      name: "Pain"
+      description: "Unplayable. Whenever you play another card, take 1 damage."
+      rarity: "curse"
 
 powers:
   StrengthPower:
@@ -298,11 +315,17 @@ powers:
   MetallicizePower:
     name: "Metallicize"
     description: "At the end of your turn, gain {amount} Block."
+  ThieveryPower:
+    name: "Thievery"
+    description: "Steals {amount} gold when attacking. Gold returned on death."
 
 potions:
   HeartOfIron:
     name: "Heart of Iron"
     description: "Gain 1 Strength."
+  BloodPotion:
+    name: "Blood Potion"
+    description: "Heal {heal_amount} HP."
 
 relics:
   # Common Global Relics
@@ -832,20 +855,20 @@ enemies:
   RedLouse:
     name: "Red Louse"
     intentions:
-      louse_bite:
+      bite:
         name: "Bite"
         description: "Deal {damage} damage."
-      red_louse_grow:
+      grow:
         name: "Grow"
         description: "Gain {strength_gain} Strength."
   
   GreenLouse:
     name: "Green Louse"
     intentions:
-      louse_bite:
+      bite:
         name: "Bite"
         description: "Deal {damage} damage."
-      green_louse_spit_web:
+      spit_web:
         name: "Spit Web"
         description: "Apply 1 Weak to you."
   
@@ -938,10 +961,10 @@ enemies:
     intentions:
       goop_spray:
         name: "Goop Spray"
-        description: "Add 2 Slimed to your discard pile."
+        description: "Add 3 Slimed to your discard pile."
       preparing:
         name: "Preparing"
-        description: "Preparing to split next turn."
+        description: "Preparing a big attack next turn."
       slime_boss_slam:
         name: "Slam"
         description: "Deal {damage} damage."
@@ -1050,6 +1073,54 @@ enemies:
       gremlin_wizard_ultimate_blast:
         name: "Ultimate Blast"
         description: "Deal {damage} damage."
+  
+  Looter:
+    name: "Looter"
+    intentions:
+      mug:
+        name: "Mug"
+        description: "Deal {damage} damage."
+      lunge:
+        name: "Lunge"
+        description: "Deal {damage} damage."
+      smoke_bomb:
+        name: "Smoke Bomb"
+        description: "Gain {block} Block."
+      escape:
+        name: "Escape"
+        description: "Flee combat with stolen gold."
+
+  TheHexaghost:
+    name: "Hexaghost"
+    intentions:
+      divider:
+        name: "Divider"
+        description: "Deal {damage} damage {attack_times} times."
+  
+  TheChamp:
+    name: "The Champ"
+    intentions:
+      heavy_slash:
+        name: "Heavy Slash"
+        description: "Deal {damage} damage."
+      face_slap:
+        name: "Face Slap"
+        description: "Deal {damage} damage. Apply 2 Frail and 2 Vulnerable."
+      defensive_stance:
+        name: "Defensive Stance"
+        description: "Gain {block} Block and {metallicize} Metallicize."
+      gloat:
+        name: "Gloat"
+        description: "Gain {strength} Strength."
+      taunt:
+        name: "Taunt"
+        description: "Apply 2 Weak and 2 Vulnerable."
+      anger:
+        name: "Anger"
+        description: "Remove all debuffs. Gain {strength} Strength."
+      execute:
+        name: "Execute"
+        description: "Deal {damage} damage twice."
 
 
 rooms:
@@ -1098,4 +1169,13 @@ rooms:
 
   shop:
     enter: "You enter a mysterious shop."
+
+  ShopRoom:
+    ShopRoom:
+      title: "Shop"
+      buy_card: "Buy {card} ({price} gold)"
+      buy_relic: "Buy {relic} ({price} gold)"
+      buy_potion: "Buy {potion} ({price} gold)"
+      remove_card: "Remove a card ({price} gold)"
+      leave: "Leave"
 

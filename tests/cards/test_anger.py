@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Test for Anger card - Ironclad Attack card.
 

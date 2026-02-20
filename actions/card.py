@@ -5,7 +5,7 @@ from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register, get_registered, list_registered
 from utils.types import CardType, PilePosType, RarityType
-from utils.random import get_random_card
+from utils.random import get_random_card, get_random_card_reward
 from utils.result_types import BaseResult, NoneResult, MultipleActionsResult, SingleActionResult
 
 # Type hints only (avoid circular imports)
@@ -46,7 +46,7 @@ class AddCardAction(Action):
         source (str): Source of card ("reward", "enemy", etc.)
         position (PilePosType): Position in pile (TOP or BOTTOM), default TOP
     """
-    def __init__(self, card, dest_pile: str = None, source: str = "reward", position: PilePosType = PilePosType.TOP, chance: float = 1.0):
+    def __init__(self, card, dest_pile: str = None, source: str = None, position: PilePosType = PilePosType.TOP, chance: float = 1.0):
         self.card = card
         self.dest_pile = dest_pile
         self.source = source
@@ -67,7 +67,9 @@ class AddCardAction(Action):
                 target_pile = self.dest_pile or "deck"
                 game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
                 # Only show [Reward] for actual rewards, use appropriate prefix for others
-                if self.source == "reward":
+                if self.source is None:
+                    print(f"Added {self.card.display_name.resolve()} to {target_pile}")
+                elif self.source == "reward":
                     print(f"[Reward] Added {self.card.display_name.resolve()} to {target_pile}")
                 elif self.source == "enemy":
                     print(f"[Enemy] Added {self.card.display_name.resolve()} to {target_pile}")
@@ -532,14 +534,18 @@ class ChooseAddRandomCardAction(Action):
         from actions.display import SelectAction
 
         options = []
+        selected_card_ids = []  # Track selected cards to avoid duplicates
         for _ in range(self.total):
             random_card = get_random_card(
                 namespaces=[self.namespace] if self.namespace else None,
                 rarities=[self.rarity] if self.rarity else None,
-                card_types=[self.card_type] if self.card_type else None
+                card_types=[self.card_type] if self.card_type else None,
+                exclude_card_ids=selected_card_ids,  # Exclude already selected cards
+                exclude_starter=True  # Exclude STARTER rarity from rewards
             )
             if not random_card:
                 continue
+            selected_card_ids.append(random_card.idstr)  # Track this card
             # * 设置临时能量
             if self.temp_cost is not None:
                 random_card.temp_cost = self.temp_cost
@@ -599,8 +605,9 @@ class AddRandomCardAction(Action):
             card_types=[self.card_type] if self.card_type else None,
             rarities=[self.rarity] if self.rarity else None
         )
-        
-        assert random_card is not None
+
+        if random_card is None:
+            return NoneResult()
         
         if self.upgrade:
             random_card.upgrade()
@@ -963,12 +970,42 @@ class ShuffleAction(Action):
         return NoneResult()
 
 @register("action")
+class UpgradeAllCardsAction(Action):
+    """Upgrade all cards in player's deck.
+
+    Required:
+        None
+
+    Optional:
+        None
+    """
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if not game_state.player:
+            return NoneResult()
+
+        deck = game_state.player.card_manager.get_pile('deck')
+
+        upgraded_count = 0
+        for card in deck:
+            if card.can_upgrade():
+                card.upgrade()
+                upgraded_count += 1
+
+        if upgraded_count > 0:
+            print(f"[Event] Upgraded {upgraded_count} card(s)")
+
+        return NoneResult()
+
+
+@register("action")
 class UpgradeRandomCardAction(Action):
     """Upgrade a random card from player's deck.
-    
+
     Required:
         count (int): Number of cards to upgrade
-    
+
     Optional:
         card_type (str): Type of cards to choose from (Attack/Skill/Power)
         namespace (str): Card namespace (default: player's character)
@@ -1037,169 +1074,65 @@ class UpgradeRandomCardAction(Action):
         else:
             return MultipleActionsResult(actions)
 
-@register("action")
-class AddRandomColorlessCardAction(Action):
-    """Add a random colorless card to the player's deck.
-
+@register("action")      
+class ChooseObtainCardAction(Action):
+    """Choose a 1/N card to add to deck
+    
     Required:
-        rarity (str): Rarity filter ('uncommon', 'rare', 'uncommon_or_rare')
-
+        total (int): Total amount of cards to choose from
+        namespace (str): Card namespace
+        encounter_type (str): Type of encounter for rarity weights ("normal", "elite", "shop").
+        use_rolling_offset (bool): If True, adjust rare chance based on common cards gained.
+        exclude_set (Optional[List[str]]): List of card idstrs to exclude (prevents duplicates)
+        pile (str): Destination pile for selected card
+        
     Optional:
         None
     """
-    def __init__(self, rarity: str = 'uncommon_or_rare'):
-        self.rarity = rarity
-
+    def __init__(self, total: int = 3, namespace: Optional[str] = None, 
+                 encounter_type: str = "normal", use_rolling_offset: bool = False,
+                 exclude_set: Optional[List[str]] = None, pile: str = "deck"):
+        self.total = total
+        self.namespace = namespace
+        self.encounter_type = encounter_type
+        self.use_rolling_offset = use_rolling_offset
+        self.exclude_set = exclude_set or []
+        self.pile = pile
+    
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
-        import random
-
         if not game_state.player:
             return NoneResult()
 
-        # Import all colorless card classes
-        # These are the colorless cards available in the game
-        colorless_cards = []
+        from actions.display import SelectAction
 
-        # Import colorless cards dynamically to avoid circular imports
-        try:
-            from cards.colorless.bite import Bite
-            colorless_cards.append(Bite)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.ritual_dagger import RitualDagger
-            colorless_cards.append(RitualDagger)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.panic_stone import PanicStone
-            colorless_cards.append(PanicStone)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.enlightenment import Enlightenment
-            colorless_cards.append(Enlightenment)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.j_a_x import JAX
-            colorless_cards.append(JAX)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.madness import Madness
-            colorless_cards.append(Madness)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.apotheosis import Apotheosis
-            colorless_cards.append(Apotheosis)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.hand_of_greed import HandOfGreed
-            colorless_cards.append(HandOfGreed)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.thinking_ahead import ThinkingAhead
-            colorless_cards.append(ThinkingAhead)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.peace_pipe import PeacePipe
-            colorless_cards.append(PeacePipe)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.chrysalis import Chrysalis
-            colorless_cards.append(Chrysalis)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.exhume import Exhume
-            colorless_cards.append(Exhume)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.metamorphosis import Metamorphosis
-            colorless_cards.append(Metamorphosis)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.magnetism import Magnetism
-            colorless_cards.append(Magnetism)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.primary_shard import PrimaryShard
-            colorless_cards.append(PrimaryShard)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.secondary_shard import SecondaryShard
-            colorless_cards.append(SecondaryShard)
-        except ImportError:
-            pass
-
-        try:
-            from cards.colorless.tertiary_shard import TertiaryShard
-            colorless_cards.append(TertiaryShard)
-        except ImportError:
-            pass
-
-        if not colorless_cards:
-            print("[Event] No colorless cards available")
-            return NoneResult()
-
-        # Filter by rarity
-        eligible_cards = []
-        for card_class in colorless_cards:
-            card_rarity = getattr(card_class, 'rarity', None)
-            if card_rarity is None:
+        options = []
+        selected_card_ids = list(self.exclude_set)  # Track selected cards to avoid duplicates
+        for _ in range(self.total):
+            random_card = get_random_card_reward(
+                namespaces=[self.namespace] if self.namespace else None,
+                encounter_type=self.encounter_type,
+                use_rolling_offset=self.use_rolling_offset,
+                exclude_set=selected_card_ids
+            )
+            if not random_card:
                 continue
-
-            rarity_name = card_rarity.name if hasattr(card_rarity, 'name') else str(card_rarity)
-
-            if self.rarity == 'uncommon_or_rare':
-                if rarity_name in ['UNCOMMON', 'RARE', 'SPECIAL']:
-                    eligible_cards.append(card_class)
-            elif self.rarity == 'uncommon':
-                if rarity_name in ['UNCOMMON', 'SPECIAL']:
-                    eligible_cards.append(card_class)
-            elif self.rarity == 'rare':
-                if rarity_name in ['RARE', 'SPECIAL']:
-                    eligible_cards.append(card_class)
-            else:
-                # If rarity doesn't match any filter, include all
-                eligible_cards.append(card_class)
-
-        if not eligible_cards:
-            eligible_cards = colorless_cards
-
-        # Select a random card class
-        selected_card_class = random.choice(eligible_cards)
-
-        # Create an instance of the card
-        new_card = selected_card_class()
-
-        # Add the card to the player's deck
-        print(f"[Event] Obtained colorless card: {new_card.display_name.resolve()}")
-
-        return SingleActionResult(AddCardAction(card=new_card, dest_pile="deck", source="event"))
+            selected_card_ids.append(random_card.idstr)  # Track to avoid duplicates in next iteration
+            option = random_card.display_name
+            options.append(
+                Option(
+                    name = option,
+                    actions = [
+                        AddCardAction(card=random_card, dest_pile=self.pile),
+                    ]
+                )
+            )
+        if not options:
+            return NoneResult()
+        select_action = SelectAction(
+            title = LocalStr("ui.choose_random_card_to_add"),
+            options = options,
+            max_select = 1,
+            must_select = False, # ? 是否全部都是，可以跳过
+        )
+        return SingleActionResult(select_action)   

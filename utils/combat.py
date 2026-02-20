@@ -53,12 +53,14 @@ def resolve_target(target_type: TargetType) -> List[Optional[Creature]]:
                 actions=[LambdaAction(func=lambda idx=idx: setattr(game_state, 'last_select_idx', idx))]
             ))
         
-        return SelectAction(
+        select_action = SelectAction(
             title=LocalStr("combat.select_target", default="=== Select Target ==="),
             options=options,
             max_select=1,
             must_select=True
         )
+        select_action.execute()
+        return [alive_enemies[game_state.last_select_idx]]
     else:
         raise ValueError(f"Unsupported TargetType: {target_type}")
     

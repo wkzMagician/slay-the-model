@@ -22,10 +22,11 @@ class DualWield(Card):
 
     upgrade_cost = 0
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Choose a card in hand and add a copy
         if game_state.player.card_manager.get_pile("hand"):

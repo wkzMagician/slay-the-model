@@ -24,8 +24,9 @@ class Immolate(Card):
 
     upgrade_damage = 28
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Add Burn status to discard pile
         from cards.colorless import Burn

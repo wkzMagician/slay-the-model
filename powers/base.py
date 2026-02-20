@@ -139,6 +139,23 @@ class Power(Localizable):
         """
         return []
     
+    def on_attack(self, target: Any, source: Any = None, card: Any = None) -> List[Action]:
+        """Called when an attack is performed (before damage calculation).
+        
+        This hook is called when an attack action is executed, regardless of 
+        whether damage is actually dealt (e.g., blocked attacks still trigger this).
+        Useful for effects like Thievery that trigger on attack, not on damage.
+        
+        Args:
+            target: Target of the attack
+            source: Source of the attack (creature)
+            card: Card being played (if applicable)
+            
+        Returns:
+            List of actions to execute when attacking
+        """
+        return []
+    
     def on_damage_taken(self, damage: int, source: Any = None, card: Any = None, 
                        player: Any = None, damage_type: str = "direct") -> List[Action]:
         """Called when damage is taken.

@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Reaper - AOE damage + lifesteal."""
 import unittest
 from cards.ironclad.reaper import Reaper

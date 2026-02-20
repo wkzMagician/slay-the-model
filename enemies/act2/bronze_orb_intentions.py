@@ -25,7 +25,7 @@ class SupportBeam(Intention):
 
     def __init__(self, enemy):
         super().__init__("Support Beam", enemy)
-        self.base_block = 11
+        self.base_block = 12
 
     def execute(self) -> List:
         """Give block to Bronze Automaton."""

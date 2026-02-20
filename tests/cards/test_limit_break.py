@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Test for Limit Break card - Ironclad Skill card.
 

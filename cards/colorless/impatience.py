@@ -24,10 +24,11 @@ class Impatience(Card):
 
     upgrade_magic = {"draw_amount": 3}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Check if there are any attacks in hand
         has_attack = False

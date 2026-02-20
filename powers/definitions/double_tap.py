@@ -4,7 +4,6 @@ This turn, your next Attack is played twice.
 """
 from typing import List, Any
 from actions.base import Action
-from actions.combat import PlayCardAction
 from cards.base import Card
 from powers.base import Power
 from utils.registry import register

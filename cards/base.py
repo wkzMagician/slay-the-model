@@ -125,7 +125,11 @@ class Card(Localizable):
         if kwargs.get("base_damage") is not None:
             self._base_damage = kwargs["base_damage"]
             self._damage = kwargs["base_damage"]
-        
+        if kwargs.get("upgrade_level") is not None:
+            self.upgrade_level = kwargs["upgrade_level"]
+            # Re-resolve target_type after upgrade_level is set
+            self.target_type = self._resolve_target()
+
     @property
     def idstr(self) -> str:
         """Card ID with namespace, e.g. 'Base.Strike'"""
@@ -261,7 +265,7 @@ class Card(Localizable):
         variables = {}
         
         # 基础变量
-        value_types = ['damage', 'block', 'heal', 'draw', 'energy', 'attack_times']
+        value_types = ['damage', 'block', 'heal', 'draw', 'energy_gain', 'attack_times']
         for vt in value_types:
             variables[vt] = resolve_card_value(self, vt)
         
@@ -298,10 +302,21 @@ class Card(Localizable):
             desc = self.description
         
         # 使用ConcatLocalStr拼接各个部分
-        return self.local("name") + f" (Cost: {cost_str}, Type: {self.card_type.value}, Rarity: {self.rarity.value})\n" + desc
+        return self.display_name + f" (Cost: {cost_str}, Type: {self.card_type.value}, Rarity: {self.rarity.value})\n" + desc
     
 
     def _resolve_target(self):
+        # Check for upgrade-based target_type first
+        if self.upgrade_level > 0:
+            upgrade_target_type = getattr(self.__class__, "upgrade_target_type", None)
+            if upgrade_target_type and isinstance(upgrade_target_type, TargetType):
+                return upgrade_target_type
+        else:
+            base_target_type = getattr(self.__class__, "base_target_type", None)
+            if base_target_type and isinstance(base_target_type, TargetType):
+                return base_target_type
+        
+        # Fall back to static target_type
         target_type = getattr(self, "target_type", None)
         if target_type and isinstance(target_type, TargetType):
             return target_type
@@ -315,7 +330,7 @@ class Card(Localizable):
         else:
             card_type = str(card_type_attr).lower()
         
-        if card_type in ("skill", "power"):
+        if card_type in ("skill", "power", "status", "curse"):
             return TargetType.SELF
         if card_type == "attack":
             # 单体/群体, 默认为单体
@@ -325,8 +340,10 @@ class Card(Localizable):
 
     # * * * actions 相关
 
-    def on_play(self, target: Optional[Creature] = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
         """卡牌被打出时触发，返回 Action 列表"""
+        # Extract first target for compatibility
+        target = targets[0] if targets else None
         try:
             from actions.combat import (
                 GainBlockAction,

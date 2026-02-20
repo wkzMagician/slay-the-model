@@ -6,7 +6,7 @@ When taking damage, gains block equal to the amount.
 from powers.base import Power
 from localization import LocalStr
 from utils.registry import register
-from actions.combat import RemovePowerAction
+from actions.combat import GainBlockAction, RemovePowerAction
 
 
 @register("power")
@@ -47,7 +47,10 @@ class CurlUpPower(Power):
             if self.owner:
                 self.owner.gain_block(self.amount)
             # Return RemovePowerAction to remove this power immediately
-            return [RemovePowerAction(power="Curl Up", target=self.owner)]
+            return [
+                GainBlockAction(self.amount, self.owner),
+                RemovePowerAction(power="Curl Up", target=self.owner)
+            ]
         return []
         
     def local(self, field: str, **kwargs) -> LocalStr:

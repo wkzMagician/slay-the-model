@@ -17,14 +17,16 @@ class Blind(Card):
 
     card_type = CardType.SKILL
     rarity = RarityType.UNCOMMON
-    target_type = TargetType.ENEMY_SELECT
+    base_target_type = TargetType.ENEMY_SELECT
+    upgrade_target_type = TargetType.ENEMY_ALL
 
     base_cost = 0
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply Weak to target(s)
         weak_amount = 2
@@ -40,7 +42,7 @@ class Blind(Card):
                 ))
         else:
             # Base: Apply to single target
-            if target:
+            if targets:
                 actions.append(ApplyPowerAction(
                     power="Weak",
                     target=target,

@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Test Thunderclap - Deals damage and applies Vulnerable to ALL enemies"""
 import unittest
 from cards.ironclad.thunderclap import Thunderclap

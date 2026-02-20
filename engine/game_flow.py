@@ -73,16 +73,9 @@ class GameFlow:
         from utils.result_types import MultipleActionsResult
         
         result = ""
-        boss_defeated = False
         
         # Act loop - iterate over floors 1-16 (boss is on floor 16, 0-indexed as 15)
         while game_state.floor_in_act < FLOORS_PER_ACT - 1:  # Floors 0-16
-            # Check for boss floor (floor_in_act 15 = floor 16 in 1-indexed)
-            if game_state.floor_in_act == 15:
-                # Boss room
-                boss_defeated = self._handle_boss_room(game_state)
-                break
-            
             # Select next room from map
             cur_room = self._select_next_room(game_state)
             if cur_room is None:
@@ -102,45 +95,18 @@ class GameFlow:
                     self._handle_game_over()
                     return False
             
-            # Handle MultipleActionsResult from rooms
+            # Handle results from rooms
             if isinstance(result, MultipleActionsResult):
                 game_state.action_queue.add_actions(result.actions)
+                game_state.execute_all_actions()
+            elif isinstance(result, SingleActionResult):
+                game_state.action_queue.add_action(result.action, to_front=True)
                 game_state.execute_all_actions()
             
             # Leave the room (cleanup)
             cur_room.leave()
         
-        return boss_defeated
-    
-    def _handle_boss_room(self, game_state) -> bool:
-        """Handle boss room encounter. Returns True if boss defeated."""
-        from utils.result_types import MultipleActionsResult
-        
-        # Select boss room from map
-        cur_room = self._select_next_room(game_state)
-        if cur_room is None:
-            return False
-        
-        # Initialize and enter boss room
-        cur_room.init()
-        result = cur_room.enter()
-        
-        # Check for victory (MultipleActionsResult with rewards)
-        if isinstance(result, MultipleActionsResult):
-            # Boss defeated
-            game_state.action_queue.add_actions(result.actions)
-            game_state.execute_all_actions()
-            cur_room.leave()
-            return True
-        
-        # Check for death
-        if isinstance(result, GameStateResult):
-            if result.state in ("GAME_LOSE", "DEATH"):
-                self._handle_game_over()
-                return False
-        
-        cur_room.leave()
-        return False
+        return True
     
     def _handle_act_completion(self, game_state) -> bool:
         """
@@ -216,43 +182,27 @@ class GameFlow:
         """
         Select and create the next room from the map.
         
-        Uses the map manager to get available moves and AI decision engine
-        to select which room to enter.
+        Uses SelectMapNodeAction to handle player choice.
         
         Returns:
             Room instance for the selected node, or None if no moves available
         """
-        from ai.ai_interface import MockAIDecisionEngine
-        from utils.result_types import GameStateResult
+        from actions.map_selection import SelectMapNodeAction
         
-        # Get available moves from map manager
-        available_moves = game_state.map_manager.get_available_moves()
+        # Use SelectMapNodeAction to handle selection
+        select_action = SelectMapNodeAction()
+        result = select_action.execute()
         
-        if not available_moves:
-            print(t('ui.no_available_moves', default='No available moves on the map.'))
-            return None
+        # The SelectMapNodeAction will return a MoveToMapNodeAction wrapped in SingleActionResult
+        # We need to add it to queue and execute
+        if isinstance(result, SingleActionResult):
+            game_state.action_queue.add_action(result.action)
+            game_state.execute_all_actions()
         
-        # Get map context for AI decision
-        map_context = game_state.map_manager.get_map_for_ai()
+        # After execution, get the current room from game_state
+        room = game_state.current_room
         
-        # Display map for human viewing
-        game_state.map_manager.display_map_for_human()
-        
-        # Use AI decision engine to select move
-        ai_engine = MockAIDecisionEngine(strategy="first", debug=True)
-        try:
-            choice_index = ai_engine.make_map_decision(map_context)
-        except ValueError:
-            return None
-        
-        # Get the selected node
-        selected_node = available_moves[choice_index]
-        
-        # Create room instance by moving to the selected node
-        room = game_state.map_manager.move_to_node(selected_node.floor, selected_node.position)
-        
-        # Update game state
-        game_state.current_room = room
+        # Advance floor counter
         game_state.advance_floor()
         
         return room
@@ -273,4 +223,4 @@ class GameFlow:
         """Handle game victory."""
         print(t('ui.game_won', default='\n=== VICTORY! ==='))
         print(t('ui.victory_message', default='You have conquered the Spire!'))
-        print(t('ui.congratulations', default='Congratulations!')) 
+        print(t('ui.congratulations', default='Congratulations!'))

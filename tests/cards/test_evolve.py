@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive tests for Evolve card."""
 import unittest
 from utils.types import CardType, RarityType

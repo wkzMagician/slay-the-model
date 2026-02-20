@@ -38,7 +38,7 @@ class DividerIntention(Intention):
         player_hp = game_state.player.hp
         n = player_hp // 12
         damage = (n + 1) * 6
-        
+
         return [
             AttackAction(
                 damage=damage,
@@ -46,20 +46,26 @@ class DividerIntention(Intention):
                 source=self.enemy,
                 damage_type="attack",
             )
+            for _ in range(6)
         ]
     
     @property
     def description(self):
         """Custom description for Divider."""
-        from localization import LocalStr
         from engine.game_state import game_state
-        
+
         if game_state and game_state.player:
             player_hp = game_state.player.hp
             n = player_hp // 12
             damage = (n + 1) * 6
-            return LocalStr(f"Deals {damage} damage.")
-        return LocalStr("Deals damage based on your HP.")
+        else:
+            damage = 6
+
+        return self.local(
+            "description",
+            damage=damage,
+            attack_times=6,
+        )
 
 
 class SearIntention(Intention):
@@ -94,9 +100,14 @@ class SearIntention(Intention):
             BurnCard = get_registered("card", "Burn")
             if BurnCard:
                 for _ in range(self._burn_count):
-                    actions.append(AddCardAction(card=BurnCard(), dest_pile="discard"))
+                    burn = BurnCard()
+                    # If Inferno has been used, upgrade the Burn card
+                    if getattr(self.enemy, '_used_inferno', False):
+                        if hasattr(burn, 'upgrade'):
+                            burn.upgrade()
+                    actions.append(AddCardAction(card=burn, dest_pile="discard"))
         except Exception:
-            pass
+            raise ValueError("Cannot Get Burn Card!")
         
         return actions
 
@@ -194,5 +205,8 @@ class InfernoIntention(Intention):
                     actions.append(AddCardAction(card=burn, dest_pile="discard"))
         except Exception:
             pass
+        
+        # Mark that Inferno has been used - subsequent Sear Burns will be upgraded
+        self.enemy._used_inferno = True
         
         return actions

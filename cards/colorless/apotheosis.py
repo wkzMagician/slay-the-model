@@ -23,9 +23,10 @@ class Apotheosis(Card):
 
     upgrade_cost = 1
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Upgrade ALL cards for this battle
         # We need to upgrade all cards in deck, hand, draw, discard

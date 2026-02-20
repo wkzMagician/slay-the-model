@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Hemokinesis - Lose HP to deal damage."""
 import unittest
 from cards.ironclad.hemokinesis import Hemokinesis

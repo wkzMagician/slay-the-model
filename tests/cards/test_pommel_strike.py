@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Test for Pommel Strike card - Ironclad Attack card.
 

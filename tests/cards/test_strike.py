@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Comprehensive test suite for Strike card - Basic attack.
 

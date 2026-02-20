@@ -22,9 +22,9 @@ class BufferPower(Power):
     def __init__(self, amount: int = 0, duration: int = -1, owner=None):
         # BufferPower is permanent (duration=-1 means infinite)
         # It only expires when amount reaches 0, not based on duration
-        print(f"[DEBUG] BufferPower.__init__ called with amount={amount}, duration={duration}")
+        # print(f"[DEBUG] BufferPower.__init__ called with amount={amount}, duration={duration}")
         super().__init__(amount=amount, duration=duration, owner=owner)
-        print(f"[DEBUG] After super().__init__: self._duration={self._duration}, self.duration={self.duration}")
+        # print(f"[DEBUG] After super().__init__: self._duration={self._duration}, self.duration={self.duration}")
     
     def try_prevent_damage(self, amount: int = 0) -> bool:
         """Attempt to prevent damage. Returns True if damage is prevented.

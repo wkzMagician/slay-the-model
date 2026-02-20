@@ -88,16 +88,34 @@ cards:
     Slimed:
       description: 消耗。
       name: 粘液
+    Pain:
+      description: 无法打出。当你打出其他牌时，受到1点伤害。
+      name: 痛苦
+    Dazed:
+      description: 无法打出。虚无。
+      name: 眩晕
+    Wound:
+      description: 无法打出。
+      name: 伤口
 events:
   neo:
     welcome: "在你面前是一座黑暗的神殿，献给尖塔神秘的精灵尼奥。"
   upgrade_shrine:
     title: "升级神殿"
     description: "你发现了一座神秘的神殿，可以升级你的一张牌。"
-    pray: "升级一张牌（花费 {gold_cost} 金币）"
+    pray: "升级一张牌"
     leave: "离开"
-    no_gold: "金币不足（需要 {gold_cost}）"
     upgraded: "你的 {card_name} 已升级！"
+  bonfire_spirits:
+    title: "篝火之灵"
+    description: "你遇到了聚集在一堆将熄火焰周围的友善灵魂。"
+    offer: "向灵魂献祭一张牌"
+    leave: "离开"
+  lab:
+    title: "实验室"
+    description: "你发现了一个废弃的实验室，里面装满了奇怪的药剂。"
+    search: "搜索实验室"
+    leave: "离开"
 combat:
   player_attacks: "玩家攻击 {target}，造成 {damage} 点伤害"
   enemy_attacks_player: "{enemy} 攻击玩家，造成 {damage} 点伤害"
@@ -356,6 +374,24 @@ enemies:
     name: "邪教徒"
   Louse:
     name: "虱子"
+  RedLouse:
+    name: "红虱子"
+    intentions:
+      bite:
+        name: "撕咬"
+        description: "造成{damage}点伤害。"
+      grow:
+        name: "成长"
+        description: "获得{strength_gain}点力量。"
+  GreenLouse:
+    name: "绿虱子"
+    intentions:
+      bite:
+        name: "撕咬"
+        description: "造成{damage}点伤害。"
+      spit_web:
+        name: "吐丝"
+        description: "对你施加1层虚弱。"
   JawWorm:
     name: "颚虫"
   Lagavulin:
@@ -374,6 +410,38 @@ enemies:
     name: "盾牌地精"
   GremlinWizard:
     name: "地精巫师"
+  TheHexaghost:
+    name: "六边幽魂"
+    intentions:
+      divider:
+        name: "分裂"
+        description: "造成{damage}点伤害，共{attack_times}次。"
+  
+  TheChamp:
+    name: "冠军"
+    intentions:
+      heavy_slash:
+        name: "重斩"
+        description: "造成{damage}点伤害。"
+      face_slap:
+        name: "面掌"
+        description: "造成{damage}点伤害。施加2层易伤和2层脆弱。"
+      defensive_stance:
+        name: "防御姿态"
+        description: "获得{block}点格挡和{metallicize}层金属化。"
+      gloat:
+        name: "得意"
+        description: "获得{strength}点力量。"
+      taunt:
+        name: "嘲讽"
+        description: "施加2层虚弱和2层脆弱。"
+      anger:
+        name: "愤怒"
+        description: "移除所有负面效果。获得{strength}点力量。"
+      execute:
+        name: "处决"
+        description: "造成{damage}点伤害两次。"
+  
   # Intention descriptions
   intentions:
     # Cultist
@@ -420,6 +488,7 @@ enemies:
 ui:
   character_selected: '选择的角色: {character}'
   choose_blessings: 选择祝福
+  choose_random_card_to_add: 随机选择一张牌加入牌组
   choose_enemy: 选择敌人：
   floor_position: 第 {act} 章 - 第 {floor} 层，位置 {position}
   act_complete: 第 {act} 章完成！
@@ -499,6 +568,23 @@ rooms:
       leave: "离开"
   shop:
     enter: "你进入了一家神秘的商店。"
+
+  ShopRoom:
+    ShopRoom:
+      title: "商店"
+      buy_card: "购买 {card} （{price} 金币）"
+      buy_relic: "购买 {relic} （{price} 金币）"
+      buy_potion: "购买 {potion} （{price} 金币）"
+      remove_card: "移除一张卡牌（{price} 金币）"
+      leave: "离开"
+
+potions:
+  BloodPotion:
+    name: "鲜血药水"
+    description: "回复 {heal}% 最大生命值。"
+  HeartOfIron:
+    name: "钢铁之心"
+    description: "获得 {strength} 点力量。"
 
 events:
   neo:

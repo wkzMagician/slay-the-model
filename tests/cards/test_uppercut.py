@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Uppercut - Damage + Vulnerable + Weak."""
 import unittest
 from cards.ironclad.uppercut import Uppercut

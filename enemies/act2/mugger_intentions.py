@@ -87,6 +87,5 @@ class EscapeIntention(Intention):
     
     def execute(self) -> List['Action']:
         """Execute Escape: flee combat."""
-        # TODO: Implement steal gold and escape mechanic
         from actions.combat import RemoveEnemyAction
         return [RemoveEnemyAction(self.enemy)]

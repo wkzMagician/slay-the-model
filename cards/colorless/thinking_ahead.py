@@ -23,7 +23,8 @@ class ThinkingAhead(Card):
     base_exhaust = True
     upgrade_exhaust = False
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        return super().on_play(target) + [ChooseMoveCardAction(src="hand", dst="draw_pile", amount=1)] # todo: pos=PilePosType.TOP
+        return super().on_play(targets) + [ChooseMoveCardAction(src="hand", dst="draw_pile", amount=1)] # todo: pos=PilePosType.TOP

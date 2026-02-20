@@ -22,8 +22,9 @@ class Discovery(Card):
     base_exhaust = True
     upgrade_exhaust = False
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Choose 1 of 3 random cards
         actions.append(ChooseAddRandomCardAction(

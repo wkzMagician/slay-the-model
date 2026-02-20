@@ -1,96 +1,41 @@
-# UTILITIES DIRECTORY KNOWLEDGE BASE
+# UTILS - SHARED UTILITIES
 
-## OVERVIEW
-Cross-cutting utilities and helper functions used throughout the project (5 files, 482 lines).
+Shared utilities and base classes. Registry decorator, localization base, type definitions, logging.
 
-## STRUCTURE
-```
-utils/
-├── result_types.py     # BaseResult, ResultType enums, action return types
-├── localization.py     # i18n helper with variable substitution
-└── [other utils]       # Various helper functions
-```
+## KEY CLASSES
 
-## WHERE TO LOOK
-| Task | File | Notes |
-|------|-------|-------|
-| Result types | `result_types.py` | BaseResult, SingleActionResult, MultipleActionsResult, GameStateResult |
-| Localization | `localization.py` | `localize()` function, template substitution |
-| Type definitions | Various files | RarityType, CardType, etc. |
+| Symbol | Type | Location | Role |
+|--------|------|----------|------|
+| `Localizable` | class | `localizable.py` | Base class for i18n support |
+| `GameLogger` | class | `game_logger.py` | Centralized logging utilities |
 
-## CORE UTILITIES
+## REGISTRY
 
-**Result Types (result_types.py):**
+Use `@register` decorator to auto-register classes to global lookup.
+
 ```python
-# Return types from actions
-class ResultType(Enum):
-    NONE = 0
-    VICTORY = 1
-    DEATH = 2
-    MENU = 3
+from utils.registry import register
 
-class BaseResult:
-    """Base for all action results"""
-
-class SingleActionResult(BaseResult):
-    """Returns one action + next room/event"""
-
-class MultipleActionsResult(BaseResult):
-    """Queue multiple actions for same turn"""
-
-class GameStateResult(BaseResult):
-    """Game ending (WIN/DEATH/end-game)"""
-
-class NoneResult(BaseResult):
-    """No state change (e.g., invalid card play)"""
+@register
+class MyCard(Card):
+    pass  # Auto-registered
 ```
 
-**Localization (localization.py):**
-- Loads YAML files from `localization/`
-- Substitutes `{variable}` placeholders at runtime
-- Supports en.yaml, zh.yaml
+Auto-registers cards/enemies/powers to global lookup. No manual registration needed.
 
-## CONVENTIONS
+## LOCALIZATION
 
-**Result Type Usage:**
-- Actions MUST return `BaseResult` subclass
-- Use `NoneResult()` for no-op actions
-- Use `SingleActionResult(action)` to queue next action
-- Use `MultipleActionsResult([actions])` for batch actions
-- Use `GameStateResult(ResultType.VICTORY/DEATH)` for game ending
+Inherit `Localizable` for i18n support. Set `localization_prefix`.
 
-**Localization:**
-- `localize(key, **kwargs)` returns localized text
-- All user-facing text must use `localize()`
-- Keys follow pattern: `domain.action.variable` (e.g., `rooms.combat.enter`)
+```python
+class MyCard(Card, Localizable):
+    localization_prefix = "cards.my_card"
+    # Looks up in localization/{en,zh}/cards.json
+```
 
-**Import Patterns:**
-- `from utils.result_types import *` for ResultType
-- `from utils.localization import localize` for i18n
+All display text goes through localization system.
 
 ## ANTI-PATTERNS
 
-**NEVER:**
-- Return strings ("WIN"/"DEATH") from actions → use ResultType
-- Return `None` instead of `NoneResult()`
-- Hardcode English strings → use `localize()`
-- Mix synchronous/async result handling
-
-**ALWAYS:**
-- Return BaseResult subclass from actions
-- Import ResultType from utils.result_types
-- Use `localize()` for all user-facing text
-- Use variable substitution for dynamic values (`{amount}`, `{card_name}`)
-
-## CROSS-DOMAIN USAGE
-
-**utils/result_types** is imported by:
-- All action classes
-- All room classes
-- All event classes
-- Game engine (GameFlow, GameState)
-
-**utils/localization** is imported by:
-- Localizable classes (actions, rooms, events)
-- Player display methods
-- Enemy descriptions
+- **NO** manual registration - use @register decorator
+- **NO** hardcoded strings for display - use Localizable

@@ -33,6 +33,14 @@ class SphericGuardian(Enemy):
         """Initialize combat state."""
         super().on_combat_start(floor)
         self._pattern_index = 0
+        
+        # Initial powers and block
+        from powers.definitions.barricade import BarricadePower
+        from powers.definitions.artifact import ArtifactPower
+        
+        self.add_power(BarricadePower(owner=self))
+        self.add_power(ArtifactPower(amount=3, owner=self))
+        self.gain_block(40)
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on fixed pattern."""

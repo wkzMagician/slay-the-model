@@ -24,8 +24,9 @@ class JackOfAllTrades(Card):
 
     upgrade_magic = {"add_count": 2}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Add random colorless card(s)
         add_count = self.get_magic_value("add_count")

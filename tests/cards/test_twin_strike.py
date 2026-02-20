@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Test Twin Strike card mechanics"""
 import unittest
 from cards.ironclad.twin_strike import TwinStrike

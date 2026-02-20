@@ -24,14 +24,11 @@ class Thunderclap(Card):
 
     upgrade_damage = 7
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        from engine.game_state import game_state
-
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        actions = super().on_play(targets)
 
         # Apply vulnerable debuff to all enemies
-        assert game_state.current_combat is not None
-        for enemy in game_state.current_combat.enemies:
+        for enemy in targets:
             if enemy.hp > 0:
                 actions.append(ApplyPowerAction(target=enemy, power="vulnerable", amount=1))
 

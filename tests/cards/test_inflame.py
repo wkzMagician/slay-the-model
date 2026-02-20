@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Inflame - Gain Strength."""
 import unittest
 from cards.ironclad.inflame import Inflame

@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Shockwave - Apply Weak/Vulnerable to all."""
 import unittest
 from cards.ironclad.shockwave import Shockwave

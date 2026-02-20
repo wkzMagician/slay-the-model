@@ -50,23 +50,33 @@ def _create_triple_louse():
 
 
 def _create_small_slimes():
-    """Create 2 medium spike slimes (AcidSlime not implemented yet)."""
-    from enemies.act1.spike_slime import SpikeSlimeM
-    # Use SpikeSlimeM for both since AcidSlime not implemented
+    """Create 2 small slimes: either (Spike Slime M + Acid Slime S) 
+    or (Acid Slime M + Spike Slime S)."""
+    from enemies.act1.spike_slime import SpikeSlimeM, SpikeSlimeS
+    from enemies.act1.acid_slime import AcidSlimeM, AcidSlimeS
+    
     rng = random.Random()
-    return [SpikeSlimeM(), SpikeSlimeM()]
+    if rng.random() < 0.5:
+        return [SpikeSlimeM(), AcidSlimeS()]
+    else:
+        return [AcidSlimeM(), SpikeSlimeS()]
 
 
 def _create_large_slime():
     """Create Spike Slime (AcidSlime not implemented yet)."""
-    from enemies.act1.spike_slime import SpikeSlime
-    return [SpikeSlime()]
+    from enemies.act1.spike_slime import SpikeSlimeL
+    return [SpikeSlimeL()]
 
 
 def _create_swarm_slimes():
     """Create 5 medium spike slimes (AcidSlime not implemented yet)."""
-    from enemies.act1.spike_slime import SpikeSlimeM
-    return [SpikeSlimeM() for _ in range(5)]
+    from enemies.act1.spike_slime import SpikeSlimeS
+    from enemies.act1.acid_slime import AcidSlimeS
+
+    slimes = [SpikeSlimeS() for _ in range(3)] + [AcidSlimeS() for _ in range(2)]
+    rng = random.Random()
+    rng.shuffle(slimes)
+    return slimes
 
 
 def _create_gremlin_gang():
@@ -74,21 +84,37 @@ def _create_gremlin_gang():
     from enemies.act1.gremlin import (
         FatGremlin, SneakyGremlin, MadGremlin, ShieldGremlin, GremlinWizard
     )
-    pool = [FatGremlin, FatGremlin, SneakyGremlin, SneakyGremlin,
-            MadGremlin, MadGremlin, ShieldGremlin, GremlinWizard]
     rng = random.Random()
-    return [rng.choice(pool)() for _ in range(4)]
+
+    valid_compositions = [
+        [FatGremlin, FatGremlin, SneakyGremlin, SneakyGremlin],
+        [FatGremlin, FatGremlin, MadGremlin, MadGremlin],
+        [SneakyGremlin, SneakyGremlin, MadGremlin, MadGremlin],
+        [FatGremlin, FatGremlin, ShieldGremlin, GremlinWizard],
+        [SneakyGremlin, SneakyGremlin, ShieldGremlin, GremlinWizard],
+        [MadGremlin, MadGremlin, ShieldGremlin, GremlinWizard],
+    ]
+
+    selected_composition = list(rng.choice(valid_compositions))
+    rng.shuffle(selected_composition)
+    return [gremlin_cls() for gremlin_cls in selected_composition]
+
+
+def _create_looter():
+    """Create Looter encounter."""
+    from enemies.act1.looter import Looter
+    return [Looter()]
 
 
 def _create_exordium_thugs():
-    """Create Exordium Thugs encounter (Looter not implemented)."""
+    """Create Exordium Thugs encounter."""
     from enemies.act1.louse import RedLouse, GreenLouse
     from enemies.act1.spike_slime import SpikeSlimeM
     from enemies.act1.slaver import BlueSlaver, RedSlaver
-    from enemies.act1.cultist import Cultist
+    from enemies.act1.looter import Looter
     rng = random.Random()
     first_pool = [RedLouse, GreenLouse, SpikeSlimeM]
-    second_pool = [BlueSlaver, RedSlaver, Cultist]  # Looter not implemented
+    second_pool = [BlueSlaver, RedSlaver, Looter]
     return [rng.choice(first_pool)(), rng.choice(second_pool)()]
 
 
@@ -140,6 +166,119 @@ def _create_sentries():
     return [Sentry(is_middle=False), Sentry(is_middle=True), Sentry(is_middle=False)]
 
 
+# Act 2 encounter factory functions
+def _create_snecko():
+    from enemies.act2.snecko import Snecko
+    return [Snecko()]
+
+
+def _create_snake_plant():
+    from enemies.act2.snake_plant import SnakePlant
+    return [SnakePlant()]
+
+
+def _create_shelled_parasite():
+    from enemies.act2.shelled_parasite import ShelledParasite
+    return [ShelledParasite()]
+
+
+def _create_chosen():
+    from enemies.act2.chosen import Chosen
+    return [Chosen()]
+
+
+def _create_cultist_chosen():
+    from enemies.act1.cultist import Cultist
+    from enemies.act2.chosen import Chosen
+    return [Cultist(), Chosen()]
+
+
+def _create_spheric_guardian():
+    from enemies.act2.spheric_guardian import SphericGuardian
+    return [SphericGuardian()]
+
+
+def _create_centurion_mystic():
+    from enemies.act2.centurion import Centurion
+    from enemies.act2.mystic import Mystic
+    return [Centurion(), Mystic()]
+
+
+# Act 2 new factory functions for updated encounter pool
+def _create_three_byrds():
+    """Create 3 Byrds encounter."""
+    from enemies.act2.byrd import Byrd
+    return [Byrd(), Byrd(), Byrd()]
+
+
+def _create_two_thieves():
+    """Create 2 Thieves: Looter on left, Mugger on right."""
+    from enemies.act1.looter import Looter
+    from enemies.act2.mugger import Mugger
+    return [Looter(), Mugger()]
+
+
+def _create_chosen_byrd():
+    """Create Chosen and Byrd encounter."""
+    from enemies.act2.chosen import Chosen
+    from enemies.act2.byrd import Byrd
+    return [Chosen(), Byrd()]
+
+
+def _create_sentry_spheric_guardian():
+    """Create Sentry and Spheric Guardian encounter."""
+    from enemies.act1.sentry import Sentry
+    from enemies.act2.spheric_guardian import SphericGuardian
+    return [Sentry(), SphericGuardian()]
+
+
+def _create_three_cultists():
+    """Create 3 Cultists encounter."""
+    from enemies.act1.cultist import Cultist
+    return [Cultist(), Cultist(), Cultist()]
+
+
+def _create_shelled_parasite_fungi():
+    """Create Shelled Parasite and Fungi Beast encounter."""
+    from enemies.act2.shelled_parasite import ShelledParasite
+    from enemies.act1.fungi_beast import FungiBeast
+    return [ShelledParasite(), FungiBeast()]
+
+
+# Act 2 elite factory functions
+def _create_book_of_stabbing():
+    from enemies.act2.book_of_stabbing import BookOfStabbing
+    return [BookOfStabbing()]
+
+
+def _create_gremlin_leader():
+    from enemies.act2.gremlin_leader import GremlinLeader
+    return [GremlinLeader()]
+
+
+def _create_taskmaster():
+    """Create Taskmaster with Blue Slaver and Red Slaver.
+    
+    Order: BlueSlaver - Taskmaster - RedSlaver
+    """
+    from enemies.act2.taskmaster import Taskmaster
+    from enemies.act1.slaver import BlueSlaver, RedSlaver
+    return [BlueSlaver(), Taskmaster(), RedSlaver()]
+
+
+def _create_bronze_automaton():
+    from enemies.act2.bronze_automaton import BronzeAutomaton
+    from enemies.act2.bronze_orb import BronzeOrb
+    return [BronzeAutomaton()]
+
+def _create_boss_champ():
+    from enemies.act2.the_champ import TheChamp
+    return [TheChamp()]
+
+def _create_boss_collector():
+    from enemies.act2.the_collector import TheCollector
+    return [TheCollector()]
+
 class EncounterPool:
     """Manages enemy encounter selection based on game rules."""
     
@@ -162,8 +301,7 @@ class EncounterPool:
         "2 Fungi Beasts": (lambda: [__import__("enemies.act1.fungi_beast", fromlist=["FungiBeast"]).FungiBeast() for _ in range(2)], 2),
         "Exordium Thugs": (_create_exordium_thugs, 1.5),
         "Exordium Wildlife": (_create_exordium_wildlife, 1.5),
-        # Looter not implemented - using extra Cultist instead
-        "Extra Cultist": (lambda: [__import__("enemies.act1.cultist", fromlist=["Cultist"]).Cultist()], 2),
+        "Looter": (_create_looter, 2),
     }
     
     ACT1_ELITE_POOL = {
@@ -172,13 +310,47 @@ class EncounterPool:
         "3 Sentries": (_create_sentries, 1),
     }
     
-    # Boss pool uses 0-indexed floors (current_floor values)
-    # Floor 2 = Act 1 boss, Floor 7 = Act 2 boss, Floor 15 = Act 3 boss
-    BOSS_POOL = {
-        2: ("The Guardian", _create_boss_guardian),
-        7: ("Slime Boss", _create_boss_slime),
-        15: ("The Hexaghost", _create_boss_hexaghost),
+    ACT2_EASY_POOL = {
+        "Spheric Guardian": (_create_spheric_guardian, 2),
+        "Chosen": (_create_chosen, 2),
+        "Shelled Parasite": (_create_shelled_parasite, 2),
+        "3 Byrds": (_create_three_byrds, 2),
+        "2 Thieves": (_create_two_thieves, 2),
     }
+    
+    ACT2_HARD_POOL = {
+        "Chosen and Byrds": (_create_chosen_byrd, 2),
+        "Cultist and Chosen": (_create_cultist_chosen, 3),
+        "Sentry and Spheric Guardian": (_create_sentry_spheric_guardian, 2),
+        "Snake Plant": (_create_snake_plant, 6),
+        "Snecko": (_create_snecko, 4),
+        "Centurion and Mystic": (_create_centurion_mystic, 6),
+        "3 Cultists": (_create_three_cultists, 3),
+        "Shelled Parasite and Fungi": (_create_shelled_parasite_fungi, 3),
+    }
+    
+    ACT2_ELITE_POOL = {
+        "Book of Stabbing": (_create_book_of_stabbing, 1),
+        "Gremlin Leader": (_create_gremlin_leader, 1),
+        "Taskmaster": (_create_taskmaster, 1),
+    }
+    
+    # Act-specific boss pools
+    # Each act has 3 possible bosses, one is randomly selected at start
+    ACT1_BOSS_POOL = {
+        "The Guardian": _create_boss_guardian,
+        "Slime Boss": _create_boss_slime,
+        "The Hexaghost": _create_boss_hexaghost,
+    }
+    
+    ACT2_BOSS_POOL = {
+        "Bronze Automaton": _create_bronze_automaton,
+        "The Collector": _create_boss_collector,
+        "The Champ": _create_boss_champ,
+    }
+    
+    # Alias for backwards compatibility
+    BOSS_POOL = ACT1_BOSS_POOL
 
     def __init__(self, seed: int, act_id: int = 1):
         self.rng = random.Random(seed)
@@ -187,20 +359,11 @@ class EncounterPool:
     
     def _load_act_pools(self, act_id: int):
         """Load encounter pools for specific act."""
-        # For now, all acts use Act 1 pools until act-specific enemies are implemented
-        # This allows the game to function while act 2-4 enemy content is being developed
-        self.easy_pool = self.ACT1_EASY_POOL
-        self.hard_pool = self.ACT1_HARD_POOL
-        self.elite_pool = self.ACT1_ELITE_POOL
-        
-        # Note: When act-specific enemies are implemented, use:
-        # pools = {
-        #     1: (self.ACT1_EASY_POOL, self.ACT1_HARD_POOL, self.ACT1_ELITE_POOL),
-        #     2: (self.ACT2_EASY_POOL, self.ACT2_HARD_POOL, self.ACT2_ELITE_POOL),
-        #     3: (self.ACT3_EASY_POOL, self.ACT3_HARD_POOL, self.ACT3_ELITE_POOL),
-        #     4: (self.ACT4_EASY_POOL, self.ACT4_HARD_POOL, self.ACT4_ELITE_POOL),
-        # }
-        # self.easy_pool, self.hard_pool, self.elite_pool = pools.get(act_id, pools[1])
+        pools = {
+            1: (self.ACT1_EASY_POOL, self.ACT1_HARD_POOL, self.ACT1_ELITE_POOL),
+            2: (self.ACT2_EASY_POOL, self.ACT2_HARD_POOL, self.ACT2_ELITE_POOL),
+        }
+        self.easy_pool, self.hard_pool, self.elite_pool = pools.get(act_id, pools[1])
 
     def get_pool_name(self, encounter_count: int, act: int = 1) -> str:
         """Determine if current encounter should be from easy or hard pool."""
@@ -273,21 +436,19 @@ class EncounterPool:
             return [], ""
         
         # Get boss from act-specific pool
-        # For now, use ACT1 boss pool for all acts until act-specific bosses are implemented
-        boss_factories = self.BOSS_POOL
+        act_boss_pools = {
+            1: self.ACT1_BOSS_POOL,
+            2: self.ACT2_BOSS_POOL,
+            # TODO: Add Act 3 and Act 4 boss pools when implemented
+            # 3: self.ACT3_BOSS_POOL,
+            # 4: self.ACT4_BOSS_POOL,
+        }
         
-        # When act-specific bosses are implemented, use:
-        # act_boss_pools = {
-        #     1: self.BOSS_POOL,  # Guardian, Slime Boss, Hexaghost
-        #     2: self.ACT2_BOSS_POOL,  # Bronze Automaton, Collector, etc.
-        #     3: self.ACT3_BOSS_POOL,  # Awakened One, Time Eater, etc.
-        #     4: self.ACT4_BOSS_POOL,  # Corrupt Heart
-        # }
-        # boss_factories = act_boss_pools.get(self.act_id, self.BOSS_POOL)
+        boss_pool = act_boss_pools.get(self.act_id, self.ACT1_BOSS_POOL)
         
         # Select random boss from pool
-        boss_floor = self.rng.choice(list(boss_factories.keys()))
-        boss_name, factory = boss_factories[boss_floor]
+        boss_name = self.rng.choice(list(boss_pool.keys()))
+        factory = boss_pool[boss_name]
         enemies = factory()
         return enemies, boss_name
 

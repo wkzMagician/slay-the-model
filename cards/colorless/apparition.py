@@ -24,10 +24,11 @@ class Apparition(Card):
 
     upgrade_ethereal = False  # Upgraded version removes Ethereal
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Gain Intangible
         intangible_amount = 1

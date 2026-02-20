@@ -7,7 +7,7 @@ from enemies.intention import Intention
 from powers.base import PowerType
 
 if TYPE_CHECKING:
-    from enemies.taskmaster import Taskmaster
+    from enemies.act2.taskmaster import Taskmaster
 
 
 class ScouringWhip(Intention):
@@ -20,7 +20,7 @@ class ScouringWhip(Intention):
     def execute(self) -> List:
         """Execute scouring whip attack."""
         from engine.game_state import game_state
-        from cards.status_cards import Wound
+        from cards.colorless import Wound
         
         actions = []
         
@@ -35,7 +35,7 @@ class ScouringWhip(Intention):
         
         # Add wound to player's discard pile
         wound = Wound()
-        game_state.player.discard_pile.append(wound)
+        game_state.player.card_manager.piles['discard_pile'].append(wound)
         
         # Asc 3+: Gain 1 Strength
         if game_state.ascension >= 3:

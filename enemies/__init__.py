@@ -5,7 +5,9 @@ from .base import Enemy
 
 # Act 1 Enemies
 from .act1 import (
-    Cultist, JawWorm, SpikeSlime, SpikeSlimeM,
+    Cultist, JawWorm, 
+    SpikeSlimeL, SpikeSlimeM, SpikeSlimeS,
+    AcidSlimeL, AcidSlimeM, AcidSlimeS,
     FungiBeast, RedLouse, GreenLouse,
     BlueSlaver, RedSlaver,
     TheGuardian, SlimeBoss, TheHexaghost,
@@ -39,8 +41,12 @@ __all__ = [
     # Act 1 Common
     'Cultist',
     'JawWorm',
-    'SpikeSlime',
+    'SpikeSlimeL',
     'SpikeSlimeM',
+    'SpikeSlimeS',
+    'AcidSlimeL',
+    'AcidSlimeM',
+    'AcidSlimeS',
     'RedLouse',
     'GreenLouse',
     'BlueSlaver',

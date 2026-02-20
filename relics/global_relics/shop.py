@@ -4,7 +4,7 @@ Relics available only at shop.
 """
 from typing import List
 from actions.base import Action, LambdaAction
-from actions.card import ChooseAddRandomCardAction, ChooseCopyCardAction, DrawCardsAction
+from actions.card import ChooseCopyCardAction, ChooseObtainCardAction, DrawCardsAction
 from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDamageAction, ApplyPowerAction, ModifyMaxHpAction
 from relics.base import Relic
 from utils.types import RarityType, CardType
@@ -85,7 +85,7 @@ class HandDrill(Relic):
         self.rarity = RarityType.SHOP
 
     def on_damage_dealt(self, damage, target, player, entities):
-        return [ApplyPowerAction(power="Vulunerable", target=target, amount=2)]
+        return [ApplyPowerAction(power="Vulnerable", target=target, amount=2)]
 
 @register("relic")
 class LeesWaffle(Relic):
@@ -145,7 +145,12 @@ class Orrery(Relic):
         from engine.game_state import game_state
         actions = []
         for _ in range(5):
-            actions.append(ChooseAddRandomCardAction(pile='deck', namespace=game_state.player.namespace))
+            actions.append(ChooseObtainCardAction(
+                total=3,
+                namespace=game_state.player.namespace,
+                encounter_type="shop",
+                use_rolling_offset=False,
+            ))
         return actions
 
 # !!! massive refactor

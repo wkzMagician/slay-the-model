@@ -24,3 +24,16 @@ class ArtifactPower(Power):
             duration: 0 for permanent (doesn't decay)
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
+
+    def try_prevent_debuff(self) -> bool:
+        """Try to prevent a debuff application.
+        
+        Returns True if the debuff was prevented (consumes 1 stack).
+        """
+        if self.amount > 0:
+            self.amount -= 1
+            print(f"[Artifact] Blocked debuff! Remaining stacks: {self.amount}")
+            if self.owner and self.amount <= 0:
+                self.owner.remove_power(self.name)
+            return True
+        return False

@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Test colorless cards"""
 import unittest
 from cards.colorless.burn import Burn

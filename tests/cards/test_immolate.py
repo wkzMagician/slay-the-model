@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Immolate - AOE damage + Burn."""
 import unittest
 from cards.ironclad.immolate import Immolate

@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test for Dropkick - Damage and draw if enemy Vulnerable"""
 import unittest
 from cards.ironclad.dropkick import Dropkick

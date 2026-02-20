@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """
 Test for Armaments card - Ironclad Skill card
 Tests block gain and card upgrade mechanics

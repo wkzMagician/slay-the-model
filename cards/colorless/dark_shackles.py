@@ -25,11 +25,12 @@ class DarkShackles(Card):
 
     upgrade_magic = {"strength_loss": 15}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Enemy loses Strength this turn (temporary weakness)
-        if target:
+        if targets:
             strength_loss = self.get_magic_value("strength_loss")
             # Apply Strength (negative value reduces strength)
             actions.append(ApplyPowerAction(

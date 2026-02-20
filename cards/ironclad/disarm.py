@@ -24,11 +24,12 @@ class Disarm(Card):
 
     upgrade_magic = {"strength_debuff": 3}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Apply Strength debuff to target
-        if target:
+        if targets:
             strength_amount = self.get_magic_value("strength_debuff")
             actions.append(ApplyPowerAction(target=target, power="strength", amount=-strength_amount))
 

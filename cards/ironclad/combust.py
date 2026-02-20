@@ -22,13 +22,14 @@ class Combust(Card):
     base_magic = {"combust_damage": 5}
     upgrade_magic = {"combust_damage": 7}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply CombustPower
         combust_damage = self.get_magic_value("combust_damage")
-        actions.append(ApplyPowerAction(power="CombustPower", target=game_state.player, amount=combust_damage, duration=-1))
+        actions.append(ApplyPowerAction(power="CombustPower", target=target, amount=combust_damage, duration=-1))
 
         return actions

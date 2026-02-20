@@ -24,15 +24,16 @@ class Berserk(Card):
     base_magic = {"Vulnerable": 2}
     upgrade_magic = {"Vulnerable": 1}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
         
         magic = get_magic_value(self, "Vulnerable")
 
         # Apply BerserkPower (which handles energy gain) and VulnerablePower
-        actions.append(ApplyPowerAction(power="BerserkPower", target=game_state.player, amount=1, duration=-1))
-        actions.append(ApplyPowerAction(power="Vulnerable", target=game_state.player, amount=magic))
+        actions.append(ApplyPowerAction(power="BerserkPower", target=target, amount=1, duration=-1))
+        actions.append(ApplyPowerAction(power="Vulnerable", target=target, amount=magic))
 
         return actions

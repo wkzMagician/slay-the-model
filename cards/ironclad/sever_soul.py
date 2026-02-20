@@ -23,10 +23,11 @@ class SeverSoul(Card):
 
     upgrade_damage = 22
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         hand = game_state.player.card_manager.get_pile('hand')
         for card in hand:

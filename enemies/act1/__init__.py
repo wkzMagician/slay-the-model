@@ -2,7 +2,8 @@
 
 from .cultist import Cultist
 from .jaw_worm import JawWorm
-from .spike_slime import SpikeSlime, SpikeSlimeM
+from .spike_slime import SpikeSlimeL, SpikeSlimeM, SpikeSlimeS
+from .acid_slime import AcidSlimeL, AcidSlimeM, AcidSlimeS
 from .fungi_beast import FungiBeast
 from .louse import RedLouse, GreenLouse
 from .slaver import BlueSlaver, RedSlaver
@@ -24,8 +25,12 @@ __all__ = [
     # Common enemies
     'Cultist',
     'JawWorm',
-    'SpikeSlime',
+    'SpikeSlimeL',
     'SpikeSlimeM',
+    'SpikeSlimeS',
+    'AcidSlimeL',
+    'AcidSlimeM',
+    'AcidSlimeS',
     'RedLouse',
     'GreenLouse',
     'BlueSlaver',

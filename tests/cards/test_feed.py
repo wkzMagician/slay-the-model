@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive test suite for Feed - Gain Max HP on fatal."""
 import unittest
 from cards.ironclad.feed import Feed

@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Test Sword Boomerang - Deals damage X times to random enemies"""
 import unittest
 from cards.ironclad.sword_boomerang import SwordBoomerang

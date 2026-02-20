@@ -408,7 +408,16 @@ class MapManager:
         - Max 3 outgoing and 3 incoming connections per node
         """
         print("\n" + "="*60)
-        print("MAP VIEW")
+        # Calculate act number based on current floor
+        # Act 1: floors 0-16, Act 2: floors 17-33, Act 3: floors 34+
+        current_floor = self.map_data.current_floor
+        if current_floor < 17:
+            act_num = 1
+        elif current_floor < 34:
+            act_num = 2
+        else:
+            act_num = 3
+        print(f"MAP VIEW - Act {act_num}")
         print("="*60)
         
         # Get available moves

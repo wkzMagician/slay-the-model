@@ -1,6 +1,5 @@
-"""SpikeSlime specific intentions."""
+"""Spike Slime specific intentions."""
 
-import random
 from typing import List, TYPE_CHECKING
 
 from enemies.intention import Intention
@@ -11,11 +10,14 @@ if TYPE_CHECKING:
 
 
 class LickIntention(Intention):
-    """Lick - Applies 2 Frail."""
+    """Lick - Applies 2 Frail to player.
+    
+    According to doc, Spike Slime (S) applies Frail.
+    """
     
     def __init__(self, enemy: 'Enemy'):
         super().__init__("lick", enemy)
-        self.base_amount = 2  # Amount of Frail to apply
+        self._frail_amount = 2
     
     def execute(self) -> List['Action']:
         """Execute Lick: applies 2 Frail to player."""
@@ -29,54 +31,57 @@ class LickIntention(Intention):
             ApplyPowerAction(
                 power="Frail",
                 target=game_state.player,
-                amount=2,
+                amount=self._frail_amount,
                 duration=2
             )
         ]
 
 
-class FlameTackleIntention(Intention):
-    """Flame Tackle - Deals 16 damage and adds 2 Slimed cards to discard."""
+class TackleIntention(Intention):
+    """Tackle - Deals damage to player.
+    
+    Spike Slime (L): 16 damage
+    Spike Slime (M): 10 damage  
+    Spike Slime (S): 5 damage (6 on A2+)
+    """
     
     def __init__(self, enemy: 'Enemy'):
-        super().__init__("flame_tackle", enemy)
-        self.base_damage = 16
+        super().__init__("tackle", enemy)
+        # Determine damage based on enemy type
+        if hasattr(enemy, '__class__'):
+            enemy_class = enemy.__class__.__name__
+            if enemy_class == 'SpikeSlimeL':
+                self.base_damage = 16
+            elif enemy_class == 'SpikeSlimeM':
+                self.base_damage = 10
+            else:  # SpikeSlimeS
+                self.base_damage = 5
+        else:
+            self.base_damage = 5
     
     def execute(self) -> List['Action']:
-        """Execute Flame Tackle: deals 16 damage and adds Slimed cards."""
+        """Execute Tackle: deals damage to player."""
         from actions.combat import AttackAction
-        from actions.card import AddCardAction
         from engine.game_state import game_state
         
         if not game_state or not game_state.player:
             return []
         
-        actions = [
+        return [
             AttackAction(
-                damage=16,
+                damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack",
             )
         ]
-        
-        # Add 2 Slimed cards to discard pile
-        # Note: Slimed card needs to exist in card registry
-        try:
-            from utils.registry import get_registered
-            SlimedCard = get_registered("card", "Slimed")
-            if SlimedCard:
-                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard_pile", source="enemy"))
-                actions.append(AddCardAction(card=SlimedCard(), dest_pile="discard_pile", source="enemy"))
-        except Exception:
-            # If Slimed card doesn't exist, just deal damage
-            pass
-        
-        return actions
 
 
 class SplitIntention(Intention):
-    """Split - Disappears and spawns 2 Spike Slimes (M) with current HP."""
+    """Split - Disappears and spawns 2 Spike Slimes (M) with current HP.
+    
+    Only used by Spike Slime (L).
+    """
     
     def __init__(self, enemy: 'Enemy'):
         super().__init__("split", enemy)
@@ -85,7 +90,6 @@ class SplitIntention(Intention):
         """Execute Split: spawns 2 smaller slimes."""
         from actions.combat import RemoveEnemyAction, AddEnemyAction
         
-        # Current HP will be divided between the two new slimes
         current_hp = self.enemy.hp
         
         actions = [
@@ -93,18 +97,22 @@ class SplitIntention(Intention):
         ]
         
         # Spawn 2 Spike Slimes (M) with half current HP each
-        # Note: This assumes SpikeSlimeM class exists
         try:
             from enemies.act1.spike_slime import SpikeSlimeM
+            
             slime_m1 = SpikeSlimeM()
-            slime_m1.hp = max(1, current_hp // 2)
+            hp1 = max(1, current_hp // 2)
+            slime_m1.max_hp = hp1
+            slime_m1.hp = hp1
+            
             slime_m2 = SpikeSlimeM()
-            slime_m2.hp = max(1, current_hp - current_hp // 2)
+            hp2 = max(1, current_hp - current_hp // 2)
+            slime_m2.max_hp = hp2
+            slime_m2.hp = hp2
             
             actions.append(AddEnemyAction(enemy=slime_m1))
             actions.append(AddEnemyAction(enemy=slime_m2))
         except Exception:
-            # If SpikeSlimeM doesn't exist yet, just remove the original
             pass
         
         return actions

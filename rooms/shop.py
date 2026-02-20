@@ -2,7 +2,7 @@
 Shop room implementation - manages purchasing loop.
 """
 import random
-from actions.card import AddCardAction, ChooseRemoveCardAction
+from actions.card import ChooseRemoveCardAction
 from actions.display import SelectAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
 from actions.misc import BuyItemAction, LeaveRoomAction, _has_relic

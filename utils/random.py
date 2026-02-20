@@ -19,7 +19,9 @@ def get_random_card(namespaces: Optional[List[str]] = None,
                      rarities: Optional[List[RarityType]] = None, 
                      card_types: Optional[List[CardType]] = None, 
                      target_set: Optional[List[str]] = None, 
-                     exclude_set: Optional[List[str]] = None) -> Optional[Card]:
+                     exclude_set: Optional[List[str]] = None,
+                     exclude_card_ids: Optional[List[str]] = None,
+                     exclude_starter: bool = False) -> Optional[Card]:
     """
     Get a random card from the registry based on criteria.
     
@@ -29,6 +31,8 @@ def get_random_card(namespaces: Optional[List[str]] = None,
         card_type (Optional[List[CardType]]): List of card types to filter cards.
         target_set (Optional[List[str]]): List of target set to include.
         exclude_set (Optional[List[str]]): List of set to exclude.
+        exclude_card_ids (Optional[List[str]]): List of card idstrs to exclude (prevents duplicates).
+        exclude_starter (bool): If True, exclude STARTER rarity cards.
         
     returns:
         Optional[Card]: A random card matching the criteria, or None if none found.
@@ -55,6 +59,10 @@ def get_random_card(namespaces: Optional[List[str]] = None,
             continue
         if exclude_set and card_instance.set in exclude_set:
             continue
+        if exclude_card_ids and card_idstr in exclude_card_ids:
+            continue
+        if exclude_starter and card_instance.rarity == RarityType.STARTER:
+            continue
         
         filtered_card_idstrs.append(card_idstr)
         
@@ -68,14 +76,17 @@ def get_random_card(namespaces: Optional[List[str]] = None,
 
 # 基础概率配置（按百分比）
 CARD_RARITY_PROBABILITIES = {
-    "normal": {RarityType.COMMON: 60, RarityType.UNCOMMON: 37, RarityType.RARE: 3},
-    "elite": {RarityType.COMMON: 50, RarityType.UNCOMMON: 40, RarityType.RARE: 10},
-    "shop": {RarityType.COMMON: 54, RarityType.UNCOMMON: 37, RarityType.RARE: 9},
+    "normal": {RarityType.COMMON: 60, RarityType.UNCOMMON: 37, RarityType.RARE: -2}, # 3
+    "elite": {RarityType.COMMON: 50, RarityType.UNCOMMON: 40, RarityType.RARE: 5}, # 10
+    "shop": {RarityType.COMMON: 54, RarityType.UNCOMMON: 37, RarityType.RARE: 4}, # 9
 }
+
+card_rarity_probabilities = CARD_RARITY_PROBABILITIES.copy()
 
 def get_random_card_reward(namespaces: Optional[List[str]] = None,
                          encounter_type: str = "normal",
-                         use_rolling_offset: bool = False) -> Optional[Card]:
+                         use_rolling_offset: bool = False,
+                         exclude_set: Optional[List[str]] = None) -> Optional[Card]:
     """
     Get a random card from registry with rarity weights based on encounter type.
 
@@ -83,21 +94,13 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
         namespaces (Optional[List[str]]): List of namespaces to filter cards.
         encounter_type (str): Type of encounter for rarity weights ("normal", "elite", "shop").
         use_rolling_offset (bool): If True, adjust rare chance based on common cards gained.
+        exclude_set (Optional[List[str]]): List of card idstrs to exclude (prevents duplicates).
 
     returns:
         Optional[Card]: A random card matching criteria with weighted rarity, or None if none found.
     """
     # Get base probabilities for this encounter type
-    base_probs = CARD_RARITY_PROBABILITIES.get(encounter_type, CARD_RARITY_PROBABILITIES["normal"]).copy()
-
-    # Apply rolling offset if enabled
-    if use_rolling_offset:
-        from engine.game_state import game_state
-        # Each common card gained adds 1% to rare chance, capped at +47% (max 50% rare)
-        offset = min(game_state.card_chance_common_counter, 47)
-        base_probs[RarityType.RARE] += offset
-        # Decrease common chance proportionally
-        base_probs[RarityType.COMMON] -= offset
+    base_probs = card_rarity_probabilities.get(encounter_type, card_rarity_probabilities["normal"]).copy()
 
     # Filter available cards
     all_card_idstrs = list_registered("card")
@@ -117,6 +120,14 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
         if namespaces and card_instance.namespace not in namespaces:
             continue
 
+        # Exclude STARTER rarity cards from rewards
+        if card_instance.rarity == RarityType.STARTER:
+            continue
+
+        # Exclude already selected cards (prevent duplicates)
+        if exclude_set and card_idstr in exclude_set:
+            continue
+
         # Group cards by rarity
         if card_instance.rarity in cards_by_rarity:
             cards_by_rarity[card_instance.rarity].append(card_idstr)
@@ -130,22 +141,40 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
 
     if not available_rarities:
         return None
-
-    # Calculate weights based on available rarities and base probabilities
-    total_prob = sum(base_probs[rarity] for rarity, _ in available_rarities)
-    weights = [base_probs[rarity] / total_prob for rarity, _ in available_rarities]
+    
+    # 处理负权重：将负值替换为0
+    effective_probs = {}
+    for rarity, _ in available_rarities:
+        prob = base_probs.get(rarity, 0)
+        effective_probs[rarity] = max(0, prob)  # 负权重视为0
+    
+    # 计算权重：基于可用的稀有度和基础概率
+    total_prob = sum(effective_probs[rarity] for rarity, _ in available_rarities)
+    
+    # 如果总概率为0（所有权重都是0或负数），使用均匀分布
+    if total_prob <= 0:
+        weights = [1.0 / len(available_rarities) for _ in available_rarities]
+    else:
+        weights = [effective_probs[rarity] / total_prob for rarity, _ in available_rarities]
 
     # Randomly select rarity based on weights
     selected_rarity, card_list = random.choices(available_rarities, weights=weights, k=1)[0]
+    
+    # Apply rolling offset if enabled
+    if use_rolling_offset:
+        base_probs[RarityType.RARE] += 1
+        # Decrease common chance proportionally
+        base_probs[RarityType.COMMON] -= 1
+    
+    if selected_rarity == RarityType.RARE:
+        # reset prob
+        card_rarity_probabilities.clear()
+        card_rarity_probabilities.update(CARD_RARITY_PROBABILITIES.copy())
 
     # Randomly select a card from the chosen rarity
     selected_card_idstr = random.choice(card_list)
     selected_card_cls = get_registered("card", selected_card_idstr)
     selected_card = selected_card_cls() if selected_card_cls else None
-
-    # Store selected rarity in the card instance for caller reference
-    if selected_card:
-        selected_card.selected_rarity = selected_rarity
 
     return selected_card
 

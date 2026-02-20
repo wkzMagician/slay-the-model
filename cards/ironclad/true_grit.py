@@ -24,10 +24,11 @@ class TrueGrit(Card):
 
     upgrade_block = 9
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Exhaust random card (base) or choose card (upgraded)
         if self.upgrade_level == 0:

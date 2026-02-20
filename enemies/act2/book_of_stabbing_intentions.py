@@ -7,7 +7,7 @@ from actions.combat import AttackAction
 from enemies.intention import Intention
 
 if TYPE_CHECKING:
-    from enemies.book_of_stabbing import BookOfStabbing
+    from enemies.act2.book_of_stabbing import BookOfStabbing
 
 
 class MultiStab(Intention):

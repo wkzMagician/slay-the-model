@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """More colorless card tests"""
 import unittest
 from cards.colorless.apotheosis import Apotheosis

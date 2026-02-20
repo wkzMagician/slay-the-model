@@ -23,10 +23,11 @@ class Rupture(Card):
 
     upgrade_magic = {"strength_gain": 2}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply RupturePower
         strength_gain = self.get_magic_value("strength_gain")

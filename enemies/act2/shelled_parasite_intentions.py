@@ -47,24 +47,22 @@ class LifeSuckIntention(Intention):
         self.base_damage = 10
     
     def execute(self) -> List['Action']:
-        """Execute Life Suck: deals damage and heals."""
-        from actions.combat import AttackAction, HealAction
+        """Execute Life Suck: deals damage, healing handled by on_damage_dealt callback."""
+        from actions.combat import AttackAction
         from engine.game_state import game_state
         
         if not game_state or not game_state.player:
             return []
         
-        # TODO: Implement proper heal equal to unblocked damage
+        # Set flag so on_damage_dealt will create HealAction
+        self.enemy.pending_life_suck_heal = True
+        
         return [
             AttackAction(
                 damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack",
-            ),
-            HealAction(
-                amount=self.base_damage // 2,  # Approximate
-                target=self.enemy
             )
         ]
 

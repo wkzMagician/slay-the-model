@@ -53,12 +53,6 @@ class Elixir(Potion):
                 actions=[ExhaustCardAction(card=card, source_pile="hand")]
             ))
         
-        # Add a "Done" option
-        options.append(Option(
-            name=LocalStr("ui.done"),
-            actions=[]
-        ))
-        
         # Let player choose which cards to exhaust (multi-select mode)
         # Use max_select=-1 to allow selecting all hand cards
         return [SelectAction(

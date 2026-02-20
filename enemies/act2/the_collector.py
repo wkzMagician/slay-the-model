@@ -60,9 +60,14 @@ class TheCollector(Enemy):
     def _count_torch_heads(self) -> int:
         """Count alive Torch Heads in battle."""
         from engine.game_state import game_state
-        
+        enemies = (
+            game_state.current_combat.enemies
+            if game_state.current_combat is not None
+            else []
+        )
+
         count = 0
-        for enemy in game_state.enemies:
+        for enemy in enemies:
             if enemy.is_alive and isinstance(enemy, TorchHead):
                 count += 1
         return count

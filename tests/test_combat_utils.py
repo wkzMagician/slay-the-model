@@ -17,6 +17,7 @@ from player.player import Player
 from player.card_manager import CardManager
 from engine.combat import Combat
 from engine.game_state import GameState
+from utils.types import TargetType
 class CombatTestHelper:
     """Helper class for setting up and running combat tests."""
     
@@ -165,12 +166,20 @@ class CombatTestHelper:
         player.card_manager.piles['hand'].remove(card)
         
         # Execute card effect
-        if target is None and card.target_type:
-            # Default to first enemy
-            if combat.enemies:
-                target = combat.enemies[0]
+        if card.target_type in (None, TargetType.SELF):
+            target = player
+        elif target is None:
+            if card.target_type in (
+                TargetType.ENEMY_SELECT,
+                TargetType.ENEMY_RANDOM,
+                TargetType.ENEMY_LOWEST_HP,
+                TargetType.ENEMY_ALL,
+            ):
+                # Default to first enemy
+                if combat.enemies:
+                    target = combat.enemies[0]
                 
-        result = card.on_play(target)
+        result = card.on_play([target] if target else [])
         
         # Handle result - recursively execute actions and nested results
         if result:

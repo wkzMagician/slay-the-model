@@ -184,24 +184,38 @@ Taskmaster is an Elite enemy found exclusively in Act 2.
 | Scouring Whip  | 🗡️     | Deals 7 damage. Adds a 🩸 Wound into your discard pile.<br>Deals 7 damage. Adds 1 🔥3 Wounds into your discard pile. Gains 1 ⚔️ Strength. |
 ## Found With
 Act 2<br>• Found in the Slavers Elite encounter with:<br>  - 🗡️ Red Slaver<br>  - 🗡️ Blue Slaver<br>• Found in 🏛️ The Colosseum event alongside:<br>  - 🐀 Gremlin Nob
+```markdown
 # Bronze Automaton
-Bronze Automaton is a boss found at the end of Act 2.
+The Bronze Automaton is a Boss found at the end of Act 2.
 ## Pattern
-| Name         | Intent | Effect                                                                 |
-|--------------|--------|------------------------------------------------------------------------|
-| Summon Orb   | ???    | Summons 2 🟡 Bronze Orbs.                                               |
-| Hit          | 🗡️     | Deals 12 damage.                                                       |
-| Repair       | 🛡️     | Gains 3 ⚔️ Strength and 9 🛡️ Block.<br>Gains 4 🔥3 Strength and 9 🛡️ Block. |
-| Hyper Beam   | 🗡️     | Deals 45 damage.<br>Deals 54 🔥3 damage.                                  |
-| Unsummon     | ???    | Does nothing.                                                          |
-Always starts with 🟡 Summon Orb, then repeats the following pattern:<br>1. 🗡️ Hit<br>2. 🛡️ Repair<br>3. 🗡️ Hyper Beam<br>4. 🟡 Unsummon
+| Name       | Intent | Effect                                  |
+| :--------- | :----- | :-------------------------------------- |
+| Spawn Orbs  | ???    | Summons 2 🟢 Bronze Orbs.                 |
+| Flail      |        | Deals 7×2 damage.                        |
+| Boost      |        | Gains 3 ⚔️ Strength and 9 🛡️ Block.        |
+| HYPER BEAM |        | Deals 45 damage.                         |
+| Stunned    | ???    | Does nothing.                           |
+Always starts with ?? Spawn Orbs, then repeats the following pattern:
+1. Flail
+2. Boost
+3. Flail
+4. Boost
+5. HYPER BEAM
+6. ?? Stunned
+On Ascension 🟢 Bronze Automaton will always use Boost in place of ?? Stunned.
+## Stats
+- Health: 300 (320 ⚔️ 7)
+- Debuts In: Act 2
+- Powers: Artifact 3
+```
+
 ## Bronze Orb
 Bronze Orb is a minion summoned only by the 🤖 Bronze Automaton.
 ### Pattern
 | Name         | Intent | Effect                                                                 |
 |--------------|--------|------------------------------------------------------------------------|
 | Steal        | 🌀     | Steals a random card of the highest rarity from your draw pile (or discard pile). If the draw pile is empty, on death, returns the card to your hand. |
-| Support Beam | 🛡️     | 🤖 Bronze Automaton gains 11 🛡️ Block.                                   |
+| Support Beam | 🛡️     | 🤖 Bronze Automaton gains 12 🛡️ Block.                                   |
 | Beam         | 🗡️     | Deals 8 damage.                                                        |
 Each Bronze Orb can only use one action per turn. 🤖 Bronze Automaton has a 75% chance to use the same turn until it has been hit once. After using 🗡️ Beam, 🤖 Bronze Automaton has a 70% chance to use 🟡 Support Beam and a 30% chance to use 🟡 Beam each turn. 🟡 Bronze Orb cannot use the same attack twice in a row.
 # The Collector
@@ -220,19 +234,33 @@ Torch Head is a 🐙 Minion spawned by the Collector.
 | Name    | Intent | Effect                                                                 |
 |---------|--------|------------------------------------------------------------------------|
 | Tackle  | 🗡️     | Deals 7 damage.                                                        |
+```markdown
 # The Champ
-The Champ is an Elite Enemy found in Act 2.
-## Pattern
-| Name              | Intent | Effect                                                                 |
-|-------------------|--------|------------------------------------------------------------------------|
-| Heavy Slash       | 🗡️     | Deals 16 damage.<br>Deals 19 🔥3 damage.                                 |
-| Face Slap         | 🗡️     | Deals 12 damage. Applies 2 ⚔️ Frail and 2 ❤️ Vulnerable.<br>Deals 14 🔥3 damage. Applies 2 ⚔️ Frail and 2 ❤️ Vulnerable. |
-| Defensive Stance  | 🛡️     | Gains 8 🛡️ Block and 2 ⚔️ Strength.<br>Gains 9 🔥3 🛡️ Block and 2 🔥3 Strength. |
-| Glint             | 🐙     | Gains 2 ⚔️ Strength.                                                   |
-| Taunt             | ???    | Applies 2 ⚔️ Weak and 2 ❤️ Vulnerable.                                   |
-| Anger             | 🐙     | Removes all 🐙 Buffs. Gains 4 ⚔️ Strength.<br>Removes all 🐙 Buffs. Gains 4 🔥3 Strength. |
-| Escalate          | 🗡️     | Deals 16×2 damage.<br>Deals 19 🔥2 🔥3 damage.                            |
-### Phase One
-Always uses 🗡️ Heavy Slash every 4 turns.<br>On all other turns:<br>• 🗡️ Face Slap (50% chance)<br>• 🛡️ Defensive Stance (50% chance)<br>No more than one intent can be used in a row.
-### Phase Two
-When health is below 50%, 🗡️ Glint is replaced with 🛡️ Defensive Stance. If the last move was 🛡️ Defensive Stance, he will instead use 🗡️ Glint.<br>After the first turn of Phase Two, he will repeat the pattern for the rest of the combat:<br>• Randomly choose (chance as Phase One)<br>• 🗡️ Escalate
+## Pattern Table
+| Name             | Intent | Effect                                                                 |
+| :--------------- | :----- | :--------------------------------------------------------------------- |
+| Heavy Slash      |        | Deals 16 damage.<br>Deals 18 ⚔️ 4 damage.                                 |
+| Face Slap        |        | Deals 12 damage. Applies 2 🦴 Frail and 2 ❤️ Vulnerable<br>Deals 14 ⚔️ 4 damage. Applies 2 🦴 Frail and 2 ❤️ Vulnerable |
+| Defensive Stance |        | Gains 15 🛡️ Block and 5 💎 Metallicize.<br>Gains 18 🛡️ 9 Block and 6 💎 9 Metallicize.<br>Gains 20 🛡️ 19 Block and 7 💎 19 Metallicize. |
+| Gloat            |        | Gains 2 ⚔️ Strength.<br>Gains 3 ⚔️ 4 Strength.<br>Gains 4 ⚔️ 19 Strength.     |
+| Taunt            | ???    | Applies 2 🧊 Weak and 2 ❤️ Vulnerable.                                    |
+| Anger            |        | Removes all Debuffs. Gains 6 ⚔️ Strength.<br>Removes all Debuffs. Gains 9 ⚔️ 4 Strength.<br>Removes all Debuffs. Gains 12 ⚔️ 19 Strength. |
+| Execute          |        | Deals 10×2 damage.                                                     |
+## Phase One
+Always uses ??? Taunt every 4 turns.
+On all other turns:
+- 🛡️ Defensive Stance 15% chance
+- 🔥 Gloat (🛡️ Defensive Stance 🔥 19) 15% chance
+- 🗡️ Face Slap 25% chance
+- 🗡️ Heavy Slash 45% chance
+No move can be used twice in a row.
+On Ascension 🔥 19, when 🔥 Gloat is replaced with 🛡️ Defensive Stance, if the last move was also 🛡️ Defensive Stance, he will instead use 🔥 Gloat.
+## Phase Two
+When his HP drops below 50%, he will use 🔥 Anger on the next turn and enter Phase Two.
+After using 🔥 Anger he will use 🗡️ Execute the turn after.
+He will then repeat this pattern for the rest of combat:
+- Random Move (Same chances as Phase One)
+- Random Move (Same chances as Phase One)
+- 🗡️ Execute
+```
+

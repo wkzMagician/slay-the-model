@@ -23,10 +23,11 @@ class Rage(Card):
     base_magic = {"block_per_attack": 3}
     upgrade_magic = {"block_per_attack": 5}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply RagePower
         block_per_attack = self.get_magic_value("block_per_attack")

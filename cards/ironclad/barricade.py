@@ -21,12 +21,12 @@ class Barricade(Card):
     base_cost = 3
     upgrade_cost = 2
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        from engine.game_state import game_state
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
 
         # Apply BarricadePower
-        actions.append(ApplyPowerAction(power="BarricadePower", target=game_state.player, amount=0, duration=-1))
+        actions.append(ApplyPowerAction(power="BarricadePower", target=target, amount=0, duration=-1))
 
         return actions

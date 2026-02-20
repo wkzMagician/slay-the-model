@@ -24,12 +24,12 @@ class Reaper(Card):
 
     upgrade_damage = 5
 
-    def on_play(self, target=None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
         """Deal damage to ALL enemies"""
         from engine.game_state import game_state
 
         actions = []
-        for enemy in game_state.current_combat.enemies:
+        for enemy in targets:
             if enemy.hp > 0:
                 actions.append(DealDamageAction(
                     target=enemy,

@@ -476,6 +476,43 @@ class TestTheHexaghostIntention(unittest.TestCase):
         from utils.types import EnemyType
         self.assertEqual(self.enemy.enemy_type, EnemyType.BOSS)
 
+    def test_divider_hits_six_times(self):
+        """Test Divider executes as 6 hits."""
+        from engine.game_state import game_state
+
+        old_player = game_state.player
+        try:
+            class _TestPlayer:
+                def __init__(self, hp):
+                    self.hp = hp
+
+            game_state.player = _TestPlayer(48)
+            intention = self.enemy.intentions["divider"]
+            actions = intention.execute()
+
+            expected_damage = ((48 // 12) + 1) * 6
+            self.assertEqual(len(actions), 6)
+            self.assertTrue(all(action.damage == expected_damage for action in actions))
+            self.assertTrue(all(action.target is game_state.player for action in actions))
+        finally:
+            game_state.player = old_player
+
+    def test_divider_description_mentions_six_hits(self):
+        """Test Divider description includes 6-hit wording."""
+        from engine.game_state import game_state
+
+        old_player = game_state.player
+        try:
+            class _TestPlayer:
+                def __init__(self, hp):
+                    self.hp = hp
+
+            game_state.player = _TestPlayer(36)
+            intention = self.enemy.intentions["divider"]
+            self.assertIn("6 times", str(intention.description))
+        finally:
+            game_state.player = old_player
+
 
 if __name__ == '__main__':
     unittest.main()

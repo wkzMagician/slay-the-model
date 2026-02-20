@@ -7,7 +7,7 @@ from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import SelectAction, DisplayTextAction
-from actions.card import AddRandomColorlessCardAction
+from actions.card import AddRandomCardAction
 from actions.combat import LoseHPAction
 from localization import LocalStr
 from utils.option import Option
@@ -30,24 +30,24 @@ class SensoryStone(Event):
             Option(
                 name=LocalStr('events.sensory_stone.recall_1'),
                 actions=[
-                    AddRandomColorlessCardAction(rarity='uncommon_or_rare')
+                    AddRandomCardAction(namespace='colorless', rarity='uncommon_or_rare')
                 ]
             ),
             Option(
                 name=LocalStr('events.sensory_stone.recall_2'),
                 actions=[
                     LoseHPAction(amount=5),
-                    AddRandomColorlessCardAction(rarity='uncommon_or_rare'),
-                    AddRandomColorlessCardAction(rarity='uncommon_or_rare')
+                    AddRandomCardAction(namespace='colorless', rarity='uncommon_or_rare'),
+                    AddRandomCardAction(namespace='colorless', rarity='uncommon_or_rare')
                 ]
             ),
             Option(
                 name=LocalStr('events.sensory_stone.recall_3'),
                 actions=[
                     LoseHPAction(amount=10),
-                    AddRandomColorlessCardAction(rarity='uncommon_or_rare'),
-                    AddRandomColorlessCardAction(rarity='uncommon_or_rare'),
-                    AddRandomColorlessCardAction(rarity='uncommon_or_rare')
+                    AddRandomCardAction(namespace='colorless', rarity='uncommon_or_rare'),
+                    AddRandomCardAction(namespace='colorless', rarity='uncommon_or_rare'),
+                    AddRandomCardAction(namespace='colorless', rarity='uncommon_or_rare')
                 ]
             )
         ]

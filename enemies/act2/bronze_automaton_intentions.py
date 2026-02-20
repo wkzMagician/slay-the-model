@@ -2,18 +2,23 @@
 
 from typing import List
 from enemies.intention import Intention
-from actions.combat import AttackAction, GainBlockAction, ApplyPowerAction, AddEnemyAction
-from enemies.act2.bronze_orb import BronzeOrb
+from actions.combat import (
+    AttackAction,
+    GainBlockAction,
+    ApplyPowerAction,
+    AddEnemyAction,
+)
 
 
-class SummonOrb(Intention):
+class SpawnOrbs(Intention):
     """Summon 2 Bronze Orbs."""
 
     def __init__(self, enemy):
-        super().__init__("Summon Orb", enemy)
+        super().__init__("Spawn Orbs", enemy)
 
     def execute(self) -> List:
         """Summon 2 Bronze Orb minions."""
+        from enemies.act2.bronze_orb import BronzeOrb
         actions = []
         # Summon 2 Bronze Orbs
         for _ in range(2):
@@ -22,25 +27,31 @@ class SummonOrb(Intention):
         return actions
 
 
-class Hit(Intention):
-    """Deal 12 damage."""
+class Flail(Intention):
+    """Deal 7x2 damage."""
 
     def __init__(self, enemy):
-        super().__init__("Hit", enemy)
-        self.base_damage = 12
+        super().__init__("Flail", enemy)
+        self.base_damage = 7
+        self.hits = 2
 
     def execute(self) -> List:
-        """Deal damage to player."""
+        """Deal damage to player twice."""
         from engine.game_state import game_state
         damage = self.enemy.calculate_damage(self.base_damage)
-        return [AttackAction(damage, game_state.player, self.enemy, "attack")]
+        actions = []
+        for _ in range(self.hits):
+            actions.append(
+                AttackAction(damage, game_state.player, self.enemy, "attack")
+            )
+        return actions
 
 
-class Repair(Intention):
+class Boost(Intention):
     """Gain 3 Strength and 9 Block (4 Strength A17+)."""
 
     def __init__(self, enemy):
-        super().__init__("Repair", enemy)
+        super().__init__("Boost", enemy)
         self.base_block = 9
         self.base_strength_gain = 3
 
@@ -48,8 +59,10 @@ class Repair(Intention):
         """Gain strength and block."""
         actions = []
         # Gain Strength (4 on A17+, 3 otherwise)
-        # For simplicity, using base value
-        actions.append(ApplyPowerAction("strength", self.enemy, self.base_strength_gain))
+        # TODO: Check ascension level for A17+ bonus
+        actions.append(
+            ApplyPowerAction("strength", self.enemy, self.base_strength_gain)
+        )
         # Gain Block
         actions.append(GainBlockAction(self.base_block, self.enemy))
         return actions
@@ -69,11 +82,11 @@ class HyperBeam(Intention):
         return [AttackAction(damage, game_state.player, self.enemy, "attack")]
 
 
-class Unsummon(Intention):
-    """Does nothing (Bronze Orbs return)."""
+class Stunned(Intention):
+    """Does nothing (Stunned turn)."""
 
     def __init__(self, enemy):
-        super().__init__("Unsummon", enemy)
+        super().__init__("Stunned", enemy)
 
     def execute(self) -> List:
         """Do nothing."""

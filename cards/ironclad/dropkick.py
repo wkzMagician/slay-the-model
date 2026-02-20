@@ -24,11 +24,10 @@ class Dropkick(Card):
 
     upgrade_damage = 8
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
-        # If enemy has Vulnerable, gain energy and draw
-        # todo: 增加Creature的has_power函数
         if target and target.has_power("vulnerable"):
             actions.append(GainEnergyAction(energy=1))
             actions.append(DrawCardsAction(count=1))

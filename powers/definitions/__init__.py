@@ -45,7 +45,8 @@ from powers.definitions.sentinel import SentinelPower
 from powers.definitions.buffer import BufferPower
 from powers.definitions.rupture import RupturePower
 from powers.definitions.enrage import EnragePower
-
+from powers.definitions.entangled import EntangledPower
+ 
 __all__ = [
     "StrengthPower",
     "VulnerablePower",
@@ -90,4 +91,5 @@ __all__ = [
     "BufferPower",
     "RupturePower",
     "EnragePower",
+    "EntangledPower",
 ]

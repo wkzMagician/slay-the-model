@@ -4,7 +4,7 @@ Relics obtained through events.
 """
 from typing import List
 from actions.base import Action, LambdaAction
-from actions.card import ChooseAddRandomCardAction, DrawCardsAction, AddCardAction, ExhaustCardAction
+from actions.card import ChooseAddRandomCardAction
 from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDamageAction, ApplyPowerAction, ModifyMaxHpAction
 # GainGoldAction imported lazily when needed to avoid circular import
 from relics.base import Relic

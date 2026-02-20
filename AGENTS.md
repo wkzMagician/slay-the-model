@@ -1,140 +1,106 @@
-# PROJECT KNOWLEDGE BASE
+# SLAY THE MODEL - KNOWLEDGE BASE
 
-**Generated:** 2026-02-09T02:53:33Z
-**Commit:** 2a9687a
+**Generated:** 2026-02-20
+**Commit:** ef19e04
 **Branch:** main
 
 ## OVERVIEW
-Python deck-building roguelike (117 Python files, 13,876 lines, 20 game systems). NOT a proper package - direct execution only.
+
+Python roguelike deck-builder (Slay the Spire clone). Turn-based combat with cards, enemies, relics, potions. No UI - CLI/game logic only.
 
 ## STRUCTURE
+
 ```
-slay-the-model/
-├── actions/      # Game actions (10 files)
-├── ai/           # AI modules (2 files)
-├── ai_tools/      # AI utilities (2 files)
-├── cards/        # Card definitions by character (Ironclad only, 2 files)
-├── config/       # Game configuration (YAML)
-├── enemies/       # Enemy definitions (3 files + act1/ subdirectory)
-├── engine/        # Core engine (GameFlow, GameState, CombatState, 5 files)
-├── entities/      # Base classes (Card, Enemy, Player, 3 files)
-├── events/        # Random events (10 files)
-├── localization/  # i18n (en.yaml, zh.yaml, 1 file)
-├── logs/          # Debug log output
-├── map/          # Map generation & placement (5 files)
-├── orbs/         # Orb mechanics (1 file)
-├── player/        # Player character classes (6 files)
-├── potions/       # Potions (7 files)
-├── powers/        # Status effects (2 files)
-├── relics/        # Relics (global + character, 2 files)
-├── rooms/         # Room types (8 files)
-├── tests/         # 113 tests (pytest + unittest hybrid, 17 files)
-└── utils/         # Utilities (5 files)
+.
+├── __main__.py          # Entry: imports cards.ironclad, potions, powers, relics → starts GameFlow
+├── engine/              # Core game loop, state management, combat resolution
+├── actions/             # Global ActionQueue, delayed actions, action resolution
+├── cards/               # Card definitions (base.py, ironclad/, colorless/), @register decorator
+├── enemies/             # Enemy definitions by act (act1/, act2/, act3/, act4/), intention system
+├── powers/              # Power/buff/debuff definitions, @register decorator
+├── player/              # PlayerManager, player state management
+├── rooms/               # Room types: Combat, Rest, Shop, Treasure, Event, Neo
+├── events/              # 60+ random events with choices and outcomes
+├── potions/             # Potion definitions and effects
+├── relics/              # Relic definitions and triggers
+├── utils/               # Registry, localizable base, type definitions
+├── config/              # YAML configs (game_config.yaml has god_mode debug)
+├── localization/        # i18n: en/, zh/
+└── tests/               # 668 tests, CombatTestHelper utility
 ```
 
 ## WHERE TO LOOK
+
 | Task | Location | Notes |
 |------|----------|-------|
-| Main entry point | `__main__.py` | Creates GameFlow, starts game loop |
-| Game configuration | `config/game_config.yaml` | Mode (human/ai), language (en/zh), debug settings |
-| Localization | `localization/en.yaml`, `localization/zh.yaml` | Template-based i18n with `{variable}` placeholders |
-| Card definitions | `cards/ironclad/` | 22 card files (name, description, upgrades) |
-| Enemy definitions | `enemies/` | Enemy classes and behaviors |
-| Room definitions | `rooms/` | 7 room type modules |
-| Event system | `events/` | Event pool and individual events |
-| Action classes | `actions/` | 13 action modules (combat, reward, display) |
-| Game engine | `engine/` | GameFlow (main loop), GameState (singleton), CombatState |
-| Relic system | `relics/` | Global relics + Ironclad-specific (22 files total) |
-| Player classes | `player/` | Player character implementation |
-| Test files | `tests/` | Mixed pytest/unittest, 113 tests |
+| Add new card | `cards/ironclad/` or `cards/colorless/` | Use @register decorator, inherit Card |
+| Add new enemy | `enemies/act{1-4}/` | Inherit Enemy, define intentions |
+| Add new power | `powers/` | Use @register decorator, inherit Power |
+| Add new event | `events/` | Inherit Event, define choices |
+| Modify combat flow | `engine/combat.py` or `engine/combat_state.py` | |
+| Change game state | `engine/game_state.py` | Singleton pattern |
+| Add new room type | `rooms/` | Inherit Room base |
+| Debug/testing | `tests/test_combat_utils.py` | CombatTestHelper class |
+| Localization | `localization/{en,zh}/` | JSON files |
+
+## CODE MAP
+
+| Symbol | Type | Location | Role |
+|--------|------|----------|------|
+| `GameFlow` | class | `engine/game_flow.py` | Main game loop controller |
+| `GameState` | class | `engine/game_state.py` | Singleton game state |
+| `ActionQueue` | class | `actions/action_queue.py` | Global action resolution |
+| `Card` | class | `cards/base.py` | Base card class |
+| `Enemy` | class | `enemies/base.py` | Base enemy class |
+| `Intention` | class | `enemies/intention.py` | Enemy AI intent system |
+| `Power` | class | `powers/base.py` | Base power class |
+| `Room` | class | `rooms/base.py` | Base room class |
+| `CombatTestHelper` | class | `tests/test_combat_utils.py` | Test utility for combat |
+| `@register` | decorator | `utils/registry.py` | Registry pattern for cards/enemies/powers |
+| `Localizable` | class | `utils/localizable.py` | Localization support base |
 
 ## CONVENTIONS
 
-**Critical Architectural Patterns:**
-- Action Execution: All actions/events/rooms inherit from `actions.base.ActionQueue`
-- Actions return `ResultType` from `utils.result_types.BaseResult`
-- Game state processes actions via `game_state.execute_all_actions()`
-- Single `game_state` singleton manages ALL persistent data
+**Style:** Google Python Style Guide. 79 char lines, 4-space indent.
 
-**Localization System:**
-- Template-based i18n with `{variable}` placeholders
-- Runtime loading via `localization/` (en.yaml, zh.yaml)
-- Apply via `localize()` helper function
+**Naming:**
+- Modules: `lower_with_under`
+- Classes: `CapWords`
+- Functions/vars: `lower_with_under`
+- Constants: `CAPS_WITH_UNDER`
+- Private: `_prefix`
 
-**Game Loop:**
-- Floors 0-16 (MAX_FLOOR constant)
-- Per floor: map generation → enter rooms → events → rest
-- Victory: Floor 16 with no DEATH event
-- Defeat: HP ≤ 0 OR 3 DEATH events
+**Imports:** stdlib → third-party → local. Use `TYPE_CHECKING` for forward refs.
 
-**Return Types (from `utils/result_types.py`):**
-- `BaseResult`: Base class for all actions
-- `SingleActionResult`: One ResultType + next room/event
-- `MultipleActionsResult`: Queue multiple actions for same turn
-- `GameStateResult`: Win/Death/end-game
-- `NoneResult`: No state change
+**Registry:** Use `@register` decorator for cards/enemies/powers. Auto-registers to global lookup.
 
-**Development Standards:**
-- **Entry Point:** `__main__.py` creates GameFlow, starts game loop, handles KeyboardInterrupt, TeeStream logging
-- **Dependencies:** NO `requirements.txt`/`pyproject.toml` - manual installation, direct execution via `python __main__.py`
-- **Code Style (Google Python Style Guide):** `import package` for libs, `from package import module` for internals, 80-char limit, `ALL_CAPS` constants, `_leading_underscore` for internal modules
+**Localization:** Inherit `Localizable`, set `localization_prefix`, add JSON to `localization/{en,zh}/`.
+
+## ANTI-PATTERNS
+
+- **NO** direct GameState instantiation - use singleton accessor
+- **NO** circular imports - use lazy imports or TYPE_CHECKING
+- **NO** hardcoded strings for display - use localization system
+- **NO** modifying ActionQueue directly during resolution - queue actions instead
 
 ## COMMANDS
 
 ```bash
-# Run the game
+# Run game
 python __main__.py
 
-# Run tests (pytest - installed)
-python -m pytest tests/ -v
+# Run tests
+pytest tests/
+python -m unittest discover tests/
+python run_game_test.py
 
-# Run specific test (unittest)
-python tests/test_enemies.py
-
-# Run specific test (pytest)
-python -m pytest tests/test_rooms.py -v
-
-# Enable debug mode (logs to logs/debug.log)
-python __main__.py --debug
+# PowerShell runner
+pwsh run_games.ps1
 ```
 
 ## NOTES
 
-### Project Status
-- **Work-in-progress prototype**: Not a proper Python package (no `pyproject.toml`)
-- **Direct execution only**: Must run from source directory or use `python -m slay-the-model` (only works if installed)
-- **No CI/CD**: Manual testing only
-- **Hybrid test framework**: Both pytest (recommended) and unittest (legacy) in 113 test files
-- **Dependency hell risk**: New developers cannot reproduce environment without manual setup
-
-### Gotchas
-- **Circular import issue in tests**: `tests/test_events.py` uses `importlib.util` to load `events.event_pool` because direct imports would cause circular dependency between `engine.game_state` and `rooms.neo`. This is intentional workaround, not a bug.
-- **PyInstaller artifacts**: `.gitignore` mentions `*.spec` and `*.manifest` suggesting PyInstaller was used at some point, but no build configuration exists.
-- **Config loading**: Assumes project structure relative to `engine/` directory (hardcoded path in `config/game_config.py`). Breaking directory structure breaks config loading.
-- **Debug logging default**: Debug mode is ON by default (writes to `logs/debug.log`). This is intentional for game development but may confuse players.
-
-### Architecture Notes
-- **Global state singleton**: `engine.game_state.game_state` is imported at module level (line 56) and shared globally. This makes testing harder but ensures consistent game state across all systems.
-- **Action queue pattern**: All actions flow through centralized queue in `game_state.execute_all_actions()`.
-- **Localization system**: Template-based with runtime variable substitution, supports English/Chinese.
-- **Character-specific directories**: Ironclad relics/cards/powers have own subdirs (`relics/ironclad/`, `cards/ironclad/`, `powers/ironclad/`) - pattern for adding new characters.
-
-## UNIQUE STYLES
-
-### Game Design
-- **Deck-building roguelike**: Battle cards with energy costs, strategic card management
-- **16-floor progression**: Linear dungeon crawl with boss fights at floors 3, 8, 11, 15
-- **Relic system**: Global relics (available to all characters) + character-specific relics
-- **Event system**: Random encounters between rooms (Neo shrine, chest, elite fights, etc.)
-- **Rest mechanics**: Heal, upgrade cards, remove cards at rest sites
-
-### Code Organization
-- **Domain-driven directories**: Each game domain has its own directory (actions, cards, enemies, rooms, etc.)
-- **No root __init__.py**: Project is a module, not a package
-- **Explicit imports**: Use full package paths (`from slay_the_model.engine.game_state import game_state`)
-- **Result type system**: Centralized in `utils.result_types` with base classes
-
-### Localization Style
-- **Variable substitution**: `{card_name}`, `{enemy_name}`, `{amount}` placeholders
-- **YAML structure**: Key-value pairs with nested objects
-- **Bilingual**: English default, Chinese optional via `--language zh` flag
+- No requirements.txt/pyproject.toml - dependencies not tracked
+- No linting config (ruff, flake8, mypy) present
+- `config/game_config.yaml` has `god_mode` for debug
+- `run_game_test.py` runs automated game simulations

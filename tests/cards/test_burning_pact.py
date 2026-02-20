@@ -1,3 +1,4 @@
+from entities.creature import Creature
 """Comprehensive tests for BurningPact card."""
 import unittest
 from tests.test_combat_utils import CombatTestHelper, create_test_helper

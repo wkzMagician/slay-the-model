@@ -78,13 +78,28 @@ class LoseRelicAction(Action):
     Optional:
         None
     """
-    def __init__(self, relic: "Relic"):
+    def __init__(
+        self,
+        relic: Optional["Relic"] = None,
+        relic_type: Optional[type] = None,
+    ):
         self.relic = relic
+        self.relic_type = relic_type
     
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
-        if self.relic and game_state.player:
+        if not game_state.player:
+            return NoneResult()
+
+        if self.relic and self.relic in game_state.player.relics:
             game_state.player.relics.remove(self.relic)
+            return NoneResult()
+
+        if self.relic_type is not None:
+            for relic in list(game_state.player.relics):
+                if isinstance(relic, self.relic_type):
+                    game_state.player.relics.remove(relic)
+                    break
         return NoneResult()
 
 @register("action")
@@ -169,7 +184,17 @@ class LoseGoldAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         if game_state.player:
-            game_state.player.gold -= self.amount
+            if self.amount == 'all':
+                loss = game_state.player.gold
+            elif isinstance(self.amount, str):
+                try:
+                    loss = int(self.amount)
+                except ValueError:
+                    return NoneResult()
+            else:
+                loss = self.amount
+
+            game_state.player.gold = max(0, game_state.player.gold - loss)
         return NoneResult()
             
 @register("action")

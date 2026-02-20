@@ -25,14 +25,15 @@ class Clothesline(Card):
     upgrade_damage = 14
     upgrade_magic = {"weak": 3}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
         from engine.game_state import game_state
 
-        actions = super().on_play(target)
+        actions = super().on_play(targets)
         weak_amount = self.get_magic_value("weak")
 
         # Apply weak debuff to target
-        if target:
+        if targets:
             actions.append(ApplyPowerAction(target=target, power="weak", amount=weak_amount))
 
         return actions

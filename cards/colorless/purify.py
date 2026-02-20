@@ -24,8 +24,9 @@ class Purify(Card):
 
     upgrade_magic = {"exhaust_amount": 5}
 
-    def on_play(self, target: Creature | None = None) -> List[Action]:
-        actions = super().on_play(target)
+    def on_play(self, targets: List[Creature] = []) -> List[Action]:
+        target = targets[0] if targets else None
+        actions = super().on_play(targets)
 
         # Exhaust up to N cards
         exhaust_amount = self.get_magic_value("exhaust_amount")
