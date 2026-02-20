@@ -51,7 +51,7 @@ class MapManager:
         self.deadly_events = deadly_events
         
         # Initialize encounter pool system
-        self.encounter_pool = EncounterPool(seed)
+        self.encounter_pool = EncounterPool(seed, act_id=act_id)
         
         # Track visits to each ? room type for "bad luck protection"
         # Each increment represents a visit that didn't result in that type
@@ -64,6 +64,24 @@ class MapManager:
         
         # todo: use relic's own counter
         self._tiny_chest_counter = 0
+        self.relic_effects = {}
+        
+        # Relic effects that modify unknown room probabilities
+        self._relic_effects = {
+            'tiny_chest': False,
+            'juzu_bracelet': False,
+        }
+    
+    def set_relic_effect(self, effect_name: str, enabled: bool) -> None:
+        """
+        Enable or disable a relic effect that modifies unknown room probabilities.
+        
+        Args:
+            effect_name: Name of the relic effect (e.g., 'tiny_chest', 'juzu_bracelet')
+            enabled: Whether the effect is active
+        """
+        if effect_name in self._relic_effects:
+            self._relic_effects[effect_name] = enabled
     
     def generate_map(self) -> MapData:
         """
@@ -251,11 +269,11 @@ class MapManager:
 
     @property
     def has_tiny_chest(self) -> bool:
-        return self._player_has_relic("tiny_chest") or self._player_has_relic("tinychest")
+        return self._player_has_relic("tiny_chest") or self._player_has_relic("tinychest") or self._relic_effects.get("tiny_chest", False)
 
     @property
     def has_juzu_bracelet(self) -> bool:
-        return self._player_has_relic("juzu_bracelet") or self._player_has_relic("juzubracelet")
+        return self._player_has_relic("juzu_bracelet") or self._player_has_relic("juzubracelet") or self._relic_effects.get("juzu_bracelet", False)
 
     @property
     def has_ssserpent_head(self) -> bool:
@@ -277,14 +295,15 @@ class MapManager:
         next_floor = self.map_data.current_floor + 1
         is_boss_floor = next_floor >= len(self.map_data.nodes) - 1
         
-        for pos in current_node.connections_up:
-            if next_floor < len(self.map_data.nodes):
-                try:
-                    node = self.map_data.get_node(next_floor, pos)
-                    # Include all connected nodes - dead ends will be handled by game flow
-                    available_nodes.append(node)
-                except IndexError:
-                    pass
+        if current_node:
+            for pos in current_node.connections_up:
+                if next_floor < len(self.map_data.nodes):
+                    try:
+                        node = self.map_data.get_node(next_floor, pos)
+                        # Include all connected nodes - dead ends will be handled by game flow
+                        available_nodes.append(node)
+                    except IndexError:
+                        pass
         
         return available_nodes
     
@@ -349,11 +368,12 @@ class MapManager:
             return CombatRoom(enemies=enemies, room_type=RoomType.ELITE, encounter_name=encounter_name)
         
         elif room_type == RoomType.BOSS:
-            # Get boss encounter from encounter pool
-            enemies = self.encounter_pool.get_boss_encounter(
-                floor=self.map_data.current_floor
+            # Boss combat room - fight the boss!
+            from engine.game_state import game_state
+            enemies, encounter_name = self.encounter_pool.get_boss_encounter(
+                floor=self.map_data.current_floor,
             )
-            return CombatRoom(enemies=enemies, room_type=RoomType.BOSS)
+            return CombatRoom(enemies=enemies, room_type=RoomType.BOSS, encounter_name=encounter_name)
         
         elif room_type == RoomType.REST:
             return RestRoom()
@@ -362,7 +382,9 @@ class MapManager:
             return ShopRoom()
         
         elif room_type == RoomType.TREASURE:
-            return TreasureRoom()
+            # Floor 17 is the hidden boss treasure room
+            is_boss = self.map_data.current_floor == 17
+            return TreasureRoom(is_boss=is_boss)
         
         elif room_type == RoomType.EVENT:
             return EventRoom()

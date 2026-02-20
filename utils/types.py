@@ -39,6 +39,7 @@ class RarityType(str, Enum):
     CURSE = "Curse"
 
 class RoomType(str, Enum):
+    NORMAL = "Normal"
     MONSTER = "Monster"
     ELITE = "Elite"
     REST = "Rest Site"
@@ -58,3 +59,4 @@ class EnemyType(str, Enum):
     NORMAL = "Normal"
     ELITE = "Elite"
     BOSS = "Boss"
+    MINION = "Minion"

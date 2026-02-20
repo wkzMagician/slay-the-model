@@ -27,6 +27,6 @@ class Evolve(Card):
 
         # Apply EvolvePower
         # The amount is handled by the power's on_card_draw hook
-        actions.append(ApplyPowerAction(power="EvolvePower", target=game_state.player, amount=1, duration=0))
+        actions.append(ApplyPowerAction(power="EvolvePower", target=game_state.player, amount=1, duration=-1))
 
         return actions

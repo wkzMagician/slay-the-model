@@ -5,6 +5,26 @@ from powers.definitions import BufferPower
 from actions.card import UpgradeRandomCardAction
 from actions.combat import GainBlockAction, GainEnergyAction, ApplyPowerAction, RemovePowerAction
 
+# Top-level imports for all test classes
+from player.player import Player
+from engine.game_state import GameState
+from powers.definitions import VulnerablePower
+
+# Common relics
+from relics.global_relics.common import Akabeko, Anchor, BronzeScales
+
+# Uncommon relics
+from relics.global_relics.uncommon import BlueCandle, Pantograph, Sundial
+
+# Rare relics
+from relics.global_relics.rare import DeadBranch
+
+# Boss relics
+from relics.global_relics.boss import SneckoEye
+
+# Ironclad relics
+from relics.character.ironclad import ChampionBelt, OrangePellets, BurningBlood as IroncladBurningBlood
+
 class TestNewRelicFeatures:
     
     def test_champion_belt_applies_weak_on_vulnerable(self):
@@ -15,7 +35,8 @@ class TestNewRelicFeatures:
         from engine.game_state import GameState
         
         # Mock game state
-        game_state = GameState()
+        from engine.game_state import game_state
+        game_state.__init__()  # Reset singleton for test
         player = Player(max_hp=70)
         game_state.player = player
         
@@ -57,7 +78,8 @@ class TestNewRelicFeatures:
         from powers.definitions import WeakPower
         
         # Mock game state
-        game_state = GameState()
+        from engine.game_state import game_state
+        game_state.__init__()  # Reset singleton for test
         player = Player(max_hp=70)
         game_state.player = player
         
@@ -70,17 +92,25 @@ class TestNewRelicFeatures:
         vulnerable = VulnerablePower(amount=1, duration=2)
         player.powers.extend([weak, vulnerable])
         
-        # Play a Power card (should trigger relic)
-        orange_pellets.on_card_play(None, player, [])
+        # Create mock cards for testing
+        from cards.base import Card
+        from utils.types import CardType
         
-        # Play an Attack card (should trigger relic but not complete yet)
-        orange_pellets.on_card_play(None, player, [])
+        power_card = Card(name="TestPower", card_type=CardType.POWER)
+        attack_card = Card(name="TestAttack", card_type=CardType.ATTACK)
+        skill_card = Card(name="TestSkill", card_type=CardType.SKILL)
+        
+        # Play a Power card
+        orange_pellets.on_card_play(power_card, player, [])
+        
+        # Play an Attack card (should not complete yet)
+        orange_pellets.on_card_play(attack_card, player, [])
         
         # Play a Skill card - this should remove all debuffs
-        orange_pellets.on_card_play(None, player, [])
-        
-        # Should return 2 RemovePowerActions (Weak and Vulnerable)
-        actions = orange_pellets.on_card_play(None, player, [])
+        actions = orange_pellets.on_card_play(skill_card, player, [])
+        # Execute the returned actions
+        for action in actions:
+            action.execute()
         
         assert len(actions) == 2
         assert all(isinstance(a, RemovePowerAction) for a in actions)
@@ -98,7 +128,8 @@ class TestNewRelicFeatures:
         from engine.game_state import GameState
         
         # Mock game state with boss combat
-        game_state = GameState()
+        from engine.game_state import game_state
+        game_state.__init__()  # Reset singleton for test
         player = Player(max_hp=70)
         game_state.player = player
         
@@ -107,7 +138,7 @@ class TestNewRelicFeatures:
         game_state.player.relics = [pantograph]
         
         # Create mock boss combat
-        from engine.combat import CombatState
+        from engine.combat_state import CombatState
         combat_state = CombatState()
         combat_state.combat_type = CombatType.BOSS
         game_state.current_combat = combat_state
@@ -130,8 +161,9 @@ class TestNewRelicFeatures:
         from engine.game_state import GameState
         
         # Mock game state
-        game_state = GameState()
-        player = Player(max_hp=70, max_energy=3)
+        from engine.game_state import game_state
+        game_state.__init__()  # Reset singleton for test
+        player = Player(max_hp=70, max_energy=5)
         game_state.player = player
         
         # Add relic
@@ -140,16 +172,18 @@ class TestNewRelicFeatures:
         
         # Trigger on_shuffle 3 times
         actions = []
-        for _ in range(3):
+        for _ in range(2):
             actions.extend(sundial.on_shuffle())
-            assert actions  # Should be empty first 2 times
             assert len(actions) == 0
             assert sundial.shuffle_count == _ + 1
         
-        # 3rd shuffle should gain 2 energy
+        # 3rd shuffle should gain 2 energy (loop ran 2 times, this is the 3rd)
         actions.extend(sundial.on_shuffle())
         
         # Should have 1 action: GainEnergyAction(energy=2)
+        # Execute the action
+        for action in actions:
+            action.execute()
         assert len(actions) == 1
         assert isinstance(actions[0], GainEnergyAction)
         assert actions[0].energy == 2
@@ -223,7 +257,7 @@ class TestRelicInstantiation:
     
     def test_ironclad_relics_can_instantiate(self):
         """Ironclad relics should be instantiatable."""
-        relic = BurningBlood()
+        relic = IroncladBurningBlood()
         assert relic is not None
 
 
@@ -242,7 +276,7 @@ class TestRelicMethods:
     
     def test_relic_has_on_combat_end(self):
         """Relics should have on_combat_end hook."""
-        relic = BurningBlood()
+        relic = IroncladBurningBlood()
         assert hasattr(relic, 'on_combat_end')
     
     def test_relic_has_on_card_play(self):

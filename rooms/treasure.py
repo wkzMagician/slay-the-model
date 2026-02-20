@@ -4,9 +4,9 @@ Treasure room implementation.
 import random
 from actions.display import SelectAction, DisplayTextAction
 from actions.misc import OpenChestAction
-from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult
+from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult, SingleActionResult
 from engine.game_state import game_state
-from localization import LocalStr
+from localization import LocalStr, t
 from rooms.base import Room, BaseResult
 from utils.option import Option
 from utils.registry import register
@@ -28,16 +28,63 @@ class TreasureRoom(Room):
     def init(self):
         """Initialize the treasure room"""
         # Determine chest type
+        self._determine_chest_type()
+    
+    def _determine_chest_type(self):
+        """Determine the type of chest based on random roll. Returns the chest type string."""
         if self.is_boss:
             self.chest_type = "boss"
         else:
             roll = random.random()
             self.chest_type = "small" if roll < 0.50 else "medium" if roll < 0.83 else "large"
+        return self.chest_type
+    
+    def _get_small_chest_contents(self):
+        """Get contents for a small chest."""
+        import random
+        from utils.types import RarityType
+        from relics.relics import get_random_relic_by_rarity
+        # Small chest: 23-27 gold + 1 common relic
+        gold = random.randint(23, 27)
+        relic_classes = get_random_relic_by_rarity(RarityType.COMMON)
+        relic = relic_classes[0]() if relic_classes else None
+        return {"gold": gold, "relic": RarityType.COMMON, "relics": [relic] if relic else []}
+    
+    def _get_medium_chest_contents(self):
+        """Get contents for a medium chest."""
+        import random
+        from utils.types import RarityType
+        from relics.relics import get_random_relic_by_rarity
+        # Medium chest: 45-55 gold + 1 uncommon relic
+        gold = random.randint(45, 55)
+        relic_classes = get_random_relic_by_rarity(RarityType.UNCOMMON)
+        relic = relic_classes[0]() if relic_classes else None
+        return {"gold": gold, "relic": RarityType.UNCOMMON, "relics": [relic] if relic else []}
+    
+    def _get_large_chest_contents(self):
+        """Get contents for a large chest."""
+        import random
+        from utils.types import RarityType
+        from relics.relics import get_random_relic_by_rarity
+        # Large chest: 68-82 gold + 1 rare relic
+        gold = random.randint(68, 82)
+        relic_classes = get_random_relic_by_rarity(RarityType.RARE)
+        relic = relic_classes[0]() if relic_classes else None
+        return {"gold": gold, "relic": RarityType.RARE, "relics": [relic] if relic else []}
+    
+    def _get_boss_chest_contents(self):
+        """Get contents for a boss chest."""
+        from utils.types import RarityType
+        from relics.relics import get_random_relic_by_rarity
+        # Boss chest: choice of boss relics
+        boss_relic_classes = get_random_relic_by_rarity(RarityType.BOSS, count=3)
+        boss_relics = [cls() for cls in boss_relic_classes]
+        return {"gold": 0, "relic": RarityType.BOSS, "relics": boss_relics}
     
     def enter(self) -> BaseResult:
         """Enter treasure room and handle chest opening"""
         # Display entry message
-        entry_action = DisplayTextAction(text_key="rooms.treasure.enter")
+        print(t("rooms.treasure.enter"))
 
         # Main treasure loop
         while not self.should_leave:
@@ -45,14 +92,7 @@ class TreasureRoom(Room):
             select_action = self._build_treasure_menu()
 
             if select_action:
-                # Return entry message on first iteration, then select action
-                if entry_action:
-                    actions = [entry_action, select_action]
-                    entry_action = None  # Only show entry message once
-                else:
-                    actions = [select_action]
-
-                return MultipleActionsResult(actions)
+                return SingleActionResult(select_action)
             else:
                 # No actions to return, break loop
                 break
@@ -80,8 +120,10 @@ class TreasureRoom(Room):
                 actions=[]
             ))
 
-        # Return SelectAction instead of adding to queue
-        return SelectAction(
+        # Create SelectAction and add to action queue
+        select_action = SelectAction(
             title=self.local("treasure.boss_title") if self.is_boss else self.local("treasure.title"),
             options=options
         )
+        self.action_queue.add_action(select_action)
+        return select_action

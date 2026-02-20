@@ -14,7 +14,7 @@ class LouseBiteIntention(Intention):
     """Bite - Deals N damage (N is chosen at combat start, between 5-7)."""
     
     def __init__(self, enemy: 'Enemy', damage: int = 5):
-        super().__init__("louse_bite", enemy)
+        super().__init__("bite", enemy)
         self.base_damage = damage  # Set at combat start
     
     def execute(self) -> List['Action']:
@@ -39,7 +39,7 @@ class RedLouseGrowIntention(Intention):
     """Grow - Gains 3 Strength (4 on A17+)."""
     
     def __init__(self, enemy: 'Enemy'):
-        super().__init__("red_louse_grow", enemy)
+        super().__init__("grow", enemy)
         self.base_strength_gain = 3
     
     def execute(self) -> List['Action']:
@@ -51,7 +51,7 @@ class RedLouseGrowIntention(Intention):
                 power="strength",
                 target=self.enemy,
                 amount=self.base_strength_gain,
-                duration=0
+                duration=-1
             )
         ]
 
@@ -60,7 +60,7 @@ class GreenLouseSpitWebIntention(Intention):
     """Spit Web - Applies 2 Weak."""
     
     def __init__(self, enemy: 'Enemy'):
-        super().__init__("green_louse_spit_web", enemy)
+        super().__init__("spit_web", enemy)
     
     def execute(self) -> List['Action']:
         """Execute Spit Web: applies 2 Weak to player."""

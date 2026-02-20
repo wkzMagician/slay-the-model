@@ -26,7 +26,7 @@ class FireBreathing(Power):
             amount: Damage to deal when status is drawn
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_card_draw(self, card: Any) -> List[Action]:
         """Deal damage to all enemies when a status card is drawn."""

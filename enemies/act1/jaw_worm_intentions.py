@@ -53,7 +53,7 @@ class BellowIntention(Intention):
                 power="strength",
                 target=self.enemy,
                 amount=self.base_strength_gain,
-                duration=0
+                duration=-1
             ),
             GainBlockAction(
                 block=self.base_block,

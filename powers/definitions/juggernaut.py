@@ -27,7 +27,7 @@ class JuggernautPower(Power):
             amount: Damage to deal per block gained (default 5)
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_gain_block(self, amount: int, player: Any = None, source: Any = None, card: Any = None) -> List[Action]:
         """Deal damage to all enemies when block is gained."""

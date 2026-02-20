@@ -26,7 +26,7 @@ class BrutalityPower(Power):
             amount: Not used
             duration: 0 for permanent
         """
-        super().__init__(amount=0, duration=0, owner=owner)
+        super().__init__(amount=0, duration=-1, owner=owner)
 
     def on_turn_start(self) -> List[Action]:
         """Lose 1 HP and draw 1 card at turn start."""

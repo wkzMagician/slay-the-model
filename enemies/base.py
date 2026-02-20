@@ -29,16 +29,30 @@ class Enemy(Creature):
     def __init__(
         self,
         hp_range: Tuple[int, int] = (40, 50),
+        name: str = None,
+        max_hp: int = None,
+        damage: int = None,
+        **kwargs
     ) -> None:
         """
         Initialize enemy.
         
         Args:
             hp_range: Tuple of (min_hp, max_hp) for random HP generation
+            name: Optional name override for testing
+            max_hp: Optional max HP override for testing (bypasses hp_range)
+            damage: Optional base damage for testing
         """
-        min_hp, max_hp = hp_range
-        actual_max_hp = random.randint(min_hp, max_hp)
+        if max_hp is not None:
+            actual_max_hp = max_hp
+        else:
+            min_hp, max_hp_val = hp_range
+            actual_max_hp = random.randint(min_hp, max_hp_val)
         super().__init__(max_hp=actual_max_hp)
+        
+        # Store optional overrides
+        self._name_override = name
+        self._base_damage = damage
         
         # Intention system
         self.intentions: Dict[str, 'Intention'] = {}
@@ -109,7 +123,8 @@ class Enemy(Creature):
         Args:
             floor: Current floor number
         """
-        pass
+        # Set initial intention when combat starts
+        self.current_intention = self.determine_next_intention(floor)
     
     def on_player_turn_start(self) -> None:
         """Called at the start of player's turn.

@@ -34,8 +34,7 @@ class SpotWeakness(Card):
 
         assert target is not None
         assert isinstance(target, Enemy)
-        enemy = Enemy(target)
-        if enemy.current_intention.base_damage > 0:
+        if target.current_intention.base_damage > 0:
             actions.append(ApplyPowerAction("strength", player, get_magic_value(self, "strength")))
 
         return actions

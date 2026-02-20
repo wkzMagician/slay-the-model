@@ -27,7 +27,7 @@ class CultistRitualIntention(Intention):
                 power="strength",
                 target=self.enemy,
                 amount=self.base_strength_gain,
-                duration=0  # Permanent
+                duration=-1  # Permanent
             )
         ]
 
@@ -36,7 +36,7 @@ class CultistAttackIntention(Intention):
     """Attack - Deals 6 damage."""
     
     def __init__(self, enemy: 'Enemy'):
-        super().__init__("cultist_attack", enemy)
+        super().__init__("attack", enemy)
         # 在__init__中设置基础数值
         self.base_damage = 6
     

@@ -194,7 +194,8 @@ class TheAbacus(Relic):
 
     def on_shuffle(self) -> List[Action]:
         """Gain 6 Block when shuffling draw pile."""
-        return [GainBlockAction(amount=6)]
+        from engine.game_state import game_state
+        return [GainBlockAction(block=6, target=game_state.player)]
 
 @register("relic")
 class TwistedFunnel(Relic):

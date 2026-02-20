@@ -7,7 +7,7 @@ from actions.base import Action
 from actions.display import DisplayTextAction
 from utils.result_types import MultipleActionsResult, NoneResult
 from actions.reward import AddGoldAction, AddRandomPotionAction
-from actions.card import AddCardAction, AddRandomCardAction
+from actions.card import AddCardAction, AddRandomCardAction, ChooseAddRandomCardAction
 from utils.result_types import GameStateResult
 from engine.combat import Combat
 from rooms.base import Room, BaseResult
@@ -96,17 +96,40 @@ class CombatRoom(Room):
 
         # Add card reward (non-boss)
         if self.room_type != RoomType.BOSS:
-            actions.append(AddRandomCardAction(
-                pile="hand",
-                card_type=CardType.ATTACK,
-                rarity=RarityType.COMMON
+            # 3 choose 1, rarity determined by encounter type
+            actions.append(ChooseAddRandomCardAction(
+                pile='deck',
+                total=3,
+                namespace=game_state.player.namespace
+            ))
+        else:  # boss - 3 rare cards
+            actions.append(ChooseAddRandomCardAction(
+                pile='deck',
+                total=3,
+                namespace=game_state.player.namespace,
+                rarity=RarityType.RARE
             ))
 
-        # Add potion reward (elites and bosses)
-        if self.room_type in (RoomType.ELITE, RoomType.BOSS):
+        # Add potion reward with probability check
+        # Base 40% chance, -10% after drop, +10% after no drop
+        # White Beast Statue: always drop
+        from actions.misc import _has_relic
+
+        if _has_relic("White Beast Statue", game_state):
+            # Always drop with White Beast Statue
             actions.append(AddRandomPotionAction(
                 character=game_state.player.character
             ))
+            game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
+        else:
+            import random as rd
+            if rd.randint(1, 100) <= game_state.potion_drop_chance:
+                actions.append(AddRandomPotionAction(
+                    character=game_state.player.character
+                ))
+                game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
+            else:
+                game_state.potion_drop_chance = min(90, game_state.potion_drop_chance + 10)
 
         # Display victory message
         actions.append(DisplayTextAction(text_key="rooms.combat.victory"))

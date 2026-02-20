@@ -62,7 +62,13 @@ class ChampionBelt(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    # todo: on_apply_power (to_enemy)
+    def on_apply_power(self, power, target, player, entities):
+        from powers.definitions.vulnerable import VulnerablePower
+        from actions.combat import ApplyPowerAction
+        
+        if isinstance(power, VulnerablePower):
+            return [ApplyPowerAction(power="Weak", amount=1, target=target), ApplyPowerAction(power="Frail", amount=1, target=target)]
+        return []
 
 @register("relic")
 class CharonsAshes(Relic):
@@ -160,6 +166,8 @@ class OrangePellets(Relic):
         from utils.types import CardType
         from actions.combat import RemovePowerAction
         
+        if card is None:
+            return []
         if card.card_type == CardType.POWER:
             self.power_count += 1
         elif card.card_type == CardType.ATTACK:

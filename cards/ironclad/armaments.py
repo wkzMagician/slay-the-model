@@ -27,10 +27,12 @@ class Armaments(Card):
     upgrade_magic = {"upgrade_hand": -1}
 
     def on_play(self, target: Creature | None = None) -> List[Action]:
+        from engine.game_state import game_state  # Lazy import to avoid circular dependency
+        
         actions = super().on_play(target)
 
         # Gain block
-        actions.append(GainBlockAction(block=self.block))
+        actions.append(GainBlockAction(block=self.block, target=game_state.player))
 
         # Upgrade a card in hand
         upgrade_amount = self.get_magic_value("upgrade_hand")

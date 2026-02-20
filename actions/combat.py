@@ -5,6 +5,7 @@ from utils.result_types import BaseResult, BaseResult, NoneResult, SingleActionR
 from localization import t
 from utils.registry import register
 from entities.creature import Creature
+from utils.types import TargetType
 
 # Lazy import COST_X to avoid circular import
 COST_X = -1  # Default value, will be overwritten when cards.base is loaded
@@ -463,35 +464,16 @@ class PlayCardAction(Action):
         can_play, reason = self.card.can_play(self.ignore_energy)
         if not can_play:
             print(f"Cannot play card: {reason}")
-            return SingleActionResult(DiscardCardAction(card=self.card))
+            return NoneResult()
         
-        # determine target
-        if self.card.card_type != CardType.ATTACK:
-            target = player
-            return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
+        if self.card.target_type == TargetType.ENEMY_SELECT and self.is_auto:
+            targets = resolve_target(TargetType.ENEMY_RANDOM)
+            return SingleActionResult(PlayCardBHAction(card=self.card, targets=targets, ignore_energy=self.ignore_energy))
         else:
-            if self.is_auto:
-                target_type = self.card.target_type
-                assert target_type is not None
-                target_or_action = resolve_target(target_type, card=self.card, ignore_energy=self.ignore_energy)
-                
-                # Handle case where resolve_target returns a SelectAction (for target selection)
-                if isinstance(target_or_action, SelectAction):
-                    return SingleActionResult(target_or_action)
-                else:
-                    target = target_or_action
-                    return SingleActionResult(PlayCardBHAction(card=self.card, target=target, ignore_energy=self.ignore_energy))
-            else:
-                options = []
-                for enemy in enemies:
-                    options.append(Option(
-                        name=LocalStr("ui.select_enemy"),
-                        actions=[PlayCardBHAction(card=self.card, target=enemy, ignore_energy=self.ignore_energy)]
-                    ))
-                
-        return NoneResult()
-    
-        
+            assert self.card.target_type is not None
+            targets = resolve_target(self.card.target_type)
+            return SingleActionResult(PlayCardBHAction(card=self.card, targets=targets, ignore_energy=self.ignore_energy))
+     
     
 @register("action")
 class PlayCardBHAction(Action):
@@ -500,7 +482,7 @@ class PlayCardBHAction(Action):
     
     Required:
         card (Card): Card to play
-        target (Creature): card's target
+        targets (List[Optional[Creature]]): card's target
         ignore_energy (bool): whether player the card without consuming energy
 
     Optional:
@@ -510,9 +492,9 @@ class PlayCardBHAction(Action):
     if TYPE_CHECKING:
         from cards.base import Card
         from entities.creature import Creature
-    def __init__(self, card: 'Card', target: 'Creature', ignore_energy: bool = False):
+    def __init__(self, card: 'Card', targets: List[Optional['Creature']], ignore_energy: bool = False):
         self.card = card
-        self.target = target
+        self.target = targets
         self.ignore_energy = ignore_energy
         
     def execute(self) -> 'BaseResult':
@@ -528,7 +510,7 @@ class PlayCardBHAction(Action):
         
         actions = []
         # 1. Trigger card's on_play
-        actions.extend(self.card.on_play(target=self.target))
+        actions.extend(self.card.on_play(targets=self.targets))
         
         # 2. Trigger powers
         for power in player.powers:
@@ -555,7 +537,7 @@ class PlayCardBHAction(Action):
 
         # Remove card from hand
         from actions.card import ExhaustCardAction
-        if self.card.get_value('exhaust'):
+        if self.card.get_value('exhaust') == True:
             actions.append(ExhaustCardAction(card=self.card))
         else:
             # Move to discard pile
@@ -714,3 +696,103 @@ class TriggerRelicAction(Action):
         
         return NoneResult()
 
+
+@register("action")
+class StartFightAction(Action):
+    """Start a fight with specified enemies
+    
+    Required:
+        enemies (list): List of enemy names or IDs to fight
+    
+    Optional:
+        None
+    """
+    def __init__(self, enemies: list):
+        self.enemies = enemies
+    
+    def execute(self) -> 'BaseResult':
+        """Start combat with the specified enemies"""
+        from engine.game_state import game_state
+        from engine.combat import Combat
+        
+        # Create enemy instances from names
+        enemy_instances = []
+        for enemy_name in self.enemies:
+            if enemy_name == 'random_act1_boss':
+                # Special case: random Act 1 boss
+                import random
+                from utils.registry import get_registered
+                bosses = ['slime_boss', 'hexaghost', 'the_guardian']
+                enemy_name = random.choice(bosses)
+            
+            from utils.registry import get_registered
+            enemy_class = get_registered("enemy", enemy_name)
+            if enemy_class:
+                enemy_instances.append(enemy_class())
+        
+        if not enemy_instances:
+            return NoneResult()
+        
+        # Start combat
+        combat = Combat(game_state.player, enemy_instances)
+        game_state.current_combat = combat
+        
+        return NoneResult()
+
+@register("action")
+class LoseMaxHPAction(Action):
+    """Lose max HP permanently
+    
+    Required:
+        amount (int): Amount of max HP to lose
+    
+    Optional:
+        None
+    """
+    def __init__(self, amount: int):
+        self.amount = amount
+    
+    def execute(self) -> 'BaseResult':
+        """Reduce player's max HP"""
+        from engine.game_state import game_state
+        
+        player = game_state.player
+        player.max_hp -= self.amount
+        player.hp = min(player.hp, player.max_hp)
+        
+        print(f"Lost {self.amount} max HP. New max HP: {player.max_hp}")
+        return NoneResult()
+
+@register("action")
+class UsePotionAction(Action):
+    """Use a potion on a target
+    
+    Required:
+        potion (Potion): The potion to use
+        target (Creature): The target creature
+    
+    Optional:
+        None
+    """
+    def __init__(self, potion, target):
+        self.potion = potion
+        self.target = target
+    
+    def execute(self) -> 'BaseResult':
+        """Execute potion effect and return resulting actions"""
+        from engine.game_state import game_state
+        from utils.result_types import MultipleActionsResult
+        
+        # Get actions from potion's on_use method
+        actions = self.potion.on_use(self.target)
+        
+        # Remove potion from player's inventory
+        if self.potion in game_state.player.potions:
+            game_state.player.potions.remove(self.potion)
+        
+        print(f"Used {self.potion.local('name')}")
+        
+        # Return the actions from the potion
+        if actions:
+            return MultipleActionsResult(actions)
+        return NoneResult()

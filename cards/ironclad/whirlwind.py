@@ -18,6 +18,28 @@ class Whirlwind(Card):
     base_damage = 5
     upgrade_damage = 8
 
+    target_type = "ALL_ENEMIES"
+
     @property
     def attack_times(self) -> int:
-        return self.cost # feature: X药，+2
+        return self.cost  # feature: X药，+2
+
+    def on_play(self, target=None) -> list:
+        """Deal damage to ALL enemies X times."""
+        from engine.game_state import game_state
+        from actions.combat import DealDamageAction
+
+        # X-cost: attack times = energy consumed (stored by test helper)
+        times = getattr(self, '_x_cost_energy', 0)
+        actions = []
+
+        for enemy in game_state.combat.enemies:
+            if enemy.hp > 0:
+                for _ in range(times):
+                    actions.append(DealDamageAction(
+                        target=enemy,
+                        damage=self.damage,
+                        damage_type="attack",
+                        card=self,
+                    ))
+        return actions

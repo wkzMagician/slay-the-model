@@ -42,7 +42,20 @@ class Lagavulin(Enemy):
         self.add_intention(SiphonSoulIntention(self, dex_loss, str_gain))
     
     def determine_next_intention(self, floor: int = 1):
-        """Determine next intention based on state."""
+        """Determine next intention based on state.
+        
+        Also handles natural wake-up after 3 turns without damage.
+        Counter increments at START of turn for correct intention display.
+        """
+        # Handle natural wake-up: increment counter first
+        if self.is_sleeping:
+            self.turns_without_damage += 1
+            if self.turns_without_damage >= 3:
+                # Wake up now - show correct intention this turn
+                self.is_sleeping = False
+                self.powers = [p for p in self.powers if p.name != "Metallicize"]
+                # Fall through to attack pattern below
+        
         if self.is_sleeping:
             return self.intentions["sleep"]
         if self.is_stunned:
@@ -51,17 +64,29 @@ class Lagavulin(Enemy):
             return self.intentions["attack"]
         return self.intentions["siphon_soul"]
     
-    def execute_turn(self):
+    def execute_intention(self):
+        """Override to handle state transitions since base combat calls execute_intention, not execute_turn."""
+        from actions.base import Action
+        
+        # Handle sleeping state - just do nothing
+        # Note: wake-up counter is handled in determine_next_intention()
         if self.is_sleeping:
-            return None
+            return []
+        
+        # Handle stunned state - clear stun and do nothing this turn
         if self.is_stunned:
             self.is_stunned = False
-            return None
+            return []
         
-        intention = self.determine_next_intention()
-        if intention:
-            intention.execute()
+        # Execute the current intention
+        actions = []
+        if self.current_intention:
+            actions = self.current_intention.execute()
+        
+        # Toggle attack pattern index for next turn
         self.attack_pattern_index = 1 - self.attack_pattern_index
+        
+        return actions
     
     def on_damage_taken(self, amount: int, source=None, card=None, damage_type=None):
         if self.is_sleeping and amount > 0:

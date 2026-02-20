@@ -27,6 +27,6 @@ class DarkEmbrace(Card):
         actions = super().on_play(target)
 
         # Apply DarkEmbracePower
-        actions.append(ApplyPowerAction(power="DarkEmbracePower", target=game_state.player, amount=0, duration=0))
+        actions.append(ApplyPowerAction(power="DarkEmbracePower", target=game_state.player, amount=0, duration=-1))
 
         return actions

@@ -2,7 +2,7 @@
 Base room definitions for new architecture.
 Rooms use global action queue and lifecycle management.
 """
-from actions.base import Action
+from actions.base import Action, ActionQueue
 from actions.map_selection import SelectMapNodeAction
 from utils.result_types import BaseResult
 from localization import Localizable
@@ -23,6 +23,9 @@ class Room(Localizable):
         
         # Room type tracking
         self.room_type = None
+        
+        # Action queue for room actions
+        self.action_queue = ActionQueue()
     
     def init(self):
         """

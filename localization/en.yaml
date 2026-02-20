@@ -7,7 +7,10 @@ ui:
   choose_enemy: "Choose an enemy:"
   select_prompt: "Choose (1-{count}): "
   select_move: "Select your next move"
-  floor_position: "Floor {floor}, Position {position}"
+  floor_position: "Act {act} - Floor {floor}, Position {position}"
+  act_complete: "Act {act} Complete!"
+  entering_act: "Entering Act {act}"
+  entering_act4: "With all three keys, you unlock the path to the Heart..."
   map_move_option: "{floor_pos} - {room_type}"
   invalid_option: "Invalid option!"
   invalid_number: "Please enter a valid number"
@@ -65,6 +68,13 @@ blessing:
 events:
   neo:
     welcome: "Before you stands a dark shrine to Neow, the enigmatic spirit of the Spire."
+  upgrade_shrine:
+    title: "Upgrade Shrine"
+    description: "You discover a mysterious shrine that can upgrade one of your cards."
+    pray: "Upgrade a card (costs {gold_cost} Gold)"
+    leave: "Leave"
+    no_gold: "Not enough gold (need {gold_cost})"
+    upgraded: "Your {card_name} has been upgraded!"
 
 combat:
   title: "Combat"
@@ -243,8 +253,16 @@ cards:
   colorless:
     Slimed:
       name: "Slimed"
-      description: "Unplayable. Exhaust this card."
+      description: "Exhaust."
       rarity: "special"
+    Dazed:
+      name: "Dazed"
+      description: "Unplayable. Draws a replacement card when drawn."
+      rarity: "common"
+    Wound:
+      name: "Wound"
+      description: "Unplayable."
+      rarity: "common"
 
 powers:
   StrengthPower:
@@ -839,7 +857,7 @@ enemies:
         description: "Deal {damage} damage."
       rake:
         name: "Rake"
-        description: "Deal {damage} damage. Apply 1 Vulnerable and 1 Weak to you."
+        description: "Deal {damage} damage. Apply 1 Weak to you."
   
   RedSlaver:
     name: "Red Slaver"
@@ -990,6 +1008,47 @@ enemies:
         description: "Add 2 Dazed to your discard pile."
       beam:
         name: "Beam"
+        description: "Deal {damage} damage."
+  
+  FatGremlin:
+    name: "Fat Gremlin"
+    intentions:
+      fat_gremlin_smash:
+        name: "Smash"
+        description: "Deal {damage} damage. Apply 1 Weak to you."
+  
+  SneakyGremlin:
+    name: "Sneaky Gremlin"
+    intentions:
+      sneaky_gremlin_stab:
+        name: "Stab"
+        description: "Deal {damage} damage."
+  
+  MadGremlin:
+    name: "Mad Gremlin"
+    intentions:
+      mad_gremlin_scratch:
+        name: "Scratch"
+        description: "Deal {damage} damage."
+  
+  ShieldGremlin:
+    name: "Shield Gremlin"
+    intentions:
+      shield_gremlin_protect:
+        name: "Protect"
+        description: "Gain {block} Block."
+      shield_gremlin_bash:
+        name: "Bash"
+        description: "Deal {damage} damage."
+  
+  GremlinWizard:
+    name: "Gremlin Wizard"
+    intentions:
+      gremlin_wizard_charge:
+        name: "Charge"
+        description: "Charging up..."
+      gremlin_wizard_ultimate_blast:
+        name: "Ultimate Blast"
         description: "Deal {damage} damage."
 
 

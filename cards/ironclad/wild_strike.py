@@ -29,7 +29,7 @@ class WildStrike(Card):
         actions = super().on_play(target)
 
         # Add Wound status card to draw pile
-        from cards.colorsless.definitions import Wound
-        actions.append(AddCardAction(card=Wound(), dest_pile="draw"))
+        from cards.colorless.wound import Wound
+        actions.append(AddCardAction(card=Wound(), dest_pile="draw_pile"))
 
         return actions

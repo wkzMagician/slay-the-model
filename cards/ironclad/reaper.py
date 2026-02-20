@@ -4,7 +4,7 @@ Ironclad Rare Attack card - Reaper
 
 from typing import List
 from actions.base import Action
-from actions.combat import AttackAction, HealAction
+from actions.combat import AttackAction, HealAction, DealDamageAction
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
@@ -24,6 +24,21 @@ class Reaper(Card):
 
     upgrade_damage = 5
 
+    def on_play(self, target=None) -> List[Action]:
+        """Deal damage to ALL enemies"""
+        from engine.game_state import game_state
+
+        actions = []
+        for enemy in game_state.current_combat.enemies:
+            if enemy.hp > 0:
+                actions.append(DealDamageAction(
+                    target=enemy,
+                    damage=self.damage,
+                    damage_type="attack",
+                    card=self,
+                ))
+        return actions
+
     def on_damage_dealt(self, damage: int, target: Creature, card: Card, damage_type: str) -> List[Action]:
         """Vampirism: heal player for damage dealt"""
         from engine.game_state import game_state
@@ -34,7 +49,6 @@ class Reaper(Card):
         heal_amount = damage
         actions.append(HealAction(
             target=game_state.player,
-            amount=heal_amount,
-            source=self
+            amount=heal_amount
         ))
         return actions

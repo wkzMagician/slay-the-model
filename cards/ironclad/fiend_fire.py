@@ -41,7 +41,7 @@ class FiendFire(Card):
             actions.append(ExhaustCardAction(card=hand[i], source_pile="hand"))
 
         # Deal damage for each card exhausted
-        damage = self.damage
+        damage = self._magic.get("exhaust_damage", 7)
         for _ in range(cards_to_exhaust):
             if target and target.hp > 0:
                 actions.append(AttackAction(damage=damage, target=target, source=player))

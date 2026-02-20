@@ -126,7 +126,7 @@ class DefensiveModeIntention(Intention):
                 power="SharpHide",
                 target=self.enemy,
                 amount=self._sharp_hide_stacks,
-                duration=0
+                duration=-1
             )
         ]
 

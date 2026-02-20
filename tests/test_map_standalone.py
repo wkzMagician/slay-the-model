@@ -17,6 +17,16 @@ class SimpleRoom:
     pass
 
 
+import pytest
+
+@pytest.fixture
+def manager():
+    """Create a MapManager instance for testing."""
+    m = MapManager(seed=12345, act_id=1)
+    m.generate_map()
+    return m
+
+
 def test_map_generation():
     """Test basic map generation."""
     print("=" * 60)

@@ -299,6 +299,98 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
         
         return items
     
+    def _generate_colored_cards(self):
+        """Generate 5 colored cards for the shop (2 attacks, 2 skills, 1 power)."""
+        cards = []
+        character = game_state.player.character if game_state.player else "Ironclad"
+        namespace = game_state.player.namespace if game_state.player else "ironclad"
+        
+        # Generate 2 attacks
+        for _ in range(2):
+            card = get_random_card(
+                rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+                card_types=[CardType.ATTACK],
+                namespaces=[namespace]
+            )
+            if card:
+                cards.append(card)
+        
+        # Generate 2 skills
+        for _ in range(2):
+            card = get_random_card(
+                rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+                card_types=[CardType.SKILL],
+                namespaces=[namespace]
+            )
+            if card:
+                cards.append(card)
+        
+        # Generate 1 power
+        card = get_random_card(
+            rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+            card_types=[CardType.POWER],
+            namespaces=[namespace]
+        )
+        if card:
+            cards.append(card)
+        
+        return cards
+    
+    def _generate_colorless_cards(self):
+        """Generate 2 colorless cards for the shop (1 uncommon, 1 rare)."""
+        cards = []
+        
+        # Generate 1 uncommon colorless card
+        card = get_random_card(
+            rarities=[RarityType.UNCOMMON],
+            card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
+            namespaces=["colorless"]
+        )
+        if card:
+            cards.append(card)
+        
+        # Generate 1 rare colorless card
+        card = get_random_card(
+            rarities=[RarityType.RARE],
+            card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
+            namespaces=["colorless"]
+        )
+        if card:
+            cards.append(card)
+        
+        return cards
+    
+    def _generate_potions(self):
+        """Generate 3 potions for the shop."""
+        from utils.card_loader import get_random_potion
+        
+        potions = []
+        for _ in range(3):
+            potion = get_random_potion()
+            if potion:
+                potions.append(potion)
+        
+        return potions
+    
+    def _generate_relics(self):
+        """Generate relics for the shop (1 uncommon, 1 rare)."""
+        from utils.types import RarityType
+        from relics.relics import get_random_relic_by_rarity
+        
+        relics = []
+        
+        # Generate 1 uncommon relic
+        uncommon_relics = get_random_relic_by_rarity(RarityType.UNCOMMON, count=1)
+        for relic_class in uncommon_relics:
+            relics.append(relic_class())
+        
+        # Generate 1 rare relic
+        rare_relics = get_random_relic_by_rarity(RarityType.RARE, count=1)
+        for relic_class in rare_relics:
+            relics.append(relic_class())
+        
+        return relics
+    
     def _build_shop_menu(self):
         """Build shop selection menu and return SelectAction"""
         options = []

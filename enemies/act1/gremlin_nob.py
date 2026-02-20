@@ -56,8 +56,9 @@ class GremlinNob(Enemy):
         return self.intentions["skull_bash"] if random.random() < 0.33 else self.intentions["bull_rush"]
     
     def execute_turn(self):
-        intention = self.determine_next_intention()
-        self.turn_count += 1
+        """Execute the current intention. Intention was already determined by on_player_turn_start."""
+        # Use the intention that was already set by on_player_turn_start
+        intention = self.current_intention
         
         # Track actions for pattern
         if intention == self.intentions["bull_rush"]:
@@ -66,6 +67,9 @@ class GremlinNob(Enemy):
         else:
             self.bull_rush_count = 0
             self.last_action = "skull"
+        
+        # Increment turn count after executing (for next turn's intention)
+        self.turn_count += 1
         
         if intention:
             return intention.execute()

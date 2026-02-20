@@ -5,19 +5,20 @@ Tests that power tick_down is triggered at turn end.
 import sys
 sys.path.insert(0, 'D:/game/slay-the-model')
 
+from powers.base import Power
+
 class MockCard:
     def __init__(self):
         self._cost = 1
+        from utils.types import CardType
         self.card_type = CardType.ATTACK
 
-class TestPower:
+class TestPower(Power):
     def __init__(self, duration=2):
-        self._duration = 2
+        super().__init__(duration=duration)
 
 def test_power_on_turn_end_calls_tick_down():
     """Test that on_turn_end calls tick_down."""
-    from powers.base import Power
-
     power = TestPower(duration=2)
     owner = None
 
@@ -31,18 +32,20 @@ def test_power_on_turn_end_calls_tick_down():
     return True
 
 def test_power_tick_decreases_duration():
-    """Test that tick_down decreases duration."""
-    from powers.base import Power
-
+    """Test that tick method decreases duration."""
     power = TestPower(duration=2)
-    owner = None
 
-    # Call tick_down directly
+    # First tick: duration becomes 1, returns False (still > 0)
     should_remove = power.tick()
+    assert should_remove is False, f"tick should return False (duration still > 0)"
+    assert power._duration == 1, f"Duration should be 1 after first tick"
 
-    assert should_remove is True, f"tick_down should return True (duration reached 0)"
-    assert power._duration == 0, f"Duration should be 0 after tick_down"
-    print("Test 2 PASSED: tick_down decreases duration")
+    # Second tick: duration becomes 0, returns True (<= 0)
+    should_remove = power.tick()
+    assert should_remove is True, f"tick should return True (duration reached 0)"
+    assert power._duration == 0, f"Duration should be 0 after second tick"
+
+    print("Test 2 PASSED: tick decreases duration")
 
     return True
 

@@ -29,6 +29,6 @@ class FireBreathing(Card):
 
         # Apply FireBreathingPower
         damage_on_status = self.get_magic_value("damage_on_status")
-        actions.append(ApplyPowerAction(power="FireBreathingPower", target=game_state.player, amount=damage_on_status, duration=0))
+        actions.append(ApplyPowerAction(power="FireBreathing", target=game_state.player, amount=damage_on_status, duration=-1))
 
         return actions

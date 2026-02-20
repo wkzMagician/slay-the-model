@@ -25,7 +25,7 @@ class DarkEmbracePower(Power):
             amount: card to draw
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_exhaust(self) -> List[Action]:
         """Draw 1 card when any card is exhausted."""

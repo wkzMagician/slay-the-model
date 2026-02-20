@@ -132,3 +132,59 @@ class RestRoom(Room):
             options=options
         ))
         # LeaveRoomAction is now part of each option's actions
+
+    def _create_options(self):
+        """Create and return rest options (for testing)."""
+        options = []
+
+        # Rest option - heal 30% of max HP
+        heal_amount = game_state.player.max_hp // 10 * 3
+        options.append(Option(
+            name=self.local("RestRoom.rest"),
+            actions=[HealAction(amount=heal_amount), LeaveRoomAction(room=self)]
+        ))
+
+        can_smith = not self._has_relic("FusionHammer")
+        if can_smith:
+            can_smith = False
+            deck = game_state.player.card_manager.get_pile('deck')
+            for card in deck:
+                if card.can_upgrade():
+                    can_smith = True
+                    break
+        if can_smith:
+            options.append(Option(
+                name=self.local("RestRoom.smith"),
+                actions=[ChooseUpgradeCardAction(pile="deck"), LeaveRoomAction(room=self)]
+            ))
+
+        # Special relic options (Girya, Peace Pipe, Shovel)
+        if self._has_relic("Girya"):
+            options.append(Option(
+                name=self.local("RestRoom.lift"),
+                actions=[TriggerRelicAction(relic_name="Lift"), LeaveRoomAction(room=self)],
+            ))
+
+        if self._has_relic("PeacePipe"):
+            options.append(Option(
+                name=self.local("RestRoom.toke"),
+                actions=[ChooseRemoveCardAction(pile="deck"), LeaveRoomAction(room=self)]
+            ))
+
+        if self._has_relic("Shovel"):
+            options.append(Option(
+                name=self.local("RestRoom.dig"),
+                actions=[AddRandomRelicAction(rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]), LeaveRoomAction(room=self)]
+            ))
+
+        # Skip option
+        options.append(Option(
+            name=self.local("RestRoom.skip"),
+            actions=[LeaveRoomAction(room=self)]
+        ))
+
+        return options
+
+    def _has_relic(self, relic_name: str) -> bool:
+        """Check if player has a specific relic."""
+        return _has_relic(relic_name)

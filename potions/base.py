@@ -34,4 +34,8 @@ class Potion(Localizable):
         PotionName
         Description text
         """
-        return self.local("name") + "\n" + self.local("description")
+        result = self.local("name") + f"\nRarity: {self.rarity.name.title()}"
+        if hasattr(self, 'category') and self.category:
+            result += f"\nCategory: {self.category}"
+        result += "\n" + self.local("description")
+        return result

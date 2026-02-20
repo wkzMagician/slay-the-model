@@ -29,10 +29,7 @@ class BattleTrance(Card):
 
         actions = super().on_play(target)
 
-        # Draw cards
-        actions.append(DrawCardsAction(count=self.draw))
-
-        # Apply "Cannot Draw" power for this turn
+        # Apply "Cannot Draw" power for this turn (draw already handled by base class)
         from powers.definitions.battle_trance_draw_power import BattleTranceDrawPower
         actions.append(ApplyPowerAction(power="BattleTranceDrawPower", target=game_state.player, amount=1, duration=1))
 

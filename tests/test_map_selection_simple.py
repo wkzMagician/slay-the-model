@@ -22,7 +22,7 @@ def test_map_visualization():
     map_data = map_manager.generate_map()
     
     # Set a starting position
-    map_data.set_current_position(0, 1)  # Floor 0, Position 1
+    map_data.set_current_position(0, 0)  # Floor 0, Position 1
     
     # Display the map
     map_manager.display_map_for_human()
@@ -112,7 +112,7 @@ def test_ai_decision_engine():
     # Create a map manager
     map_manager = MapManager(seed=99999, act_id=1)
     map_data = map_manager.generate_map()
-    map_data.set_current_position(0, 1)
+    map_data.set_current_position(0, 0)
     
     # Get AI context
     context = map_manager.get_map_for_ai()

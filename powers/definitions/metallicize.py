@@ -25,7 +25,7 @@ class MetallicizePower(Power):
             amount: Block to gain each turn (default 3)
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_turn_end(self) -> List[Action]:
         """Gain block at end of turn."""

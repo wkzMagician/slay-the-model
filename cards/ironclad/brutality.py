@@ -27,6 +27,6 @@ class Brutality(Card):
         actions = super().on_play(target)
 
         # Apply BrutalityPower
-        actions.append(ApplyPowerAction(power="BrutalityPower", target=game_state.player, amount=0, duration=0))
+        actions.append(ApplyPowerAction(power="BrutalityPower", target=game_state.player, amount=0, duration=-1))
 
         return actions

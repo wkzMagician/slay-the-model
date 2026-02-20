@@ -20,12 +20,12 @@ class Player(Creature):
     orb_slots = 1
     base_potion_limit = 3
 
-    def __init__(self):
+    def __init__(self, max_hp=None, max_energy=None):
         from cards.namespaces import get_namespace_for_character
         self.namespace = get_namespace_for_character(self.character)
 
         # Initialize Creature base class
-        super().__init__(max_hp=self.__class__.base_max_hp)
+        super().__init__(max_hp=max_hp if max_hp else self.__class__.base_max_hp)
 
         # Initialize managers
         self.card_manager = CardManager(self.__class__.starting_deck)
@@ -38,8 +38,8 @@ class Player(Creature):
         self.relics = Collection()
 
         # Combat-related properties
-        self.max_energy = self.__class__.base_energy
-        self._energy = self.__class__.base_energy
+        self.max_energy = max_energy if max_energy is not None else self.__class__.base_energy
+        self._energy = max_energy if max_energy is not None else self.__class__.base_energy
 
         # Draw count (base, can be modified by relics/powers)
         self.base_draw_count = 5
@@ -85,3 +85,13 @@ class Player(Creature):
         """Gain or lose energy. Positive amount gains energy, negative loses it."""
         self.energy += amount
         return self.energy
+
+    @property
+    def deck(self) -> List:
+        """Get the player's deck (all cards owned by player)."""
+        return self.card_manager.piles['deck']
+
+    @deck.setter
+    def deck(self, value: List) -> None:
+        """Set the player's deck."""
+        self.card_manager.piles['deck'] = list(value)

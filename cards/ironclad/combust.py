@@ -29,6 +29,6 @@ class Combust(Card):
 
         # Apply CombustPower
         combust_damage = self.get_magic_value("combust_damage")
-        actions.append(ApplyPowerAction(power="CombustPower", target=game_state.player, amount=combust_damage, duration=0))
+        actions.append(ApplyPowerAction(power="CombustPower", target=game_state.player, amount=combust_damage, duration=-1))
 
         return actions

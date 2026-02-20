@@ -40,17 +40,26 @@ class AddRandomRelicAction(Action):
     """Add a random relic to player
     
     Required:
-        rarities (List[RarityType]): Relic rarity
+        rarities (List[RarityType]): Relic rarity (optional, defaults to all rarities)
         
     Optional:
-        None
+        rarity (RarityType): Single rarity (will be converted to list)
+        pool (str): Pool name for special relic pools (e.g., 'face')
     """
-    def __init__(self, rarities: List[RarityType]):
-        self.rarities = rarities
+    def __init__(self, rarities: List[RarityType] = None, rarity: RarityType = None, pool: str = None):
+        if rarities is not None:
+            self.rarities = rarities if isinstance(rarities, list) else [rarities]
+        elif rarity is not None:
+            self.rarities = [rarity]
+        else:
+            # Default to all rarities
+            from relics.base import RarityType as RT
+            self.rarities = [RT.COMMON, RT.UNCOMMON, RT.RARE]
+        self.pool = pool
     
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
-        if self.rarities and game_state.player:
+        if game_state.player:
             relic = get_random_relic(rarities=self.rarities)
             if relic:
                 game_state.player.relics.append(relic)
@@ -77,8 +86,49 @@ class LoseRelicAction(Action):
         if self.relic and game_state.player:
             game_state.player.relics.remove(self.relic)
         return NoneResult()
-            
+
 @register("action")
+class ChooseBossRelicAction(Action):
+    """Let player choose from a selection of boss relics
+    
+    Required:
+        None
+        
+    Optional:
+        amount (int): Number of relics to choose from. Default is 3.
+    """
+    def __init__(self, amount: int = 3):
+        self.amount = amount
+    
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        from relics.base import RarityType
+        from actions.display import SelectAction
+        
+        # Generate boss relics (rare tier)
+        relics = []
+        for _ in range(self.amount):
+            relic = get_random_relic(rarities=[RarityType.RARE])
+            if relic:
+                relics.append(relic)
+        
+        if not relics:
+            return NoneResult()
+        
+        # Create selection action
+        options = []
+        for relic in relics:
+            options.append({
+                'name': relic.idstr,
+                'actions': [AddRelicAction(relic=relic)]
+            })
+        
+        return SingleActionResult(SelectAction(
+            prompt="Choose a boss relic:",
+            options=options
+        ))
+
+@register("action")            
 class AddGoldAction(Action):
     """Add gold to player
     
@@ -86,16 +136,21 @@ class AddGoldAction(Action):
         amount (int): Amount of gold to add
         
     Optional:
-        None
+        chance (float): Probability of adding gold (0.0-1.0). Default is 1.0 (always)
     """
-    def __init__(self, amount: int):
+    def __init__(self, amount: int, chance: float = 1.0):
         self.amount = amount
+        self.chance = chance
     
     def execute(self) -> 'BaseResult':
+        import random
         from engine.game_state import game_state
         if game_state.player:
-            game_state.player.gold += self.amount
-            print(t("rewards.gold", default="Gained {amount} gold", amount=self.amount))
+            if random.random() < self.chance:
+                game_state.player.gold += self.amount
+                print(t("rewards.gold", default="Gained {amount} gold", amount=self.amount))
+            else:
+                print(t("rewards.gold_fail", default="Failed to gain gold", chance=self.chance))
         return NoneResult()
             
 @register("action")
@@ -143,7 +198,7 @@ class AddRandomPotionAction(Action):
                     for index, existing in enumerate(game_state.player.potions):
                         options.append(
                             Option(
-                                name=LocalStr("ui.replace_potion_option", name=existing.name),
+                                name=LocalStr("ui.replace_potion_option", name=existing.local("name")),
                                 actions=[ReplacePotionAction(index=index, new_potion=potion)],
                             )
                         )

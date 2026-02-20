@@ -35,7 +35,7 @@ class SadisticNature(Card):
             power="SadisticNaturePower",
             target=game_state.player,
             amount=damage_amount,
-            duration=0  # Permanent for this combat
+            duration=-1  # Permanent for this combat
         ))
 
         return actions

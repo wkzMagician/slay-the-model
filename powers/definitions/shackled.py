@@ -24,7 +24,7 @@ class ShackledPower(Power):
         Args:
             amount: Strength to gain (default 1)
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_turn_end(self) -> List[Action]:
         """Gain Strength at end of turn."""

@@ -25,7 +25,7 @@ class RupturePower(Power):
             amount: Strength to gain when HP is lost (default 1)
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_damage_taken(self, damage: int, source: Any = None, card: Any = None,
                        player: Any = None, damage_type: str = "direct") -> List[Action]:

@@ -8,6 +8,28 @@ from localization import Localizable
 from utils.types import TargetType
 
 
+class PowerType:
+    """Power type constants for use in ApplyPowerAction."""
+    STRENGTH = "Strength"
+    DEXTERITY = "Dexterity"
+    WEAK = "Weak"
+    VULNERABLE = "Vulnerable"
+    FRAIL = "Frail"
+    POISON = "Poison"
+    REGENERATE = "Regenerate"
+    INTANGIBLE = "Intangible"
+    BARRICADE = "Barricade"
+    BUFFER = "Buffer"
+    ANGER = "Anger"
+    RITUAL = "Ritual"
+    THORNS = "Thorns"
+    CONSTRICTED = "Constricted"
+    FLYING = "Flying"
+    HEX = "Hex"
+    PLATED_ARMOR = "Plated Armor"
+    CONFUSED = "Confused"
+
+
 class Power(Localizable):
     """Base power class for temporary and permanent combat effects."""
     
@@ -20,7 +42,7 @@ class Power(Localizable):
     amount_equals_duration: bool = False  # Should amount be set to duration on apply?
     is_buff: bool = True  # True for beneficial effects, False for harmful effects
     
-    def __init__(self, amount: int = 0, duration: int = 0, owner=None):
+    def __init__(self, amount: int = 0, duration: int = -1, owner=None):
         """Initialize power with amount and duration.
         
         Args:
@@ -58,12 +80,19 @@ class Power(Localizable):
     
     @duration.setter
     def duration(self, value: int):
-        self._duration = max(0, int(value))
+        # Allow -1 for permanent powers, clamp other negative values to 0
+        if value == -1:
+            self._duration = -1  # Permanent power (infinite duration)
+        else:
+            self._duration = max(0, int(value))
         if self.amount_equals_duration:
             self._amount = self._duration
             
     def tick(self) -> bool:
         """Decrease duration by 1. Returns True if power should be removed."""
+        # Permanent powers (duration=-1) should never be decremented or removed
+        if self.duration == -1:
+            return False
         if self.duration is not None and self.duration != 0:
             # Check if it's a special duration like "turn_start"/"turn_end"
             if not isinstance(self.duration, int):
@@ -153,17 +182,6 @@ class Power(Localizable):
         """
         return []
     
-    def should_remove(self) -> bool:
-        """Return True if this power should be removed.
-        
-        Override this method in subclasses for powers that need to be
-        removed based on custom conditions (e.g., after triggering once).
-        
-        Returns:
-            False by default (power stays until duration expires)
-        """
-        return False
-        
     def info(self):
         """
         获取力量的完整信息显示
@@ -177,6 +195,6 @@ class Power(Localizable):
         """
         power_type = "Buff" if self.is_buff else "Debuff"
         if self.duration != 0:
-            return self.local("name") + f" (Duration: {self.duration}, Type: {power_type})\n" + self.local("description")
+            return self.local("name") + f" (Duration: {self.duration}, Type: {power_type}, Amount: {self.amount})\n" + self.local("description")
         else:
-            return self.local("name") + f" (Type: {power_type})\n" + self.local("description")
+            return self.local("name") + f" (Duration: Permanent, Type: {power_type}, Amount: {self.amount})\n" + self.local("description")

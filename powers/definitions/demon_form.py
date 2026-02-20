@@ -24,7 +24,7 @@ class DemonFormPower(Power):
             amount: Strength to gain each turn
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_turn_start(self) -> List[Action]:
         """Gain Strength at end of turn."""

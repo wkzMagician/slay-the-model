@@ -32,7 +32,8 @@ class DarkOrb(Orb):
         from actions.combat import DealDamageAction
 
         target = resolve_target(self.target_type)
-        assert target is not None
+        if target is None:
+            return []  # No target available
         return [DealDamageAction(
             damage=resolve_orb_damage(self.charge, target),
             target=target,

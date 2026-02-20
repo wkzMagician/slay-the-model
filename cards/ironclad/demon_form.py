@@ -30,6 +30,6 @@ class DemonForm(Card):
 
         # Apply DemonFormPower
         strength_per_turn = self.get_magic_value("strength_per_turn")
-        actions.append(ApplyPowerAction(power="DemonFormPower", target=game_state.player, amount=strength_per_turn, duration=0))
+        actions.append(ApplyPowerAction(power="DemonFormPower", target=game_state.player, amount=strength_per_turn, duration=-1))
 
         return actions

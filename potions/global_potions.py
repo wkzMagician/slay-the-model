@@ -547,7 +547,7 @@ class CultistPotion(Potion):
 
     def on_use(self, target) -> List[Action]:
         from engine.game_state import game_state
-        return [ApplyPowerAction(power="Ritual", target=game_state.player, amount=self.amount, duration=0)]
+        return [ApplyPowerAction(power="Ritual", target=game_state.player, amount=self.amount, duration=-1)]
 
 @register("potion")
 class EntropicBrew(Potion):

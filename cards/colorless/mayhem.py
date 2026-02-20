@@ -33,7 +33,7 @@ class Mayhem(Card):
             power="MayhemPower",
             target=game_state.player,
             amount=1,
-            duration=0  # Permanent for this combat
+            duration=-1  # Permanent for this combat
         ))
 
         return actions

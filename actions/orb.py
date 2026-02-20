@@ -55,12 +55,12 @@ class OrbEvokeAction(Action):
         # Get actions from orb's evoke
         actions = self.orb.on_evoke()
 
-        if actions:
-            if isinstance(actions, list):
-                return MultipleActionsResult(actions)
-            return MultipleActionsResult([actions])
-
-        return NoneResult()
+        if actions is None:
+            return NoneResult()
+        
+        if isinstance(actions, list):
+            return MultipleActionsResult(actions)
+        return MultipleActionsResult([actions])
 
 
 @register("action")

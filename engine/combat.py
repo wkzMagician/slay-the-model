@@ -157,8 +157,6 @@ class Combat(Localizable):
             status_parts.append(f"{t('ui.enemy_block', default='Block')}: {enemy.block}")
 
         actions.append(DisplayTextAction(text_key="combat.display"))
-
-        # 2. Build SelectAction for cards in hand
         
         # 2. Build SelectAction for cards in hand
         hand = game_state.player.card_manager.get_pile("hand")
@@ -174,12 +172,14 @@ class Combat(Localizable):
                     actions=[PlayCardAction(card=card, is_auto=True)]
                 ))
         
-        # 3. Build SelectAction for potions (if implemented)
+        # 3. Build SelectAction for potions
+        from actions.combat import UsePotionAction
         for potion in game_state.player.potions:
-            options.append(Option(
-                name=LocalStr(potion.info()),
-                actions=potion.on_use(target=game_state.player)
-            ))
+            if potion.can_be_used_actively:
+                options.append(Option(
+                    name=LocalStr(potion.info()),
+                    actions=[UsePotionAction(potion=potion, target=game_state.player)]
+                ))
             
         # 4. Add option to end turn
         options.append(Option(
@@ -269,9 +269,25 @@ class Combat(Localizable):
          # Trigger end-of-turn effects
         # relics - powers - cards in hand
         for relic in game_state.player.relics:
-            game_state.action_queue.add_actions(relic.on_player_turn_end())
+            game_state.action_queue.add_actions(relic.on_player_turn_end(
+                player=game_state.player,
+                entities=self.enemies
+            ))
+        # Process player powers: call on_turn_end and remove expired ones
+        print(f"[DEBUG] End of player turn - current powers: {[p.name for p in game_state.player.powers]}")
+        powers_to_remove = []
         for power in game_state.player.powers:
             game_state.action_queue.add_actions(power.on_turn_end())
+            print(f"[DEBUG] Power {power.name}: duration={power.duration}")
+            # Check if power should be removed (duration reached 0)
+            if power.duration == 0:
+                powers_to_remove.append(power.name)
+                print(f"[DEBUG] Marking power {power.name} for removal")
+        
+        # Remove expired powers
+        for power_name in powers_to_remove:
+            game_state.player.remove_power(power_name)
+        print(f"[DEBUG] After power removal - current powers: {[p.name for p in game_state.player.powers]}")
         
         hand = game_state.player.card_manager.get_pile("hand")
         for card in hand:
@@ -310,6 +326,11 @@ class Combat(Localizable):
         # For each alive enemy, execute actions
         for enemy in self.enemies:
             if not enemy.is_dead():
+                # Clear block at start of enemy turn (unless Barricade)
+                has_barricade = any(p.name == "Barricade" for p in enemy.powers)
+                if not has_barricade:
+                    enemy.block = 0
+                
                 # Print enemy intention before executing
                 enemy_name_raw = enemy.local("name").resolve() if hasattr(enemy, 'local') else 'Enemy'
                 # Extract readable name from localization key (e.g., "Cultist" from "enemies.Cultist.name")
@@ -327,7 +348,27 @@ class Combat(Localizable):
                     print(f">> Enemy [{enemy_name}] intends to: {intent_desc}")
                 game_state.action_queue.add_actions(enemy.execute_intention())
 
+        # Process enemy turn-end effects (tick down power durations)
+        self._end_enemy_phase()
+
         return game_state.execute_all_actions()
+    
+    def _end_enemy_phase(self):
+        """Process end of enemy turn - tick down enemy power durations."""
+        from engine.game_state import game_state
+        
+        # Process each alive enemy's powers
+        for enemy in self.enemies:
+            if enemy.is_dead():
+                continue
+                
+            # Call on_turn_end for each power and collect actions
+            for power in enemy.powers[:]:  # Use slice copy to allow modification
+                game_state.action_queue.add_actions(power.on_turn_end())
+                
+                # Remove power if duration reached 0
+                if power.duration == 0:
+                    enemy.remove_power(power.name)
     
     def _remove_dead_enemies(self):
         """Remove dead enemies from the list"""
@@ -376,6 +417,9 @@ class Combat(Localizable):
         self.combat_ended = False
         self.player_turn_ended = False
         
+        # Clear player powers at start of each combat (powers don't persist between combats)
+        game_state.player.powers = []
+        
         # Trigger combat start effects (relics)
         for relic in game_state.player.relics:
             game_state.action_queue.add_actions(relic.on_combat_start(
@@ -387,17 +431,13 @@ class Combat(Localizable):
         for enemy in self.enemies:
             enemy.on_combat_start(floor=game_state.current_floor)
         
-        # Clear player powers at start of each combat (powers don't persist between combats)
-        game_state.player.powers = []
-        
         # God mode: apply 999 BufferPower if enabled
-        if game_state.config.get("debug.god_mode", False):
+        god_mode_enabled = game_state.config.get("debug.god_mode", False)
+        print(f"[DEBUG] god_mode enabled: {god_mode_enabled}")
+        if god_mode_enabled:
             from powers.definitions.buffer import BufferPower
             game_state.player.add_power(BufferPower(amount=999, owner=game_state.player))
-        
-        # Reset combat flags
-        self.combat_ended = False
-        self.player_turn_ended = False
+            print(f"[DEBUG] Added BufferPower with 999 stacks to player")
         
         # todo: prepare innate cards to top of draw_pile
 
@@ -408,6 +448,12 @@ class Combat(Localizable):
         
         # Print player turn header
         print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
+        
+        # Clear block at start of turn (unless Barricade/Calipers)
+        has_barricade = any(p.name == "Barricade" for p in game_state.player.powers)
+        has_calipers = any(r.idstr == "Calipers" for r in game_state.player.relics)
+        if not has_barricade and not has_calipers:
+            game_state.player.block = 0
 
         # Draw cards
         draw_count = game_state.player.draw_count  # todo: modified by relics/powers
@@ -425,7 +471,7 @@ class Combat(Localizable):
         
         # relics - powers
         for relic in game_state.player.relics:
-            game_state.action_queue.add_actions(relic.on_player_turn_start())
+            game_state.action_queue.add_actions(relic.on_player_turn_start(game_state.player, self.enemies))
         for power in game_state.player.powers:
             game_state.action_queue.add_actions(power.on_turn_start())
         # enemies

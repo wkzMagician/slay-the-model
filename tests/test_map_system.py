@@ -10,6 +10,15 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from map import MapManager, MapNode, MapData
 from utils.types import RoomType
 
+import pytest
+
+@pytest.fixture
+def manager():
+    """Create a MapManager instance for testing."""
+    m = MapManager(seed=12345, act_id=1)
+    m.generate_map()
+    return m
+
 
 def test_map_generation():
     """Test basic map generation."""

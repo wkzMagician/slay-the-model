@@ -35,7 +35,7 @@ class Violence(Card):
         draw_count = get_magic_value(self, "draw_attack")
 
         if game_state.player and hasattr(game_state.player, "card_manager"):
-            draw_cards = list(game_state.player.card_manager.get_pile("draw"))
+            draw_cards = list(game_state.player.card_manager.get_pile("draw_pile"))
             attack_cards = [c for c in draw_cards if c.card_type == CardType.ATTACK]
 
             # Get up to draw_count random attacks
@@ -45,7 +45,7 @@ class Violence(Card):
             for card in selected:
                 actions.append(MoveCardAction(
                     card=card,
-                    src_pile="draw",
+                    src_pile="draw_pile",
                     dst_pile="hand"
                 ))
 

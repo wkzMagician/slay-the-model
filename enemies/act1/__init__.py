@@ -12,6 +12,13 @@ from .the_hexaghost import TheHexaghost
 from .lagavulin import Lagavulin
 from .gremlin_nob import GremlinNob
 from .sentry import Sentry
+from .gremlin import (
+    FatGremlin,
+    SneakyGremlin,
+    MadGremlin,
+    ShieldGremlin,
+    GremlinWizard,
+)
 
 __all__ = [
     # Common enemies
@@ -23,6 +30,11 @@ __all__ = [
     'GreenLouse',
     'BlueSlaver',
     'RedSlaver',
+    'FatGremlin',
+    'SneakyGremlin',
+    'MadGremlin',
+    'ShieldGremlin',
+    'GremlinWizard',
     # Elite enemies
     'FungiBeast',
     'Lagavulin',

@@ -25,7 +25,7 @@ class HornCleat(Relic):
         from engine.game_state import game_state
         if game_state.current_combat is not None:
             if game_state.current_combat.combat_state.combat_turn == 2:
-                return [GainBlockAction(block=14)]
+                return [GainBlockAction(block=14, target=player)]
         return []
 
 # New Uncommon relics
@@ -308,7 +308,7 @@ class OrnamentalFan(Relic):
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn >= 3:
-                return [GainBlockAction(block=4)]
+                return [GainBlockAction(block=4, target=player)]
         return []
 
 @register("relic")
@@ -393,7 +393,7 @@ class SelfFormingClay(Relic):
         if self.block_gain_next_turn > 0:
             block = self.block_gain_next_turn
             self.block_gain_next_turn = 0
-            return [GainBlockAction(block=block)]
+            return [GainBlockAction(block=block, target=player)]
         return []
 
 @register("relic")

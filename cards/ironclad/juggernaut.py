@@ -30,6 +30,6 @@ class Juggernaut(Card):
 
         # Apply JuggernautPower
         damage_per_block = self.get_magic_value("damage_per_block")
-        actions.append(ApplyPowerAction(power="JuggernautPower", target=game_state.player, amount=damage_per_block, duration=0))
+        actions.append(ApplyPowerAction(power="JuggernautPower", target=game_state.player, amount=damage_per_block, duration=-1))
 
         return actions

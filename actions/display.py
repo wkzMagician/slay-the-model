@@ -389,7 +389,7 @@ class MenuAction(Action):
         """显示遗物信息。"""
         print(f"\n--- 遗物信息 ({len(gs.player.relics)} 个) ---")
         for i, relic in enumerate(gs.player.relics, 1):
-            print(f"{i}. {relic.name}")
+            print(f"{i}. {relic.local('name')}")
 
     def _save_game(self, gs):
         """保存当前游戏状态。"""

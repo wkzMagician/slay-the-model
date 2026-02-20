@@ -1,5 +1,5 @@
 """
-Ironclad Common Power card - Flex
+Ironclad Common Skill card - Flex
 """
 
 from typing import List
@@ -15,7 +15,7 @@ from utils.types import CardType, RarityType
 class Flex(Card):
     """Gain Strength, lose it at end of turn"""
 
-    card_type = CardType.POWER
+    card_type = CardType.SKILL
     rarity = RarityType.COMMON
 
     base_cost = 0

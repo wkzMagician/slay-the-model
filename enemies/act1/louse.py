@@ -52,9 +52,9 @@ class RedLouse(Enemy):
         if not self.history_intentions:
             roll = random.random()
             if roll < 0.75:
-                return self.intentions["louse_bite"]
+                return self.intentions["bite"]
             else:
-                return self.intentions["red_louse_grow"]
+                return self.intentions["grow"]
         
         # Count consecutive uses
         last = self.history_intentions[-1]
@@ -67,17 +67,17 @@ class RedLouse(Enemy):
         
         # Cannot use same move 3 times in a row
         if consecutive_count >= 2:
-            if last == "louse_bite":
-                return self.intentions["red_louse_grow"]
+            if last == "bite":
+                return self.intentions["grow"]
             else:
-                return self.intentions["louse_bite"]
+                return self.intentions["bite"]
         
         # Normal pattern: 75% Bite, 25% Grow
         roll = random.random()
         if roll < 0.75:
-            return self.intentions["louse_bite"]
+            return self.intentions["bite"]
         else:
-            return self.intentions["red_louse_grow"]
+            return self.intentions["grow"]
 
 
 class GreenLouse(Enemy):
@@ -116,9 +116,9 @@ class GreenLouse(Enemy):
         if not self.history_intentions:
             roll = random.random()
             if roll < 0.75:
-                return self.intentions["louse_bite"]
+                return self.intentions["bite"]
             else:
-                return self.intentions["green_louse_spit_web"]
+                return self.intentions["spit_web"]
         
         # Count consecutive uses
         last = self.history_intentions[-1]
@@ -131,14 +131,14 @@ class GreenLouse(Enemy):
         
         # Cannot use same move 3 times in a row
         if consecutive_count >= 2:
-            if last == "louse_bite":
-                return self.intentions["green_louse_spit_web"]
+            if last == "bite":
+                return self.intentions["spit_web"]
             else:
-                return self.intentions["louse_bite"]
+                return self.intentions["bite"]
         
         # Normal pattern: 75% Bite, 25% Spit Web
         roll = random.random()
         if roll < 0.75:
-            return self.intentions["louse_bite"]
+            return self.intentions["bite"]
         else:
-            return self.intentions["green_louse_spit_web"]
+            return self.intentions["spit_web"]

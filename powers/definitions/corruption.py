@@ -24,7 +24,7 @@ class CorruptionPower(Power):
             amount: Not used
             duration: 0 for permanent
         """
-        super().__init__(amount=0, duration=0, owner=owner)
+        super().__init__(amount=0, duration=-1, owner=owner)
 
     def on_draw_card(self, card, player, entities) -> List[Action]:
         """Modify skill costs to 0."""

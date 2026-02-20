@@ -26,7 +26,7 @@ def test_map_visualization():
     map_data = map_manager.generate_map()
     
     # Set a starting position
-    map_data.set_current_position(0, 1)  # Floor 0, Position 1
+    map_data.set_current_position(0, 0)  # Floor 0, Position 1
     
     # Display the map
     map_manager.display_map_for_human()
@@ -83,7 +83,7 @@ def test_ai_decision_engine():
     map_data = map_manager.generate_map()
     
     # Set a starting position
-    map_data.set_current_position(0, 1)  # Floor 0, Position 1
+    map_data.set_current_position(0, 0)  # Floor 0, Position 1
     
     # Get AI context
     context = get_map_context_for_ai(map_manager)
@@ -124,7 +124,7 @@ def test_human_mode_simulation():
     game_state.map_data = game_state.map_manager.generate_map()
     
     # Set a starting position
-    game_state.map_data.set_current_position(0, 1)
+    game_state.map_data.set_current_position(0, 0)
     
     # Display map
     game_state.map_manager.display_map_for_human()
@@ -167,7 +167,7 @@ def test_ai_mode_simulation():
     game_state.map_data = game_state.map_manager.generate_map()
     
     # Set a starting position
-    game_state.map_data.set_current_position(0, 1)
+    game_state.map_data.set_current_position(0, 0)
     
     print("Simulating AI selection with 'least_risk' strategy...")
     

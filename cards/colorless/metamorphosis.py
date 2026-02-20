@@ -34,7 +34,7 @@ class Metamorphosis(Card):
 
         for _ in range(card_count):
             actions.append(AddRandomCardAction(
-                pile="draw",
+                pile="draw_pile",
                 card_type=CardType.ATTACK,
                 namespace=game_state.player.namespace,
                 permanent_cost=0

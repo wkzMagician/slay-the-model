@@ -6,6 +6,7 @@ When taking damage, gains block equal to the amount.
 from powers.base import Power
 from localization import LocalStr
 from utils.registry import register
+from actions.combat import RemovePowerAction
 
 
 @register("power")
@@ -29,27 +30,25 @@ class CurlUpPower(Power):
     def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type="direct"):
         """
         Called when owner takes damage.
-        Gains block equal to amount, then marks itself for removal.
+        Gains block equal to amount, then removes.
         
         Args:
-            damage: Amount of damage taken
+            damage: Amount of damage taken itself
             source: Source of the damage (optional)
             card: Card that caused damage (optional)
             player: Player taking damage (optional)
             damage_type: Type of damage (optional)
             
         Returns:
-            Empty list (no actions to queue)
+            List of actions (RemovePowerAction to remove this power)
         """
         if not self.triggered and damage > 0:
             self.triggered = True
             if self.owner:
                 self.owner.gain_block(self.amount)
+            # Return RemovePowerAction to remove this power immediately
+            return [RemovePowerAction(power="Curl Up", target=self.owner)]
         return []
-    
-    def should_remove(self) -> bool:
-        """Return True if this power should be removed after triggering."""
-        return self.triggered
         
     def local(self, field: str, **kwargs) -> LocalStr:
         """Get localized string for this power

@@ -28,6 +28,6 @@ class RecklessCharge(Card):
 
         # Shuffle Dazed into draw pile
         from cards.colorless import Dazed
-        actions.append(AddCardAction(card=Dazed(), dest_pile="draw"))
+        actions.append(AddCardAction(card=Dazed(), dest_pile="draw_pile"))
 
         return actions

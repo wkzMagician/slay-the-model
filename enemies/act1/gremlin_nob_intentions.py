@@ -25,7 +25,7 @@ class BellowIntention(Intention):
                 power="Enrage",
                 target=self.enemy,
                 amount=2,
-                duration=0  # Permanent
+                duration=-1  # Permanent
             )
         ]
 

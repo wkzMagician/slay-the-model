@@ -27,6 +27,6 @@ class Corruption(Card):
         actions = super().on_play(target)
 
         # Apply CorruptionPower
-        actions.append(ApplyPowerAction(power="CorruptionPower", target=game_state.player, amount=0, duration=0))
+        actions.append(ApplyPowerAction(power="CorruptionPower", target=game_state.player, amount=0, duration=-1))
 
         return actions

@@ -50,7 +50,7 @@ class CaptainsWheel(Relic):
         from engine.game_state import game_state
         if game_state.current_combat is not None:
             if game_state.current_combat.combat_state.combat_turn == 3:
-                return [GainBlockAction(block=18)]
+                return [GainBlockAction(block=18, target=player)]
         return []
 
 @register("relic")
@@ -96,7 +96,7 @@ class FossilizedHelix(Relic):
     
     def on_combat_start(self, player, entities):
         """Apply Buffer power at combat start"""
-        return [ApplyPowerAction(power="Buffer", target=player, amount=1, duration=0)]
+        return [ApplyPowerAction(power="Buffer", target=player, amount=1, duration=-1)]
 
 @register("relic")
 class Ginger(Relic):
@@ -349,7 +349,7 @@ class ToughBandages(Relic):
 
     def on_card_discard(self, card, player, entities):
         """Gain Block on card discard"""
-        return [GainBlockAction(block=3)]
+        return [GainBlockAction(block=3, target=player)]
 
 @register("relic")
 class TungstenRod(Relic):

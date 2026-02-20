@@ -191,10 +191,12 @@ class SelectMapNodeAction(Action):
         room_type_key = f"ui.room_type.{node.room_type.value}"
         
         # Build a descriptive option name
-        # Format: "Floor X, Position Y - RoomType"
+        # Format: "Act X - Floor Y, Position Z - RoomType"
+        from engine.game_state import game_state
         floor_pos_text = t(
             "ui.floor_position",
-            default="Floor {floor}, Position {position}",
+            default="Act {act} - Floor {floor}, Position {position}",
+            act=game_state.current_act,
             floor=node.floor,
             position=node.position
         )

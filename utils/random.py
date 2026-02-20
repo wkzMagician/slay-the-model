@@ -251,52 +251,6 @@ def get_random_potion(characters: Optional[List[str]] = None,
     return selected_potion_cls() if selected_potion_cls else None
 
 
-def get_random_relic_with_fallback(
-    preferred_rarity: str = 'uncommon',
-    characters: Optional[List[str]] = None,
-    exclude: Optional[List[str]] = None,
-    game_state = None
-) -> Optional[Any]:
-    """
-    Get a random relic with fallback to lower rarities if preferred rarity is unavailable.
-    
-    Fallback order:
-    - boss -> rare -> uncommon -> common
-    - rare -> uncommon -> common
-    - uncommon -> common
-    - common (no fallback)
-    
-    Args:
-        preferred_rarity: The preferred rarity ('common', 'uncommon', 'rare', 'boss')
-        characters: Character filter (defaults to ['ironclad'])
-        exclude: Relics to exclude
-        game_state: Game state for exclusions
-    
-    Returns:
-        Relic instance or None if all rarities exhausted
-    """
-    rarity_fallback_map = {
-        'boss': ['boss', 'rare', 'uncommon', 'common'],
-        'rare': ['rare', 'uncommon', 'common'],
-        'uncommon': ['uncommon', 'common'],
-        'common': ['common'],
-    }
-    
-    fallback_rarities = rarity_fallback_map.get(preferred_rarity, ['uncommon', 'common'])
-    
-    for rarity in fallback_rarities:
-        relic = get_random_relic(
-            rarities=[rarity],
-            characters=characters,
-            exclude=exclude,
-            game_state=game_state
-        )
-        if relic:
-            return relic
-    
-    return None
-
-
 def get_random_events(floor: int = 0, count: int = 1, floors: Optional[str] = None) -> List[Any]:
     """
     Get random events from the event pool based on criteria.

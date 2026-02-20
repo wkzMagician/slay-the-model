@@ -91,14 +91,22 @@ class Creature(Localizable):
                 multiplier *= power.get_damage_taken_multiplier()
         return multiplier
     
-    def try_prevent_damage(self) -> bool:
+    def try_prevent_damage(self, amount: int = 0) -> bool:
         """Check if any power can prevent damage (e.g., BufferPower).
         
+        Args:
+            amount: Amount of damage to potentially prevent
+            
         Returns True if damage was prevented, False otherwise.
         """
+        print(f"[DEBUG] Creature.try_prevent_damage called: amount={amount}, powers={[p.__class__.__name__ for p in self.powers]}")
         for power in list(self.powers):
-            if hasattr(power, 'try_prevent_damage') and power.try_prevent_damage():
-                return True
+            if hasattr(power, 'try_prevent_damage'):
+                print(f"[DEBUG] Checking power {power.__class__.__name__} for damage prevention")
+                if power.try_prevent_damage(amount):
+                    print(f"[DEBUG] Power {power.__class__.__name__} prevented damage!")
+                    return True
+        print(f"[DEBUG] No power prevented damage")
         return False
 
     def heal(self, amount: int) -> int:
@@ -120,7 +128,7 @@ class Creature(Localizable):
     def on_damage_taken(self, damage: int, source=None, card=None, damage_type=None):
         """Called when creature takes damage.
         
-        Triggers power on_damage_taken hooks and removes powers that should be removed.
+        Triggers power on_damage_taken hooks.
         
         Args:
             damage: Amount of damage taken
@@ -140,26 +148,32 @@ class Creature(Localizable):
                 if result:
                     actions.extend(result)
         
-        # Remove powers that should be removed
-        self.powers = [p for p in self.powers if not (hasattr(p, 'should_remove') and p.should_remove())]
-        
         return actions
 
     def add_power(self, power) -> None:
         if not power:
             return
+        print(f"[DEBUG] add_power called: power={power.name if power else None}, current powers count={len(self.powers)}")
         for existing in self.powers:
             if existing.name == power.name and existing.stackable:
                 if getattr(power, "amount", 0):
                     existing.amount += power.amount
                 if getattr(power, "duration", 0):
                     existing.duration += power.duration
+                print(f"[DEBUG] Stacked power: {power.name}, new amount={existing.amount}")
                 return
         power.owner = self
         self.powers.append(power)
+        print(f"[DEBUG] Added new power: {power.name}, total powers count={len(self.powers)}, powers={[p.name for p in self.powers]}")
 
     def remove_power(self, power_name: str) -> None:
-        self.powers = [p for p in self.powers if p.name != power_name]
+        print(f"[DEBUG] remove_power called: power_name={power_name}, current powers={[p.name for p in self.powers]}")
+        self.powers = [p for p in self.powers if p.name != power_name and p.__class__.__name__ != power_name]
+        # Also try to match by removing the "Power" suffix
+        import re
+        base_name = re.sub(r"Power$", "", power_name)
+        self.powers = [p for p in self.powers if p.name != base_name]
+        print(f"[DEBUG] After removal: powers={[p.name for p in self.powers]}")
 
     def get_power(self, power_name: str):
         if not power_name:

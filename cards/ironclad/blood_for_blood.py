@@ -24,6 +24,6 @@ class BloodForBlood(Card):
 
     def on_damage_taken(self, damage: int, source: Creature, card: Card, damage_type: str) -> List[Action]:
         """Track HP taken to reduce card cost"""
-        # Reduce cost by 1 (minimum 0)
-        self.cost = max(0, self.base_cost - 1)
+        # Reduce cost by 1 each time damage is taken (minimum 0)
+        self._cost = max(0, self._cost - 1)
         return []  # Return empty list, just updating cost

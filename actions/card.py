@@ -46,25 +46,33 @@ class AddCardAction(Action):
         source (str): Source of card ("reward", "enemy", etc.)
         position (PilePosType): Position in pile (TOP or BOTTOM), default TOP
     """
-    def __init__(self, card, dest_pile: str, source: str = "reward", position: PilePosType = PilePosType.TOP):
+    def __init__(self, card, dest_pile: str = None, source: str = "reward", position: PilePosType = PilePosType.TOP, chance: float = 1.0):
         self.card = card
         self.dest_pile = dest_pile
         self.source = source
         self.position = position
+        self.chance = chance
 
     def execute(self) -> 'BaseResult':
+        import random
         from engine.game_state import game_state
+
+        # Check probability if chance < 1.0
+        if self.chance < 1.0 and random.random() >= self.chance:
+            # Chance check failed - don't add the card
+            return NoneResult()
 
         if self.card and game_state.player:
             if hasattr(game_state.player, "card_manager"):
-                game_state.player.card_manager.add_to_pile(self.card, self.dest_pile, pos=self.position)
+                target_pile = self.dest_pile or "deck"
+                game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
                 # Only show [Reward] for actual rewards, use appropriate prefix for others
                 if self.source == "reward":
-                    print(f"[Reward] Added {self.card.display_name.resolve()} to {self.dest_pile}")
+                    print(f"[Reward] Added {self.card.display_name.resolve()} to {target_pile}")
                 elif self.source == "enemy":
-                    print(f"[Enemy] Added {self.card.display_name.resolve()} to {self.dest_pile}")
+                    print(f"[Enemy] Added {self.card.display_name.resolve()} to {target_pile}")
                 else:
-                    print(f"[{self.source.title()}] Added {self.card.display_name.resolve()} to {self.dest_pile}")
+                    print(f"[{self.source.title()}] Added {self.card.display_name.resolve()} to {target_pile}")
         return NoneResult()
                 
 @register("action")
@@ -131,8 +139,12 @@ class ExhaustCardAction(Action):
             
             relic_actions = []
             for relic in list(game_state.player.relics):
-                if hasattr(relic, "on_exhaust"):
-                    result = relic.on_exhaust()
+                if hasattr(relic, "on_card_exhaust"):
+                    result = relic.on_card_exhaust(
+                        card=self.card,
+                        player=game_state.player,
+                        entities=game_state.current_combat.enemies if game_state.current_combat else []
+                    )
                     if result:
                         relic_actions.extend(result if isinstance(result, list) else [result])
 
@@ -178,7 +190,99 @@ class DiscardCardAction(Action):
             
             return MultipleActionsResult(card_actions + power_actions)
         return NoneResult()
-    
+
+@register("action")
+class RemoveAllStrikesAction(Action):
+    """Remove all Strike cards from player's deck.
+
+    Required:
+        None
+
+    Optional:
+        None
+    """
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        from cards.ironclad.strike import Strike
+
+        if not game_state.player:
+            return NoneResult()
+
+        removed_count = 0
+        # Check all piles
+        piles = ['draw_pile', 'hand', 'discard_pile', 'exhaust_pile']
+
+        for pile_name in piles:
+            if not hasattr(game_state.player, 'card_manager'):
+                continue
+            pile = getattr(game_state.player.card_manager, pile_name, None)
+            if not pile:
+                continue
+
+            # Find all Strike cards in this pile
+            strikes = [card for card in pile if isinstance(card, Strike)]
+            for strike in strikes:
+                game_state.player.card_manager.remove_from_pile(strike, pile_name)
+                removed_count += 1
+
+        print(f"[Event] Removed {removed_count} Strike card(s)")
+        return NoneResult()
+
+
+@register("action")
+class RemoveRandomCardAction(Action):
+    """Remove a random card of a specific type from player's deck.
+
+    Required:
+        card_type (CardType): Type of card to remove (SKILL, POWER, ATTACK)
+
+    Optional:
+        None
+    """
+    def __init__(self, card_type):
+        self.card_type = card_type
+
+    def execute(self) -> 'BaseResult':
+        import random
+        from engine.game_state import game_state
+        from utils.types import CardType
+
+        if not game_state.player or not hasattr(game_state.player, 'card_manager'):
+            return NoneResult()
+
+        # Get all cards from all piles
+        all_cards = []
+        card_manager = game_state.player.card_manager
+
+        # Map card_type string to actual CardType enum if needed
+        target_type = self.card_type
+        if isinstance(target_type, str):
+            type_map = {
+                'skill': CardType.SKILL,
+                'power': CardType.POWER,
+                'attack': CardType.ATTACK
+            }
+            target_type = type_map.get(target_type.lower())
+
+        # Check each pile for matching cards
+        piles = ['draw_pile', 'hand', 'discard_pile', 'exhaust_pile']
+        for pile_name in piles:
+            pile = getattr(card_manager, pile_name, [])
+            for card in pile:
+                if hasattr(card, 'card_type') and card.card_type == target_type:
+                    all_cards.append((card, pile_name))
+
+        if not all_cards:
+            print(f"[Event] No {self.card_type} cards found to remove")
+            return NoneResult()
+
+        # Remove a random card
+        card_to_remove, pile_name = random.choice(all_cards)
+        card_manager.remove_from_pile(card_to_remove, pile_name)
+        print(f"[Event] Removed {card_to_remove.name} ({self.card_type})")
+
+        return NoneResult()
+
 @register("action")
 class UpgradeCardAction(Action):
     """Upgrade a specific card.
@@ -236,6 +340,10 @@ class ChooseRemoveCardAction(Action):
                     ]
                 )
             )
+        if not options:
+            return NoneResult()
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_remove"),
             options = options,
@@ -282,6 +390,8 @@ class ChooseTransformCardAction(Action):
                     ]
                 )
             )
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_transform"),
             options = options,
@@ -330,6 +440,8 @@ class ChooseUpgradeCardAction(Action):
                     ]
                 )
             )
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_upgrade"),
             options = options,
@@ -378,6 +490,8 @@ class ChooseExhaustCardAction(Action):
                     ]
                 )
             )
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_exhaust"),
             options = options,
@@ -438,6 +552,8 @@ class ChooseAddRandomCardAction(Action):
                     ]
                 )
             )
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options,
@@ -596,6 +712,8 @@ class ChooseReplaceCardAction(Action):
                     ]
                 )
             )
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options,
@@ -656,6 +774,8 @@ class ChooseMoveCardAction(Action):
                 )
             )
 
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_move"),
             options = options,
@@ -704,6 +824,8 @@ class ChooseCopyCardAction(Action):
                 )
             )
 
+        if not options:
+            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_copy"),
             options = options,
@@ -845,20 +967,20 @@ class UpgradeRandomCardAction(Action):
     """Upgrade a random card from player's deck.
     
     Required:
-        card_type (CardType): Type of cards to choose from (Attack/Skill/Power)
         count (int): Number of cards to upgrade
     
     Optional:
+        card_type (str): Type of cards to choose from (Attack/Skill/Power)
         namespace (str): Card namespace (default: player's character)
     """
-    def __init__(self, card_type: Optional[str] = None, count: int = 1, 
+    def __init__(self, count: int = 1, card_type: Optional[str] = None, 
                  namespace: Optional[str] = None):
-        self.card_type = card_type
         self.count = count
+        self.card_type = card_type
         self.namespace = namespace
     
     def execute(self) -> 'BaseResult':
-        """Execute: choose random cards to upgrade"""
+        """Execute: upgrade random cards from deck"""
         from engine.game_state import game_state
         if not game_state.player:
             return NoneResult()
@@ -901,25 +1023,183 @@ class UpgradeRandomCardAction(Action):
         # If requesting more than available, reduce to available
         actual_count = min(self.count, len(cards_to_choose))
         
-        if actual_count == 1:
-            # Auto-upgrade if only 1 requested
-            return SingleActionResult(UpgradeCardAction(card=cards_to_choose[0]))
+        # Randomly select cards to upgrade
+        import random
+        cards_to_upgrade = random.sample(cards_to_choose, actual_count)
+        
+        # Create upgrade actions for all selected cards
+        actions = []
+        for card in cards_to_upgrade:
+            actions.append(UpgradeCardAction(card=card))
+        
+        if len(actions) == 1:
+            return SingleActionResult(actions[0])
         else:
-            # Import for use in option actions
-            from actions.card import UpgradeCardAction as _UpgradeCardAction
-            # Let player choose from multiple cards
-            options = []
-            for card in cards_to_choose[:actual_count]:
-                options.append(Option(
-                    name=card.display_name,
-                    actions=[UpgradeCardAction(card=card)]
-                ))
-            
-            select_action = SelectAction(
-                title=LocalStr("ui.choose_card_to_upgrade"),
-                options=options,
-                max_select=actual_count,
-                must_select=False
-            )
-            
-            return SingleActionResult(select_action)
+            return MultipleActionsResult(actions)
+
+@register("action")
+class AddRandomColorlessCardAction(Action):
+    """Add a random colorless card to the player's deck.
+
+    Required:
+        rarity (str): Rarity filter ('uncommon', 'rare', 'uncommon_or_rare')
+
+    Optional:
+        None
+    """
+    def __init__(self, rarity: str = 'uncommon_or_rare'):
+        self.rarity = rarity
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        import random
+
+        if not game_state.player:
+            return NoneResult()
+
+        # Import all colorless card classes
+        # These are the colorless cards available in the game
+        colorless_cards = []
+
+        # Import colorless cards dynamically to avoid circular imports
+        try:
+            from cards.colorless.bite import Bite
+            colorless_cards.append(Bite)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.ritual_dagger import RitualDagger
+            colorless_cards.append(RitualDagger)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.panic_stone import PanicStone
+            colorless_cards.append(PanicStone)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.enlightenment import Enlightenment
+            colorless_cards.append(Enlightenment)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.j_a_x import JAX
+            colorless_cards.append(JAX)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.madness import Madness
+            colorless_cards.append(Madness)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.apotheosis import Apotheosis
+            colorless_cards.append(Apotheosis)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.hand_of_greed import HandOfGreed
+            colorless_cards.append(HandOfGreed)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.thinking_ahead import ThinkingAhead
+            colorless_cards.append(ThinkingAhead)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.peace_pipe import PeacePipe
+            colorless_cards.append(PeacePipe)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.chrysalis import Chrysalis
+            colorless_cards.append(Chrysalis)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.exhume import Exhume
+            colorless_cards.append(Exhume)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.metamorphosis import Metamorphosis
+            colorless_cards.append(Metamorphosis)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.magnetism import Magnetism
+            colorless_cards.append(Magnetism)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.primary_shard import PrimaryShard
+            colorless_cards.append(PrimaryShard)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.secondary_shard import SecondaryShard
+            colorless_cards.append(SecondaryShard)
+        except ImportError:
+            pass
+
+        try:
+            from cards.colorless.tertiary_shard import TertiaryShard
+            colorless_cards.append(TertiaryShard)
+        except ImportError:
+            pass
+
+        if not colorless_cards:
+            print("[Event] No colorless cards available")
+            return NoneResult()
+
+        # Filter by rarity
+        eligible_cards = []
+        for card_class in colorless_cards:
+            card_rarity = getattr(card_class, 'rarity', None)
+            if card_rarity is None:
+                continue
+
+            rarity_name = card_rarity.name if hasattr(card_rarity, 'name') else str(card_rarity)
+
+            if self.rarity == 'uncommon_or_rare':
+                if rarity_name in ['UNCOMMON', 'RARE', 'SPECIAL']:
+                    eligible_cards.append(card_class)
+            elif self.rarity == 'uncommon':
+                if rarity_name in ['UNCOMMON', 'SPECIAL']:
+                    eligible_cards.append(card_class)
+            elif self.rarity == 'rare':
+                if rarity_name in ['RARE', 'SPECIAL']:
+                    eligible_cards.append(card_class)
+            else:
+                # If rarity doesn't match any filter, include all
+                eligible_cards.append(card_class)
+
+        if not eligible_cards:
+            eligible_cards = colorless_cards
+
+        # Select a random card class
+        selected_card_class = random.choice(eligible_cards)
+
+        # Create an instance of the card
+        new_card = selected_card_class()
+
+        # Add the card to the player's deck
+        print(f"[Event] Obtained colorless card: {new_card.display_name.resolve()}")
+
+        return SingleActionResult(AddCardAction(card=new_card, dest_pile="deck", source="event"))

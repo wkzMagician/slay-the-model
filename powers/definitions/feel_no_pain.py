@@ -25,7 +25,7 @@ class FeelNoPainPower(Power):
             amount: Block to gain per exhaust (default 3)
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_exhaust(self) -> List[Action]:
         """Gain block when a card is exhausted."""

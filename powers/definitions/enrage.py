@@ -24,7 +24,7 @@ class EnragePower(Power):
             amount: Strength to gain per skill played (default 1)
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_card_play(self, card, player, entities) -> List[Action]:
         """Trigger when player plays a card."""
@@ -39,7 +39,7 @@ class EnragePower(Power):
                     power="strength",
                     target=self.owner,
                     amount=self.amount,
-                    duration=0
+                    duration=-1
                 )
             )
         

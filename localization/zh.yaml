@@ -84,6 +84,20 @@ cards:
       name: 上勾拳
       combat_description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 层脆弱和 {magic.weak} 层虚弱。（造成{damage}点伤害，施加{magic.vulnerable}层脆弱和{magic.weak}层虚弱）
       upgrade_description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 层脆弱和 {magic.weak} 层虚弱。
+  colorless:
+    Slimed:
+      description: 消耗。
+      name: 粘液
+events:
+  neo:
+    welcome: "在你面前是一座黑暗的神殿，献给尖塔神秘的精灵尼奥。"
+  upgrade_shrine:
+    title: "升级神殿"
+    description: "你发现了一座神秘的神殿，可以升级你的一张牌。"
+    pray: "升级一张牌（花费 {gold_cost} 金币）"
+    leave: "离开"
+    no_gold: "金币不足（需要 {gold_cost}）"
+    upgraded: "你的 {card_name} 已升级！"
 combat:
   player_attacks: "玩家攻击 {target}，造成 {damage} 点伤害"
   enemy_attacks_player: "{enemy} 攻击玩家，造成 {damage} 点伤害"
@@ -350,6 +364,16 @@ enemies:
     name: "地精贵族"
   Sentry:
     name: "哨兵"
+  FatGremlin:
+    name: "胖子地精"
+  SneakyGremlin:
+    name: "狡猾地精"
+  MadGremlin:
+    name: "疯狂地精"
+  ShieldGremlin:
+    name: "盾牌地精"
+  GremlinWizard:
+    name: "地精巫师"
   # Intention descriptions
   intentions:
     # Cultist
@@ -370,11 +394,37 @@ enemies:
     thrash:
       name: "甩尾"
       description: "造成{damage}点伤害并获得{block}点格挡。"
+    
+    # Gremlins
+    fat_gremlin_smash:
+      name: "猛击"
+      description: "造成{damage}点伤害。对你施加1层虚弱。"
+    sneaky_gremlin_stab:
+      name: "刺击"
+      description: "造成{damage}点伤害。"
+    mad_gremlin_scratch:
+      name: "抓击"
+      description: "造成{damage}点伤害。"
+    shield_gremlin_protect:
+      name: "防护"
+      description: "获得{block}点格挡。"
+    shield_gremlin_bash:
+      name: "重击"
+      description: "造成{damage}点伤害。"
+    gremlin_wizard_charge:
+      name: "蓄力"
+      description: "正在蓄力..."
+    gremlin_wizard_ultimate_blast:
+      name: "终极爆破"
+      description: "造成{damage}点伤害。"
 ui:
   character_selected: '选择的角色: {character}'
   choose_blessings: 选择祝福
   choose_enemy: 选择敌人：
-  floor_position: 第 {floor} 层，位置 {position}
+  floor_position: 第 {act} 章 - 第 {floor} 层，位置 {position}
+  act_complete: 第 {act} 章完成！
+  entering_act: 进入第 {act} 章
+  entering_act4: 集齐三把钥匙，你开启了通往心脏之路...
   game_awaken: 你醒来在尖塔中，开始你的攀登...
   game_over: 游戏结束！你已在尖塔中倒下。
   game_welcome: 欢迎来到杀戮尖塔！
@@ -427,3 +477,36 @@ ui:
   player_turn: "玩家回合"
   select_prompt: '选择 (1-{count}): '
   skip_potion: 不拾取
+
+rooms:
+  treasure:
+    enter: "你发现了一个宝箱房间！"
+    title: "宝箱房间"
+    boss_title: "Boss宝箱"
+    open_chest: "打开{chest_type}宝箱"
+    open_small_chest: "打开小宝箱"
+    open_boss_chest: "打开Boss宝箱"
+    leave: "离开"
+  rest:
+    enter: "你进入了一个安静的休息点。"
+    rest: "你休息并恢复了{amount}点生命值。"
+    smith: "你升级了一张卡牌。"
+    recall: "你回想起红宝石钥匙。"
+    options:
+      rest: "休息（{amount}点生命值）"
+      smith: "锻造（升级一张卡牌）"
+      recall: "回忆（红宝石钥匙）"
+      leave: "离开"
+  shop:
+    enter: "你进入了一家神秘的商店。"
+
+events:
+  neo:
+    welcome: "在你面前耸立着一座黑暗的神殿，献给尖塔神秘的守护灵尼奥。"
+  upgrade_shrine:
+    title: "升级神殿"
+    description: "你发现了一个神秘的神殿，可以升级你的一张卡牌。"
+    pray: "升级一张卡牌（需要{gold_cost}金币）"
+    leave: "离开"
+    no_gold: "金币不足（需要{gold_cost}）"
+    upgraded: "你的{card_name}已升级！"

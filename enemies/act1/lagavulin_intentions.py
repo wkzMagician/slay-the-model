@@ -78,7 +78,7 @@ class SiphonSoulIntention(Intention):
                     power="Dexterity",
                     target=game_state.player,
                     amount=-self.dex_loss,
-                    duration=0  # Permanent
+                    duration=-1  # Permanent
                 )
             )
         
@@ -88,7 +88,7 @@ class SiphonSoulIntention(Intention):
                 power="strength",
                 target=self.enemy,
                 amount=self.str_gain,
-                duration=0  # Permanent
+                duration=-1  # Permanent
             )
         )
         

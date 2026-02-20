@@ -24,13 +24,11 @@ class CardManager:
 
     def reset_for_combat(self) -> None:
         # Gather all cards from all piles (they belong to the player's deck)
-        all_cards = []
-        for pile_name in ['deck', 'draw_pile', 'discard_pile', 'hand', 'exhaust_pile']:
-            all_cards.extend(self.piles[pile_name])
         
         # Move all cards to draw_pile, clear other piles
-        self.piles['draw_pile'] = all_cards
-        self.piles['deck'] = []
+        self.piles['draw_pile'] = []
+        for card in self.piles['deck']:
+            self.piles['draw_pile'].append(card.copy())
         self.piles['discard_pile'] = []
         self.piles['hand'] = []
         self.piles['exhaust_pile'] = []

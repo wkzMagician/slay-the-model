@@ -26,7 +26,7 @@ class SearingBlow(Card):
         
         damage = self.base_damage
         
-        for level in range(self.upgrade_level):
-            damage += self.base_damage_gain + level - 1
+        for level in range(1, self.upgrade_level + 1):
+            damage += self.base_damage_gain + max(0, level - 2)
 
         return damage

@@ -50,7 +50,9 @@ class MapData:
         Raises:
             IndexError: If floor or position is out of range
         """
-        return self.nodes[floor][position]
+        if 0 <= floor < len(self.nodes) and 0 <= position < len(self.nodes[floor]):
+            return self.nodes[floor][position]
+        return None
     
     def get_floor(self, floor: int) -> List[MapNode]:
         """
@@ -78,7 +80,9 @@ class MapData:
         """
         self.current_floor = floor
         self.current_position = position
-        self.get_current_node().visited = True
+        node = self.get_current_node()
+        if node:
+            node.visited = True
         # Record this position in the visited path
         self.visited_path.append((floor, position))
     

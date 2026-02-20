@@ -7,10 +7,10 @@ from actions.base import Action
 from actions.card import AddCardAction
 from actions.display import SelectAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
-from utils.result_types import BaseResult, GameStateResult, NoneResult, SingleActionResult
+from utils.result_types import BaseResult, GameStateResult, MultipleActionsResult, NoneResult, SingleActionResult
 from localization import LocalStr, t
 from utils.option import Option
-from utils.random import get_random_relic, get_random_relic_with_fallback
+from utils.random import get_random_relic
 from utils.registry import register
 from utils.types import RarityType
 
@@ -161,13 +161,17 @@ class OpenChestAction(Action):
             # 3 boss relics to choose from
             relics = []
             for _ in range(3):
-                relics.append(get_random_relic(rarities=[RarityType.BOSS]))
+                relic = get_random_relic(rarities=[RarityType.BOSS])
+                if relic:
+                    relics.append(relic)
+
+            assert len(relics) == 3, "cannot get random relics"
 
             # Create selection options
             options = []
             for relic in relics:
                 options.append(Option(
-                    name=LocalStr("ui.choose_relic", name=relic.name),
+                    name=LocalStr("ui.choose_relic", name=relic.local("name")),
                     actions=[AddRelicAction(relic=relic.idstr)]
                 ))
 
@@ -183,47 +187,72 @@ class OpenChestAction(Action):
             ))
 
         elif self.treasure_room.chest_type == "small":
-            roll = random.random()
-            if roll < 0.50:
+            actions = []
+            if random.random() < 0.50:
                 gold = random.randint(23, 27)
-                AddGoldAction(amount=gold).execute()
-                print(t("ui.found_gold", default=f"Found {gold} gold!"))
+                actions.append(AddGoldAction(amount=gold))
+            if random.random() < 0.75:
+                rarities = [RarityType.COMMON]
             else:
-                rarity = 'common' if random.random() < 0.75 else 'uncommon'
-                relic = get_random_relic_with_fallback(preferred_rarity=rarity)
-                if relic:
-                    AddRelicAction(relic=relic.idstr).execute()
-                    print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
-            return NoneResult()
-
+                rarities = [RarityType.UNCOMMON]
+            relic = get_random_relic(rarities=rarities)
+            if relic:
+                actions.append(AddRelicAction(relic=relic.idstr))
+                
+            return MultipleActionsResult(actions)
+            
         elif self.treasure_room.chest_type == "medium":
-            roll = random.random()
-            if roll < 0.35:
+            actions = []
+            if random.random() < 0.35:
                 gold = random.randint(45, 55)
-                AddGoldAction(amount=gold).execute()
-                print(t("ui.found_gold", default=f"Found {gold} gold!"))
+                actions.append(AddGoldAction(amount=gold))
+            relic_random = random.random()
+            if relic_random < 0.35:
+                rarities = [RarityType.COMMON]
+            elif relic_random < 0.85:
+                rarities = [RarityType.UNCOMMON]
             else:
-                roll = random.random()
-                rarity = 'common' if roll < 0.35 else 'uncommon' if roll < 0.85 else 'rare'
-                relic = get_random_relic_with_fallback(preferred_rarity=rarity)
-                if relic:
-                    AddRelicAction(relic=relic.idstr).execute()
-                    print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
-            return NoneResult()
+                rarities = [RarityType.RARE]
+            relic = get_random_relic(rarities=rarities)
+            if relic:
+                actions.append(AddRelicAction(relic=relic.idstr))
+                
+            return MultipleActionsResult(actions)
 
         elif self.treasure_room.chest_type == "large":
-            roll = random.random()
-            if roll < 0.50:
+            actions = []
+            if random.random() < 0.50:
                 gold = random.randint(68, 82)
-                AddGoldAction(amount=gold).execute()
-                print(t("ui.found_gold", default=f"Found {gold} gold!"))
+                actions.append(AddGoldAction(amount=gold))
+            if random.random() < 0.75:
+                rarities = [RarityType.UNCOMMON]
             else:
-                rarity = 'uncommon' if random.random() < 0.75 else 'rare'
-                relic = get_random_relic_with_fallback(preferred_rarity=rarity)
-                if relic:
-                    AddRelicAction(relic=relic.idstr).execute()
-                    print(t("ui.found_relic", default=f"Found {relic.idstr}!"))
-            return NoneResult()
+                rarities = [RarityType.RARE]
+            relic = get_random_relic(rarities=rarities)
+            if relic:
+                actions.append(AddRelicAction(relic=relic.idstr))
+                
+            return MultipleActionsResult(actions)
         
         else:
             raise ValueError(f"Invalid chest type: {self.treasure_room.chest_type}")
+
+
+@register("action")
+class SkipToBossAction(Action):
+    """Skip to the boss floor.
+    
+    Required:
+        None
+        
+    Optional:
+        None
+    """
+    def execute(self) -> 'BaseResult':
+        """Skip to boss floor."""
+        from engine.game_state import game_state
+        
+        # Set flag to skip to boss
+        game_state.skip_to_boss = True
+        print("[Event] Skipping to boss!")
+        return NoneResult()

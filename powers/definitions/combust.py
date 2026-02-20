@@ -25,7 +25,7 @@ class CombustPower(Power):
             amount: Damage to deal each turn
             duration: 0 for permanent
         """
-        super().__init__(amount=amount, duration=0, owner=owner)
+        super().__init__(amount=amount, duration=-1, owner=owner)
 
     def on_turn_end(self) -> List[Action]:
         """Deal damage to all enemies at end of turn."""

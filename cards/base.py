@@ -75,7 +75,7 @@ class Card(Localizable):
     localization_prefix = "cards"
     localizable_fields = ("name", "description", "upgrade_description", "combat_description", "upgrade_combat_description")
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         # ***** Basic card attributes with namespace support
         # Determine namespace from module path
         self.namespace = namespace_from_module(self.__class__.__module__)
@@ -113,6 +113,18 @@ class Card(Localizable):
         
         # temporary cost for this turn (e.g. from Corruption)
         self.temp_cost: Optional[int] = None
+        
+        # Handle optional kwargs for testing
+        if kwargs.get("name"):
+            self._name = kwargs["name"]
+        if kwargs.get("card_type"):
+            self.card_type = kwargs["card_type"]
+        if kwargs.get("base_cost") is not None:
+            self._base_cost = kwargs["base_cost"]
+            self._cost = kwargs["base_cost"]
+        if kwargs.get("base_damage") is not None:
+            self._base_damage = kwargs["base_damage"]
+            self._damage = kwargs["base_damage"]
         
     @property
     def idstr(self) -> str:
@@ -320,6 +332,7 @@ class Card(Localizable):
                 GainBlockAction,
                 HealAction,
                 GainEnergyAction,
+                LoseHPAction,
             )
             from actions.card import ExhaustCardAction, DrawCardsAction
             
@@ -349,10 +362,10 @@ class Card(Localizable):
             # 治疗
             if self.heal > 0:
                 heal_value = resolve_card_value(self, 'heal')
-                actions.append(HealAction(heal=lambda: heal_value))
+                actions.append(HealAction(amount=lambda: heal_value))
             elif self.heal < 0:
-                # todo: LoseHPAction
-                pass
+                hp_loss = abs(resolve_card_value(self, 'heal'))
+                actions.append(LoseHPAction(amount=lambda: hp_loss))
             
             # 抽牌
             if self.draw > 0:
@@ -361,7 +374,7 @@ class Card(Localizable):
             
             # 能量
             if self.energy_gain > 0:
-                energy_value = resolve_card_value(self, 'energy')
+                energy_value = resolve_card_value(self, 'energy_gain')
                 actions.append(GainEnergyAction(energy=lambda: energy_value))
             
             # 消耗
@@ -474,3 +487,15 @@ class Card(Localizable):
             self._ethereal = self.upgrade_ethereal
         if self.upgrade_innate is not None:
             self._innate = self.upgrade_innate
+
+    def copy(self) -> "Card":
+        """Create a copy of this card.
+        
+        Used when shuffling deck to create independent card instances
+        for each combat.
+        
+        Returns:
+            Card: A new Card instance that is a copy of this card.
+        """
+        import copy
+        return copy.copy(self)

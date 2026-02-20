@@ -14,7 +14,7 @@ from utils.types import CardType, RarityType
 
 @register("card")
 class PowerThrough(Card):
-    """Gain block, add a random card to hand"""
+    """Gain block, add a 2 Wound card to hand"""
 
     card_type = CardType.SKILL
     rarity = RarityType.UNCOMMON

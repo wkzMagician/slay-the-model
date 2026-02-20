@@ -18,12 +18,23 @@ from .combat_state import CombatState
 from .combat import Combat
 from player.player_factory import create_player
 
+# Constants for multi-act support
+FLOORS_PER_ACT = 18  # Floors 0-17 per act (0=Neo act1, 16=boss, 17=treasure)
+MAX_ACTS = 4
+
 class GameState:
     """Global game state containing all persistent game data"""
 
     def __init__(self):
-        # Game progress
-        self.current_floor = 0
+        # Multi-act game progress
+        self.current_act: int = 1          # Current act (1-4)
+        self.floor_in_act: int = 0         # Floor within current act (0-17)
+        self.ascension: int = 0            # Ascension level (0-20, 0 = no ascension)
+
+        # Keys for Act 4 access (defeat act 3 boss with all 3 keys to enter act 4)
+        self.ruby_key: bool = False        # From boss relic
+        self.emerald_key: bool = False     # From chest
+        self.sapphire_key: bool = False    # From specific events (already tracked)
 
         # Configuration
         config_path = os.path.join(os.path.dirname(__file__), "..", "config", "game_config.yaml")
@@ -57,6 +68,9 @@ class GameState:
         # Card chance rolling offset (each common card gained increases rare chance)
         self.card_chance_common_counter = 0
 
+        # Potion drop chance (40% base, -10% after drop, +10% after no drop)
+        self.potion_drop_chance = 40
+
         # Normal encounter counter for encounter pool selection
         # First 3 encounters use easy pool, rest use hard pool
         self.normal_encounters_fought = 0
@@ -85,12 +99,68 @@ class GameState:
         rd.seed(self.config.seed)
         # character
         self.player = create_player(self.config.character)
+        
+        # temp value for select result
+        self.last_select_idx = -1
+    
+    @property
+    def current_floor(self) -> int:
+        """Total floor count across all acts (for backward compatibility and display)."""
+        return (self.current_act - 1) * FLOORS_PER_ACT + self.floor_in_act
+    
+    @current_floor.setter
+    def current_floor(self, value: int):
+        """Setter for backward compatibility - derives act and floor_in_act from total."""
+        self.current_act = value // FLOORS_PER_ACT + 1
+        self.floor_in_act = value % FLOORS_PER_ACT
+    
+    @property
+    def has_all_keys(self) -> bool:
+        """Check if player has all 3 keys for Act 4 access."""
+        return self.ruby_key and self.emerald_key and self.sapphire_key
+    
+    def advance_floor(self) -> bool:
+        """
+        Advance to next floor within act.
+        Returns True if act completed (reached floor 17, boss treasure).
+        """
+        self.floor_in_act += 1
+        return self.floor_in_act >= FLOORS_PER_ACT
+    
+    def advance_act(self) -> bool:
+        """
+        Advance to next act after boss treasure.
+        Returns True if game completed (after act 4 or act 3 without keys).
+        Resets act-specific counters and generates new map.
+        """
+        # Check if can enter act 4
+        if self.current_act == 3:
+            if not self.has_all_keys:
+                # No keys - game complete after act 3
+                return True
+            # Has keys - continue to act 4
+        
+        if self.current_act >= MAX_ACTS:
+            return True  # Game complete after act 4
+        
+        self.current_act += 1
+        self.floor_in_act = 0
+        
+        # Reset act-specific counters
+        self.normal_encounters_fought = 0
+        self.encounter_history = []
+        self.elite_history = []
+        
+        # Reset potion drop chance for new act
+        self.potion_drop_chance = 40
+        
+        return False
     
     def initialize_map(self):
-        """Initialize map system and generate the first act."""
+        """Initialize map system for current act."""
         from map import MapManager
         
-        self.map_manager = MapManager(self.config.seed, act_id=1)
+        self.map_manager = MapManager(self.config.seed + self.current_act, act_id=self.current_act)
         self.map_data = self.map_manager.generate_map()
 
     def execute_all_actions(self) -> BaseResult:

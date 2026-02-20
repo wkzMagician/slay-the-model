@@ -32,7 +32,7 @@ class Berserk(Card):
         magic = get_magic_value(self, "Vulnerable")
 
         # Apply BerserkPower (which handles energy gain) and VulnerablePower
-        actions.append(ApplyPowerAction(power="BerserkPower", target=game_state.player, amount=1, duration=0))
-        actions.append(ApplyPowerAction(power="Vulnerable", target=game_state.player, amount=-1, duration=magic))
+        actions.append(ApplyPowerAction(power="BerserkPower", target=game_state.player, amount=1, duration=-1))
+        actions.append(ApplyPowerAction(power="Vulnerable", target=game_state.player, amount=magic))
 
         return actions

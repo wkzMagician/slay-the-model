@@ -4,7 +4,7 @@ Tests for random card reward system with rarity weights.
 import pytest
 from unittest.mock import patch, MagicMock
 from utils.random import CARD_RARITY_PROBABILITIES
-from utils.types import RarityType
+from utils.types import RarityType, CardType
 
 
 class TestCardRarityProbabilities:

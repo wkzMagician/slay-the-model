@@ -40,7 +40,7 @@ class Anchor(Relic):
         from engine.game_state import game_state
         if (game_state.current_combat is not None and 
             game_state.current_combat.combat_state.combat_turn == 1):
-            return [GainBlockAction(block=10)]
+            return [GainBlockAction(block=10, target=player)]
         return []
 
 @register("relic")
@@ -333,7 +333,7 @@ class Orichalcum(Relic):
         """Gain 6 Block if you ended turn without Block"""
         from engine.game_state import game_state
         if game_state.player and game_state.player.block == 0:
-            return [GainBlockAction(block=6)]
+            return [GainBlockAction(block=6, target=player)]
         return []
 
 @register("relic")
@@ -348,6 +348,7 @@ class PenNib(Relic):
     
     def on_combat_start(self, player, entities) -> List[Action]:
         """Reset tracker at start of combat"""
+        self.attacks_played = 0
         return [LambdaAction(func=lambda: setattr(self, 'attacks_played', 0))]
     
     def on_card_play(self, card, player, entities):

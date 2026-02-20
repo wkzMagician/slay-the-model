@@ -52,6 +52,6 @@ class GrowIntention(Intention):
                 power="strength",
                 target=self.enemy,
                 amount=self.base_strength_gain,
-                duration=0  # Permanent
+                duration=-1  # Permanent
             )
         ]

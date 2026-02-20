@@ -22,6 +22,11 @@ def _import_powers():
     from powers import definitions  # This triggers __init__.py which imports all powers
 
 
+def _import_relics():
+    """Import relics to register them in the registry."""
+    import relics  # This triggers __init__.py which imports all relics
+
+
 class TeeStream:
     """Duplicate writes to multiple streams."""
     def __init__(self, *streams):
@@ -44,6 +49,8 @@ if __name__ == "__main__":
         _import_potions()
         # Import powers to register them in the registry
         _import_powers()
+        # Import relics to register them in the registry
+        _import_relics()
         game = GameFlow()
         game.start_game(game_state)
     except KeyboardInterrupt:

@@ -29,6 +29,6 @@ class Entrench(Card):
 
         # Double current block
         current_block = game_state.player.block
-        actions.append(GainBlockAction(block=current_block))
+        actions.append(GainBlockAction(block=current_block, target=game_state.player))
 
         return actions

@@ -34,4 +34,4 @@ class Cultist(Enemy):
             return self.intentions["ritual"]
         
         # After first turn: Always Attack
-        return self.intentions["cultist_attack"]
+        return self.intentions["attack"]

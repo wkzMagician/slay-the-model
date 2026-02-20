@@ -19,6 +19,7 @@ class Barricade(Card):
     rarity = RarityType.RARE
 
     base_cost = 3
+    upgrade_cost = 2
 
     def on_play(self, target: Creature | None = None) -> List[Action]:
         from engine.game_state import game_state
@@ -26,6 +27,6 @@ class Barricade(Card):
         actions = super().on_play(target)
 
         # Apply BarricadePower
-        actions.append(ApplyPowerAction(power="BarricadePower", target=game_state.player, amount=0, duration=0))
+        actions.append(ApplyPowerAction(power="BarricadePower", target=game_state.player, amount=0, duration=-1))
 
         return actions
