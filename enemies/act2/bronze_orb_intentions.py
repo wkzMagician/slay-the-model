@@ -50,5 +50,4 @@ class Beam(Intention):
     def execute(self) -> List:
         """Deal damage to player."""
         from engine.game_state import game_state
-        damage = self.enemy.calculate_damage(self.base_damage)
-        return [AttackAction(damage, game_state.player, self.enemy, "attack")]
+        return [AttackAction(self.base_damage, game_state.player, self.enemy, "attack")]

@@ -18,7 +18,7 @@ class Bash(Intention):
         from engine.game_state import game_state
 
         player = game_state.player
-        damage = self.enemy.calculate_damage(random.choice([12, 14]))
+        damage = random.choice([12, 14])
         actions = [
             AttackAction(
                 damage=damage,
@@ -75,11 +75,10 @@ class Smash(Intention):
         base_damage, fixed_block = random.choice(
             [(34, None), (38, None), (38, 99)]
         )
-        damage = self.enemy.calculate_damage(base_damage)
-        block_gain = fixed_block if fixed_block is not None else damage
+        block_gain = fixed_block if fixed_block is not None else base_damage
         return [
             AttackAction(
-                damage=damage,
+                damage=base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack",

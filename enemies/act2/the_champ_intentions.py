@@ -22,9 +22,8 @@ class HeavySlash(Intention):
         """Execute heavy slash attack."""
         from engine.game_state import game_state
         
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=game_state.player,
             source=self.enemy,
             damage_type="attack"
@@ -47,9 +46,8 @@ class FaceSlap(Intention):
         player = game_state.player
         
         # Deal damage
-        damage = self.enemy.calculate_damage(self.base_damage)
         actions.append(AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=player,
             source=self.enemy,
             damage_type="attack"
@@ -201,9 +199,8 @@ class Execute(Intention):
         
         actions = []
         for _ in range(self._hits):
-            damage = self.enemy.calculate_damage(self.base_damage)
             actions.append(AttackAction(
-                damage=damage,
+                damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack"

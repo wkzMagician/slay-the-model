@@ -27,9 +27,8 @@ class MultiStab(Intention):
         num_hits = self.enemy.multi_stab_count + self._hits_base
         
         for _ in range(num_hits):
-            damage = self.enemy.calculate_damage(self.base_damage)
             actions.append(AttackAction(
-                damage=damage,
+                damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack"
@@ -49,9 +48,8 @@ class BigStab(Intention):
         """Execute big stab attack."""
         from engine.game_state import game_state
         
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=game_state.player,
             source=self.enemy,
             damage_type="attack"

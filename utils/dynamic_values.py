@@ -59,118 +59,140 @@ def resolve_card_value(card, value_type: str) -> int:
 
 def resolve_card_damage(card: 'Card') -> int:
     """
-    Resolve damage value (only considers attacker's abilities, not defender)
+    Resolve damage value for card preview (only considers attacker's abilities).
     
-    Calculation order:
-    1. Base damage (card.damage)
-    2. + StrengthPower
-    3. * 0.5 if has WeakPower
-    4. * Multiplier (Rage/Divine stances)
+    This is a thin wrapper around resolve_potential_damage for preview purposes.
+    It applies all damage modifiers except target-specific ones (Vulnerable, Intangible).
     
     Args:
         card: Card instance
-        source: Source creature (usually player)
     
     Returns:
-        Resolved damage value
+        Resolved damage value for preview
     """
     from engine.game_state import game_state
     player = game_state.player
     
-    damage = card.damage
+    # Get base damage
+    base_damage = card.damage
+    if callable(base_damage):
+        base_damage = base_damage()
     
-    # 1. Strength bonus
+    # Handle Heavy Blade special case - extra strength scaling
     strength_power = player.get_power('strength')
-    if strength_power:
-        damage += strength_power.amount
-    
-    # 2. Heavy Blade special handling (strength multiplied)
-    if hasattr(card, 'get_magic_value'):
+    if strength_power and hasattr(card, 'get_magic_value'):
         strength_mult = card.get_magic_value('strength_mult', 0)
-        if strength_mult and strength_power:
-            damage += (strength_mult - 1) * strength_power.amount
+        if strength_mult and strength_mult:
+            # Heavy Blade: extra strength bonus added to base
+            base_damage += (strength_mult - 1) * strength_power.amount
     
-    # 3. Weak effect (25% damage reduction)
-    weak_power = player.get_power('weak')
-    if weak_power:
-        damage = int(damage * 0.75)
-    
-    # 4. Stance multiplier (Rage/Divine)
-    status = player.status_manager.status
-    if status == StatusType.WRATH:
-        damage *= 2
-    elif status == StatusType.DIVINITY:
-        damage = int(damage * 3)
-    
-    # 5. Akabeko relic bonus: first attack deals 8 additional damage (only in combat)
+    # Handle Akabeko relic bonus: first attack deals 8 additional damage
     if hasattr(card, 'card_type') and card.card_type == "Attack":
-        # Only apply combat-specific bonuses when in combat
         if game_state.current_combat is not None:
             first_attack_played = game_state.current_combat.combat_state.turn_attack_cards_played == 0
-            
-            # Check if player has Akabeko relic
             has_akabeko = any(r.__class__.__name__ == 'Akabeko' for r in player.relics)
-            
             if has_akabeko and first_attack_played:
-                damage += 8
-                # Mark that first attack has been played
-                game_state.current_combat.combat_state.turn_attack_cards_played += 1
+                base_damage += 8
     
-    return max(0, damage)
+    # Use unified pipeline with no target (preview mode)
+    return resolve_potential_damage(base_damage, player, target=None, card=card)
 
 
 def resolve_potential_damage(base_damage: int, attacker: Creature, 
-                         target: Creature) -> int:
+                         target: Creature, card=None) -> int:
     """
-    Resolve final damage value
+    Resolve final damage value with unified phased pipeline.
     
-    Calculation order:
-    1. Resolve callable damage if needed
-    2. attacker's Strength
-    3. attacker's stance multiplier (Rage/Divine)
-    4. attacker's Weak
-    5. target's Vulnerable
-    6. target's other power (e.g. Slow)
-    7. target's stance multiplier (Rage)
+    This is the SINGLE SOURCE OF TRUTH for damage calculation.
+    All damage modifiers should be applied here, not in DealDamageAction.
+    
+    Phase order (CRITICAL - additive before multiplicative):
+    1. Normalize damage (callable/list -> int)
+    2. Outgoing ADDITIVE modifiers (Strength, card bonuses)
+    3. Outgoing MULTIPLICATIVE modifiers (Weak, BackAttack, PenNib, stance)
+    4. Incoming MULTIPLICATIVE modifiers (Vulnerable, target stance)
+    5. Incoming POST-PROCESSING (Intangible cap)
+    6. Clamp to non-negative
+    
+    Args:
+        base_damage: Base damage value (int or callable returning int)
+        attacker: Creature dealing damage
+        target: Creature receiving damage (can be None for preview)
+        card: Card being played (optional, for PenNib etc.)
+    
+    Returns:
+        Final resolved damage value
     """
-    # 0. Resolve callable damage first
+    from player.player import Player
+    
+    # ====================
+    # Phase 1: Normalize
+    # ====================
     damage = base_damage() if callable(base_damage) else base_damage
     
-    # Debug: Check if damage is a list
+    # Defensive: handle case where damage is accidentally a list
     if isinstance(damage, list):
         print(f"[ERROR] resolve_potential_damage received list: {damage}, base_damage={base_damage}")
-        damage = damage[0] if damage else 0  # Take first element or 0
-    # 1. Attacker's Strength
-    strength_power = attacker.get_power('strength')
-    if strength_power:
-        damage += strength_power.amount
-    # 2. Attacker's stance multiplier
-    from player.player import Player
+        damage = damage[0] if damage else 0
+    
+    # ====================
+    # Phase 2: Outgoing ADDITIVE modifiers
+    # ====================
+    # Apply attacker's additive damage modifiers (Strength, etc.)
+    if attacker and hasattr(attacker, 'powers'):
+        for power in attacker.powers:
+            if hasattr(power, 'modify_damage_dealt'):
+                # Check if this power is additive (like Strength)
+                if getattr(power, 'is_additive', False):
+                    damage = power.modify_damage_dealt(damage)
+    
+    # ====================
+    # Phase 3: Outgoing MULTIPLICATIVE modifiers
+    # ====================
+    # Apply attacker's multiplicative damage modifiers (Weak, BackAttack, etc.)
+    if attacker and hasattr(attacker, 'powers'):
+        for power in attacker.powers:
+            if hasattr(power, 'modify_damage_dealt'):
+                # Non-additive powers are multiplicative
+                if not getattr(power, 'is_additive', False):
+                    damage = power.modify_damage_dealt(damage)
+    
+    # Attacker's stance multiplier (Player only)
     if isinstance(attacker, Player):
         attacker_status = attacker.status_manager.status
         if attacker_status == StatusType.WRATH:
             damage *= 2
         elif attacker_status == StatusType.DIVINITY:
             damage = int(damage * 3)
-    # 3. Attacker's Weak (25% damage reduction)
-    weak_power = attacker.get_power('weak')
-    if weak_power:
-        damage = int(damage * 0.75)
-    # 4. Target's Vulnerable
+    
+    # ====================
+    # Phase 4: Incoming MULTIPLICATIVE modifiers
+    # ====================
     if target is not None:
-        vulnerable_power = target.get_power('vulnerable')
-        if vulnerable_power:
-            damage = int(damage * 1.5)
-        # 5. Target's other powers (e.g. Slow)
-        # feature: SLowPower
-        # 6. Target's stance multiplier
-        from player.player import Player
+        # Target's Vulnerable (50% more damage)
+        if hasattr(target, 'get_damage_taken_multiplier'):
+            multiplier = target.get_damage_taken_multiplier()
+            damage = int(damage * multiplier)
+        
+        # Target's stance multiplier (Player only)
         if isinstance(target, Player):
             target_status = target.status_manager.status
             if target_status == StatusType.WRATH:
                 damage *= 2
-            
-    return max(0, damage)
+    
+    # ====================
+    # Phase 5: Incoming POST-PROCESSING
+    # ====================
+    # Apply target's damage taken modifiers (Intangible caps at 1)
+    if target is not None and hasattr(target, 'powers'):
+        for power in target.powers:
+            if hasattr(power, 'modify_damage_taken'):
+                damage = power.modify_damage_taken(damage)
+    
+    # ====================
+    # Phase 6: Clamp
+    # ====================
+    return max(0, int(damage))
 
 
 def resolve_card_block(card: 'Card') -> int:

@@ -24,21 +24,6 @@ class Reaper(Card):
 
     upgrade_damage = 5
 
-    def on_play(self, targets: List[Creature] = []) -> List[Action]:
-        """Deal damage to ALL enemies"""
-        from engine.game_state import game_state
-
-        actions = []
-        for enemy in targets:
-            if enemy.hp > 0:
-                actions.append(DealDamageAction(
-                    target=enemy,
-                    damage=self.damage,
-                    damage_type="attack",
-                    card=self,
-                ))
-        return actions
-
     def on_damage_dealt(self, damage: int, target: Creature, card: Card, damage_type: str) -> List[Action]:
         """Vampirism: heal player for damage dealt"""
         from engine.game_state import game_state

@@ -343,7 +343,6 @@ class Card(Localizable):
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         """卡牌被打出时触发，返回 Action 列表"""
         # Extract first target for compatibility
-        target = targets[0] if targets else None
         try:
             from actions.combat import (
                 GainBlockAction,
@@ -367,22 +366,23 @@ class Card(Localizable):
             # 伤害
             if self.damage > 0:
                 hits = max(1, resolve_card_value(self, 'attack_times'))
-                for _ in range(hits):
-                    action = DealDamageAction(
-                        damage=self.damage,
-                        target=target,
-                        damage_type="attack",
-                        card=self,
-                    )
-                    actions.append(action)
+                for target in targets:
+                    for _ in range(hits):
+                        action = DealDamageAction(
+                            damage=self.damage,
+                            target=target,
+                            damage_type="attack",
+                            card=self,
+                        )
+                        actions.append(action)
             
             # 治疗
             if self.heal > 0:
                 heal_value = resolve_card_value(self, 'heal')
-                actions.append(HealAction(amount=lambda: heal_value))
+                actions.append(HealAction(amount=heal_value))
             elif self.heal < 0:
                 hp_loss = abs(resolve_card_value(self, 'heal'))
-                actions.append(LoseHPAction(amount=lambda: hp_loss))
+                actions.append(LoseHPAction(amount=hp_loss))
             
             # 抽牌
             if self.draw > 0:

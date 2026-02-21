@@ -173,11 +173,22 @@ class CombatTestHelper:
                 TargetType.ENEMY_SELECT,
                 TargetType.ENEMY_RANDOM,
                 TargetType.ENEMY_LOWEST_HP,
-                TargetType.ENEMY_ALL,
             ):
-                # Default to first enemy
+                # Default to first enemy for single-target types
                 if combat.enemies:
                     target = combat.enemies[0]
+            elif card.target_type == TargetType.ENEMY_ALL:
+                # For ENEMY_ALL, pass all enemies as targets
+                result = card.on_play(combat.enemies)
+                # Handle result - recursively execute actions and nested results
+                if result:
+                    self._execute_actions_recursive(result)
+                # Move to discard or exhaust pile
+                if card.exhaust:
+                    player.card_manager.piles['exhaust_pile'].append(card)
+                else:
+                    player.card_manager.piles['discard_pile'].append(card)
+                return True
                 
         result = card.on_play([target] if target else [])
         

@@ -23,11 +23,3 @@ class Cleave(Card):
     base_damage = 8
 
     upgrade_damage = 11
-
-    def on_play(self, targets: List[Creature] = []) -> List[Action]:
-        """Deal damage to ALL enemies"""
-        from engine.game_state import game_state
-        actions = []
-        for enemy in targets:
-            actions.append(DealDamageAction(target=enemy, damage=self.damage))
-        return actions

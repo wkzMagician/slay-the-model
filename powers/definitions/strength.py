@@ -15,6 +15,7 @@ class StrengthPower(Power):
     description = "Increases attack damage by amount."
     stackable = True
     is_buff = True  # Beneficial effect - increases damage
+    is_additive = True  # Additive modifier (applied before multiplicative)
     
     def __init__(self, amount: int = 2, duration: int = 0, owner=None):
         """

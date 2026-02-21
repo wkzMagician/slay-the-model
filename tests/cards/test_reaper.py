@@ -26,7 +26,8 @@ class TestReaper(unittest.TestCase):
         self.helper.start_combat([enemy1, enemy2])
         card = Reaper()
         self.helper.add_card_to_hand(card)
-        self.helper.play_card(card, target=enemy1)
+        # Reaper has ENEMY_ALL target type - don't pass specific target
+        self.helper.play_card(card)
         # Should deal damage to all enemies (4 base)
         self.assertLess(enemy1.hp, 100)
         self.assertLess(enemy2.hp, 100)

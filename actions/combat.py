@@ -234,30 +234,38 @@ class DealDamageAction(Action):
 
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
+        from utils.dynamic_values import resolve_potential_damage
         actions_to_return = []
 
         if not self.target or self.target.is_dead():
             return NoneResult()
 
-        # Get base damage
-        damage_amount = self.damage
-        
-        # Defensive fix: handle case where damage is accidentally a list
-        if isinstance(damage_amount, list):
-            # print(f"[DEBUG] Converting damage list to int: {damage_amount} -> {damage_amount[0] if damage_amount else 0}")
-            damage_amount = damage_amount[0] if damage_amount else 0
+        # ====================
+        # DAMAGE CALCULATION (Single Point of Truth)
+        # ====================
+        # If source is provided, use unified damage pipeline
+        # This ensures all modifiers (Strength, Weak, Vulnerable, Intangible, etc.)
+        # are applied exactly once in the correct order.
+        if self.source is not None:
+            damage_amount = resolve_potential_damage(
+                self.damage, 
+                self.source, 
+                self.target, 
+                card=self.card
+            )
+        else:
+            # Fallback for damage without source (relics, powers, etc.)
+            damage_amount = self.damage
+            if callable(damage_amount):
+                damage_amount = damage_amount()
+            if isinstance(damage_amount, list):
+                damage_amount = damage_amount[0] if damage_amount else 0
 
-        # Apply attacker's damage modifiers (Strength, Weakness)
-        if self.source and hasattr(self.source, 'get_damage_dealt_modifier'):
-            damage_amount = self.source.get_damage_dealt_modifier(damage_amount)
-        
-        # Apply defender's damage taken multiplier (Vulnerable, Buffer)
-        if hasattr(self.target, 'get_damage_taken_multiplier'):
-            multiplier = self.target.get_damage_taken_multiplier()
-            damage_amount = int(damage_amount * multiplier)
-
-        # Check for BufferPower damage prevention
-        if hasattr(self.target, 'try_prevent_damage') and self.target.try_prevent_damage():
+        # ====================
+        # DAMAGE PREVENTION (Buffer)
+        # ====================
+        # Check for BufferPower damage prevention - this is separate from modifiers
+        if hasattr(self.target, 'try_prevent_damage') and self.target.try_prevent_damage(damage_amount):
             from localization import t
             target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Unknown'))
             print(t("combat.buffer_prevented", default="{target_name}'s Buffer prevented the damage!", target_name=target_name))
@@ -381,7 +389,9 @@ class AttackAction(Action):
         self.source = source
         
     def execute(self) -> 'BaseResult':
-        from utils.dynamic_values import resolve_potential_damage
+        # NOTE: Do NOT pre-resolve damage here!
+        # DealDamageAction will call resolve_potential_damage itself.
+        # Pre-resolving would cause double modifier application.
         
         actions_to_return = []
         
@@ -398,9 +408,8 @@ class AttackAction(Action):
                     if power_actions:
                         actions_to_return.extend(power_actions)
         
-        # Resolve damage and create DealDamageAction
-        damage = resolve_potential_damage(self.damage, self.source, self.target)
-        damage_action = DealDamageAction(damage, 
+        # Create DealDamageAction with RAW damage - it will resolve internally
+        damage_action = DealDamageAction(self.damage, 
                                     target=self.target, 
                                     damage_type=self.damage_type,
                                     card=self.card,

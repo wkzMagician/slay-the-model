@@ -22,9 +22,8 @@ class Slash(Intention):
     def execute(self) -> List:
         """Execute the intention."""
         from engine.game_state import game_state
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=game_state.player,
             source=self.enemy,
             damage_type="attack"
@@ -43,10 +42,9 @@ class SoulStrike(Intention):
         """Execute the intention."""
         from engine.game_state import game_state
         actions = []
-        damage = self.enemy.calculate_damage(self.base_damage)
         for _ in range(self.base_hits):
             actions.append(AttackAction(
-                damage=damage,
+                damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack"
@@ -90,9 +88,8 @@ class DarkEcho(Intention):
     def execute(self) -> List:
         """Execute the intention."""
         from engine.game_state import game_state
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=game_state.player,
             source=self.enemy,
             damage_type="attack"
@@ -110,10 +107,9 @@ class Sludge(Intention):
         """Execute the intention."""
         from engine.game_state import game_state
         from cards.colorless.wound import Wound
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [
             AttackAction(
-                damage=damage,
+                damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack"
@@ -134,10 +130,9 @@ class Tackle(Intention):
         """Execute the intention."""
         from engine.game_state import game_state
         actions = []
-        damage = self.enemy.calculate_damage(self.base_damage)
         for _ in range(self.base_hits):
             actions.append(AttackAction(
-                damage=damage,
+                damage=self.base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack"

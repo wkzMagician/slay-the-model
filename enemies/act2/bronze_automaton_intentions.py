@@ -38,11 +38,10 @@ class Flail(Intention):
     def execute(self) -> List:
         """Deal damage to player twice."""
         from engine.game_state import game_state
-        damage = self.enemy.calculate_damage(self.base_damage)
         actions = []
         for _ in range(self.hits):
             actions.append(
-                AttackAction(damage, game_state.player, self.enemy, "attack")
+                AttackAction(self.base_damage, game_state.player, self.enemy, "attack")
             )
         return actions
 
@@ -78,8 +77,7 @@ class HyperBeam(Intention):
     def execute(self) -> List:
         """Deal heavy damage to player."""
         from engine.game_state import game_state
-        damage = self.enemy.calculate_damage(self.base_damage)
-        return [AttackAction(damage, game_state.player, self.enemy, "attack")]
+        return [AttackAction(self.base_damage, game_state.player, self.enemy, "attack")]
 
 
 class Stunned(Intention):

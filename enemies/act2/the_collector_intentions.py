@@ -54,9 +54,8 @@ class Fireball(Intention):
         """Execute fireball attack."""
         from engine.game_state import game_state
         
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=game_state.player,
             source=self.enemy,
             damage_type="attack"
@@ -153,9 +152,8 @@ class Tackle(Intention):
         """Execute tackle attack."""
         from engine.game_state import game_state
         
-        damage = self.enemy.calculate_damage(self.base_damage)
         return [AttackAction(
-            damage=damage,
+            damage=self.base_damage,
             target=game_state.player,
             source=self.enemy,
             damage_type="attack"

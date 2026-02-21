@@ -54,12 +54,11 @@ class BloodShots(Intention):
         from engine.game_state import game_state
 
         base_damage, hits = random.choice([(2, 12), (2, 15)])
-        damage = self.enemy.calculate_damage(base_damage)
         actions: List[Action] = []
         for _ in range(hits):
             actions.append(
                 AttackAction(
-                    damage=damage,
+                    damage=base_damage,
                     target=game_state.player,
                     source=self.enemy,
                     damage_type="attack",
@@ -78,10 +77,9 @@ class Echo(Intention):
         from engine.game_state import game_state
 
         base_damage = random.choice([40, 45])
-        damage = self.enemy.calculate_damage(base_damage)
         return [
             AttackAction(
-                damage=damage,
+                damage=base_damage,
                 target=game_state.player,
                 source=self.enemy,
                 damage_type="attack",
