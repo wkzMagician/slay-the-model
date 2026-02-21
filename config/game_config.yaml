@@ -2,6 +2,7 @@ mode: debug # human | ai | debug
 language: en
 seed: 1
 character: Ironclad
+ascension: 0  # 0-20, 0 = no ascension
 select_overflow: truncate # truncate | reselect
 
 human:

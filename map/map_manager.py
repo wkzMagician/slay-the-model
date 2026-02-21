@@ -109,28 +109,49 @@ class MapManager:
         Generate the number of nodes for each floor.
         
         Returns:
-            List of node counts for each floor (17 floors for standard act)
+            List of node counts for each floor
         """
-        floor_sizes = []
+        from engine.game_state import game_state
         
-        for floor in range(18):  # 18 floors (0-17), Floor 17 is hidden TreasureRoom after boss
+        if self.act_id == 4:
+            return [1, 1, 1, 1, 1, 1]
+        
+        if self.act_id == 3 and game_state.ascension >= 20:
+            floor_sizes = []
+            for floor in range(19):
+                if floor == 0:
+                    floor_sizes.append(1)
+                elif floor == 1:
+                    floor_sizes.append(3)
+                elif floor == 9:
+                    floor_sizes.append(3)
+                elif floor == 15:
+                    floor_sizes.append(3)
+                elif floor == 16:
+                    floor_sizes.append(1)
+                elif floor == 17:
+                    floor_sizes.append(1)
+                elif floor == 18:
+                    floor_sizes.append(1)
+                else:
+                    floor_sizes.append(self.rng.randint(3, 5))
+            return floor_sizes
+        
+        floor_sizes = []
+        for floor in range(18):
             if floor == 0:
-                floor_sizes.append(1)  # Neo
+                floor_sizes.append(1)
             elif floor == 1:
-                # Floor 1: 3 nodes (player can start at any)
                 floor_sizes.append(3)
-            elif floor == 9: # ? 是否写死Treasure有3个
+            elif floor == 9:
                 floor_sizes.append(3)
-            elif floor == 15: # ? 是否写死Campfire有3个
+            elif floor == 15:
                 floor_sizes.append(3)
             elif floor == 16:
-                # Floor 16: 1 node (boss)
                 floor_sizes.append(1)
             elif floor == 17:
-                # Floor 17: Hidden TreasureRoom after boss (invisible in original game)
                 floor_sizes.append(1)
             else:
-                # Other floors: 2-5 nodes
                 floor_sizes.append(self.rng.randint(3, 5))
         
         return floor_sizes
@@ -198,27 +219,74 @@ class MapManager:
         Args:
             nodes: 2D array of MapNode objects
         """
+        from engine.game_state import game_state
+        
         for floor in range(len(nodes)):
             for node in nodes[floor]:
-                if floor == 0: # Neo - starter room
+                if self.act_id == 4:
+                    if floor == 0:
+                        node.room_type = RoomType.REST
+                    elif floor == 1:
+                        node.room_type = RoomType.MERCHANT
+                    elif floor == 2:
+                        node.room_type = RoomType.ELITE
+                    elif floor == 3:
+                        node.room_type = RoomType.BOSS
+                    elif floor == 4:
+                        node.room_type = RoomType.VICTORY
+                    else:
+                        node.room_type = RoomType.VICTORY
+                    continue
+                
+                if self.act_id == 3 and game_state.ascension >= 20:
+                    if floor == 16:
+                        node.room_type = RoomType.BOSS
+                    elif floor == 17:
+                        node.room_type = RoomType.BOSS
+                    elif floor == 18:
+                        node.room_type = RoomType.VICTORY
+                    elif floor == 0:
+                        node.room_type = RoomType.NEO
+                    elif floor == 1:
+                        node.room_type = RoomType.MONSTER
+                    elif floor == 9:
+                        node.room_type = RoomType.TREASURE
+                    elif floor == 15:
+                        node.room_type = RoomType.REST
+                    else:
+                        node.room_type = self._get_random_room_type()
+                    continue
+                
+                if self.act_id == 3:
+                    if floor == 16:
+                        node.room_type = RoomType.BOSS
+                    elif floor == 17:
+                        node.room_type = RoomType.VICTORY
+                    elif floor == 0:
+                        node.room_type = RoomType.NEO
+                    elif floor == 1:
+                        node.room_type = RoomType.MONSTER
+                    elif floor == 9:
+                        node.room_type = RoomType.TREASURE
+                    elif floor == 15:
+                        node.room_type = RoomType.REST
+                    else:
+                        node.room_type = self._get_random_room_type()
+                    continue
+                
+                if floor == 0:
                     node.room_type = RoomType.NEO
                 elif floor == 1:
-                    # Floor 1: All monsters (easy pool)
                     node.room_type = RoomType.MONSTER
                 elif floor == 9:
-                    # Floor 8: All treasure
                     node.room_type = RoomType.TREASURE
                 elif floor == 15:
-                    # Floor 14: All rest
                     node.room_type = RoomType.REST
                 elif floor == 16:
-                    # Floor 15: Boss
                     node.room_type = RoomType.BOSS
-                # Floor 17: Hidden TreasureRoom after boss (invisible in original game)
                 elif floor == 17:
                     node.room_type = RoomType.TREASURE
                 else:
-                    # Other floors: Random based on weights
                     node.room_type = self._get_random_room_type()
     
     def _get_random_room_type(self) -> RoomType:
@@ -347,10 +415,11 @@ class MapManager:
         from rooms.shop import ShopRoom
         from rooms.treasure import TreasureRoom
         from rooms.event import EventRoom
+        from rooms.victory import VictoryRoom
+        from engine.game_state import game_state
         
         if room_type == RoomType.MONSTER:
             # Get monster encounter from encounter pool
-            from engine.game_state import game_state
             enemies, encounter_name = self.encounter_pool.get_normal_encounter(
                 floor=self.map_data.current_floor,
                 encounter_count=game_state.normal_encounters_fought,
@@ -360,7 +429,6 @@ class MapManager:
         
         elif room_type == RoomType.ELITE:
             # Get elite encounter from encounter pool
-            from engine.game_state import game_state
             enemies, encounter_name = self.encounter_pool.get_elite_encounter(
                 floor=self.map_data.current_floor,
                 last_elite=game_state.elite_history[-1] if game_state.elite_history else None
@@ -369,9 +437,12 @@ class MapManager:
         
         elif room_type == RoomType.BOSS:
             # Boss combat room - fight the boss!
-            from engine.game_state import game_state
+            boss_index = 0
+            if self.act_id == 3 and game_state.ascension >= 20:
+                boss_index = 0 if self.map_data.current_floor == 16 else 1
             enemies, encounter_name = self.encounter_pool.get_boss_encounter(
                 floor=self.map_data.current_floor,
+                boss_index=boss_index,
             )
             return CombatRoom(enemies=enemies, room_type=RoomType.BOSS, encounter_name=encounter_name)
         
@@ -382,12 +453,14 @@ class MapManager:
             return ShopRoom()
         
         elif room_type == RoomType.TREASURE:
-            # Floor 17 is the hidden boss treasure room
-            is_boss = self.map_data.current_floor == 17
+            is_boss = self.map_data.current_floor == 17 and self.act_id < 3
             return TreasureRoom(is_boss=is_boss)
         
         elif room_type == RoomType.EVENT:
             return EventRoom()
+        
+        elif room_type == RoomType.VICTORY:
+            return VictoryRoom()
         
         elif room_type == RoomType.UNKNOWN:
             # Resolve unknown room type

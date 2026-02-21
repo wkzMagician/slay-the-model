@@ -22,6 +22,7 @@ ui:
     MERCHANT: "Merchant"
     TREASURE: "Treasure"
     UNKNOWN: "?"
+    VICTORY: "Victory"
   choose_blessings: "Choose blessings"
   potion_full_title: "Potion slots full"
   skip_potion: "Skip"

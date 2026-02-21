@@ -29,7 +29,7 @@ class GameState:
         # Multi-act game progress
         self.current_act: int = 1          # Current act (1-4)
         self.floor_in_act: int = 0         # Floor within current act (0-17)
-        self.ascension: int = 0            # Ascension level (0-20, 0 = no ascension)
+        self.ascension: int = 0            # Ascension level (0-20, 0 = no ascension) - set after config load
 
         # Keys for Act 4 access (defeat act 3 boss with all 3 keys to enter act 4)
         self.ruby_key: bool = False        # From boss relic
@@ -42,6 +42,9 @@ class GameState:
         
         from localization import set_language
         set_language(self.config.language)
+        
+        # Ascension from config
+        self.ascension = self.config.ascension
 
         # Run history for Neo blessings
         self.run_history = {"reached_exordium_boss": False}

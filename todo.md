@@ -7,7 +7,7 @@ Smoke Bomb cannot be used while Surrounded
 
 [-] 原来卡牌/药水/遗物的攻击选中目标，要么直接从所有enemy里面选，要么从不是is_dead的enemy里面选。应该统一改为从hp>0的enemy里面选。（即如果enemy还存活，但是hp=0，也无法选中）
 
-[] 补全/修改逻辑：act的地图布局。现在的地图布局是符合act1和act2。在act3，在ancension<20时，floor_in_act=17的楼层是VictoryRoom而不是TreasureRoom；而ancension=20时，由于有双boss站，floor_in_act=16和17是两个BossRoom（boss不同），而floor_in_act=18才是VictoryRoom。这个VictoryRoom会判断，player是否拥有3把钥匙。若没有，则直接胜利；若有，则转换到act4。act4的地图布局很独特，只有InitialRoom(act3的VictoryRoom)->RestRoom->ShopRoom->CombatRoom(Elite)->CombatRoom(Boss)->VictoryRoom，到达最后就代表最终的胜利。至于ancension，在config中调整。
+[-] 补全/修改逻辑：act的地图布局。现在的地图布局是符合act1和act2。在act3，在ancension<20时，floor_in_act=17的楼层是VictoryRoom而不是TreasureRoom；而ancension=20时，由于有双boss站，floor_in_act=16和17是两个BossRoom（boss不同），而floor_in_act=18才是VictoryRoom。这个VictoryRoom会判断，player是否拥有3把钥匙。若没有，则直接胜利；若有，则转换到act4。act4的地图布局很独特，只有InitialRoom(act3的VictoryRoom)->RestRoom->ShopRoom->CombatRoom(Elite)->CombatRoom(Boss)->VictoryRoom，到达最后就代表最终的胜利。至于ancension，在config中调整。
 
 [] ApplyPower的问题。
 1. 有些power只有duration有意义，amount没有意义。

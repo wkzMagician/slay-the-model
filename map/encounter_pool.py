@@ -604,18 +604,37 @@ class EncounterPool:
         enemies = factory()
         return enemies, selected_name
 
-    def get_boss_encounter(self, floor):
+    def get_boss_encounter(self, floor, boss_index=0):
         """Get a boss encounter for the current act.
         
         Args:
-            floor: Floor within act (0-indexed), expects 15 for boss floor
+            floor: Floor within act (0-indexed), expects 15 or 16 for boss floors
+            boss_index: For A20 Act 3 double boss, 0=first boss, 1=second boss
         """
-        # Boss is always on floor 15 (0-indexed) within an act
-        if floor != 15:
-            return [], ""
+        from engine.game_state import game_state
         
-        # Select random boss from act-specific pool (loaded in _load_act_pools)
-        boss_name = self.rng.choice(list(self.boss_pool.keys()))
+        is_act3_a20 = self.act_id == 3 and game_state.ascension >= 20
+        
+        if is_act3_a20:
+            if floor not in [15, 16]:
+                return [], ""
+        else:
+            if floor != 15:
+                return [], ""
+        
+        boss_names = list(self.boss_pool.keys())
+        
+        if is_act3_a20 and boss_index == 0:
+            boss_name = self.rng.choice(boss_names)
+            self._act3_first_boss_name = boss_name
+        elif is_act3_a20 and boss_index == 1:
+            if not hasattr(self, '_act3_first_boss_name'):
+                self._act3_first_boss_name = self.rng.choice(boss_names)
+            remaining = [n for n in boss_names if n != self._act3_first_boss_name]
+            boss_name = self.rng.choice(remaining) if remaining else self.rng.choice(boss_names)
+        else:
+            boss_name = self.rng.choice(boss_names)
+        
         factory = self.boss_pool[boss_name]
         enemies = factory()
         return enemies, boss_name

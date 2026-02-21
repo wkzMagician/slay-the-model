@@ -15,22 +15,28 @@ class GameFlow:
     """
     Room-based game flow controller with multi-act support.
     
-    Each act has 18 floors (0-17):
-    - Floor 0: Neo room (Act 1 only)
-    - Floors 1-14: Normal rooms
-    - Floor 15: Rest site before boss
-    - Floor 16: Act boss
-    - Floor 17: Boss treasure (hidden, not on map)
+    Floor layout varies by act:
+    - Act 1-2: 18 floors (0-17), floor 16=boss, floor 17=treasure
+    - Act 3 (A<20): 18 floors (0-17), floor 16=boss, floor 17=VictoryRoom
+    - Act 3 (A20): 19 floors (0-18), floor 16=boss1, floor 17=boss2, floor 18=VictoryRoom
+    - Act 4: 6 floors (0-5), fixed: Rest->Shop->Elite->Boss->VictoryRoom
     
-    After Act 3 boss:
-    - Without all 3 keys: Game victory
-    - With all 3 keys: Enter Act 4
-    
-    Act 4 has a shorter structure leading to the Corrupt Heart.
+    VictoryRoom handles key checking for Act 4 transition.
     """
     
     def __init__(self):
         self.current_room = None
+    
+    def _get_max_floor(self, game_state) -> int:
+        """Get the maximum floor number for current act (0-indexed)."""
+        from engine.game_state import FLOORS_PER_ACT
+        
+        if game_state.current_act == 4:
+            return 5  # Act 4: 6 floors (0-5)
+        elif game_state.current_act == 3 and game_state.ascension >= 20:
+            return 18  # Act 3 A20: 19 floors (0-18)
+        else:
+            return FLOORS_PER_ACT - 1  # Default: 18 floors (0-17)
     
     def start_game(self, game_state):
         """
@@ -71,11 +77,13 @@ class GameFlow:
         Returns True if boss defeated, False if player died.
         """
         from utils.result_types import MultipleActionsResult
+        from rooms.victory import VictoryRoom
         
         result = ""
+        max_floor = self._get_max_floor(game_state)
         
-        # Act loop - iterate over floors 1-16 (boss is on floor 16, 0-indexed as 15)
-        while game_state.floor_in_act < FLOORS_PER_ACT - 1:  # Floors 0-16
+        # Act loop - iterate over floors up to max_floor
+        while game_state.floor_in_act < max_floor:
             # Select next room from map
             cur_room = self._select_next_room(game_state)
             if cur_room is None:
@@ -105,18 +113,24 @@ class GameFlow:
             
             # Leave the room (cleanup)
             cur_room.leave()
+            
+            # Check if VictoryRoom was entered and handled completion
+            if isinstance(cur_room, VictoryRoom):
+                # VictoryRoom handles its own completion
+                return True
         
         return True
     
     def _handle_act_completion(self, game_state) -> bool:
         """
-        Handle end-of-act: boss treasure room, then act transition.
+        Handle end-of-act: boss treasure room (Acts 1-2), then act transition.
+        VictoryRoom (Acts 3-4) handles its own completion via the room itself.
         Returns True if game should continue to next act.
         """
         from utils.result_types import MultipleActionsResult
         from rooms.treasure import TreasureRoom
         
-        # Boss treasure room (Act 1 & 2 have treasure, Act 3 & 4 have victory room)
+        # Boss treasure room (Act 1 & 2 only - Acts 3 & 4 use VictoryRoom on map)
         if game_state.current_act <= 2:
             # Treasure room for Act 1 and 2
             treasure_room = TreasureRoom(is_boss=True)
