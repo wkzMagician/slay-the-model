@@ -4,6 +4,7 @@ Localization module for multi-language support.
 import os
 from typing import Dict, Any, Tuple
 import yaml
+# from tui.print_utils import tui_print  # Removed: causes import issues in CLI mode
 
 # Default language
 DEFAULT_LANGUAGE = 'en'
@@ -28,6 +29,7 @@ def _load_all_translations():
                     translations[lang] = _flatten_dict(data)
             except Exception as e:
                 print(f"Error loading {file_path}: {e}")
+
 
 def _flatten_dict(d, prefix=''):
     """Flatten nested dict to dotted keys."""

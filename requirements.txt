@@ -1,0 +1,10 @@
+# Slay the Model - Python Dependencies
+
+# TUI Framework
+textual>=0.47.0
+
+# Rich text formatting (required by textual)
+rich>=13.0.0
+
+# YAML configuration parsing
+pyyaml>=6.0

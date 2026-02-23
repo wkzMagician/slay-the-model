@@ -2,6 +2,7 @@
 Treasure room implementation.
 """
 import random
+from tui.print_utils import tui_print
 from actions.display import SelectAction, DisplayTextAction
 from actions.misc import OpenChestAction
 from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult, SingleActionResult
@@ -24,21 +25,21 @@ class TreasureRoom(Room):
         self.is_boss = is_boss
         self.chest_type = None
         self.chest_opened = False
-    
+
     def init(self):
         """Initialize the treasure room"""
         # Determine chest type
         self._determine_chest_type()
-    
+
     def _determine_chest_type(self):
-        """Determine the type of chest based on random roll. Returns the chest type string."""
+        """Determine type of chest based on random roll. Returns a chest type string."""
         if self.is_boss:
             self.chest_type = "boss"
         else:
             roll = random.random()
             self.chest_type = "small" if roll < 0.50 else "medium" if roll < 0.83 else "large"
         return self.chest_type
-    
+
     def _get_small_chest_contents(self):
         """Get contents for a small chest."""
         import random
@@ -49,7 +50,7 @@ class TreasureRoom(Room):
         relic_classes = get_random_relic_by_rarity(RarityType.COMMON)
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.COMMON, "relics": [relic] if relic else []}
-    
+
     def _get_medium_chest_contents(self):
         """Get contents for a medium chest."""
         import random
@@ -60,7 +61,7 @@ class TreasureRoom(Room):
         relic_classes = get_random_relic_by_rarity(RarityType.UNCOMMON)
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.UNCOMMON, "relics": [relic] if relic else []}
-    
+
     def _get_large_chest_contents(self):
         """Get contents for a large chest."""
         import random
@@ -71,7 +72,7 @@ class TreasureRoom(Room):
         relic_classes = get_random_relic_by_rarity(RarityType.RARE)
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.RARE, "relics": [relic] if relic else []}
-    
+
     def _get_boss_chest_contents(self):
         """Get contents for a boss chest."""
         from utils.types import RarityType
@@ -99,11 +100,11 @@ class TreasureRoom(Room):
             else:
                 actions.append(result)
         return actions
-    
+
     def enter(self) -> BaseResult:
         """Enter treasure room and handle chest opening"""
         # Display entry message
-        print(t("rooms.treasure.enter"))
+        tui_print(t("rooms.treasure.enter"))
 
         # Main treasure loop
         while not self.should_leave:
@@ -117,7 +118,7 @@ class TreasureRoom(Room):
                 break
 
         return NoneResult()
-    
+
     def _build_treasure_menu(self):
         """Build treasure room menu and return SelectAction"""
         options = []

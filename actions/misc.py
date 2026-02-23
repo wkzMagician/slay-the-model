@@ -13,6 +13,7 @@ from utils.option import Option
 from utils.random import get_random_relic
 from utils.registry import register
 from utils.types import RarityType
+from tui.print_utils import tui_print
 
 
 # ============================================================================
@@ -136,7 +137,7 @@ class BuyItemAction(Action):
             item_name = str(item_name)  # BaseLocalStr to string
         else:
             item_name = getattr(self.shop_item.item, 'name', 'Unknown Item')
-        print(t("ui.shop_bought_item", default=f"Bought {item_name} for {final_price} gold!"))
+        tui_print(t("ui.shop_bought_item", default=f"Bought {item_name} for {final_price} gold!"))
 
         # feature: MawBank的逻辑
         # MawBank effect: track gold spent
@@ -358,5 +359,5 @@ class SkipToBossAction(Action):
         
         # Set flag to skip to boss
         game_state.skip_to_boss = True
-        print("[Event] Skipping to boss!")
+        tui_print("[Event] Skipping to boss!")
         return NoneResult()

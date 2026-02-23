@@ -5,6 +5,7 @@ import random
 from typing import List, TYPE_CHECKING
 
 from enemies.intention import Intention
+from tui.print_utils import tui_print
 
 if TYPE_CHECKING:
     from enemies.base import Enemy
@@ -93,8 +94,7 @@ class LooterEscapeIntention(Intention):
         from localization import t
         
         # Print escape message
-        print(t("combat.looter_escape", default=f"{self.enemy.name} escapes with your gold!", 
-                enemy=self.enemy.name))
+        tui_print(t("combat.looter_escape", default=f"{self.enemy.name} escapes with your gold!", enemy=self.enemy.name))
         
         return [
             RemoveEnemyAction(enemy=self.enemy)

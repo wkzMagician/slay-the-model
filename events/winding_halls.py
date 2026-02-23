@@ -56,7 +56,7 @@ class WindingHalls(Event):
             ),
             Option(
                 name=LocalStr('events.winding_halls.retrace'),
-                actions=[ModifyMaxHpAction(percent=0.05)] # 改为计算amount，注意是negative
+                actions=[ModifyMaxHpAction(amount=-0.05*game_state.player.max_hp)]
             )
         ]
         

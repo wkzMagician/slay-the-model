@@ -4,6 +4,7 @@
 from typing import List, Any, TYPE_CHECKING
 from powers.base import Power, StackType
 from utils.registry import register
+from tui.print_utils import tui_print
 
 if TYPE_CHECKING:
     from actions.base import Action
@@ -57,8 +58,7 @@ class ThieveryPower(Power):
             self.stolen_gold += gold_to_steal
             from localization import t
             owner_name = getattr(self.owner, 'name', 'Enemy') if self.owner else 'Enemy'
-            print(t("combat.thievery_steal", default=f"{owner_name} stole {gold_to_steal} gold!", 
-                    enemy=owner_name, amount=gold_to_steal))
+            tui_print(t("combat.thievery_steal", default=f"{owner_name} stole {gold_to_steal} gold!", enemy=owner_name, amount=gold_to_steal))
         
         return []
     
@@ -73,7 +73,6 @@ class ThieveryPower(Power):
         if self.stolen_gold > 0 and game_state.player:
             game_state.player.gold += self.stolen_gold
             from localization import t
-            print(t("combat.thievery_return", default=f"Recovered {self.stolen_gold} stolen gold!", 
-                    amount=self.stolen_gold))
+            tui_print(t("combat.thievery_return", default=f"Recovered {self.stolen_gold} stolen gold!", amount=self.stolen_gold))
         
         return []

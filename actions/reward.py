@@ -1,5 +1,6 @@
 from typing import List, Optional, TYPE_CHECKING
 
+from tui.print_utils import tui_print
 from actions.base import Action
 from utils.result_types import BaseResult, NoneResult, SingleActionResult, MultipleActionsResult
 from localization import LocalStr, t
@@ -32,7 +33,7 @@ class AddRelicAction(Action):
                 game_state.player.relics.append(relic)
                 # Track relic as obtained (even if removed later)
                 game_state.obtained_relics.add(relic.idstr)
-                print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
+                tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
         return NoneResult()
             
 @register("action")
@@ -83,7 +84,7 @@ class AddRandomRelicAction(Action):
                 game_state.player.relics.append(relic)
                 # Track relic as obtained (even if removed later)
                 game_state.obtained_relics.add(relic.idstr)
-                print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
+                tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
         return NoneResult()
             
 @register("action")
@@ -191,7 +192,7 @@ class AddGoldAction(Action):
                     modified_amount = relic.modify_gold_gained(modified_amount)
                 
                 game_state.player.gold += modified_amount
-                print(t("rewards.gold", default="Gained {amount} gold", amount=modified_amount))
+                tui_print(t("rewards.gold", default="Gained {amount} gold", amount=modified_amount))
                 
                 # Trigger on_gold_gained for relics like BloodyIdol
                 for relic in game_state.player.relics:
@@ -199,7 +200,7 @@ class AddGoldAction(Action):
                     for action in actions:
                         action.execute()
             else:
-                print(t("rewards.gold_fail", default="Failed to gain gold", chance=self.chance))
+                tui_print(t("rewards.gold_fail", default="Failed to gain gold", chance=self.chance))
         return NoneResult()
             
 @register("action")
@@ -303,7 +304,7 @@ class AddPotionAction(Action):
 
         added = player.potions.append(self.potion)
         if added:
-            print(t("ui.received_potion", default=f"Received potion: {self.potion.idstr}!", name=self.potion.idstr))
+            tui_print(t("ui.received_potion", default=f"Received potion: {self.potion.idstr}!", name=self.potion.idstr))
         return NoneResult()
 
 @register("action")
@@ -330,6 +331,6 @@ class ReplacePotionAction(Action):
         potions = game_state.player.potions
         if 0 <= self.index < len(potions):
             potions[self.index] = self.new_potion
-            print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.idstr))
+            tui_print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.idstr))
             return NoneResult()
         return NoneResult()

@@ -1,0 +1,80 @@
+/* TUI Styles for Slay the Model */
+
+Screen {
+    background: $surface;
+}
+
+#main-container {
+    height: 1fr;
+    width: 100%;
+    layout: horizontal;
+}
+
+#display-panel-container {
+    width: 2fr;
+    height: 100%;
+    border: solid $primary;
+    padding: 1;
+}
+
+#selection-panel-container {
+    width: 2fr;
+    height: 100%;
+    border: solid $secondary;
+    padding: 1;
+}
+
+#output-panel-container {
+    width: 2fr;
+    height: 100%;
+    border: solid $accent;
+    padding: 1;
+    overflow-y: scroll;
+}
+
+#display-panel {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding: 1;
+}
+
+#selection-panel {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding: 1;
+}
+
+#output-panel {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+Header {
+    background: $primary;
+    color: $text;
+    text-align: center;
+}
+
+Footer {
+    background: $surface-darken-1;
+}
+
+/* Dark mode */
+.-dark-mode Screen {
+    background: $surface-darken-3;
+}
+
+.-dark-mode #display-panel-container {
+    border: solid $primary-darken-1;
+}
+
+.-dark-mode #selection-panel-container {
+    border: solid $secondary-darken-1;
+}
+
+.-dark-mode #output-panel-container {
+    border: solid $accent-darken-1;
+}

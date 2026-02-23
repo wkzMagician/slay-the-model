@@ -54,7 +54,7 @@ class HeadSlam(Intention):
                 damage_type="attack"
             ),
             ApplyPowerAction(
-                power="draw_reduction",
+                power="DrawReductionPower",
                 target=game_state.player,
                 amount=self.base_draw_reduction,
                 duration=self.base_draw_reduction

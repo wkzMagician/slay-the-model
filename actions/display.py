@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Display-related actions
+Display-related actions - with TUI integration
 """
 from typing import Dict, List, Optional
 import pickle
@@ -16,9 +16,25 @@ def get_game_state():
     from engine.game_state import game_state
     return game_state
 
+def _is_tui_mode():
+    """Check if TUI mode is active."""
+    try:
+        from tui import is_tui_mode, get_app
+        return is_tui_mode() and get_app() is not None
+    except ImportError:
+        return False
+
+def _get_tui_app():
+    """Get TUI app instance if available."""
+    try:
+        from tui import get_app
+        return get_app()
+    except ImportError:
+        return None
+
 @register("action")
 class DisplayTextAction(Action):
-    """Display text to user
+    """Display text to user - routes to TUI output panel when available
 
     Required:
         text_key (str): key for localized text
@@ -34,7 +50,13 @@ class DisplayTextAction(Action):
         # Extract default from fmt if present, otherwise use text_key
         fallback = self.fmt.get('default', self.text_key)
         text = t(self.text_key, default=fallback, **{k: v for k, v in self.fmt.items() if k != 'default'})
-        print(text)
+        
+        # Route to TUI if available
+        app = _get_tui_app()
+        if app:
+            app.add_output(text)
+        else:
+            print(text)
         return NoneResult()
 
 @register("action")
@@ -88,12 +110,24 @@ class SelectAction(Action):
     def show_info(self):
         # 展示标题与选项（翻译 name）
         # If title is a plain string that looks like a localization key, localize it
+        app = _get_tui_app()
+        
         if isinstance(self.title, str):
-            print(f"\n=== {t(self.title)} ===")
+            title_str = f"=== {t(self.title)} ==="
         else:
-            print(f"\n=== {self.title} ===")
+            title_str = f"=== {self.title} ==="
+        
+        options_lines = []
         for i, option in enumerate(self.options):
-            print(f"{i+1}. {option.name}")
+            options_lines.append(f"{i+1}. {option.name}")
+        
+        if app:
+            # Route to TUI selection panel
+            app.show_selection(title_str, self.options)
+        else:
+            print(f"\n{title_str}")
+            for line in options_lines:
+                print(line)
             
     def _build_selected_options(
         self,
@@ -116,10 +150,114 @@ class SelectAction(Action):
         if not selected_options:
             return
         
+        app = _get_tui_app()
         # Print selection header
-        print(f"\n{t('ui.selected', default='Selected:')}")
+        header = f"\n{t('ui.selected', default='Selected:')}"
+        lines = [header]
         for idx, option in selected_options.items():
-            print(f"  {idx+1}. {option.name}")
+            lines.append(f"  {idx+1}. {option.name}")
+        
+        if app:
+            for line in lines:
+                app.add_output(line)
+        else:
+            for line in lines:
+                print(line)
+
+    def _execute_human_tui(
+        self,
+        options: List[Option],
+        actual_max_select: int,
+    ) -> 'BaseResult':
+        """Execute human selection using the TUI async bridge."""
+        app = _get_tui_app()
+        if app is None:
+            return NoneResult()
+
+        if isinstance(self.title, str):
+            title_str = t(self.title)
+        else:
+            title_str = str(self.title)
+
+        selected_indices = app.request_selection_sync(
+            title_str,
+            options,
+            self.max_select,
+            self.must_select,
+        )
+
+        if not selected_indices:
+            return NoneResult()
+
+        valid_indices = list(dict.fromkeys(selected_indices))
+
+        if not self.must_select and 0 in valid_indices:
+            if len(valid_indices) > 1:
+                app.add_output(
+                    t(
+                        "ui.stop_option_mixed",
+                        default=(
+                            "WARNING: Cannot select stop option with "
+                            "other options. Please select again."
+                        ),
+                    )
+                )
+                return self._execute_human_tui(options, actual_max_select)
+            return NoneResult()
+
+        if self.has_menu:
+            menu_idx = len(options) - 1
+            if menu_idx in valid_indices:
+                if len(valid_indices) > 1:
+                    app.add_output(
+                        t(
+                            "ui.menu_option_mixed",
+                            default=(
+                                "WARNING: Cannot select menu option with "
+                                "other options. Please select again."
+                            ),
+                        )
+                    )
+                    return self._execute_human_tui(options, actual_max_select)
+                return MultipleActionsResult(options[menu_idx].actions)
+
+        if len(valid_indices) > actual_max_select:
+            overflow_handling = get_game_state().config.get(
+                "select_overflow",
+                "truncate",
+            )
+
+            if overflow_handling == "truncate":
+                app.add_output(
+                    t(
+                        "ui.too_many_options_truncated",
+                        default=(
+                            f"Too many options selected (max "
+                            f"{actual_max_select}), truncating to first "
+                            f"{actual_max_select}"
+                        ),
+                    )
+                )
+                valid_indices = valid_indices[:actual_max_select]
+            else:
+                app.add_output(
+                    t(
+                        "ui.too_many_options",
+                        default=(
+                            f"Too many options selected (max "
+                            f"{self.max_select})"
+                        ),
+                    )
+                )
+                return self._execute_human_tui(options, actual_max_select)
+
+        selected_options = self._build_selected_options(options, valid_indices)
+        self.show_choose(selected_options)
+
+        selected_actions = []
+        for idx in valid_indices:
+            selected_actions.extend(options[idx].actions)
+        return MultipleActionsResult(selected_actions)
         
         
     def execute_human(self) -> 'BaseResult':
@@ -180,6 +318,9 @@ class SelectAction(Action):
             return MultipleActionsResult(all_actions)
         
         actual_max_select = self.max_select if self.max_select != -1 else len(options)
+
+        if _is_tui_mode():
+            return self._execute_human_tui(options, actual_max_select)
         
         while True:
             try:
@@ -354,6 +495,17 @@ class MenuAction(Action):
     def execute(self) -> 'BaseResult':
         """执行菜单交互循环。"""
         gs = get_game_state()
+
+        if _is_tui_mode():
+            app = _get_tui_app()
+            if app:
+                app.add_output(
+                    t(
+                        "ui.menu_unavailable_tui",
+                        default="Menu commands are not available in TUI mode yet.",
+                    )
+                )
+            return SingleActionResult(self.parent_select_action)
 
         print("\n" + "=" * 50)
         print("游戏菜单 (输入 'help' 查看帮助)")

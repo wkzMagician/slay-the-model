@@ -1,5 +1,5 @@
 ui:
-  room_entered: "Entered room"
+  room_entered: Entered room
   game_welcome: "Welcome to Slay the Spire!"
   game_awaken: "You awaken in Spire, ready to begin your ascent..."
   seed_display: "Seed: {seed}"
@@ -177,6 +177,10 @@ events:
     accept: "Accept her offer"
     decline: "Decline"
     leave: "Leave"
+    option1: "[Buy 1 Potion] Lose 20 Gold. Obtain a random potion."
+    option2: "[Buy 2 Potions] Lose 30 Gold. Obtain 2 random potions."
+    option3: "[Buy 3 Potions] Lose 40 Gold. Obtain 3 random potions."
+    option4: "[Leave] Lose HP equal to 5% of Max HP."
   ancient_writing:
     title: "Ancient Writing"
     description: "Ancient writing covers the walls."
@@ -1422,6 +1426,52 @@ enemies:
         name: "Escape"
         description: "Flee combat with stolen gold."
 
+  Spiker:
+    name: "Spiker"
+    intentions:
+      spike_attack:
+        name: "Spike Attack"
+        description: "Deal {damage} damage."
+      buff_thorns:
+        name: "Buff Thorns"
+        description: "Gain {amount} Thorns."
+
+  Repulsor:
+    name: "Repulsor"
+    intentions:
+      repulsor_attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+      repulsor_debuff:
+        name: "Debuff"
+        description: "Apply 1 Weak and 1 Frail."
+
+  Exploder:
+    name: "Exploder"
+    intentions:
+      explode:
+        name: "Explode"
+        description: "Will explode soon!"
+      exploder_attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+
+  TheMaw:
+    name: "The Maw"
+    intentions:
+      roar:
+        name: "Roar"
+        description: "Apply 3 Weak and 3 Frail."
+      slam:
+        name: "Slam"
+        description: "Deal {damage} damage."
+      nom_nom:
+        name: "Nom Nom"
+        description: "Deal {damage} damage."
+      drool:
+        name: "Drool"
+        description: "Gain 3 Strength."
+
   TheHexaghost:
     name: "Hexaghost"
     intentions:
@@ -1473,6 +1523,175 @@ enemies:
       Square of Protection:
         name: "Square of Protection"
         description: "All enemies gain {block} Block."
+
+  # Act 3 Enemies
+  TimeEater:
+    name: "Time Eater"
+    intentions:
+      Reverberate:
+        name: "Reverberate"
+        description: "Deal {damage} damage 3 times."
+      HeadSlam:
+        name: "Head Slam"
+        description: "Deal {damage} damage. Apply 1 Draw Reduction."
+      Ripple:
+        name: "Ripple"
+        description: "Gain {block} Block. Apply 1 Vulnerable and 1 Weak."
+      Haste:
+        name: "Haste"
+        description: "Remove all debuffs. Heal to 50% HP."
+
+  AwakenedOne:
+    name: "Awakened One"
+    intentions:
+      Slash:
+        name: "Slash"
+        description: "Deal {damage} damage."
+      SoulStrike:
+        name: "Soul Strike"
+        description: "Deal {damage} damage 3 times."
+      Rebirth:
+        name: "Rebirth"
+        description: "Heal to full HP. Remove all debuffs."
+      DarkEcho:
+        name: "Dark Echo"
+        description: "Deal {damage} damage. Add 2 Dazed to your discard pile."
+      Sludge:
+        name: "Sludge"
+        description: "Deal {damage} damage. Add 2 Slimed to your discard pile."
+      Tackle:
+        name: "Tackle"
+        description: "Deal {damage} damage."
+
+  GiantHead:
+    name: "Giant Head"
+    intentions:
+      Nod:
+        name: "Nod"
+        description: "Does nothing."
+      criticism:
+        name: "Criticism"
+        description: "Deal {damage} damage."
+      ItIsTime:
+        name: "It Is Time"
+        description: "Deal {damage} damage."
+      Count:
+        name: "Count"
+        description: "Counting down..."
+
+  Nemesis:
+    name: "Nemesis"
+    intentions:
+      Attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+      Hex:
+        name: "Hex"
+        description: "Apply 1 Hex to you."
+      Torment:
+        name: "Torment"
+        description: "Add 2 Dazed to your discard pile."
+      Invisible:
+        name: "Invisible"
+        description: "Become intangible."
+
+  Reptomancer:
+    name: "Reptomancer"
+    intentions:
+      SnakeStrike:
+        name: "Snake Strike"
+        description: "Deal {damage} damage 2 times."
+      Bite:
+        name: "Bite"
+        description: "Deal {damage} damage."
+      Summon:
+        name: "Summon"
+        description: "Summon Daggers."
+
+  SpireGrowth:
+    name: "Spire Growth"
+    intentions:
+      Attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+      Constrict:
+        name: "Constrict"
+        description: "Apply Constrict to you."
+      QuickGrow:
+        name: "Quick Grow"
+        description: "Gain 1 Strength."
+
+  Transient:
+    name: "Transient"
+    intentions:
+      Attack:
+        name: "Attack"
+        description: "Deal {damage} damage."
+      Fade:
+        name: "Fade"
+        description: "Fade away..."
+
+  Darkling:
+    name: "Darkling"
+    intentions:
+      Nip:
+        name: "Nip"
+        description: "Deal {damage} damage."
+      Chomp:
+        name: "Chomp"
+        description: "Deal {damage} damage."
+      Harden:
+        name: "Harden"
+        description: "Gain {block} Block."
+      Rebirth:
+        name: "Rebirth"
+        description: "Revive all dead Darklings."
+
+  # Act 4 Enemies
+  SpireShield:
+    name: "Spire Shield"
+    intentions:
+      Bash:
+        name: "Bash"
+        description: "Deal {damage} damage. Apply 1 Vulnerable."
+      ShieldBash:
+        name: "Shield Bash"
+        description: "Deal {damage} damage."
+      Defend:
+        name: "Defend"
+        description: "Gain {block} Block."
+
+  SpireSpear:
+    name: "Spire Spear"
+    intentions:
+      Skewer:
+        name: "Skewer"
+        description: "Deal {damage} damage 4 times."
+      Sear:
+        name: "Sear"
+        description: "Deal {damage} damage. Add 2 Burn to your discard pile."
+      Pierce:
+        name: "Pierce"
+        description: "Deal {damage} damage."
+
+  CorruptHeart:
+    name: "Heart of the Spire"
+    intentions:
+      BloodShot:
+        name: "Blood Shots"
+        description: "Deal {damage} damage 12 times."
+      Debilitate:
+        name: "Debilitate"
+        description: "Apply 2 Vulnerable, 2 Weak, and 2 Frail."
+      Buff:
+        name: "Buff"
+        description: "Gain 2 Strength. Gain 2 Artifact."
+      Echo:
+        name: "Echo"
+        description: "Deal {damage} damage."
+      Invincible:
+        name: "Invincible"
+        description: "Cannot take more than 200 damage per turn."
 
 
 rooms:

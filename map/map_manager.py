@@ -9,6 +9,7 @@ from .map_node import MapNode
 from .map_data import MapData
 from .encounter_pool import EncounterPool
 
+from tui.print_utils import tui_print
 # Avoid circular import - use TYPE_CHECKING for type hints
 if TYPE_CHECKING:
     from rooms.base import Room
@@ -553,18 +554,18 @@ class MapManager:
         """
         from engine.game_state import game_state
         
-        print("\n" + "="*60)
+        tui_print("\n" + "="*60)
         # Use true_floor from game_state for accurate display across acts
         current_floor = game_state.current_floor
         act_num = game_state.current_act
-        print(f"MAP VIEW - Act {act_num} (Floor {current_floor})")
-        print("="*60)
+        tui_print(f"MAP VIEW - Act {act_num} (Floor {current_floor})")
+        tui_print("="*60)
         
         # Debug: show internal state
         act_start_floor = self._get_act_start_floor(self.act_id)
-        print(f"DEBUG: self.act_id={self.act_id}, act_start_floor={act_start_floor}")
-        print(f"DEBUG: self._act_floor_counts={self._act_floor_counts}")
-        print(f"DEBUG: current_floor={current_floor}, floor_in_act={game_state.floor_in_act}")
+        tui_print(f"DEBUG: self.act_id={self.act_id}, act_start_floor={act_start_floor}")
+        tui_print(f"DEBUG: self._act_floor_counts={self._act_floor_counts}")
+        tui_print(f"DEBUG: current_floor={current_floor}, floor_in_act={game_state.floor_in_act}")
         
         # Get available moves
         available_moves = self.get_available_moves()
@@ -580,12 +581,12 @@ class MapManager:
         }
         
         # Legend
-        print("\nLegend:")
-        print("  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Event")
-        print("  [R]=Rest     [T]=Treasure  [B]=Boss  [N]=Neo")
-        print("  *=Current   >=Available   ^=Visited")
-        print("  Connections: /=left  |=center  \\=right")
-        print()
+        tui_print("\nLegend:")
+        tui_print("  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Event")
+        tui_print("  [R]=Rest     [T]=Treasure  [B]=Boss  [N]=Neo")
+        tui_print("  *=Current   >=Available   ^=Visited")
+        tui_print("  Connections: /=left  |=center  \\=right")
+        tui_print()
         
         # Calculate true floor starting point for this act
         act_start_floor = self._get_act_start_floor(self.act_id)
@@ -624,7 +625,7 @@ class MapManager:
                 
                 line += node_str
             
-            print(line)
+            tui_print(line)
             
             # Display connection lines to next floor
             if next_floor_nodes:
@@ -686,10 +687,10 @@ class MapManager:
                 
                 # Only print connection line if there are actual connections
                 if any(c != " " for c in conn_line[11:]):
-                    print(conn_line)
+                    tui_print(conn_line)
         
-        print("\n" + "="*60)
-        print()
+        tui_print("\n" + "="*60)
+        tui_print()
     
     def get_map_for_ai(self) -> Dict:
         """
@@ -889,6 +890,31 @@ class MapManager:
         
         return "\n".join(lines)
 
+    def get_map_text_for_human(self) -> str:
+        """Get map text block for TUI display panel (no printing)."""
+        from engine.game_state import game_state
+
+        current_floor = game_state.current_floor
+        act_num = game_state.current_act
+        available_moves = self.get_available_moves()
+        available_positions = {(node.floor, node.position) for node in available_moves}
+
+        lines = [
+            "=" * 60,
+            f"MAP VIEW - Act {act_num} (Floor {current_floor})",
+            "=" * 60,
+            "",
+            "Legend:",
+            "  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Event",
+            "  [R]=Rest     [T]=Treasure  [B]=Boss  [N]=Neo",
+            "  *=Current   >=Available   X=Visited",
+            "",
+            self._format_map_ascii(available_positions),
+            "",
+            "=" * 60,
+        ]
+        return "\n".join(lines)
+
     def _resolve_unknown_type(self, floor: int) -> RoomType:
         """
         Determine what type an unknown room becomes when entered.
@@ -958,6 +984,6 @@ class MapManager:
         if self.has_ssserpent_head:
             from engine.game_state import game_state
             game_state.player.gold += 50
-            print(t("ui.ssserpent_head_gold", default="Ssserpent Head: Gained 50 gold!"))
+            tui_print(t("ui.ssserpent_head_gold", default="Ssserpent Head: Gained 50 gold!"))
         
         return chosen_type

@@ -991,7 +991,13 @@ class UsePotionAction(Action):
         if self.potion in game_state.player.potions:
             game_state.player.potions.remove(self.potion)
         
-        target_name = getattr(self.target, 'name', str(self.target))
+        from localization import LocalStr
+        # Get proper target name
+        target_name = getattr(self.target, 'name', None)
+        if target_name is None:
+            target_name = getattr(self.target, 'character', 'Unknown')
+        if isinstance(target_name, LocalStr):
+            target_name = target_name.resolve()
         print(f"Used potion: {self.potion.name} on {target_name}")
 
         all_actions = []

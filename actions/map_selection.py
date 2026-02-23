@@ -11,6 +11,7 @@ from localization import BaseLocalStr, LocalStr, t
 from typing import List
 
 from utils.registry import register
+from tui.print_utils import tui_print
 
 @register("action")
 class MoveToMapNodeAction(Action):
@@ -36,7 +37,7 @@ class MoveToMapNodeAction(Action):
         # Get map manager
         map_manager = game_state.map_manager
         if not map_manager:
-            print("Error: Map not initialized")
+            tui_print("Error: Map not initialized")
             return NoneResult()
 
         # Move to specified node
@@ -48,7 +49,7 @@ class MoveToMapNodeAction(Action):
         
         # Print which room player moved to
         from localization import t
-        print(t("ui.room_entered").format(room_type=new_room.room_type.value, floor=self.floor, position=self.position))
+        tui_print(t("ui.room_entered").format(room_type=new_room.room_type.value, floor=self.floor, position=self.position))
         
         return NoneResult()
 
@@ -88,7 +89,7 @@ class SelectMapNodeAction(Action):
         available_moves = map_manager.get_available_moves()
 
         if not available_moves:
-            print("\nNo available moves. You've reached end of act!")
+            tui_print("\nNo available moves. You've reached end of act!")
             return NoneResult()
 
         # Check game mode and handle accordingly
@@ -112,8 +113,17 @@ class SelectMapNodeAction(Action):
             map_manager: The MapManager instance
             available_moves: List of available MapNode objects
         """
-        # Display the map
-        map_manager.display_map_for_human()
+        from engine.game_state import game_state
+        from tui import get_app, is_tui_mode
+
+        # Display map in display-panel for TUI; keep console output for non-TUI
+        if is_tui_mode():
+            app = get_app()
+            if app:
+                app.update_player_info(game_state.player, game_state)
+                app.update_display_content(map_manager.get_map_text_for_human())
+        else:
+            map_manager.display_map_for_human()
         
         # Create options for each available move
         options = []

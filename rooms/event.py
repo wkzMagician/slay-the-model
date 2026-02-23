@@ -4,16 +4,11 @@ Event room definitions.
 Event rooms are rooms where random events occur when player enters.
 Events can offer choices, rewards, or challenges based on game state.
 """
-from typing import List
-
-from actions.base import LambdaAction
-from actions.display import DisplayTextAction, SelectAction
-from localization import LocalStr
+from actions.display import DisplayTextAction
 from rooms.base import Room
 from utils.result_types import BaseResult, NoneResult, GameStateResult, MultipleActionsResult, SingleActionResult
 from utils.types import RoomType
 from utils.random import get_random_events
-from utils.option import Option
 from utils.registry import register
 
 @register("room")
@@ -21,9 +16,9 @@ class EventRoom(Room):
     """
     Event room - presents random events to the player.
     
-    When the player enters an event room, they are presented with one or more
-    random events based on game state (floor, act, ascension, etc.).
-    The player can then choose which event to engage with.
+    When the player enters an event room, a random event is selected
+    from the current Act's event pool and triggered directly.
+    The player then makes choices within the event itself.
     """
     
     def __init__(self, **kwargs):
@@ -36,38 +31,33 @@ class EventRoom(Room):
         super().__init__(**kwargs)
         self.room_type = RoomType.EVENT
         
-        # List of available events for this room
-        self.available_events: List = []
-        
-        # The event that was selected and triggered
-        self.triggered_event = None
+        # The randomly selected event for this room (only one)
+        self.selected_event = None
     
     def init(self):
         """
-        Initialize event room and generate available events.
+        Initialize event room and select a random event.
         
-        Generates a list of available events based on current game state
-        including Act number and ascension level.
+        Selects one random event from the current Act's event pool.
         """
         from engine.game_state import game_state
         import events  # Ensure all @register_event decorators are loaded.
         
-        # Get random events based on current Act
-        event_count = self._get_event_count(game_state.current_act)
-        
-        # Get events from pool
-        self.available_events = get_random_events(
+        # Get a single random event from the current Act's pool
+        selected_events = get_random_events(
             act=game_state.current_act,
-            count=event_count
+            count=1
         )
         
-        # If no events available, create a fallback event
-        if not self.available_events:
+        if selected_events:
+            self.selected_event = selected_events[0]
+        else:
+            # No events available, create a fallback event
             self._create_fallback_event()
     
     def enter(self) -> BaseResult:
         """
-        Enter event room and directly trigger a random event.
+        Enter event room and directly trigger the random event.
 
         Returns:
             Execution result from event or NoneResult
@@ -78,57 +68,14 @@ class EventRoom(Room):
             default="You encounter a mysterious event...",
         )
 
-        # Check if we have available events
-        if not self.available_events:
-            # No events available, just return the display action
+        # Check if we have an event
+        if not self.selected_event:
+            # No event available, just return the display action
             return SingleActionResult(display_action)
 
-        # Multiple events: let player choose one event to engage with.
-        if len(self.available_events) > 1:
-            options = []
-            for event in self.available_events:
-                options.append(
-                    Option(
-                        name=self._get_event_option_name(event),
-                        actions=[LambdaAction(func=self._trigger_event, args=[event])],
-                    )
-                )
-            return MultipleActionsResult(
-                [
-                    display_action,
-                    SelectAction(
-                        title=LocalStr(
-                            "rooms.event.choose",
-                            default="Choose an event",
-                        ),
-                        options=options,
-                    ),
-                ]
-            )
-
-        # Single event: trigger directly.
-        event_result = self._trigger_event(self.available_events[0])
+        # Directly trigger the selected event
+        event_result = self._trigger_event(self.selected_event)
         return self._merge_display_with_result(display_action, event_result)
-    
-    def _get_event_count(self, act: int) -> int:
-        """
-        Determine how many events to offer based on Act.
-        
-        Args:
-            act: Current Act number (1-3)
-            
-        Returns:
-            Number of events to present
-        """
-        # Act 1: offer 1 event
-        if act == 1:
-            return 1
-        # Act 2: offer 2 events
-        elif act == 2:
-            return 2
-        # Act 3+: offer up to 3 events
-        else:
-            return 3
     
     def _trigger_event(self, event) -> BaseResult:
         """
@@ -167,7 +114,6 @@ class EventRoom(Room):
         class FallbackEvent(Event):
             def trigger(self):
                 from engine.game_state import game_state
-                from localization import t
                 from actions.display import DisplayTextAction
 
                 gold_gain = 10 + (game_state.current_floor * 5)
@@ -180,19 +126,7 @@ class EventRoom(Room):
                     )
                 )
 
-        self.available_events = [FallbackEvent()]
-
-    def _get_event_option_name(self, event) -> LocalStr:
-        """Build display text for an event option."""
-        if hasattr(event, "local"):
-            try:
-                return event.local("title")
-            except Exception:
-                pass
-        return LocalStr(
-            key=f"events.{event.__class__.__name__}.title",
-            default=event.__class__.__name__,
-        )
+        self.selected_event = FallbackEvent()
 
     def _merge_display_with_result(
         self, display_action: DisplayTextAction, event_result: BaseResult

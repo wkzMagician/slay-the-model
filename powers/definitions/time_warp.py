@@ -8,6 +8,7 @@ from actions.base import Action
 from actions.combat import ApplyPowerAction, EndTurnAction
 from powers.base import Power, StackType
 from utils.registry import register
+from tui.print_utils import tui_print
 from localization import LocalStr
 
 
@@ -57,14 +58,14 @@ class TimeWarpPower(Power):
         self.card_counter += 1
         
         # Print counter progress
-        print(t("powers.time_warp_counter", default=f"Time Warp: {self.card_counter}/{self.CARD_THRESHOLD}"))
+        tui_print(t("powers.time_warp_counter", default=f"Time Warp: {self.card_counter}/{self.CARD_THRESHOLD}"))
         
         if self.card_counter >= self.CARD_THRESHOLD:
             # Reset counter
             self.card_counter = 0
             
             # Print trigger message
-            print(t("powers.time_warp_trigger", default="Time Warp triggers! Turn ended and Time Eater gains Strength!"))
+            tui_print(t("powers.time_warp_trigger", default="Time Warp triggers! Turn ended and Time Eater gains Strength!"))
             
             # Return actions: end turn and gain strength
             actions = []

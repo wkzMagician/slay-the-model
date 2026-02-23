@@ -9,6 +9,7 @@ from localization import t, LocalStr
 from utils.types import RoomType
 from engine.game_state import game_state, MAX_ACTS
 from utils.result_types import BaseResult, GameStateResult, SingleActionResult
+from tui.print_utils import tui_print
 
 
 class GameFlow:
@@ -92,6 +93,14 @@ class GameFlow:
             # Initialize and enter room
             cur_room.init()
             result = cur_room.enter()
+
+            # Update display panel with room content
+            from tui import get_app, is_tui_mode
+            if is_tui_mode():
+                app = get_app()
+                if app:
+                    room_info = f"Room: {cur_room.local('name')}"
+                    app.update_display_content(room_info)
             
             # Check for game end conditions
             if isinstance(result, GameStateResult):
@@ -137,7 +146,7 @@ class GameFlow:
                 return False
             else:
                 # Has all keys - entering Act 4
-                print(t('ui.entering_act4', 
+                tui_print(t('ui.entering_act4', 
                        default='\nWith all three keys, you unlock the path to the Heart...'))
         
         # Advance to next act
@@ -147,16 +156,23 @@ class GameFlow:
             return False
         
         # Continue to next act
-        print(t('ui.entering_act', act=game_state.current_act, 
+        tui_print(t('ui.entering_act', act=game_state.current_act, 
                default=f'\n=== Entering Act {game_state.current_act} ==='))
         return True
     
     def _display_welcome(self):
         """Display initial game welcome messages"""
-        print(f"\n{t('ui.game_welcome', default='Welcome to the Spire!')}")
-        print(f"{t('ui.game_awaken', default='You awaken in a strange place...')}")
-        print(f"{t('ui.seed_display', seed=game_state.config.seed, default=f'Seed: {game_state.config.seed}')}")
-        print(f"{t('ui.character_display', character=game_state.config.character, default=f'Character: {game_state.config.character}')}\n")
+        tui_print(f"\n{t('ui.game_welcome', default='Welcome to the Spire!')}")
+        tui_print(f"{t('ui.game_awaken', default='You awaken in a strange place...')}")
+        tui_print(f"{t('ui.seed_display', seed=game_state.config.seed, default=f'Seed: {game_state.config.seed}')}")
+        tui_print(f"{t('ui.character_display', character=game_state.config.character, default=f'Character: {game_state.config.character}')}\n")
+
+        # Update display panel with player info
+        from tui import get_app, is_tui_mode
+        if is_tui_mode():
+            app = get_app()
+            if app:
+                app.update_player_info(game_state.player, game_state)
     
     def _start_neo_room(self):
         """Start with Neo reward room (Act 1 only)"""
@@ -201,18 +217,18 @@ class GameFlow:
     
     def _handle_game_over(self):
         """Handle player death/game over."""
-        print(t('ui.game_over', default='\n=== GAME OVER ==='))
-        print(t('ui.death_message', default='You have fallen in the Spire...'))
-        print(t('ui.floor_reached', floor=game_state.current_floor, 
+        tui_print(t('ui.game_over', default='\n=== GAME OVER ==='))
+        tui_print(t('ui.death_message', default='You have fallen in the Spire...'))
+        tui_print(t('ui.floor_reached', floor=game_state.current_floor, 
                default=f'Floor reached: {game_state.current_floor}'))
     
     def _handle_game_exit(self):
         """Handle game exit."""
-        print(t('ui.game_exit', default='\n=== GAME EXIT ==='))
-        print(t('ui.exit_message', default='Thanks for playing!'))
+        tui_print(t('ui.game_exit', default='\n=== GAME EXIT ==='))
+        tui_print(t('ui.exit_message', default='Thanks for playing!'))
     
     def _handle_game_won(self):
         """Handle game victory."""
-        print(t('ui.game_won', default='\n=== VICTORY! ==='))
-        print(t('ui.victory_message', default='You have conquered the Spire!'))
-        print(t('ui.congratulations', default='Congratulations!'))
+        tui_print(t('ui.game_won', default='\n=== VICTORY! ==='))
+        tui_print(t('ui.victory_message', default='You have conquered the Spire!'))
+        tui_print(t('ui.congratulations', default='Congratulations!'))

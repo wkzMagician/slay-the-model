@@ -5,6 +5,7 @@ Uses global action queue for action management.
 """
 from collections import Counter
 from typing import List
+from tui.print_utils import tui_print
 from actions.base import Action
 from actions.card import DiscardCardAction
 from actions.combat import EndTurnAction
@@ -200,6 +201,14 @@ class Combat(Localizable):
         import random
         from engine.game_state import game_state
         from localization import t
+        from tui import get_app, is_tui_mode
+
+        # TUI display panel: single-overwrite combat snapshot
+        if is_tui_mode():
+            app = get_app()
+            if app:
+                from tui.handlers.display_handler import DisplayHandler
+                DisplayHandler(app).display_combat(self, game_state)
 
         player = game_state.player
         hand = game_state.player.card_manager.get_pile("hand")
@@ -211,75 +220,75 @@ class Combat(Localizable):
         )
 
         # Print combat status
-        print(f"\n{t('combat.display', default='--- Combat Status ---')}")
-        print(f"{t('ui.player_hp', default='HP')}: {player.hp}/{player.max_hp}")
-        print(f"{t('ui.player_block', default='Block')}: {player.block}")
-        print(f"{t('ui.player_energy', default='Energy')}: {player.energy}/{player.max_energy}")
+        tui_print(f"\n{t('combat.display', default='--- Combat Status ---')}")
+        tui_print(f"{t('ui.player_hp', default='HP')}: {player.hp}/{player.max_hp}")
+        tui_print(f"{t('ui.player_block', default='Block')}: {player.block}")
+        tui_print(f"{t('ui.player_energy', default='Energy')}: {player.energy}/{player.max_energy}")
         
         # Print hand
-        print(f"\n{t('ui.hand', default='Hand')} ({len(hand)}):")
+        tui_print(f"\n{t('ui.hand', default='Hand')} ({len(hand)}):")
         for i, card in enumerate(hand):
-            print(f"  [{i+1}] {card.info()}")
+            tui_print(f"  [{i+1}] {card.info()}")
 
         draw_display = list(reversed(draw_pile))
         if not has_frozen_eye:
             random.shuffle(draw_display)
         draw_text = ", ".join(card.display_name.resolve() for card in draw_display)
         discard_text = ", ".join(card.display_name.resolve() for card in discard_pile)
-        print(f"\n{t('ui.draw_pile', default='Draw Pile')} ({len(draw_pile)}): {draw_text}")
-        print(
+        tui_print(f"\n{t('ui.draw_pile', default='Draw Pile')} ({len(draw_pile)}): {draw_text}")
+        tui_print(
             f"{t('ui.discard_pile', default='Discard Pile')} "
             f"({len(discard_pile)}): {discard_text}"
         )
         
         # Print player powers with descriptions
         if player.powers:
-            print(f"\n{t('ui.powers', default='Powers')}:")
+            tui_print(f"\n{t('ui.powers', default='Powers')}:")
             for power in player.powers:
                 power_name = power.local("name").resolve()
                 power_desc = power.local("description", amount=power.amount).resolve() if hasattr(power, 'local') else ""
                 # Show duration for powers with amount=None and valid duration
                 display_amount = power.amount if power.amount is not None else power.duration
                 if display_amount and display_amount > 0:
-                    print(f"  {power_name} x{display_amount}")
+                    tui_print(f"  {power_name} x{display_amount}")
                 else:
-                    print(f"  {power_name}")
+                    tui_print(f"  {power_name}")
                 # Print description on new line if available and not a raw key
                 if power_desc and not power_desc.startswith(power.localization_prefix if hasattr(power, 'localization_prefix') else ""):
-                    print(f"    {power_desc}")
+                    tui_print(f"    {power_desc}")
         
         # Print enemies state
-        print(f"\n{t('combat.enemies', default='=== Enemies ===')}")
+        tui_print(f"\n{t('combat.enemies', default='=== Enemies ===')}")
         for i, enemy in enumerate(self.enemies):
             enemy_name = enemy.local("name").resolve()
-            print(f"\n{enemy_name}:")  # Show enemy name instead of "Enemy 1:"
-            print(f"  {t('ui.enemy_hp', default='HP')}: {enemy.hp}/{enemy.max_hp}")
-            print(f"  {t('ui.enemy_block', default='Block')}: {enemy.block}")
+            tui_print(f"\n{enemy_name}:")  # Show enemy name instead of "Enemy 1:"
+            tui_print(f"  {t('ui.enemy_hp', default='HP')}: {enemy.hp}/{enemy.max_hp}")
+            tui_print(f"  {t('ui.enemy_block', default='Block')}: {enemy.block}")
             
             # Print enemy powers with descriptions
             if enemy.powers:
-                print(f"  {t('ui.powers', default='Powers')}:")
+                tui_print(f"  {t('ui.powers', default='Powers')}:")
                 for power in enemy.powers:
                     power_name = power.local("name").resolve()
                     power_desc = power.local("description", amount=power.amount).resolve() if hasattr(power, 'local') else ""
                     # Show duration for powers with amount=None and valid duration
                     display_amount = power.amount if power.amount is not None else power.duration
                     if display_amount and display_amount > 0:
-                        print(f"    {power_name} x{display_amount}")
+                        tui_print(f"    {power_name} x{display_amount}")
                     else:
-                        print(f"    {power_name}")
+                        tui_print(f"    {power_name}")
                     # Print description on new line if available and not a raw key
                     if power_desc and not power_desc.startswith(power.localization_prefix if hasattr(power, 'localization_prefix') else ""):
-                        print(f"      {power_desc}")
+                        tui_print(f"      {power_desc}")
             
             # Print enemy intention (hidden if player has RunicDome)
             has_runic_dome = any(r.__class__.__name__ == "RunicDome" for r in game_state.player.relics)
             if enemy.current_intention and not has_runic_dome:
                 intention = enemy.current_intention
                 intention_text = intention.description.resolve()
-                print(f"  {t('ui.intention', default='Intention')}: {intention_text}")
+                tui_print(f"  {t('ui.intention', default='Intention')}: {intention_text}")
         
-        print()  # Empty line for readability
+        tui_print()  # Empty line for readability
 
     def _end_player_phase(self) -> BaseResult:
         """
@@ -298,20 +307,20 @@ class Combat(Localizable):
                 entities=[e for e in self.enemies if e.hp > 0]
             ))
         # Process player powers: call on_turn_end and remove expired ones
-        # print(f"[DEBUG] End of player turn - current powers: {[p.name for p in game_state.player.powers]}")
+        # tui_print(f"[DEBUG] End of player turn - current powers: {[p.name for p in game_state.player.powers]}")
         powers_to_remove = []
         for power in game_state.player.powers:
             game_state.action_queue.add_actions(power.on_turn_end())
-            # print(f"[DEBUG] Power {power.name}: duration={power.duration}")
+            # tui_print(f"[DEBUG] Power {power.name}: duration={power.duration}")
             # Check if power should be removed (duration reached 0)
             if power.duration == 0:
                 powers_to_remove.append(power.name)
-                # print(f"[DEBUG] Marking power {power.name} for removal")
+                # tui_print(f"[DEBUG] Marking power {power.name} for removal")
         
         # Remove expired powers
         for power_name in powers_to_remove:
             game_state.player.remove_power(power_name)
-        # print(f"[DEBUG] After power removal - current powers: {[p.name for p in game_state.player.powers]}")
+        # tui_print(f"[DEBUG] After power removal - current powers: {[p.name for p in game_state.player.powers]}")
         
         hand = game_state.player.card_manager.get_pile("hand")
         for card in hand:
@@ -342,7 +351,7 @@ class Combat(Localizable):
         from localization import t
 
         # Print enemy turn header
-        print(f"\n{t('ui.enemy_turn', default='=== Enemy Turn ===')}")
+        tui_print(f"\n{t('ui.enemy_turn', default='=== Enemy Turn ===')}")
 
         # DEBUG: Print combat state at start of enemy phase
         # _debug_print_combat_state("ENEMY_PHASE_START", self.enemies)
@@ -373,7 +382,7 @@ class Combat(Localizable):
                     else:
                         intent_desc = intent_desc_raw
                     if intent_desc:
-                        print(f">> Enemy [{enemy_name}] intends to: {intent_desc}")
+                        tui_print(f">> Enemy [{enemy_name}] intends to: {intent_desc}")
                 game_state.action_queue.add_actions(enemy.execute_intention())
 
         # Process enemy turn-end effects (tick down power durations)
@@ -417,12 +426,12 @@ class Combat(Localizable):
         
         # Check if all enemies are dead
         if not self.enemies or all(e.is_dead() for e in self.enemies):
-            # print(f"\n[COMBAT END] COMBAT_WIN - All enemies defeated!")
+            # tui_print(f"\n[COMBAT END] COMBAT_WIN - All enemies defeated!")
             return GameStateResult("COMBAT_WIN")
         
         # Check if player is dead
         if game_state.player.is_dead():
-            # print(f"\n[COMBAT END] GAME_LOSE - Player defeated!")
+            # tui_print(f"\n[COMBAT END] GAME_LOSE - Player defeated!")
             return GameStateResult("GAME_LOSE")
         
         return NoneResult()
@@ -513,7 +522,7 @@ class Combat(Localizable):
         from localization import t
         
         # Print player turn header
-        print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
+        tui_print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
         
         # Clear block at start of turn (unless Barricade/Calipers)
         has_barricade = any(p.name == "Barricade" for p in game_state.player.powers)
@@ -544,7 +553,7 @@ class Combat(Localizable):
             draw_count = max(0, draw_count - opening_hand_count)
         
         if draw_count > 0:
-            print(f"\n{t('combat.draw_cards', count=draw_count, default=f'Draw {draw_count} cards')}")
+            tui_print(f"\n{t('combat.draw_cards', count=draw_count, default=f'Draw {draw_count} cards')}")
             from actions.card import DrawCardsAction
             game_state.action_queue.add_action(DrawCardsAction(count=draw_count))
 

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
         NoneResult,
     )
 
+from tui.print_utils import tui_print
 
 class Action(Localizable):
     """Base action class - executable game logic unit"""
@@ -86,7 +87,7 @@ class ActionQueue:
             try:
                 from engine.game_state import game_state
                 if game_state.config.mode == "debug" and game_state.config.debug["print"]:
-                    print(f"Executing action: {action}")
+                    tui_print(f"Executing action: {action}")
             except ImportError:
                 pass  # Debug mode not available
 
