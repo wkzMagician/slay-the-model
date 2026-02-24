@@ -48,6 +48,7 @@ ui:
   choose_cards_to_remove: 选择一张卡牌移除
   skip_potion_option: 跳过
   combat_enter: === 战斗开始 ===
+
 blessing:
   title: 选择祝福
   upgrade_card_option: 升级一张卡牌
@@ -70,6 +71,7 @@ blessing:
   choose_rare_colorless_card_option: 选择一张稀有无色卡牌
   random_rare_relic_option: 获得一个随机稀有遗物
   big_max_hp_option: 获得 {amount} 点最大生命值
+
 events:
   neo:
     welcome: 你又来了...
@@ -310,6 +312,7 @@ events:
     title: 黏液世界
     gather: 收集
     leave: 离开
+
 combat:
   title: 战斗
   choose_action: 选择行动
@@ -403,6 +406,7 @@ combat:
   card_details: 卡牌
   power_details: 能力
   relic_details: 遗物
+
 cards:
   ironclad:
     Strike:
@@ -728,6 +732,8 @@ cards:
       description: 造成 {damage} 点伤害。抽 1 张牌。
     Forethought:
       name: 预谋
+      description: 将一张手牌置于抽牌堆底。该牌在被打出前费用为0。
+      upgrade_description: 将任意张手牌置于抽牌堆底。这些牌在被打出前费用为0。
       description: 将手牌中的一张攻击牌放到抽牌堆底。直到打出前消耗为 0。
       upgrade_description: 将手牌中的任意张牌放到抽牌堆底。直到打出前消耗为 0。
     GoodInstincts:
@@ -823,6 +829,7 @@ cards:
     Writhe:
       name: 苦恼
       description: 无法打出。固有。
+
 powers:
   StrengthPower:
     name: 力量
@@ -865,6 +872,7 @@ powers:
     description: 每打出 12 张牌，结束回合并获得 1 点力量。
     counter: '时间扭曲: {counter}/{threshold}'
     trigger: 时间扭曲触发！回合结束，时间吞噬者获得力量！
+
 potions:
   HeartOfIron:
     name: 铁之心
@@ -992,6 +1000,7 @@ potions:
   EntropicBrew:
     name: 混沌药水
     description: 向你的空物品栏添加随机药水。
+
 relics:
   Akabeko:
     name: 赤牛
@@ -1455,6 +1464,7 @@ relics:
   OrangePellets:
     name: 橙色药丸
     description: 每当你打出能力牌、攻击牌和技能牌，移除所有你的减益。
+
 enemies:
   Cultist:
     name: 邪教徒

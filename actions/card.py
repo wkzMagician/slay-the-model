@@ -950,6 +950,133 @@ class CopyCardAction(Action):
                 game_state.player.card_manager.add_to_pile(self.card, "hand", pos=PilePosType.TOP)
         return NoneResult()
 
+
+@register("action")
+class SetTempCostAction(Action):
+    """Set temporary cost for a card (resets at end of turn)
+
+    Required:
+        card (Card): Card to modify
+        temp_cost (int): Temporary cost value (None to reset)
+
+    Optional:
+        None
+    """
+    def __init__(self, card: "Card", temp_cost: Optional[int]):
+        self.card = card
+        self.temp_cost = temp_cost
+
+    def execute(self) -> 'BaseResult':
+        if self.card:
+            self.card.temp_cost = self.temp_cost
+        return NoneResult()
+
+
+@register("action")
+class MoveAndSetCostAction(Action):
+    """Move a card and set its temporary cost to 0.
+    
+    Used by Forethought card: move card to bottom of draw pile, 
+    and set its cost to 0 until played.
+
+    Required:
+        card (Card): Card to move
+        src_pile (str): Source pile name
+        dst_pile (str): Destination pile name
+        temp_cost (int): Temporary cost to set (default 0)
+
+    Optional:
+        position (PilePosType): Position in destination pile (default BOTTOM)
+    """
+    def __init__(self, card: "Card", src_pile: str, dst_pile: str, 
+                 temp_cost: int = 0, position: PilePosType = PilePosType.BOTTOM):
+        self.card = card
+        self.src_pile = src_pile
+        self.dst_pile = dst_pile
+        self.temp_cost = temp_cost
+        self.position = position
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if self.card and game_state.player:
+            if hasattr(game_state.player, "card_manager"):
+                # Move the card
+                game_state.player.card_manager.remove_from_pile(self.card, self.src_pile)
+                game_state.player.card_manager.add_to_pile(self.card, self.dst_pile, pos=self.position)
+                # Set temporary cost
+                self.card.temp_cost = self.temp_cost
+        return NoneResult()
+
+@register("action")
+class ChooseMoveAndSetCostAction(Action):
+    """Choose cards to move and set their temporary cost.
+    
+    Used by Forethought card: choose cards from hand, move to bottom 
+    of draw pile, and set their cost to 0 until played.
+
+    Required:
+        src_pile (str): Source pile name
+        dst_pile (str): Destination pile name
+        amount (int): Number of cards to choose (-1 for any number)
+        temp_cost (int): Temporary cost to set (default 0)
+
+    Optional:
+        position (PilePosType): Position in destination pile (default BOTTOM)
+        must_select (bool): Whether selection is required (default True)
+    """
+    def __init__(self, src_pile: str, dst_pile: str, amount: int = 1, 
+                 temp_cost: int = 0, position: PilePosType = PilePosType.BOTTOM,
+                 must_select: bool = True):
+        self.src_pile = src_pile
+        self.dst_pile = dst_pile
+        self.amount = amount
+        self.temp_cost = temp_cost
+        self.position = position
+        self.must_select = must_select
+
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if not game_state.player:
+            return NoneResult()
+
+        card_manager = game_state.player.card_manager
+        from actions.display import SelectAction
+
+        options = []
+        cards_in_pile = card_manager.get_pile(self.src_pile)
+
+        for card in cards_in_pile:
+            option = card.info()
+            options.append(
+                Option(
+                    name=option,
+                    actions=[
+                        MoveAndSetCostAction(
+                            card=card, 
+                            src_pile=self.src_pile, 
+                            dst_pile=self.dst_pile,
+                            temp_cost=self.temp_cost,
+                            position=self.position
+                        ),
+                    ]
+                )
+            )
+
+        if not options:
+            return NoneResult()
+        
+        # amount = -1 means any number of cards
+        max_select = self.amount if self.amount > 0 else len(cards_in_pile)
+        
+        select_action = SelectAction(
+            title=LocalStr("ui.choose_cards_to_set_cost"),
+            options=options,
+            max_select=max_select,
+            must_select=self.must_select
+        )
+        return SingleActionResult(select_action)
+
+
 @register("action")
 class ExhaustRandomCardAction(Action):
     """Exhaust random cards from a pile

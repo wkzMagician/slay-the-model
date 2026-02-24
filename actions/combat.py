@@ -216,7 +216,6 @@ class LoseHPAction(Action):
             return MultipleActionsResult(actions_to_return)
         return NoneResult()
 
-# todo: 和block进行交互
 @register("action")
 class DealDamageAction(Action):
     """Deal damage to a target (basic damage action)

@@ -76,7 +76,6 @@ class Combat(Localizable):
         ))
         game_state.execute_all_actions()
 
-        # Combat main loop (as per todo.md)
         while True:
             # Execute player phase
             result = self.execute_player_phase()

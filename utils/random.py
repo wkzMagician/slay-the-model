@@ -14,7 +14,6 @@ else:
     Potion = Any  # Runtime placeholder
 
 
-# todo: 对于没有指定稀有度的情况，考虑根据权重选择稀有度
 def get_random_card(namespaces: Optional[List[str]] = None, 
                      rarities: Optional[List[RarityType]] = None, 
                      card_types: Optional[List[CardType]] = None, 

@@ -797,7 +797,8 @@ cards:
 
     Forethought:
       name: Forethought
-      description: Put an Attack from your hand on the bottom of your draw pile. It costs 0 until played.
+      description: Put a card from your hand on the bottom of your draw pile. It costs 0 until played.
+      upgrade_description: Put any number of cards from your hand on the bottom of your draw pile. They cost 0 until played.
       upgrade_description: Put any cards from your hand on the bottom of your draw pile. It costs 0 until played.
     GoodInstincts:
       name: Good Instincts
