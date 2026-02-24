@@ -558,7 +558,7 @@ class MapManager:
         # Use true_floor from game_state for accurate display across acts
         current_floor = game_state.current_floor
         act_num = game_state.current_act
-        tui_print(f"MAP VIEW - Act {act_num} (Floor {current_floor})")
+        tui_print(t("ui.map_view", act=act_num, floor=current_floor))
         tui_print("="*60)
         
         # Debug: show internal state
@@ -581,11 +581,11 @@ class MapManager:
         }
         
         # Legend
-        tui_print("\nLegend:")
-        tui_print("  [M]=Monster  [E]=Elite  [$]=Merchant  [?]=Event")
-        tui_print("  [R]=Rest     [T]=Treasure  [B]=Boss  [N]=Neo")
-        tui_print("  *=Current   >=Available   ^=Visited")
-        tui_print("  Connections: /=left  |=center  \\=right")
+        tui_print(f"\n{t('ui.legend')}")
+        tui_print(f"  {t('ui.legend_monster')}  {t('ui.legend_elite')}  {t('ui.legend_merchant')}  {t('ui.legend_event')}")
+        tui_print(f"  {t('ui.legend_rest')}  {t('ui.legend_treasure')}  {t('ui.legend_boss')}  {t('ui.legend_neo')}")
+        tui_print(f"  {t('ui.legend_current')}   {t('ui.legend_available')}   {t('ui.legend_visited')}")
+        tui_print(f"  {t('ui.connections')}  {t('ui.conn_left')}  {t('ui.conn_center')}  {t('ui.conn_right')}")
         tui_print()
         
         # Calculate true floor starting point for this act
@@ -606,7 +606,7 @@ class MapManager:
             
             # Display floor nodes with fixed width (5 chars total)
             # Format: [ M ] normal, [*M ] current, [>M ] available, [^M ] visited
-            line = f"Floor {true_floor:2d}: "
+            line = f"{t('ui.floor_label', num=true_floor)} "
             for pos, node in enumerate(floor_nodes):
                 symbol = self._get_room_symbol(node.room_type)
                 

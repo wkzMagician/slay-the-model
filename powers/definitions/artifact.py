@@ -3,6 +3,8 @@ Artifact power for combat effects.
 Negates debuff applications.
 """
 from typing import List
+
+from localization import t
 from powers.base import Power, StackType
 from utils.registry import register
 from tui.print_utils import tui_print
@@ -31,8 +33,8 @@ class ArtifactPower(Power):
         Returns True if the debuff was prevented (consumes 1 stack).
         """
         if self.amount > 0:
-            tui_print(f"[Artifact] Blocked debuff! Remaining stacks: {self.amount}")
-            print(f"[Artifact] Blocked debuff! Remaining stacks: {self.amount}")
+            tui_print(t("combat.artifact_blocked"))
+            print(f"[{t('powers.ArtifactPower.name')}] {t('combat.artifact_blocked')} {t('combat.artifact_remaining', count=self.amount)}")
             if self.owner and self.amount <= 0:
                 self.owner.remove_power(self.name)
             return True

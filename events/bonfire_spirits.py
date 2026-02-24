@@ -60,10 +60,8 @@ class BonfireSpirits(Event):
                     reward_actions.append(HealAction(amount=player.max_hp + 10))
                 elif card.rarity == RarityType.CURSE:
                     # Curse: Spirit Poop relic
-                    # TODO: Create Spirit Poop relic class
-                    # For now, skip curse cards or give small gold
-                    from actions.reward import AddGoldAction
-                    reward_actions.append(AddGoldAction(amount=5))
+                    from relics.global_relics.event import SpiritPoop
+                    reward_actions.append(AddRelicAction(relic=SpiritPoop()))
                 
                 card_options.append(Option(
                     name=LocalStr(f'{card.display_name} ({card.rarity.name})'),

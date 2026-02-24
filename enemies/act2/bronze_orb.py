@@ -21,6 +21,7 @@ class BronzeOrb(Enemy):
         self.add_intention(Beam(self))
         self._has_used_steal = False
         self._beam_count = 0
+        self.stolen_cards = []  # Track stolen cards to return on death
 
     def on_combat_start(self, floor: int):
         """Initialize combat state."""
@@ -64,3 +65,11 @@ class BronzeOrb(Enemy):
             # Default to Beam
             self._beam_count += 1
             self.current_intention = self.intentions["Beam"]
+    
+    def on_death(self):
+        """Return stolen cards to player's draw pile."""
+        from actions.card import AddCardAction
+        actions = []
+        for card in self.stolen_cards:
+            actions.append(AddCardAction(card=card, dest_pile='hand'))
+        return actions

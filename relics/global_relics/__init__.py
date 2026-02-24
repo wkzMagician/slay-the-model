@@ -173,7 +173,8 @@ from .event import (
     SsserpentHead,
     WarpedTongs,
     RedMask,
-    NlothGift
+    NlothGift,
+    SpiritPoop,
 )
 
 from .special import (
@@ -343,6 +344,7 @@ __all__ = [
     'WarpedTongs',
     'RedMask',
     'NlothGift',
+    'SpiritPoop',
 
     # Special (3)
     'RedKey',

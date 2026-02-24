@@ -254,13 +254,15 @@ def reset_card_chance_common_counter():
 
 
 def get_random_relic(characters: Optional[List[str]] = None, 
-                     rarities: Optional[List[RarityType]] = None) -> Optional[Relic]:
+                     rarities: Optional[List[RarityType]] = None,
+                     exclude: Optional[List[str]] = None) -> Optional[Relic]:
     """
     Get a random relic from the registry based on criteria.
     
     args:
         characters (Optional[List[str]]): List of character namespaces to filter relics.
         rarities (Optional[List[RarityType]]): List of rarities to filter relics.
+        exclude (Optional[List[str]]): List of relic idstrs to exclude.
         
     returns:
         Optional[Any]: A random relic matching the criteria, or None if none found.
@@ -281,6 +283,10 @@ def get_random_relic(characters: Optional[List[str]] = None,
         if characters and relic_instance.namespace not in characters:
             continue
         if rarities and relic_instance.rarity not in rarities:
+            continue
+        
+        # Check if relic is excluded
+        if exclude and relic_idstr in exclude:
             continue
         
         # Check if relic was already obtained

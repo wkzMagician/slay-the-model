@@ -56,11 +56,12 @@ class Boost(Intention):
 
     def execute(self) -> List:
         """Gain strength and block."""
+        from engine.game_state import game_state
         actions = []
         # Gain Strength (4 on A17+, 3 otherwise)
-        # TODO: Check ascension level for A17+ bonus
+        strength_gain = 4 if game_state.ascension >= 17 else 3
         actions.append(
-            ApplyPowerAction("strength", self.enemy, self.base_strength_gain)
+            ApplyPowerAction("strength", self.enemy, strength_gain)
         )
         # Gain Block
         actions.append(GainBlockAction(self.base_block, self.enemy))

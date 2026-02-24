@@ -14,9 +14,38 @@ class Steal(Intention):
 
     def execute(self) -> List:
         """Steal a random high-rarity card from draw pile."""
-        # TODO: Implement card stealing mechanic
-        # This requires accessing game_state.player.draw_pile
-        # and moving a card to the Bronze Orb's "stolen" state
+        from engine.game_state import game_state
+        from utils.types import RarityType
+        
+        if not game_state.player:
+            return []
+        
+        card_manager = game_state.player.card_manager
+        draw_pile = card_manager.get_pile('draw_pile')
+        
+        if not draw_pile:
+            return []
+        
+        # Prefer stealing higher rarity cards
+        rarity_priority = [RarityType.RARE, RarityType.UNCOMMON, RarityType.COMMON, RarityType.STARTER]
+        
+        for rarity in rarity_priority:
+            # Find cards of this rarity
+            candidates = [c for c in draw_pile if c.rarity == rarity]
+            if candidates:
+                import random
+                stolen_card = random.choice(candidates)
+                # Remove from draw pile
+                card_manager.remove_from_pile(stolen_card, 'draw_pile')
+                # Store in enemy's stolen cards
+                self.enemy.stolen_cards.append(stolen_card)
+                return []  # No actions needed, card is stolen
+        
+        # Fallback: steal any card
+        import random
+        stolen_card = random.choice(draw_pile)
+        card_manager.remove_from_pile(stolen_card, 'draw_pile')
+        self.enemy.stolen_cards.append(stolen_card)
         return []
 
 

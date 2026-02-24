@@ -35,11 +35,12 @@ class WheelOfChange(Event):
         
         # Note: AddRandomRelicAction doesn't support exclusions yet
         # Excluded relics: Bottled Flame, Bottled Lightning, Bottled Tornado, Whetstone
+        excluded_relics = ['BottledFlame', 'BottledLightning', 'BottledTornado', 'Whetstone']
         
         # Determine outcomes
         outcomes = [
             AddGoldAction(amount=gold_amount),  # 100/200/300 gold based on Act 1/2/3
-            AddRandomRelicAction(),  # TODO: Exclude Bottled relics and Whetstone when action supports it
+            AddRandomRelicAction(exclude_relics=excluded_relics),  # Exclude Bottled relics and Whetstone
             HealAction(percent=1.0),  # Full heal
             AddCardAction(card=Decay()),  # Gain Decay curse
             ChooseRemoveCardAction(),  # Remove a card

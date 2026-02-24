@@ -1,6 +1,8 @@
 ui:
   choose_blessings: "Choose Blessings"
   choose_cards_to_upgrade: Choose a card to upgrade
+  upgrade_comparison_header: "=== Before Upgrade ==="
+  upgrade_comparison_separator: "\n=== After Upgrade ==="
   choose_cards_to_transform: Choose a card to transform
   choose_cards_to_remove: Choose a card to remove
   skip_potion_option: Skip

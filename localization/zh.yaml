@@ -44,8 +44,45 @@ ui:
   draw_cards: 抽 {count} 张牌
   choose_random_card_to_add: 选择一张随机卡牌加入牌组
   choose_cards_to_upgrade: 选择一张卡牌升级
+  upgrade_comparison_header: "=== 升级前 ==="
+  upgrade_comparison_separator: "\n=== 升级后 ==="
   choose_cards_to_transform: 选择一张卡牌转化
   choose_cards_to_remove: 选择一张卡牌移除
+  skip_potion_option: 跳过
+  combat_enter: === 战斗开始 ===
+  # === MISSING UI KEYS - ADDED ===
+  map_view: '地图 - 第 {act} 幕（第 {floor} 层）'
+  legend: '图例:'
+  legend_monster: '[M]=怪物'
+  legend_elite: '[E]=精英'
+  legend_merchant: '[$]=商店'
+  legend_event: '[?]=事件'
+  legend_rest: '[R]=休息'
+  legend_treasure: '[T]=宝藏'
+  legend_boss: '[B]=Boss'
+  legend_neo: '[N]=捏奥'
+  legend_current: '*=当前位置'
+  legend_available: '>=可前往'
+  legend_visited: '^=已访问'
+  connections: '连接:'
+  conn_left: '/=左'
+  conn_center: '|=中'
+  conn_right: '\\=右'
+  floor_label: '第 {num} 层:'
+  rarity_label: '稀有度: {rarity}'
+  type_label: '类型: {type}'
+  category_label: '类别: {category}'
+  duration_label: '持续: {duration}'
+  amount_label: '数量: {amount}'
+  buff: 增益
+  debuff: 减益
+  permanent: 永久
+  neo_welcome: 欢迎你，旅行者。我是捏奥。
+  neo_intro: 我将赐予你一个祝福来开始你的旅程。
+  neo_goodbye: 你的旅程现在开始。祝你好运！
+  neo_max_hp_change: 最大生命值改变 {amount} 点！
+  open_menu: 打开菜单
+  empty: 空
   skip_potion_option: 跳过
   combat_enter: === 战斗开始 ===
 
@@ -71,7 +108,6 @@ blessing:
   choose_rare_colorless_card_option: 选择一张稀有无色卡牌
   random_rare_relic_option: 获得一个随机稀有遗物
   big_max_hp_option: 获得 {amount} 点最大生命值
-
 events:
   neo:
     welcome: 你又来了...
@@ -322,6 +358,12 @@ combat:
   player_turn: === 玩家回合 ===
   enemy_turn: === 敌人回合 ===
   end_turn: 结束回合
+  draw_pile: 抽牌堆
+  discard_pile: 弃牌堆
+  exhaust_pile: 消耗堆
+  enemy_defeated: '{enemy} 已被击败！'
+  artifact_blocked: '[人工制品] 阻止了减益效果！'
+  artifact_remaining: '剩余层数: {count}'
   deal_damage_enemy: 对 {target_name} 造成 {amount} 点伤害
   deal_damage_random: 对随机敌人造成 {amount} 点伤害
   deal_damage_all: 对所有敌人造成 {damage} 点伤害
@@ -852,6 +894,9 @@ powers:
   BufferPower:
     name: 缓冲
     description: 防止下次 {amount} 次受到伤害。
+  ArtifactPower:
+    name: 人工制品
+    description: 阻止下次 {amount} 次受到的减益效果。
   CurlUpPower:
     name: 蜷身
     description: 受到伤害时获得 {amount} 点格挡。
@@ -1473,6 +1518,9 @@ enemies:
         name: 仪式
         description: 获得 3 层仪式。
       cultist_attack:
+        name: 攻击
+        description: 造成 {damage} 点伤害。
+      attack:
         name: 攻击
         description: 造成 {damage} 点伤害。
   JawWorm:
@@ -2311,14 +2359,31 @@ rooms:
       gold: 获得 {amount} 金币
       card: 将 {card_name} 加入牌组
   RestRoom:
-    RestRoom:
-      title: 休息点
-      rest: 休息（恢复 30% 生命值）
+    title: 休息点
+    rest: 休息（恢复 30% 生命值）
+    smith: 锻造（升级一张卡牌）
+    skip: 跳过
+    lift: 举重（获得力量）
+    toke: 吸烟（移除一张卡牌）
+    dig: 挖掘（获得遗物）
+    recall: 回忆（获得红宝石钥匙）
+    enter: 你进入一个安静的休息点。
   TreasureRoom:
-    treasure:
-      title: 宝藏房间
-      open_chest: 打开宝箱
-      skip: 跳过
+    title: 宝藏房间
+    open_chest: 打开宝箱
+    skip: 跳过
+    enter: 你发现了一个宝藏房间！
+  ShopRoom:
+    title: 商店
+    buy_card: 购买 {card}（{price} 金币）
+    buy_relic: 购买 {relic}（{price} 金币）
+    buy_potion: 购买 {potion}（{price} 金币）
+    remove_card: 移除一张卡牌（{price} 金币）
+    leave: 离开
+    enter: 你进入了一个神秘的商店。
+  EventRoom:
+    title: 事件
+    enter: 你遇到了一个事件。
   rest:
     enter: 你进入一个安静的休息点。
     rest: 你休息并恢复 {amount} 点生命值。
@@ -2339,11 +2404,3 @@ rooms:
     leave: 离开
   shop:
     enter: 你进入了一个神秘的商店。
-  ShopRoom:
-    ShopRoom:
-      title: 商店
-      buy_card: 购买 {card}（{price} 金币）
-      buy_relic: 购买 {relic}（{price} 金币）
-      buy_potion: 购买 {potion}（{price} 金币）
-      remove_card: 移除一张卡牌（{price} 金币）
-      leave: 离开

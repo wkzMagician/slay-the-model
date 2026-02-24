@@ -275,3 +275,15 @@ class NlothGift(Relic):
     def modifies_card_reward_rare_chance(self) -> bool:
         """Marker hook for get_random_card_reward."""
         return True
+
+
+@register("relic")
+class SpiritPoop(Relic):
+    """Obtained from Bonfire Spirits when sacrificing a Curse."""
+    
+    def __init__(self):
+        super().__init__()
+        self.rarity = RarityType.EVENT
+    
+    # This is a cosmetic relic with no gameplay effect
+    # It represents a curse "reward" from the spirits

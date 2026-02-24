@@ -11,6 +11,8 @@ This module constructs a detailed, human-readable context string that includes:
 """
 from typing import TYPE_CHECKING
 
+from localization import t
+
 if TYPE_CHECKING:
     from engine.game_state import GameState
     from engine.combat import Combat
@@ -168,15 +170,15 @@ class AIContextBuilder:
         
         # Draw pile (names only, it's shuffled)
         draw_names = [AIContextBuilder._get_card_name(c) for c in draw_pile]
-        draw_line = f"Draw Pile ({len(draw_pile)}): {', '.join(draw_names) if draw_names else 'Empty'}"
+        draw_line = f"{t('combat.draw_pile')} ({len(draw_pile)}): {', '.join(draw_names) if draw_names else t('ui.empty')}"
         
         # Discard pile
         discard_names = [AIContextBuilder._get_card_name(c) for c in discard]
-        discard_line = f"Discard Pile ({len(discard)}): {', '.join(discard_names) if discard_names else 'Empty'}"
+        discard_line = f"{t('combat.discard_pile')} ({len(discard)}): {', '.join(discard_names) if discard_names else t('ui.empty')}"
         
         # Exhaust pile
         exhaust_names = [AIContextBuilder._get_card_name(c) for c in exhaust]
-        exhaust_line = f"Exhaust Pile ({len(exhaust)}): {', '.join(exhaust_names) if exhaust_names else 'Empty'}"
+        exhaust_line = f"{t('combat.exhaust_pile', default='Exhaust Pile')} ({len(exhaust)}): {', '.join(exhaust_names) if exhaust_names else t('ui.empty')}"
         
         sections.append("## Deck Status\n" + "\n".join([draw_line, discard_line, exhaust_line]))
         

@@ -54,6 +54,7 @@ class AddRandomRelicAction(Action):
         pool: str = None,
         characters: Optional[List[str]] = None,
         character: Optional[str] = None,
+        exclude_relics: Optional[List[str]] = None,
     ):
         if rarities is not None:
             self.rarities = rarities if isinstance(rarities, list) else [rarities]
@@ -72,6 +73,7 @@ class AddRandomRelicAction(Action):
             self.characters = [character]
         else:
             self.characters = None
+        self.exclude_relics = exclude_relics or []
     
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
@@ -79,6 +81,7 @@ class AddRandomRelicAction(Action):
             relic = get_random_relic(
                 characters=self.characters,
                 rarities=self.rarities,
+                exclude=self.exclude_relics,
             )
             if relic:
                 game_state.player.relics.append(relic)
@@ -333,4 +336,37 @@ class ReplacePotionAction(Action):
             potions[self.index] = self.new_potion
             tui_print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.idstr))
             return NoneResult()
+        return NoneResult()
+
+
+@register("action")
+class LosePotionAction(Action):
+    """Lose a potion from player
+    
+    Required:
+        index (int): Index of potion to lose
+        OR
+        potion: Potion instance to lose
+        
+    Optional:
+        None
+    """
+    def __init__(self, index: int = None, potion = None):
+        self.index = index
+        self.potion = potion
+    
+    def execute(self) -> 'BaseResult':
+        from engine.game_state import game_state
+        if not game_state.player:
+            return NoneResult()
+        
+        if self.index is not None:
+            # Remove by index
+            if 0 <= self.index < len(game_state.player.potions):
+                game_state.player.potions.pop(self.index)
+        elif self.potion is not None:
+            # Remove by instance
+            if self.potion in game_state.player.potions:
+                game_state.player.potions.remove(self.potion)
+        
         return NoneResult()

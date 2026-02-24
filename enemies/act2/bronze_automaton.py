@@ -64,12 +64,12 @@ class BronzeAutomaton(Enemy):
         # Pattern: 0=Flail, 1=Boost, 2=Flail, 3=Boost, 4=Hyper Beam, 5=Stunned
         pattern = ["Flail", "Boost", "Flail", "Boost", "Hyper Beam", "Stunned"]
         
-        # TODO: On A17+, replace Stunned with Boost
-        # if ascension >= 17 and pattern_index % 6 == 5:
-        #     intention_name = "Boost"
-        # else:
-        
+        # On A17+, replace Stunned with Boost
+        from engine.game_state import game_state
         intention_name = pattern[self._pattern_index % 6]
+        if game_state.ascension >= 17 and intention_name == "Stunned":
+            intention_name = "Boost"
+        
         self.current_intention = self.intentions[intention_name]
         self._pattern_index += 1
 

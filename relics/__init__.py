@@ -160,10 +160,10 @@ from .global_relics import (
     NeowsLament,
     NlothHungryFace,
     OddMushroom,
-    SsserpentHead,
     WarpedTongs,
     RedMask,
     NlothGift,
+    SpiritPoop,
     
     # Special (3)
     RedKey,
@@ -340,10 +340,10 @@ __all__ = [
     'NeowsLament',
     'NlothHungryFace',
     'OddMushroom',
-    'SsserpentHead',
     'WarpedTongs',
     'RedMask',
     'NlothGift',
+    'SpiritPoop',
     
     # Global Special (3)
     'RedKey',

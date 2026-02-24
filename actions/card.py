@@ -358,52 +358,62 @@ class UpgradeCardAction(Action):
             return NoneResult()
         return NoneResult()
     
-@register("action")   
 class ChooseRemoveCardAction(Action):
-    """Choose a card to remove from hand
+    """Choose a card to remove from pile
     
     Required:
         pile (str): Card location ('deck' or 'hand')
         amount (int): Amount of cards to remove
         
     Optional:
-        None
+        exclude_card_types (List[CardType]): Card types to exclude
+        exclude_rarities (List[RarityType]): Rarities to exclude
+        exclude_bottled (bool): Exclude bottled cards (default False)
     """
-    def __init__(self, pile: str = 'hand', amount: int = 1):
+    def __init__(self, pile: str = 'hand', amount: int = 1,
+                 exclude_card_types: Optional[List] = None,
+                 exclude_rarities: Optional[List] = None,
+                 exclude_bottled: bool = False):
         self.pile = pile
         self.amount = amount
-    
-    def execute(self) -> 'BaseResult':
+        self.exclude_card_types = exclude_card_types
+        self.exclude_rarities = exclude_rarities
+        self.exclude_bottled = exclude_bottled
+        
+    def execute(self) -> BaseResult:
         from engine.game_state import game_state
-        if not game_state.player:
-            return NoneResult()
-        pile = self.pile
-        amount = self.amount
-
         card_manager = game_state.player.card_manager
         from actions.display import SelectAction
 
         options = []
-        cards_in_pile = card_manager.get_pile(pile)
+        cards_in_pile = card_manager.get_pile(self.pile)
 
         for card in cards_in_pile:
+            # Filter by card type
+            if self.exclude_card_types and card.card_type in self.exclude_card_types:
+                continue
+            # Filter by rarity
+            if self.exclude_rarities and card.rarity in self.exclude_rarities:
+                continue
+            # Filter bottled cards
+            if self.exclude_bottled and hasattr(card, 'bottled') and card.bottled:
+                continue
+            
             option = card.info() # card.display_name
             options.append(
                 Option(
                     name = option,
                     actions = [
-                        RemoveCardAction(card=card, src_pile=pile),
+                        RemoveCardAction(card=card, src_pile=self.pile),
                     ]
                 )
             )
         if not options:
             return NoneResult()
-        if not options:
-            return NoneResult()
         select_action = SelectAction(
             title = LocalStr("ui.choose_cards_to_remove"),
             options = options,
-            max_select = amount,
+            max_select = self.amount,
             must_select = True
         )
         return SingleActionResult(select_action)
@@ -487,7 +497,40 @@ class ChooseUpgradeCardAction(Action):
         for card in cards_in_pile:
             if not card.can_upgrade():
                 continue
-            option = card.info() # card.display_name
+            
+            # 创建副本并升级，以获取升级后的信息
+            upgraded_card = card.copy()
+            upgraded_card.upgrade()
+            
+            # 构建简洁的升级预览：卡牌名 + 升级前费用（升级后费用） + 升级前描述 -> 升级后描述
+            from localization import ConcatLocalStr
+            from utils.dynamic_values import resolve_card_value
+            
+            # 获取费用
+            before_cost = resolve_card_value(card, 'cost')
+            after_cost = resolve_card_value(upgraded_card, 'cost')
+            
+            # 获取描述
+            before_desc = card.description.resolve() if hasattr(card, 'description') else ""
+            after_desc = upgraded_card.description.resolve() if hasattr(upgraded_card, 'description') else ""
+            
+            # 构建简洁的升级预览
+            cost_display = f"{before_cost}"
+            if before_cost != after_cost:
+                cost_display = f"{before_cost}→{after_cost}"
+            
+            # 如果描述相同，只显示一次
+            if before_desc == after_desc:
+                option = ConcatLocalStr(
+                    card.display_name,
+                    f" ({cost_display}) {before_desc}"
+                )
+            else:
+                option = ConcatLocalStr(
+                    card.display_name,
+                    f" ({cost_display}) {before_desc} → {after_desc}"
+                )
+            
             options.append(
                 Option(
                     name = option,

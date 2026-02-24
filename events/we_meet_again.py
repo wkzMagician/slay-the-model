@@ -8,8 +8,9 @@ from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import SelectAction, DisplayTextAction
-from actions.reward import AddRandomRelicAction, LoseGoldAction
 from actions.card import ChooseRemoveCardAction
+from actions.reward import AddRandomRelicAction, LoseGoldAction, LosePotionAction
+from utils.types import RarityType
 from localization import LocalStr
 from utils.option import Option
 from engine.game_state import game_state
@@ -31,13 +32,11 @@ class WeMeetAgain(Event):
         options = []
         
         # Option 1: Give Potion (if has potion)
-        # NOTE: LosePotionAction doesn't exist yet. When it does, we should
-        # let the player choose which potion to give before giving the relic.
         if game_state.player.potions:
             options.append(Option(
                 name=LocalStr('events.we_meet_again.give_potion'),
                 actions=[
-                    # TODO: Add LosePotionAction when available
+                    LosePotionAction(index=0),  # Remove first potion
                     AddRandomRelicAction()
                 ]
             ))
@@ -54,13 +53,13 @@ class WeMeetAgain(Event):
             ))
         
         # Option 3: Give Card (non-Basic, non-Curse, non-Bottled)
-        # NOTE: ChooseRemoveCardAction doesn't support filtering yet.
-        # According to wiki: "Not a Curse, Not a Basic (Starter), Not a Bottled card"
-        # TODO: Implement card filtering when ChooseRemoveCardAction supports it
         options.append(Option(
             name=LocalStr('events.we_meet_again.give_card'),
             actions=[
-                ChooseRemoveCardAction(),  # Player chooses a card to remove
+                ChooseRemoveCardAction(
+                    pile='deck',
+                    exclude_rarities=[RarityType.STARTER, RarityType.CURSE]
+                ),
                 AddRandomRelicAction()
             ]
         ))

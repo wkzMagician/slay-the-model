@@ -108,6 +108,9 @@ class Card(Localizable):
         self._retain = self.base_retain
         self._innate = self.base_innate
 
+        # Bottled status - whether this card is bottled by a relic
+        self.bottled = False
+
         # Computed properties
         self.target_type = self._resolve_target()
         
