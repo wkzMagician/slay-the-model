@@ -131,7 +131,7 @@ events:
     sacrifice: Sacrifice
     desecrate: Desecrate
     leave: Leave
-  golden_idol:
+  GoldenIdol:
     title: Golden Idol
     take: Take the idol
     trap: Trap
@@ -1192,418 +1192,418 @@ relics:
   Whetstone:
     name: Whetstone
     description: Upon pickup, upgrade 2 random Attacks.
-  horn_cleat:
+  HornCleat:
     name: Horn Cleat
     description: At start of your 2nd turn, gain 14 Block.
-  blue_candle:
+  BlueCandle:
     name: Blue Candle
     description: Curse Cards can now be played. Playing a Curse will make you lose
       1 HP and Exhaust Card.
-  bottled_flame:
+  BottledFlame:
     name: Bottled Flame
     description: Upon pick up, choose an Attack. Start each combat with this Card
       in your hand.
-  bottled_lightning:
+  BottledLightning:
     name: Bottled Lightning
     description: Upon pick up, choose a Skill. Start each combat with this Card in
       your hand.
-  bottled_tornado:
+  BottledTornado:
     name: Bottled Tornado
     description: Upon pick up, choose a Power. Start each combat with this Card in
       your hand.
-  darkstone_periapt:
+  DarkstonePeriapt:
     name: Darkstone Periapt
     description: Whenever you obtain a Curse, increase your Max HP by 6.
-  eternal_feather:
+  EternalFeather:
     name: Eternal Feather
     description: For every 5 Cards in your deck, heal 3 HP whenever you enter a Rest
       Site.
-  frozen_egg:
+  FrozenEgg:
     name: Frozen Egg
     description: Whenever you add a Power to your deck, it is Upgraded.
-  gremlin_horn:
+  GremlinHorn:
     name: Gremlin Horn
     description: Whenever an enemy dies, gain 1 Energy and draw 1 Card.
-  ink_bottle:
+  InkBottle:
     name: Ink Bottle
     description: Whenever you play 10 cards, draw 1 Card.
-  kunai:
+  Kunai:
     name: Kunai
     description: Every time you play 3 Attacks in a single turn, gain 1 Dexterity.
-  letter_opener:
+  LetterOpener:
     name: Letter Opener
     description: Every time you play 3 Skills in a single turn, deal 5 damage to ALL
       enemies.
-  matryoshka:
+  Matryoshka:
     name: Matryoshka
     description: The next 2 Chests you open contain 2 Relics.
-  meat_on_bone:
+  MeatOnBone:
     name: Meat on Bone
     description: If your HP is at or below 50% at end of combat, heal 12 HP.
-  mercury_hourglass:
+  MercuryHourglass:
     name: Mercury Hourglass
     description: At start of your turn, deal 3 damage to ALL enemies.
-  molten_egg:
+  MoltenEgg:
     name: Molten Egg
     description: Whenever you add an Attack to your deck, it is Upgraded.
-  mummified_hand:
+  MummifiedHand:
     name: Mummified Hand
     description: Whenever you play a Power, a random card in your hand costs 0 Energy
       for turn.
-  ninja_scroll:
+  NinjaScroll:
     name: Ninja Scroll
     description: Start each combat with 3 Shivs in hand.
-  ornamental_fan:
+  OrnamentalFan:
     name: Ornamental Fan
     description: Every time you play 3 Attacks in a single turn, gain 4 Block.
-  pantograph:
+  Pantograph:
     name: Pantograph
     description: At start of Boss combats, heal 25 HP.
-  paper_krane:
+
+  PaperFrog:
+    name: Paper Frog
+    description: Enemies dealing 75% or more of your Max HP have damage reduced by 50%.
+  PaperKrane:
     name: Paper Krane
     description: Enemies with Weak deal 50% less damage rather than 25%.
-  paper_phrog:
+  PaperPhrog:
     name: Paper Phrog
     description: Enemies with Vulnerable take 75% more damage rather than 50%.
-  pear:
+  Pear:
     name: Pear
     description: Raise your Max HP by 10.
-  question_card:
+  QuestionCard:
     name: Question Card
     description: On future Card Reward screens you have 1 additional Card to choose
       from.
-  self_forming_clay:
+  SelfFormingClay:
     name: Self-Forming Clay
     description: Whenever you lose HP in combat, gain 3 Block next turn.
-  shuriken:
+  Shuriken:
     name: Shuriken
     description: Every time you play 3 Attacks in a single turn, gain 1 Strength.
-  singing_bowl:
+  SingingBowl:
     name: Singing Bowl
     description: When adding Cards to your deck, you may gain +2 Max HP instead.
-  strike_dummy:
+  StrangeSpoon:
+    name: Strange Spoon
+    description: 50% chance for Exhaust cards to be removed from play instead.
+
+  StrikeDummy:
     name: Strike Dummy
     description: Cards containing "Strike" deal 3 additional damage.
-  sundial:
+  Sundial:
     name: Sundial
     description: Every 3 times you shuffle your Drawpile, gain 2 Energy.
-  courier:
+  TheCourier:
     name: The Courier
     description: The merchant no longer runs out of Cards, Relics, or Potions and
       his prices are reduced by 20%.
-  toxic_egg:
+  ToxicEgg:
     name: Toxic Egg
     description: Whenever you add a Skill to your deck, it is Upgraded.
-  white_beast_statue:
+  WhiteBeastStatue:
     name: White Beast Statue
     description: Potions always drop after combat.
-  bird_faced_urn:
+  BirdFacedUrn:
     name: Bird-Faced Urn
     description: Whenever you play a Power card, heal 2 HP.
-  calipers:
+  Calipers:
     name: Calipers
     description: At start of your turn, lose 15 Block rather than all of your Block.
-  captains_wheel:
+  CaptainsWheel:
     name: Captain's Wheel
     description: At start of your 3rd turn, gain 18 Block.
-  dead_branch:
+  DeadBranch:
     name: Dead Branch
     description: Whenever you Exhaust a Card, add a random Card to your hand.
-  du_vu_doll:
+  DuVuDoll:
     name: Du-Vu Doll
     description: For each Curse in your deck, start each combat with 1 additional
       Strength.
-  fossilized_helix:
+  FossilizedHelix:
     name: Fossilized Helix
     description: Prevent first time you would lose HP in combat.
-  ginger:
+  Ginger:
     name: Ginger
     description: You can no longer become Weakened.
-  girya:
+  Girya:
     name: Girya
     description: You can now gain Strength at Rest Sites. (3 times max)
-  ice_cream:
+  IceCream:
     name: Ice Cream
     description: Energy is now conserved between turns.
-  lizard_tail:
+  LizardTail:
     name: Lizard Tail
     description: When you would die, heal to 50% of your Max HP instead (works once).
-  magic_flower:
+  MagicFlower:
     name: Magic Flower
     description: Healing is 50% more effective during combat.
-  mango:
+  Mango:
     name: Mango
     description: Upon pickup, raise your Max HP by 14.
-  old_coin:
+  OldCoin:
     name: Old Coin
     description: Gain 300 Gold.
-  peace_pipe:
+  PeacePipe:
     name: Peace Pipe
     description: You can now remove Cards from your deck at Rest Sites.
-  pocketwatch:
+  Pocketwatch:
     name: Pocketwatch
     description: Whenever you play 3 or less Cards in a turn, draw 3 additional Cards
       at start of your next turn.
-  prayer_wheel:
+  PrayerWheel:
     name: Prayer Wheel
     description: Normal enemies drop an additional Card reward.
-  shovel:
+  Shovel:
     name: Shovel
     description: You can now Dig for Relics at Rest Sites.
-  stone_calendar:
+  StoneCalendar:
     name: Stone Calendar
     description: At end of turn 7, deal 52 damage to ALL enemies.
-  specimen:
+  TheSpecimen:
     name: The Specimen
     description: Whenever an enemy dies, transfer any Poison it has to a random enemy.
-  thread_and_needle:
+  ThreadAndNeedle:
     name: Thread and Needle
     description: At start of each combat, gain 4 Plated Armor.
-  tingsha:
+  Tingsha:
     name: Tingsha
     description: Whenever you discard a card during your turn, deal 3 damage to a
       random enemy for each card discarded.
-  torii:
+  Torii:
     name: Torii
     description: Whenever you would receive 5 or less unblocked Attack damage, reduce
       it to 1.
-  tough_bandages:
+  ToughBandages:
     name: Tough Bandages
     description: Whenever you discard a Card during your turn, gain 3 Block.
-  tungsten_rod:
+  TungstenRod:
     name: Tungsten Rod
     description: Whenever you would lose HP, lose 1 less.
-  turnip:
+  Turnip:
     name: Turnip
-    description: Gain 300 Gold.
-  unceasing_top:
+    description: You can no longer become Frail.
+  UnceasingTop:
     name: Unceasing Top
     description: Whenever you have no Cards in hand during your turn, draw a Card.
-  snecko_eye:
+  SneckoEye:
     name: Snecko Eye
     description: Draw 2 additional cards each turn. Start each combat Confused.
-  astrolabe:
+  Astrolabe:
     name: Astrolabe
     description: Upon pickup, choose and Transform 3 Cards, then Upgrade them.
-  black_star:
+  BlackStar:
     name: Black Star
     description: Elites drop an additional Relic when defeated.
-  black_blood:
+  BlackBlood:
     name: Black Blood
     description: Replaces Burning Blood. At end of combat, heal 12 HP.
-  busted_crown:
+  BustedCrown:
     name: Busted Crown
     description: Gain 1 Energy at start of each turn. On Card Reward screens, you
       have 2 fewer Cards to choose from.
-  calling_bell:
+  CallingBell:
     name: Calling Bell
     description: Upon pickup, obtain a unique Curse and 3 Relics.
-  coffee_dripper:
+  CoffeeDripper:
     name: Coffee Dripper
     description: Gain 1 Energy at start of each turn. You can no longer Rest at Rest
       Sites.
-  cursed_key:
+  CursedKey:
     name: Cursed Key
     description: Gain 1 Energy at start of each turn. Whenever you open a non-boss
       chest, obtain a Curse.
-  ectoplasm:
+  Ectoplasm:
     name: Ectoplasm
     description: Gain 1 Energy at start of each turn. You can no longer gain Gold.
-  empty_cage:
+  EmptyCage:
     name: Empty Cage
     description: Upon pickup, remove 2 Cards from your Deck.
-  fusion_hammer:
+  FusionHammer:
     name: Fusion Hammer
     description: Gain 1 Energy at start of each turn. You can no longer Smith at Rest
       Sites.
-  hovering_kite:
+  HoveringKite:
     name: Hovering Kite
     description: The first time you discard a Card each turn, gain 1 Energy.
-  mark_of_pain:
+  MarkOfPain:
     name: Mark of Pain
     description: Gain 1 Energy at start of each turn. Start combats with 2 Wounds
       in your Drawpile.
-  pandoras_box:
+  PandorasBox:
     name: Pandora's Box
     description: Transform all Strikes and Defends.
-  philosophers_stone:
+  PhilosophersStone:
     name: Philosopher's Stone
     description: Gain 1 Energy at start of each turn. ALL enemies start with 1 Strength.
-  ring_of_serpent:
+  RingOfSerpent:
     name: Ring of Serpent
     description: Replaces Ring of Snake. At start of your turn, draw 1 additional
       Card.
-  runic_cube:
+  RunicCube:
     name: Runic Cube
     description: Whenever you lose HP, draw 1 card.
-  runic_dome:
+  RunicDome:
     name: Runic Dome
     description: Gain 1 Energy at start of each turn. You can no longer see enemy
       Intents.
-  runic_pyramid:
+  RunicPyramid:
     name: Runic Pyramid
     description: At end of your turn, you no longer discard your hand.
-  sacred_bark:
+  SacredBark:
     name: Sacred Bark
     description: Double effectiveness of most Potions.
-  slavers_collar:
+  SlaversCollar:
     name: Slaver's Collar
     description: During Boss and Elite combats, gain 1 Energy at start of your turn.
-  sozu:
+  Sozu:
     name: Sozu
     description: Gain 1 Energy at start of each turn. You can no longer obtain Potions.
-  tiny_house:
+  TinyHouse:
     name: Tiny House
     description: Obtain 1 Potion. Gain 50 Gold. Raise your Max HP by 5. Obtain 1 Card.
       Upgrade 1 Random Card.
-  velvet_choker:
+  VelvetChoker:
     name: Velvet Choker
     description: Gain 1 Energy at start of each turn. You cannot play more than 6
       Cards per turn.
-  wrist_blade:
+  WristBlade:
     name: Wrist Blade
     description: Attacks that cost 0 Energy deal 4 additional damage.
-  cauldron:
+  Cauldron:
     name: Cauldron
     description: Upon pickup, brews 5 random Potions.
-  chemical_x:
+  ChemicalX:
     name: Chemical X
     description: Whenever you play a cost X Card, its effects are increased by 2.
-  clockwork_souvenir:
+  ClockworkSouvenir:
     name: Clockwork Souvenir
     description: At start of each combat, gain 1 Artifact.
-  dollys_mirror:
+  DollysMirror:
     name: Dolly's Mirror
     description: Upon pickup, obtain an additional copy of a Card in your deck.
-  frozen_eye:
+  FrozenEye:
     name: Frozen Eye
     description: When viewing your Drawpile, Cards are now shown in order.
-  hand_drill:
+  HandDrill:
     name: Hand Drill
     description: Whenever you break an enemy's Block, apply 2 Vulnerable.
   LeesWaffle:
     name: Lee's Waffle
     description: Raise your Max HP by 7 and heal all of your HP.
-  medical_kit:
+  MedicalKit:
     name: Medical Kit
     description: Status Cards can now be played. Playing a Status will Exhaust Card.
-  membership_card:
+  MembershipCard:
     name: Membership Card
     description: 50% discount on all products in Shop!
-  prismatic_shard:
+  PrismaticShard:
     name: Prismatic Shard
     description: Combat reward screens now contain colorless cards and cards from
       other colors.
   Orrery:
     name: Orrery
     description: Choose and add 5 Cards to your deck.
-  potion_belt_shop:
+  PotionBeltShop:
     name: Potion Belt (Shop)
     description: Upon pick up, gain 2 Potion slots.
-  sling_of_courage:
+  SlingOfCourage:
     name: Sling of Courage
     description: Start each Elite combat with 2 Strength. (Does not work against Bosses).
-  strange_spoon_shop:
+  StrangeSpoonShop:
     name: Strange Spoon (Shop)
     description: Cards which Exhaust when played will instead discard 50% of time.
-  abacus:
+  TheAbacus:
     name: The Abacus
     description: Gain 6 Block whenever you shuffle your Drawpile.
-  twisted_funnel:
+  TwistedFunnel:
     name: Twisted Funnel
     description: At start of each combat, apply 4 Poison to ALL enemies.
-  cultist_headpiece:
+  CultistHeadpiece:
     name: Cultist Headpiece
     description: CAW CAW CAWWWW!
-  face_of_cleric:
+  FaceOfCleric:
     name: Face of Cleric
     description: Raise your Max HP by 1 after each combat.
-  golden_idol:
+  GoldenIdol:
     name: Golden Idol
     description: Enemies drop 25% more Gold.
-  bloody_idol:
+  BloodyIdol:
     name: Bloody Idol
     description: Whenever you gain Gold, heal 5 HP.
-  gremlin_visage:
+  GremlinVisage:
     name: Gremlin Visage
     description: Start each combat with 1 Weak.
-  mark_of_bloom:
+  MarkOfBloom:
     name: Mark of Bloom
     description: You can no longer heal.
-  mutagenic_strength:
+  MutagenicStrength:
     name: Mutagenic Strength
     description: Start each combat with 3 Strength that is lost at end of your turn.
-  necronomicon:
+  Necronomicon:
     name: Necronomicon
     description: The first Attack played each turn that costs 2 or more is played
       twice. When you take this Relic, become Cursed.
-  nilrys_codex:
+  NilrysCodex:
     name: Nilry's Codex
     description: At end of each turn, you can choose 1 of 3 random Cards to shuffle
       into your Drawpile.
-  enchiridion:
+  Enchiridion:
     name: Enchiridion
     description: At start of each combat, add a random Power to your hand. It costs
       0 Energy until end of turn.
-  neows_lament:
+  NeowsLament:
     name: Neow's Lament
     description: Enemies in your first 3 combats will have 1 HP.
-  nloth_hungry_face:
+  NlothHungryFace:
     name: N'loth's Hungry Face
     description: The next non-boss chest you open is empty.
-  odd_mushroom:
+  OddMushroom:
     name: Odd Mushroom
     description: When Vulnerable, take 25% more damage rather than 50%.
-  ssserpent_head:
+  SsserpentHead:
     name: Ssserpent Head
     description: Whenever you enter an Event room, gain 50 Gold.
-  warped_tongs:
+  WarpedTongs:
     name: Warped Tongs
     description: At start of your turn, Upgrade a random Card in your hand for rest
       of combat.
-  red_mask_event:
-    name: Red Mask (Event)
+  RedMask:
+    name: Red Mask
     description: At start of each combat, apply 1 Weakness to ALL enemies.
-  nloth_gift:
+  NlothGift:
     name: N'loth's Gift
     description: Triples chance of receiving rare Cards as monster rewards.
-  red_key:
+
+  RedKey:
     name: Red Key
     description: You need to obtain Red, Green and Blue Key. Why? Find out yourself!
-  blue_key:
+  BlueKey:
     name: Blue Key
     description: You need to obtain Red, Green and Blue Key. Why? Find out yourself!
-  green_key:
+  GreenKey:
     name: Green Key
     description: You need to obtain Red, Green and Blue Key. Why? Find out yourself!
-  burning_blood:
-    name: Burning Blood (Ironclad)
+  BurningBlood:
+    name: Burning Blood
     description: At end of combat, heal 6 HP.
-  red_skull:
+  RedSkull:
     name: Red Skull
     description: While your HP is at or below 50%, you have 3 additional Strength.
-  paper_phrog_ironclad:
-    name: Paper Frog (Ironclad)
+  PaperPhrogIronclad:
+    name: Paper Frog
     description: Enemies with Vulnerable take 75% more damage rather than 50%.
-  champion_belt:
+  ChampionBelt:
     name: Champion's Belt
     description: Whenever you apply Vulnerable, also apply 1 Weak.
-  charons_ashes:
+  CharonsAshes:
     name: Charon's Ashes
     description: Whenever you Exhaust a card, deal 3 damage to ALL enemies.
-  magic_flower_ironclad:
-    name: Magic Flower (Ironclad)
-    description: Healing is 50% more effective during combat.
-  black_blood_boss:
-    name: Black Blood (Ironclad)
-    description: Replaces Burning Blood. At end of combat, heal 12 HP.
-  runic_cube_ironclad:
-    name: Runic Cube (Ironclad)
-    description: Whenever you lose HP, draw 1 card.
-  brimstone:
-    name: Brim Stone (Ironclad)
+  Brimstone:
+    name: Brim Stone
     description: At start of your turn, gain 2 Strength and ALL enemies gain 1 Strength.
-  orange_pellets:
+  OrangePellets:
     name: Orange Pellets
     description: Whenever you play a Power, Attack, and Skill in same turn, remove
       all of your Debuffs.
@@ -1617,6 +1617,7 @@ relics:
     name: Ornamental Fan
   PotionBeltShop:
     name: Potion Belt
+
 enemies:
   Cultist:
     name: Cultist
