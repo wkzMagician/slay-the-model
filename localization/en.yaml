@@ -402,28 +402,23 @@ cards:
     Strike:
       name: Strike
       description: Deal {damage} damage.
-      upgrade_description: Deal {damage} damage.
+
     Defend:
       name: Defend
       description: Gain {block} Block.
-      upgrade_description: Gain {block} Block.
+
     Bash:
       name: Bash
       description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable.
-      upgrade_description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable.
+
     Anger:
       name: Anger
       description: Deal {damage} damage. Add a copy of this card to your discard pile.
-      upgrade_description: Deal {damage} damage. Add a copy of this card to your discard
-        pile.
+
     IronWave:
       name: Iron Wave
       description: Gain {block} Block. Deal {damage} damage.
-      combat_description: Gain {block} Block. Deal {damage} damage. (Gain {block}
-        Block, Deal {damage} damage)
-      upgrade_description: Gain {block} Block. Deal {damage} damage.
-      upgrade_combat_description: Gain {block} Block. Deal {damage} damage. (Gain
-        {block} Block, Deal {damage} damage)
+
     PommelStrike:
       name: Pommel Strike
       description: Deal {damage} damage. Draw {draw} card.
@@ -432,44 +427,37 @@ cards:
       name: Heavy Blade
       description: Deal {damage} damage. Strength affects this {magic.strength_mult}
         times.
-      upgrade_description: Deal {damage} damage. Strength affects this {magic.strength_mult}
-        times.
+
     Armaments:
       name: Armaments
       description: Gain {block} Block. Upgrade a card in your hand this combat.
-      upgrade_description: Gain {block} Block. Upgrade a card in your hand this combat.
+
     Flex:
       name: Flex
       description: Gain {magic.temp_strength} Strength. Lose {magic.temp_strength}
         Strength at the end of your turn.
-      upgrade_description: Gain {magic.temp_strength} Strength. Lose {magic.temp_strength}
-        Strength at the end of your turn.
+
     Clothesline:
       name: Clothesline
       description: Deal {damage} damage. Apply {magic.weak} Weak.
-      upgrade_description: Deal {damage} damage. Apply {magic.weak} Weak.
+
     Inflame:
       name: Inflame
       description: Gain {magic.strength} Strength.
-      upgrade_description: Gain {magic.strength} Strength.
+
     BodySlam:
       name: Body Slam
       description: Deal damage equal to your Block.
-      combat_description: Deal damage equal to your Block. (Deal {damage} damage)
+
       upgrade_description: Deal damage equal to your Block. Costs 0.
     Carnage:
       name: Carnage
       description: Deal {damage} damage to ALL enemies.
-      combat_description: Deal {damage} damage to ALL enemies. (Deal {damage} damage)
-      upgrade_description: Deal {damage} damage to ALL enemies.
-      upgrade_combat_description: Deal {damage} damage to ALL enemies. (Deal {damage}
-        damage)
+
     Bludgeon:
       name: Bludgeon
       description: Deal {damage} damage.
-      combat_description: Deal {damage} damage. (Deal {damage} damage)
-      upgrade_description: Deal {damage} damage.
-      upgrade_combat_description: Deal {damage} damage. (Deal {damage} damage)
+
     LimitBreak:
       name: Limit Break
       description: Double your Strength.
@@ -477,17 +465,12 @@ cards:
     Pummel:
       name: Pummel
       description: Deal {damage} damage {attack_times} times.
-      combat_description: Deal {damage} damage {attack_times} times. (Deal {damage}
-        damage x {attack_times} times)
-      upgrade_description: Deal {damage} damage {attack_times} times.
-      upgrade_combat_description: Deal {damage} damage {attack_times} times. (Deal
-        {damage} damage x {attack_times} times)
+
     Uppercut:
       name: Uppercut
       description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable and {magic.weak}
         Weak.
-      upgrade_description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable
-        and {magic.weak} Weak.
+
     Offering:
       name: Offering
       description: Lose 6 HP. Gain {energy_gain} Energy. Gain 2 Strength. Draw {draw}
@@ -499,19 +482,19 @@ cards:
     BattleTrance:
       name: Battle Trance
       description: Draw {draw} cards. You cannot draw any more cards this turn.
-      upgrade_description: Draw {draw} cards. You cannot draw any more cards this turn.
+
     Berserk:
       name: Berserk
       description: Gain {magic.vulnerable} Vulnerable. At the start of your turn, gain 1 Energy.
-      upgrade_description: Gain {magic.vulnerable} Vulnerable. At the start of your turn, gain 1 Energy.
+
     BloodForBlood:
       name: Blood for Blood
       description: Deal {damage} damage. Costs 1 less energy for each HP lost this combat.
-      upgrade_description: Deal {damage} damage. Costs 1 less energy for each HP lost this combat.
+
     Bloodletting:
       name: Bloodletting
       description: Lose 2 HP. Gain {energy_gain} Energy.
-      upgrade_description: Lose 2 HP. Gain {energy_gain} Energy.
+
     Brutality:
       name: Brutality
       description: At the start of your turn, lose 1 HP and draw 1 card.
@@ -519,19 +502,19 @@ cards:
     BurningPact:
       name: Burning Pact
       description: Exhaust 1 card. Draw {draw} cards.
-      upgrade_description: Exhaust 1 card. Draw {draw} cards.
+
     Clash:
       name: Clash
       description: Can only be played if every card in your hand is an Attack. Deal {damage} damage.
-      upgrade_description: Can only be played if every card in your hand is an Attack. Deal {damage} damage.
+
     Cleave:
       name: Cleave
       description: Deal {damage} damage to ALL enemies.
-      upgrade_description: Deal {damage} damage to ALL enemies.
+
     Combust:
       name: Combust
       description: At the end of your turn, lose 1 HP and deal {magic.damage} damage to ALL enemies.
-      upgrade_description: At the end of your turn, lose 1 HP and deal {magic.damage} damage to ALL enemies.
+
     Corruption:
       name: Corruption
       description: Skills cost 0. Whenever you play a Skill, Exhaust it.
@@ -543,19 +526,19 @@ cards:
     DemonForm:
       name: Demon Form
       description: At the end of your turn, gain {magic.strength} Strength.
-      upgrade_description: At the end of your turn, gain {magic.strength} Strength.
+
     Disarm:
       name: Disarm
       description: Enemy loses {magic.strength} Strength.
-      upgrade_description: Enemy loses {magic.strength} Strength.
+
     DoubleTap:
       name: Double Tap
       description: The next {magic.double_tap} Attack(s) is(are) played twice.
-      upgrade_description: The next {magic.double_tap} Attack(s) is(are) played twice.
+
     Dropkick:
       name: Dropkick
       description: Deal {damage} damage. If the enemy has Vulnerable, gain 1 Energy and draw 1 card.
-      upgrade_description: Deal {damage} damage. If the enemy has Vulnerable, gain 1 Energy and draw 1 card.
+
     DualWield:
       name: Dual Wield
       description: Choose a card in your hand. Add a copy of it to your hand.
@@ -567,7 +550,7 @@ cards:
     Evolve:
       name: Evolve
       description: Whenever you draw a Status card, draw {draw} card(s).
-      upgrade_description: Whenever you draw a Status card, draw {draw} card(s).
+
     Exhume:
       name: Exhume
       description: Choose a card from your Exhaust pile and put it into your hand. Exhaust.
@@ -575,27 +558,27 @@ cards:
     Feed:
       name: Feed
       description: Deal {damage} damage. If Fatal, gain {magic.max_hp} Max HP.
-      upgrade_description: Deal {damage} damage. If Fatal, gain {magic.max_hp} Max HP.
+
     FeelNoPain:
       name: Feel No Pain
       description: Whenever a card is Exhausted, gain {block} Block.
-      upgrade_description: Whenever a card is Exhausted, gain {block} Block.
+
     FiendFire:
       name: Fiend Fire
       description: Exhaust all cards in your hand. Deal {damage} damage for each. Exhaust.
-      upgrade_description: Exhaust all cards in your hand. Deal {damage} damage for each. Exhaust.
+
     FireBreathing:
       name: Fire Breathing
       description: Whenever you draw a Status or Curse card, deal {magic.damage} damage to ALL enemies.
-      upgrade_description: Whenever you draw a Status or Curse card, deal {magic.damage} damage to ALL enemies.
+
     FlameBarrier:
       name: Flame Barrier
       description: Gain {block} Block. Whenever you are attacked this turn, deal {magic.damage} damage.
-      upgrade_description: Gain {block} Block. Whenever you are attacked this turn, deal {magic.damage} damage.
+
     GhostlyArmor:
       name: Ghostly Armor
       description: Ethereal. Gain {block} Block.
-      upgrade_description: Ethereal. Gain {block} Block.
+
     Havoc:
       name: Havoc
       description: Play the top card of your draw pile and Exhaust it.
@@ -603,71 +586,71 @@ cards:
     Headbutt:
       name: Headbutt
       description: Deal {damage} damage. Put a card from your discard pile on top of your draw pile.
-      upgrade_description: Deal {damage} damage. Put a card from your discard pile on top of your draw pile.
+
     Hemokinesis:
       name: Hemokinesis
       description: Lose 2 HP. Deal {damage} damage.
-      upgrade_description: Lose 2 HP. Deal {damage} damage.
+
     Immolate:
       name: Immolate
       description: Deal {damage} damage to ALL enemies. Add a Burn into your discard pile.
-      upgrade_description: Deal {damage} damage to ALL enemies. Add a Burn into your discard pile.
+
     Impervious:
       name: Impervious
       description: Ethereal. Gain {block} Block. Exhaust.
-      upgrade_description: Ethereal. Gain {block} Block. Exhaust.
+
     InfernalBlade:
       name: Infernal Blade
       description: Add a random Attack into your hand. It costs 0 this turn. Exhaust.
-      upgrade_description: Add a random Attack into your hand. It costs 0 this turn. Exhaust.
+
     Intimidate:
       name: Intimidate
       description: Apply {magic.weak} Weak to ALL enemies.
-      upgrade_description: Apply {magic.weak} Weak to ALL enemies.
+
     Juggernaut:
       name: Juggernaut
       description: Whenever you gain Block, deal {magic.damage} damage to a random enemy.
-      upgrade_description: Whenever you gain Block, deal {magic.damage} damage to a random enemy.
+
     Metallicize:
       name: Metallicize
       description: At the end of your turn, gain {block} Block.
-      upgrade_description: At the end of your turn, gain {block} Block.
+
     PerfectedStrike:
       name: Perfected Strike
       description: Deal {damage} damage. Deals an additional {magic.damage_bonus} damage for each card in your deck containing "Strike".
-      upgrade_description: Deal {damage} damage. Deals an additional {magic.damage_bonus} damage for each card in your deck containing "Strike".
+
     PowerThrough:
       name: Power Through
       description: Gain {block} Block. Add 2 Wounds into your hand.
-      upgrade_description: Gain {block} Block. Add 2 Wounds into your hand.
+
     Rage:
       name: Rage
       description: Whenever you play an Attack this turn, gain {block} Block.
-      upgrade_description: Whenever you play an Attack this turn, gain {block} Block.
+
     Rampage:
       name: Rampage
       description: Deal {damage} damage. This combat, increase the damage of this card by {magic.damage_increase} every time it is played.
-      upgrade_description: Deal {damage} damage. This combat, increase the damage of this card by {magic.damage_increase} every time it is played.
+
     Reaper:
       name: Reaper
       description: Deal {damage} damage to ALL enemies. Heal HP equal to unblocked damage dealt. Exhaust.
-      upgrade_description: Deal {damage} damage to ALL enemies. Heal HP equal to unblocked damage dealt. Exhaust.
+
     RecklessCharge:
       name: Reckless Charge
       description: Deal {damage} damage. Shuffle a Dazed into your draw pile.
-      upgrade_description: Deal {damage} damage. Shuffle a Dazed into your draw pile.
+
     Rupture:
       name: Rupture
       description: Whenever you lose HP from a card, gain {magic.strength} Strength.
-      upgrade_description: Whenever you lose HP from a card, gain {magic.strength} Strength.
+
     SearingBlow:
       name: Searing Blow
       description: Deal {damage} damage. Can be upgraded any number of times.
-      upgrade_description: Deal {damage} damage. Can be upgraded any number of times.
+
     SecondWind:
       name: Second Wind
       description: Exhaust all non-Attack cards in your hand. Gain {block} Block for each.
-      upgrade_description: Exhaust all non-Attack cards in your hand. Gain {block} Block for each.
+
     SeeingRed:
       name: Seeing Red
       description: Gain {energy_gain} Energy. Exhaust.
@@ -675,31 +658,31 @@ cards:
     Sentinel:
       name: Sentinel
       description: Gain {block} Block. If this card is Exhausted, gain {magic.energy} Energy.
-      upgrade_description: Gain {block} Block. If this card is Exhausted, gain {magic.energy} Energy.
+
     SeverSoul:
       name: Sever Soul
       description: Exhaust all non-Attack cards in your hand. Deal {damage} damage.
-      upgrade_description: Exhaust all non-Attack cards in your hand. Deal {damage} damage.
+
     Shockwave:
       name: Shockwave
       description: Apply {magic.vulnerable} Vulnerable and {magic.weak} Weak to ALL enemies. Exhaust.
-      upgrade_description: Apply {magic.vulnerable} Vulnerable and {magic.weak} Weak to ALL enemies. Exhaust.
+
     ShrugItOff:
       name: Shrug It Off
       description: Gain {block} Block. Draw 1 card.
-      upgrade_description: Gain {block} Block. Draw 1 card.
+
     SpotWeakness:
       name: Spot Weakness
       description: If the enemy intends to attack, gain {magic.strength} Strength.
-      upgrade_description: If the enemy intends to attack, gain {magic.strength} Strength.
+
     SwordBoomerang:
       name: Sword Boomerang
       description: Deal {damage} damage to a random enemy {attack_times} times.
-      upgrade_description: Deal {damage} damage to a random enemy {attack_times} times.
+
     Thunderclap:
       name: Thunderclap
       description: Deal {damage} damage. Apply 1 Vulnerable to ALL enemies.
-      upgrade_description: Deal {damage} damage. Apply 1 Vulnerable to ALL enemies.
+
     TrueGrit:
       name: True Grit
       description: Gain {block} Block. Exhaust a random card from your hand.
@@ -707,19 +690,19 @@ cards:
     TwinStrike:
       name: Twin Strike
       description: Deal {damage} damage twice.
-      upgrade_description: Deal {damage} damage twice.
+
     WarCry:
       name: War Cry
       description: Draw {draw} card(s). Place a card from your hand on top of your draw pile.
-      upgrade_description: Draw {draw} card(s). Place a card from your hand on top of your draw pile.
+
     Whirlwind:
       name: Whirlwind
       description: Deal {damage} damage to ALL enemies X times.
-      upgrade_description: Deal {damage} damage to ALL enemies X times.
+
     WildStrike:
       name: Wild Strike
       description: Deal {damage} damage. Shuffle a Wound into your draw pile.
-      upgrade_description: Deal {damage} damage. Shuffle a Wound into your draw pile.
+
   colorless:
     Slimed:
       name: Slimed
@@ -739,20 +722,20 @@ cards:
       rarity: curse
     DeepBreath:
       name: Deep Breath
-      description: End your turn. Draw {draw_amount} cards.
+      description: Shuffle all cards into your draw pile. Draw {draw} cards.
     HandOfGreed:
       name: Hand of Greed
       description: Deal {damage} damage. If this kills a non-minion enemy, gain {gold}
         Gold.
     Impatience:
       name: Impatience
-      description: If you have no Attacks in hand, draw {draw_amount} cards.
+      description: If you have no Skills in hand, draw {draw_amount} cards.
     Madness:
       name: Madness
-      description: A random card in your hand costs 0 this combat. Exhaust.
+      description: A random card in your hand costs 0 this turn. Exhaust.
     Mayhem:
       name: Mayhem
-      description: Play the top card of your draw pile {times} times.
+      description: At the start of your turn, play the top card of your draw pile.
     Apotheosis:
       name: Apotheosis
       description: Upgrade ALL cards in your hand this combat. Exhaust.
@@ -767,11 +750,11 @@ cards:
     BandageUp:
       name: Bandage Up
       description: Heal {heal} HP. Exhaust.
-      upgrade_description: Heal {heal} HP. Exhaust.
+
     Bite:
       name: Bite
       description: Deal {damage} damage. Heal {heal} HP.
-      upgrade_description: Deal {damage} damage. Heal {heal} HP.
+
     Blind:
       name: Blind
       description: Apply 2 Weak to an enemy.
@@ -779,11 +762,11 @@ cards:
     Burn:
       name: Burn
       description: Unplayable. At the end of your turn, take {damage} damage.
-      upgrade_description: Unplayable. At the end of your turn, take {damage} damage.
+
     Chrysalis:
       name: Chrysalis
       description: Shuffle {magic.cards} random Skills into your draw pile. They cost 0 this combat. Exhaust.
-      upgrade_description: Shuffle {magic.cards} random Skills into your draw pile. They cost 0 this combat. Exhaust.
+
     Clumsy:
       name: Clumsy
       description: Unplayable. Ethereal.
@@ -793,7 +776,7 @@ cards:
     DarkShackles:
       name: Dark Shackles
       description: Enemy loses {magic.strength} Strength this turn. Exhaust.
-      upgrade_description: Enemy loses {magic.strength} Strength this turn. Exhaust.
+
     Decay:
       name: Decay
       description: Unplayable. At the end of your turn, take 2 damage.
@@ -807,7 +790,7 @@ cards:
     DramaticEntrance:
       name: Dramatic Entrance
       description: Deal {damage} damage to ALL enemies. Innate. Exhaust.
-      upgrade_description: Deal {damage} damage to ALL enemies. Innate. Exhaust.
+
     Enlightenment:
       name: Enlightenment
       description: Set all cards in your hand to 1 cost this turn.
@@ -815,11 +798,11 @@ cards:
     Finesse:
       name: Finesse
       description: Gain {block} Block. Draw 1 card.
-      upgrade_description: Gain {block} Block. Draw 1 card.
+
     FlashOfSteel:
       name: Flash of Steel
       description: Deal {damage} damage. Draw 1 card.
-      upgrade_description: Deal {damage} damage. Draw 1 card.
+
     Forethought:
       name: Forethought
       description: Put an Attack from your hand on the bottom of your draw pile. It costs 0 until played.
@@ -827,18 +810,18 @@ cards:
     GoodInstincts:
       name: Good Instincts
       description: Gain {block} Block.
-      upgrade_description: Gain {block} Block.
+
     Injury:
       name: Injury
       description: Unplayable.
     JackOfAllTrades:
       name: Jack of All Trades
       description: Add {magic.cards} random colorless card(s) to your hand. Exhaust.
-      upgrade_description: Add {magic.cards} random colorless card(s) to your hand. Exhaust.
+
     JAX:
       name: JAX
       description: Lose 3 HP. Gain {magic.strength} Strength.
-      upgrade_description: Lose 3 HP. Gain {magic.strength} Strength.
+
     Magnetism:
       name: Magnetism
       description: At the start of your turn, add a random colorless card to your hand.
@@ -846,11 +829,11 @@ cards:
     MasterOfStrategy:
       name: Master of Strategy
       description: Draw {draw} cards. Exhaust.
-      upgrade_description: Draw {draw} cards. Exhaust.
+
     Metamorphosis:
       name: Metamorphosis
       description: Shuffle {magic.cards} random Attacks into your draw pile. They cost 0 this combat. Exhaust.
-      upgrade_description: Shuffle {magic.cards} random Attacks into your draw pile. They cost 0 this combat. Exhaust.
+
     MindBlast:
       name: Mind Blast
       description: Deal damage equal to the number of cards in your draw pile. Innate.
@@ -864,33 +847,33 @@ cards:
     Panacea:
       name: Panacea
       description: Gain {magic.artifact} Artifact. Exhaust.
-      upgrade_description: Gain {magic.artifact} Artifact. Exhaust.
+
     Panache:
       name: Panache
       description: Every 5th card you play deals {damage} damage to ALL enemies.
-      upgrade_description: Every 5th card you play deals {damage} damage to ALL enemies.
+
     PanicButton:
       name: Panic Button
       description: Gain {block} Block. You cannot gain Block for the next {magic.turns} turns. Exhaust.
-      upgrade_description: Gain {block} Block. You cannot gain Block for the next {magic.turns} turns. Exhaust.
+
     Parasite:
       name: Parasite
       description: Unplayable. If removed from your deck, lose 3 Max HP.
     Purify:
       name: Purify
       description: Exhaust up to {magic.cards} cards from your hand. Exhaust.
-      upgrade_description: Exhaust up to {magic.cards} cards from your hand. Exhaust.
+
     Regret:
       name: Regret
       description: Unplayable. At the end of your turn, lose 1 HP for each card in your hand.
     RitualDagger:
       name: Ritual Dagger
       description: Deal {damage} damage. If Fatal, permanently increase this card's damage by {magic.damage_increase}. Exhaust.
-      upgrade_description: Deal {damage} damage. If Fatal, permanently increase this card's damage by {magic.damage_increase}. Exhaust.
+
     SadisticNature:
       name: Sadistic Nature
       description: Whenever you apply a debuff to an enemy, deal {damage} damage.
-      upgrade_description: Whenever you apply a debuff to an enemy, deal {damage} damage.
+
     SecretTechnique:
       name: Secret Technique
       description: Put a Skill from your draw pile into your hand. Exhaust.
@@ -905,11 +888,11 @@ cards:
     SwiftStrike:
       name: Swift Strike
       description: Deal {damage} damage.
-      upgrade_description: Deal {damage} damage.
+
     TheBomb:
       name: The Bomb
       description: At the end of 3 turns, deal {damage} damage to ALL enemies.
-      upgrade_description: At the end of 3 turns, deal {damage} damage to ALL enemies.
+
     ThinkingAhead:
       name: Thinking Ahead
       description: Draw 2 cards. Put a card from your hand on top of your draw pile. Exhaust.
@@ -917,7 +900,7 @@ cards:
     Transmutation:
       name: Transmutation
       description: Add X random colorless cards to your hand. They cost 0 this turn. Exhaust.
-      upgrade_description: Add X random colorless cards to your hand. They cost 0 this turn. Exhaust.
+      upgrade_description: Add X upgraded random colorless cards to your hand. They cost 0 this turn. Exhaust.
     Trip:
       name: Trip
       description: Apply 2 Vulnerable.
@@ -925,7 +908,7 @@ cards:
     Violence:
       name: Violence
       description: Put {magic.cards} random Attacks from your draw pile into your hand. Exhaust.
-      upgrade_description: Put {magic.cards} random Attacks from your draw pile into your hand. Exhaust.
+
     Void:
       name: Void
       description: Unplayable. Ethereal. When drawn, lose 1 Energy.

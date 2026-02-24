@@ -42,7 +42,12 @@ class TestDualWield(unittest.TestCase):
         self.assertEqual(card.cost, 0)
 
     def test_can_only_copy_attack_or_power_cards(self):
-        """Test that Dual Wield can only copy Attack or Power cards, not Skill cards."""
+        """Test that Dual Wield's ChooseCopyCardAction only includes Attack or Power cards."""
+        # Import the action class
+        from actions.card import ChooseCopyCardAction
+        from utils.result_types import SingleActionResult
+        from actions.display import SelectAction
+        
         # Setup
         player = self.helper.create_player(energy=3)
         enemy = self.helper.create_enemy(Cultist)
@@ -57,27 +62,34 @@ class TestDualWield(unittest.TestCase):
         self.helper.add_card_to_hand(power_card)
         self.helper.add_card_to_hand(skill_card)
         
-        # Add Dual Wield to hand
-        dual_wield = DualWield()
-        self.helper.add_card_to_hand(dual_wield)
+        # Create the action with the same parameters as Dual Wield uses
+        action = ChooseCopyCardAction(
+            pile="hand", 
+            copies=1, 
+            card_types=[CardType.ATTACK, CardType.POWER]
+        )
         
-        # Play Dual Wield
-        initial_hand_size = len(self.helper.game_state.player.card_manager.piles['hand'])
-        self.helper.play_card(dual_wield, target=None)
+        # Execute the action
+        result = action.execute()
         
-        # After playing Dual Wield, we should have a ChooseCopyCardAction
-        # The action should only show Attack and Power cards as options, not Skill cards
-        # Since we can't directly test the UI selection, we need to test the logic
+        # The action should return a SingleActionResult with a SelectAction
+        self.assertIsInstance(result, SingleActionResult)
+        self.assertIsInstance(result.action, SelectAction)
         
-        # For now, we'll test that the card plays without error
-        # The actual filtering logic will be tested in the implementation
-        self.assertTrue(True)  # Placeholder test
+        # The SelectAction should have options only for Attack and Power cards (2 options)
+        options = result.action.options
+        self.assertEqual(len(options), 2, "Should only have options for Attack and Power cards, not Skill cards")
         
-    def test_choose_copy_card_action_filters_card_types(self):
-        """Test that ChooseCopyCardAction filters cards to only Attack and Power types."""
-        # This test will fail initially because ChooseCopyCardAction doesn't filter card types
-        # We need to modify ChooseCopyCardAction to filter by card_type
+        # Verify that the options are for Attack and Power cards only
+        for option in options:
+            for act in option.actions:
+                if hasattr(act, 'card'):
+                    card = act.card
+                    self.assertIn(card.card_type, [CardType.ATTACK, CardType.POWER],
+                                 f"Card {card.__class__.__name__} should be Attack or Power, not {card.card_type}")
         
+    def test_choose_copy_card_action_without_filter(self):
+        """Test that ChooseCopyCardAction without card_types filter includes all cards."""
         # Import the action class
         from actions.card import ChooseCopyCardAction
         from utils.result_types import SingleActionResult
@@ -97,31 +109,19 @@ class TestDualWield(unittest.TestCase):
         self.helper.add_card_to_hand(power_card)
         self.helper.add_card_to_hand(skill_card)
         
-        # Create the action
+        # Create the action WITHOUT card_types filter (should include all cards)
         action = ChooseCopyCardAction(pile="hand", copies=1)
         
-        # Execute the action to see what options it creates
+        # Execute the action
         result = action.execute()
         
         # The action should return a SingleActionResult with a SelectAction
         self.assertIsInstance(result, SingleActionResult)
         self.assertIsInstance(result.action, SelectAction)
         
-        # The SelectAction should have options only for Attack and Power cards
-        # Currently, it will have 3 options (all cards), but after our fix, it should have only 2
-        # For now, this test will fail because all 3 cards are included
+        # Without filter, should have 3 options (all cards)
         options = result.action.options
-        self.assertEqual(len(options), 2, "Should only have options for Attack and Power cards, not Skill cards")
-        
-        # Verify that the options are for Attack and Power cards only
-        # We can check by looking at the card types
-        for option in options:
-            # Each option has actions that contain a CopyCardAction with a card
-            for action in option.actions:
-                if hasattr(action, 'card'):
-                    card = action.card
-                    self.assertIn(card.card_type, [CardType.ATTACK, CardType.POWER],
-                                 f"Card {card.__class__.__name__} should be Attack or Power, not {card.card_type}")
+        self.assertEqual(len(options), 3, "Without filter, should have all 3 cards as options")
 
 
 if __name__ == '__main__':

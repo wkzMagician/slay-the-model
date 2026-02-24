@@ -139,7 +139,7 @@ events:
     sacrifice: 献祭
     desecrate: 亵渎
     leave: 离开
-  golden_idol:
+  GoldenIdol:
     title: 金神像
     take: 拿走神像
     trap: 陷阱
@@ -993,480 +993,468 @@ potions:
     name: 混沌药水
     description: 向你的空物品栏添加随机药水。
 relics:
-  akabeko:
+  Akabeko:
     name: 赤牛
     description: 你每场战斗首次攻击额外造成 8 点伤害。
   Anchor:
-    name: 铁锚
+    name: 锚
     description: 每场战斗开始时获得 10 点格挡。
-  art_of_war:
+  ArtOfWar:
     name: 孙子兵法
     description: 如果你回合不打出任何攻击牌，下一回合获得 1 点额外能量。
-  bag_of_marbles:
+  BagOfMarbles:
     name: 弹珠袋
     description: 每场战斗开始时对所有敌人施加 1 层易伤。
-  blood_vial:
+  BloodVial:
     name: 小血瓶
     description: 每场战斗开始时恢复 2 点生命值。
-  bronze_scales:
+  BronzeScales:
     name: 铜制鳞片
     description: 每场战斗开始时获得 3 层荆棘。
-  centennial_puzzle:
+  CentennialPuzzle:
     name: 百年积木
     description: 每次战斗失去生命值时，抽 3 张牌。
-  ceramic_fish:
+  CeramicFish:
     name: 陶瓷小鱼
     description: 每当你向牌组添加一张卡牌，获得 9 金币。
-  dream_catcher:
+  DreamCatcher:
     name: 捕梦网
     description: 每次休息时，你可以向牌组添加一张卡牌。
-  happy_flower:
-    name: 幸运花
+  HappyFlower:
+    name: 幸运小花
     description: 每 3 回合获得 1 点能量。
   JuzuBracelet:
-    name: 护腕
+    name: 佛珠手链
     description: 普通敌人战斗不再在事件房间遇到。
-  lantern:
+  Lantern:
     name: 灯笼
     description: 每场战斗第一回合获得 1 点能量。
-  maw_bank:
-    name: 贪食银行
+  MawBank:
+    name: 巨口储钱罐
     description: 每爬一层获得 12 金币。当你在商店花费任何金币时不再生效。
-  meal_ticket:
+  MealTicket:
     name: 餐券
     description: 每次进入商店房间时恢复 15 点生命值。
-  nunchaku:
-    name: 努卡库
+  Nunchaku:
+    name: 双截棍
     description: 每打出 10 次攻击，获得 1 点能量。
-  odd_smooth_stone:
-    name: 奇数平滑石
+  OddlySmoothStone:
+    name: 奇异常平滑的石头
     description: 每场战斗开始时获得 1 点敏捷。
-  omamori:
-    name: 护身符
+  Omamori:
+    name: 御守
     description: 获得的下 2 个诅咒将变成正效果。
   Orichalcum:
-    name: 黑骨圣堂
+    name: 奥利哈刚
     description: 如果你在回合结束时没有格挡，获得 6 点格挡。
-  pen_nib:
+  PenNib:
     name: 钢笔尖
     description: 每 10 次攻击造成双倍伤害。
-  potion_belt:
+  PotionBelt:
     name: 药水腰带
     description: 拾取时获得 2 个药水槽。
-  preserved_insect:
-    name: ' preserved_insect'
+  PreservedInsect:
+    name: '昆虫标本'
     description: 精英房间的敌人生命值减少 25%。
-  regal_pillow:
-    name: 皇家枕
+  RegalPillow:
+    name: 皇家枕头
     description: 休息时额外恢复 15 点生命值。
-  smiling_mask:
+  SmilingMask:
     name: 微笑面具
     description: 商人的移牌服务现在总是花费 50 金币。
   Strawberry:
     name: 草莓
     description: 拾取时最大生命值增加 7 点。
-  boot:
-    name: 靴子
+  TheBoot:
+    name: 发条靴
     description: 每当造成 4 点或更少的未格挡攻击伤害时，将其增加到 5 点。
-  tiny_chest:
+  TinyChest:
     name: 小宝箱
     description: 每 4 个事件房间是宝藏房间。
-  toy_ornithopter:
-    name: 玩具雕刻家
+  ToyOrnithopter:
+    name: 玩具扑翼飞机
     description: 每次饮用药水时恢复 5 点生命值。
-  war_paint:
+  WarPaint:
     name: 战争颜料
     description: 拾取时升级 2 张随机技能。
-  whetstone:
+  Whetstone:
     name: 磨刀石
     description: 拾取时升级 2 张随机攻击。
-  horn_cleat:
-    name: 角号角
+  HornCleat:
+    name: 船夹板
     description: 第二回合开始时获得 14 点格挡。
-  blue_candle:
-    name: 蓝烛
+  BlueCandle:
+    name: 蓝蜡烛
     description: 诅咒卡牌现在可以打出。打出诅咒牌会使你失去 1 点生命值并移除卡牌。
-  bottled_flame:
+  BottledFlame:
     name: 瓶中火焰
     description: 拾取时，选择一张攻击。每场战斗以该卡在手牌开始。
-  bottled_lightning:
+  BottledLightning:
     name: 瓶中闪电
     description: 拾取时，选择一张技能。每场战斗以该卡在手牌开始。
-  bottled_tornado:
+  BottledTornado:
     name: 瓶中旋风
     description: 拾取时，选择一个能力。每场战斗以该能力在手牌开始。
-  darkstone_periapt:
-    name: 暗石佩剑
+  DarkstonePeriapt:
+    name: 黑石护符
     description: 每当你获得一个诅咒时，最大生命值增加 6。
-  eternal_feather:
-    name: 永恒之羽
+  EternalFeather:
+    name: 永恒羽毛
     description: 每 5 张牌在牌组中，当你进入休息点时恢复 3 点生命值。
-  frozen_egg:
-    name: 冰冻之蛋
+  FrozenEgg:
+    name: 冻结之蛋
     description: 每当你向牌组添加一个能力时，它被升级。
-  gremlin_horn:
-    name: 格林号角
+  GremlinHorn:
+    name: 地精角
     description: 每当一个敌人死亡，获得 1 点能量并抽 1 张牌。
-  ink_bottle:
+  InkBottle:
     name: 墨水瓶
     description: 每打出 10 张牌，抽 1 张牌。
-  kunai:
-    name: 昆仑
+  Kunai:
+    name: 苦无
     description: 每在单回合打出 3 次攻击，获得 1 点敏捷。
-  letter_opener:
-    name: 开信者
+  LetterOpener:
+    name: 开信刀
     description: 每在单回合打出 3 次技能，对所有敌人造成 5 点伤害。
-  matryoshka:
-    name: 松代加
+  Matryoshka:
+    name: 套娃
     description: 你打开的下 2 个宝箱包含 2 个遗物。
-  meat_on_bone:
-    name: 骨肉
+  MeatOnBone:
+    name: 带骨肉
     description: 如果战斗结束时你的生命值在或低于 50%，恢复 12 点生命值。
-  mercury_hourglass:
+  MercuryHourglass:
     name: 水银时漏
     description: 回合开始时对所有敌人造成 3 点伤害。
-  molten_egg:
+  MoltenEgg:
     name: 熔化之蛋
     description: 每当你向牌组添加一个攻击，它被升级。
-  mummified_hand:
-    name: 被诅咒的手
+  MummifiedHand:
+    name: 干瘪之手
     description: 每当你打出一张能力牌，你手牌中的一张随机卡牌消耗变为 0 能量，持续回合。
-  ninja_scroll:
+  NinjaScroll:
     name: 忍者卷轴
-    description: 每场战斗开始时手牌中有 3 把飞镖。
-  ornamental_fan:
-    name: 羽毛扇
+    description: 每场战斗开始时手牌中有 3 把小刀。
+  OrnamentalFan:
+    name: 精致折扇
     description: 每在单回合打出 3 次攻击，获得 4 点格挡。
-  pantograph:
-    name: 全息图
+  Pantograph:
+    name: 缩放仪
     description: Boss 战斗开始时恢复 25 点生命值。
-  paper_krane:
+  PaperKrane:
     name: 纸鹤
     description: 虚弱敌人造成 50% 伤害，而不是 25%。
-  paper_phrog:
-    name: 纸螳
+  PaperPhrog:
+    name: 纸蛙
     description: 易伤敌人受到 75% 伤害，而不是 50%。
-  pear:
+  Pear:
     name: 梨
     description: 最大生命值增加 10 点。
-  question_card:
-    name: 问题卡牌
+  QuestionCard:
+    name: 问号牌
     description: 在未来的卡牌奖励屏幕上，你有 1 个额外卡牌可选择。
-  self_forming_clay:
+  SelfFormingClay:
     name: 塑形陶土
     description: 战斗中失去生命值时，下一回合获得 3 点格挡。
-  shuriken:
+  Shuriken:
     name: 手里剑
     description: 每在单回合打出 3 次攻击，获得 1 点力量。
-  singing_bowl:
-    name: 歌钵
+  SingingBowl:
+    name: 颂钵
     description: 向牌组添加卡牌时，可以改为 +2 点最大生命值。
-  strike_dummy:
-    name: 打击假人
+  StrikeDummy:
+    name: 打击木偶
     description: 包含"打击"的卡牌额外造成 3 点伤害。
-  sundial:
+  Sundial:
     name: 日晷
     description: 每 3 次洗牌时获得 2 点能量。
-  courier:
-    name: 信使
+  TheCourier:
+    name: 送货员
     description: 商人不再出售卡牌、遗物或药水，价格降低 20%。
-  toxic_egg:
-    name: 剧毒之蛋
+  ToxicEgg:
+    name: 毒素之蛋
     description: 每当你向牌组添加一个技能，它被升级。
-  white_beast_statue:
-    name: 白兽像
+  WhiteBeastStatue:
+    name: 白兽雕像
     description: 战斗后总是掉落药水。
-  bird_faced_urn:
-    name: 乌面花瓶
+  BirdFacedUrn:
+    name: 鸟面翁
     description: 每当你打出一张能力牌，恢复 2 点生命值。
-  calipers:
-    name: 卡尺
+  Calipers:
+    name: 外卡钳
     description: 回合开始时失去 15 点格挡，而不是全部格挡。
-  captains_wheel:
-    name: 船长之轮
+  CaptainsWheel:
+    name: 舵轮
     description: 第三回合开始时获得 18 点格挡。
-  dead_branch:
-    name: 枯枝
+  DeadBranch:
+    name: 枯木树枝
     description: 每当你消耗一张卡牌，向手牌添加一张随机卡牌。
-  du_vu_doll:
-    name: 毒娃娃
+  DuVuDoll:
+    name: 巫毒娃娃
     description: 牌组中的每个诅咒使每场战斗开始时获得 1 点额外力量。
-  fossilized_helix:
-    name: 化石化螺旋
+  FossilizedHelix:
+    name: 螺类化石
     description: 防止战斗中第一次失去生命值。
-  ginger:
-    name: 姜
+  Ginger:
+    name: 生姜
     description: 你不再能被激怒。
-  girya:
-    name: 基雅
+  Girya:
+    name: 哑铃
     description: 你现在可以在休息点获得力量（最多 3 次）。
-  ice_cream:
+  IceCream:
     name: 冰激凌
     description: 能量在回合之间得到保留。
-  lizard_tail:
+  LizardTail:
     name: 蜥蜴尾
     description: 当你濒死时，恢复到你最大生命值的 50%（只生效一次）。
-  magic_flower:
+  MagicFlower:
     name: 魔法花
     description: 战斗期间治疗效果提升 50%。
-  mango:
+  Mango:
     name: 芒果
     description: 拾取时最大生命值增加 14 点。
-  old_coin:
+  OldCoin:
     name: 古币
     description: 获得 300 金币。
-  peace_pipe:
+  PeacePipe:
     name: 和平烟斗
     description: 你现在可以在休息点从牌组移除卡牌。
-  pocketwatch:
+  Pocketwatch:
     name: 怀表
     description: 每在回合打出 3 张或更少的牌时，下一回合开始额外抽 3 张牌。
-  prayer_wheel:
-    name: 祈祷轮
+  PrayerWheel:
+    name: 转经轮
     description: 普通敌人掉落额外卡牌奖励。
-  shovel:
-    name: 铁锹
+  Shovel:
+    name: 铲子
     description: 你现在可以在休息点挖掘遗物。
-  stone_calendar:
-    name: 石日历
+  StoneCalendar:
+    name: 历石
     description: 回合 7 结束时对所有敌人造成 52 点伤害。
-  specimen:
-    name: 标本
+  TheSpecimen:
+    name: 生物标本
     description: 每当一个敌人死亡，将它的任何中毒转移给随机敌人。
-  thread_and_needle:
-    name: 线与针
+  ThreadAndNeedle:
+    name: 针线
     description: 每场战斗开始时获得 4 点镀层护甲。
-  tingsha:
-    name: 钉刺
+  Tingsha:
+    name: 铜拨
     description: 每回合弃一张牌时，对随机敌人造成 3 点伤害。
-  torii:
-    name: 托尔图
+  Torii:
+    name: 鸟居
     description: 每当你要受到 5 点或更少的未格挡攻击伤害时，将其减少到 1 点。
-  tough_bandages:
+  ToughBandages:
     name: 坚固绑带
     description: 每回合弃一张牌时，获得 3 点格挡。
-  tungsten_rod:
-    name: 钨钢棒
+  TungstenRod:
+    name: 钨合金棍
     description: 每当你要失去生命值时，失去 1 点。
-  turnip:
-    name: 大葱
-    description: 获得 300 金币。
-  unceasing_top:
-    name: 移顶
+  Turnip:
+    name: 萝卜
+    description: 你不会被脆弱。
+  UnceasingTop:
+    name: 不休陀螺
     description: 回合期间手中没有卡牌时，抽一张牌。
-  snecko_eye:
-    name: 斯拉格眼
+  SneckoEye:
+    name: 异蛇之眼
     description: 每回合多抽 2 张牌。每场战斗开始时混乱。
-  astrolabe:
-    name: 天体仪
+  Astrolabe:
+    name: 星盘
     description: 拾取时，选择并转化 3 张卡牌，然后升级它们。
-  black_star:
+  BlackStar:
     name: 黑星
     description: 精英掉落额外遗物。
-  black_blood:
+  BlackBlood:
     name: 黑血
     description: 替代燃烧之血。战斗结束时恢复 12 点生命值。
-  busted_crown:
+  BustedCrown:
     name: 破碎王冠
     description: 每回合开始时获得 1 点能量。在卡牌奖励屏幕上，你有 2 张更少卡牌可选择。
-  calling_bell:
-    name: 召唤钟
+  CallingBell:
+    name: 召唤铃铛
     description: 拾取时，获得一个独特诅咒和 3 个遗物。
-  coffee_dripper:
-    name: 咖啡磨豆机
+  CoffeeDripper:
+    name: 咖啡杯
     description: 每回合开始时获得 1 点能量。你不能再在休息点休息。
-  cursed_key:
+  CursedKey:
     name: 诅咒之钥
     description: 每回合开始时获得 1 点能量。打开非 Boss 宝箱时获得诅咒。
-  ectoplasm:
-    name: 外质晶体
+  Ectoplasm:
+    name: 灵体外质
     description: 每回合开始时获得 1 点能量。你不能再获得金币。
-  empty_cage:
+  EmptyCage:
     name: 空笼
     description: 拾取时，从你的牌组移除 2 张卡牌。
-  fusion_hammer:
+  FusionHammer:
     name: 融合之锤
     description: 每回合开始时获得 1 点能量。你不能再在休息点打铁。
-  hovering_kite:
+  HoveringKite:
     name: 悬停风筝
     description: 每回合第一张弃牌时获得 1 点能量。
-  mark_of_pain:
+  MarkOfPain:
     name: 痛苦印记
     description: 每回合开始时获得 1 点能量。战斗开始时手牌中有 2 把创伤。
-  pandoras_box:
+  PandorasBox:
     name: 潘多拉魔盒
     description: 转化所有的打击和防御。
-  philosophers_stone:
-    name: 哲学之石
+  PhilosophersStone:
+    name: 贤者之石
     description: 每回合开始时获得 1 点能量。所有敌人开始时有 1 点力量。
-  ring_of_serpent:
+  RingOfSerpent:
     name: 巨蛇戒指
     description: 替代巨蛇戒指。回合开始时额外抽 1 张牌。
-  runic_cube:
-    name: 独角兽立方
+  RunicCube:
+    name: 符文立方
     description: 每当失去生命值时，抽 1 张牌。
-  runic_dome:
-    name: 独角兽圆顶
+  RunicDome:
+    name: 符文圆顶
     description: 每回合开始时获得 1 点能量。你不再看到敌人意图。
-  runic_pyramid:
-    name: 独角兽金字塔
+  RunicPyramid:
+    name: 符文金字塔
     description: 回合结束时，你不再弃掉手牌。
-  sacred_bark:
+  SacredBark:
     name: 神圣树皮
     description: 大多数药水的效果翻倍。
-  slavers_collar:
+  SlaversCollar:
     name: 奴隶项圈
     description: Boss 和精英战斗回合开始时获得 1 点能量。
-  sozu:
-    name: 苏祖
+  Sozu:
+    name: 添水
     description: 每回合开始时获得 1 点能量。你不能再获得药水。
-  tiny_house:
-    name: 小屋
+  TinyHouse:
+    name: 小房子
     description: 获得 1 瓶药水。获得 50 金币。最大生命值增加 5 点。获得 1 张卡牌。升级 1 张随机卡牌。
-  velvet_choker:
-    name: 天鹅绒衣外套
+  VelvetChoker:
+    name: 天鹅绒项圈
     description: 每回合开始时获得 1 点能量。你每回合不能打出超过 6 张牌。
-  wrist_blade:
-    name: 手腕刃
+  WristBlade:
+    name: 袖剑
     description: 消耗 0 能量的攻击额外造成 4 点伤害。
-  cauldron:
+  Cauldron:
     name: 坩埚
     description: 拾取时，酿造 5 瓶随机药水。
-  chemical_x:
-    name: 化学试剂 X
+  ChemicalX:
+    name: 化学物 X
     description: 每当你打出一张消耗 X 的卡牌，其效果增加 2 倍。
-  clockwork_souvenir:
-    name: 钟表纪念品
+  ClockworkSouvenir:
+    name: 齿轮工艺品
     description: 每场战斗开始时获得 1 点人工制品。
-  dollys_mirror:
-    name: 多利斯的镜子
+  DollysMirror:
+    name: 多利之镜
     description: 拾取时，获得你牌组中一张卡牌的额外复制。
-  frozen_eye:
+  FrozenEye:
     name: 冰冻之眼
     description: 查看你的抽牌堆时，卡牌现在按顺序显示。
-  hand_drill:
-    name: 手持钻头
+  HandDrill:
+    name: 手钻
     description: 每当你破坏一个敌人的格挡，施加 2 层易伤。
   LeesWaffle:
-    name: 蕾丝华夫
+    name: 李家华夫饼
     description: 最大生命值增加 7 点并恢复所有生命值。
-  medical_kit:
+  MedicalKit:
     name: 医疗包
     description: 状态卡现在可以打出。打出状态牌会移除卡牌。
-  membership_card:
+  MembershipCard:
     name: 会员卡
     description: 商店所有产品 50% 折扣！
-  prismatic_shard:
+  PrismaticShard:
     name: 棱镜碎片
     description: 战斗奖励屏幕现在包含无色卡牌和其他颜色的卡牌。
   Orrery:
-    name: 星仪
+    name: 星系仪
     description: 选择并向你的牌组添加 5 张卡牌。
-  potion_belt_shop:
-    name: 药水腰带（商店）
-    description: 拾取时，获得 2 个药水槽。
-  sling_of_courage:
+  SlingOfCourage:
     name: 勇气吊索
     description: 每场精英战斗开始时获得 2 点力量。（对 Boss 无效）。
-  strange_spoon_shop:
-    name: 奇怪勺子（商店）
+  StrangeSpoon:
+    name: 奇怪勺子
     description: 打出的卡牌消耗时，50% 的机会将其移除而不是弃掉。
-  abacus:
+  TheAbacus:
     name: 算盘
     description: 每当洗牌时获得 6 点格挡。
-  twisted_funnel:
+  TwistedFunnel:
     name: 扭曲漏斗
     description: 回合开始时对所有敌人施加 4 层中毒。
-  cultist_headpiece:
+  CultistHeadpiece:
     name: 邪教徒头颅
     description: CAW CAW CAW CAW WAWWWW!
-  face_of_cleric:
+  FaceOfCleric:
     name: 牧师面具
     description: 每次战斗后最大生命值增加 1 点。
-  golden_idol:
+  GoldenIdol:
     name: 金神像
     description: 敌人掉落 25% 更多金币。
-  bloody_idol:
-    name: 血腥神像
+  BloodyIdol:
+    name: 鲜血神像
     description: 每当你获得金币时，恢复 5 点生命值。
-  gremlin_visage:
-    name: 格林姆画像
+  GremlinVisage:
+    name: 地精脸
     description: 每场战斗开始时获得 1 层虚弱。
-  mark_of_bloom:
+  MarkOfBloom:
     name: 绽放印记
     description: 你不能再治疗。
-  mutagenic_strength:
+  MutagenicStrength:
     name: 突变力量
     description: 每场战斗开始时获得 3 点力量，回合结束时失去。
-  necronomicon:
-    name: 死灵面具
+  Necronomicon:
+    name: 死灵之书
     description: 每回合打出的第一张消耗 2 或更多的牌时被播放两次。获得此遗物时，你被诅咒。
-  nilrys_codex:
-    name: 奈瑞斯法典
+  NilrysCodex:
+    name: 尼利法典
     description: 回合结束时，你可以从 3 张随机卡牌中选择 1 张洗入你的抽牌堆。
-  enchiridion:
-    name: 附灵图腾
+  Enchiridion:
+    name: 英雄宝典
     description: 回合开始时，向你的手牌添加一个随机能力，持续到回合结束。
-  neows_lament:
-    name: 诺的哀叹
+  NeowsLament:
+    name: 涅奥的祝福
     description: 你最初 3 场战斗中的敌人有 1 点生命值。
-  nloth_hungry_face:
+  NlothHungryFace:
     name: 恩洛斯的饥饿脸
     description: 下一个非 Boss 宝箱是空的。
-  odd_mushroom:
-    name: 奇数蘑菇
+  OddMushroom:
+    name: 奇怪蘑菇
     description: 易伤时受到 50% 更多伤害，而不是 75%。
-  ssserpent_head:
+  SsserpentHead:
     name: 巨蛇头颅
     description: 每当你进入事件房间时，获得 50 金币。
-  warped_tongs:
-    name: 扭曲战歌
+  WarpedTongs:
+    name: 扭曲之钳
     description: 回合开始时，为休息回合升级你手牌中的一张随机卡牌。
-  red_mask_event:
-    name: 红面具（事件）
+  RedMask:
+    name: 红面具
     description: 每场战斗开始时，对所有敌人施加 1 层虚弱。
-  nloth_gift:
+  NlothGift:
     name: 恩洛斯的馈赠
-    description: 作为怪物奖励获得稀有卡牌的几率加倍。
-  red_key:
+    description: 作为怪物奖励获得稀有卡牌的几率x3。
+  RedKey:
     name: 红钥匙
     description: 你需要获得红、绿和蓝钥匙才能开启通往心的道路。为什么？自己找吧！
-  blue_key:
+  BlueKey:
     name: 蓝钥匙
     description: 你需要获得红、绿和蓝钥匙才能开启通往心的道路。为什么？自己找吧！
-  green_key:
+  GreenKey:
     name: 绿钥匙
     description: 你需要获得红、绿和蓝钥匙才能开启通往心的道路。为什么？自己找吧！
-  burning_blood:
-    name: 燃烧之血（铁甲战士）
+  BurningBlood:
+    name: 燃烧之血
     description: 战斗结束时恢复 6 点生命值。
-  red_skull:
-    name: 红颅骨
+  RedSkull:
+    name: 红头骨
     description: 当你的生命值在或低于 50% 时，你有 3 点额外力量。
-  paper_frog_ironclad:
-    name: 纸青蛙（铁甲战士）
+  PaperFrog:
+    name: 纸蛙
     description: 易伤敌人受到 75% 更多伤害，而不是 50%。
-  champion_belt:
+  ChampionBelt:
     name: 冠军腰带
     description: 每当你施加易伤时，同时也施加 1 层虚弱。
-  charons_ashes:
-    name: 战鬼灰烬
+  CharonsAshes:
+    name: 卡戎之灰
     description: 每当你消耗一张卡牌时，对所有敌人造成 3 点伤害。
-  magic_flower_ironclad:
-    name: 魔法花（铁甲战士）
-    description: 战斗期间治疗效果提升 50%。
-  black_blood_ironclad:
-    name: 黑血（铁甲战士）
-    description: 替代燃烧之血。战斗结束时恢复 12 点生命值。
-  runic_cube_ironclad:
-    name: 独角兽立方（铁甲战士）
-    description: 每当失去生命值时，抽 1 张牌。
-  brimstone:
-    name: 边缘石
+  Brimstone:
+    name: 硫磺
     description: 回合开始时获得 2 点力量，所有敌人获得 1 点力量。
-  orange_pellets:
-    name: 橙色弹珠
-    description: 每当你打出能力牌时，同时打出攻击牌和技能牌，移除所有你的减益。
+  OrangePellets:
+    name: 橙色药丸
+    description: 每当你打出能力牌、攻击牌和技能牌，移除所有你的减益。
 enemies:
   Cultist:
     name: 邪教徒
