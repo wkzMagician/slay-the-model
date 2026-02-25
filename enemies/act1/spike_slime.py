@@ -28,7 +28,7 @@ class SpikeSlimeL(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(28, 32)
+            hp_range=(64, 70) # todo: 67-73 >= ancension7
         )
         
         # Register intentions
@@ -112,7 +112,7 @@ class SpikeSlimeM(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(14, 16)
+            hp_range=(28, 32) # todo: 29-34 >= ancension7
         )
         
         # Register intentions
@@ -171,7 +171,7 @@ class SpikeSlimeS(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(10, 14)
+            hp_range=(10, 14) # todo: 11-15 >= ancension7
         )
         
         # Register intentions

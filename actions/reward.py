@@ -16,26 +16,45 @@ if TYPE_CHECKING:
 # Reward actions
 @register("action")
 class AddRelicAction(Action):
-    """Add a specific relic to player
+    """Add a specific relic instance to player
     
     Required:
-        relic (str): Relic name
+        relic (Relic): Relic instance to add
     """
-    def __init__(self, relic):
+    def __init__(self, relic: "Relic"):
         self.relic = relic
     
     def execute(self) -> BaseResult:
         """Execute: add relic to player"""
         from engine.game_state import game_state
         if self.relic and game_state.player:
-            relic = get_registered_instance("relic", self.relic)
+            game_state.player.relics.append(self.relic)
+            # Track relic as obtained (even if removed later)
+            game_state.obtained_relics.add(self.relic.idstr)
+            tui_print(t("ui.received_relic", default=f"Received relic: {self.relic.idstr}!", name=self.relic.idstr))
+        return NoneResult()
+            
+@register("action")
+class AddRelicByNameAction(Action):
+    """Add a relic by its idstr/name to player
+    
+    Required:
+        relic_id (str): Relic idstr/name to lookup and add
+    """
+    def __init__(self, relic_id: str):
+        self.relic_id = relic_id
+    
+    def execute(self) -> BaseResult:
+        """Execute: lookup relic by name and add to player"""
+        from engine.game_state import game_state
+        if self.relic_id and game_state.player:
+            relic = get_registered_instance("relic", self.relic_id)
             if relic:
                 game_state.player.relics.append(relic)
                 # Track relic as obtained (even if removed later)
                 game_state.obtained_relics.add(relic.idstr)
                 tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
         return NoneResult()
-            
 @register("action")
 class AddRandomRelicAction(Action):
     """Add a random relic to player
@@ -145,7 +164,7 @@ class ChooseBossRelicAction(Action):
         # Generate boss relics (rare tier)
         relics = []
         for _ in range(self.amount):
-            relic = get_random_relic(rarities=[RarityType.RARE])
+            relic = get_random_relic(rarities=[RarityType.BOSS])
             if relic:
                 relics.append(relic)
         

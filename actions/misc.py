@@ -6,7 +6,7 @@ from typing import Optional
 from actions.base import Action, LambdaAction
 from actions.card import AddCardAction
 from actions.display import SelectAction
-from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
+from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction, AddRelicByNameAction
 from utils.result_types import BaseResult, GameStateResult, MultipleActionsResult, NoneResult, SingleActionResult
 from localization import LocalStr, t
 from utils.option import Option
@@ -114,7 +114,7 @@ class BuyItemAction(Action):
         if self.shop_item.item_type == "card":
             AddCardAction(card=self.shop_item.item, dest_pile="discard", source="shop").execute()
         elif self.shop_item.item_type == "relic":
-            AddRelicAction(relic=self.shop_item.item.idstr).execute()
+            AddRelicByNameAction(relic_id=self.shop_item.item.idstr).execute()
         elif self.shop_item.item_type == "potion":
             AddRandomPotionAction(character=game_state.player.character).execute()
 
@@ -275,7 +275,7 @@ class OpenChestAction(Action):
             for relic in relics:
                 options.append(Option(
                     name=LocalStr("ui.choose_relic", name=relic.local("name")),
-                    actions=[AddRelicAction(relic=relic.idstr)]
+                    actions=[AddRelicByNameAction(relic_id=relic.idstr)]
                 ))
 
             options.append(Option(
@@ -302,7 +302,7 @@ class OpenChestAction(Action):
                 rarities = [RarityType.UNCOMMON]
             relic = get_random_relic(rarities=rarities)
             if relic:
-                actions.append(AddRelicAction(relic=relic.idstr))
+                actions.append(AddRelicByNameAction(relic_id=relic.idstr))
                 
             return MultipleActionsResult(chest_open_actions + actions)
             
@@ -320,7 +320,7 @@ class OpenChestAction(Action):
                 rarities = [RarityType.RARE]
             relic = get_random_relic(rarities=rarities)
             if relic:
-                actions.append(AddRelicAction(relic=relic.idstr))
+                actions.append(AddRelicByNameAction(relic_id=relic.idstr))
                 
             return MultipleActionsResult(chest_open_actions + actions)
 
@@ -335,7 +335,7 @@ class OpenChestAction(Action):
                 rarities = [RarityType.RARE]
             relic = get_random_relic(rarities=rarities)
             if relic:
-                actions.append(AddRelicAction(relic=relic.idstr))
+                actions.append(AddRelicByNameAction(relic_id=relic.idstr))
                 
             return MultipleActionsResult(chest_open_actions + actions)
         

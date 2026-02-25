@@ -9,6 +9,7 @@ Sacrifice a card to the spirits for rewards based on card rarity.
 """
 
 from utils.result_types import BaseResult, MultipleActionsResult
+from localization import t
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import SelectAction, DisplayTextAction
@@ -64,7 +65,7 @@ class BonfireSpirits(Event):
                     reward_actions.append(AddRelicAction(relic=SpiritPoop()))
                 
                 card_options.append(Option(
-                    name=LocalStr(f'{card.display_name} ({card.rarity.name})'),
+                    name=LocalStr(f'{card.display_name} ({t("ui.rarity." + card.rarity.name.lower(), default=card.rarity.name)})'),
                     actions=reward_actions
                 ))
         

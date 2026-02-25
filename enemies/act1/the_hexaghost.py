@@ -25,7 +25,7 @@ class TheHexaghost(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(250, 250)  # Boss has fixed HP
+            hp_range=(250, 250)  # todo: 264 a9
         )
         
         # Register intentions

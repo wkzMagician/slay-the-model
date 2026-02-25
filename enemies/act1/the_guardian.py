@@ -26,7 +26,7 @@ class TheGuardian(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(240, 240)  # Boss has fixed HP
+            hp_range=(240, 240)  # todo: 250 a9
         )
         
         # Register intentions

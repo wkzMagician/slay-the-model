@@ -24,7 +24,7 @@ class AcidSlimeL(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(68, 72)
+            hp_range=(65, 69) # todo: 68-72 >= ancension 7
         )
         
         # Register intentions
@@ -128,7 +128,7 @@ class AcidSlimeM(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(28, 32)
+            hp_range=(28, 32) # todo: 29-34 >= ancension7
         )
         
         # Register intentions
@@ -208,7 +208,7 @@ class AcidSlimeS(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(14, 18)
+            hp_range=(8, 12) # todo: 9-13 >= ancensioin7
         )
         
         # Register intentions

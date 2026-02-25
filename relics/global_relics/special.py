@@ -40,3 +40,14 @@ class GreenKey(Relic):
 
     # This is a quest item with no direct effect
     # Implemented as a passive effect description
+
+@register("relic")
+class NeowsLament(Relic):
+    """Neow's Lament - A special relic."""
+    
+    def __init__(self):
+        super().__init__()
+        self.rarity = RarityType.SPECIAL
+        self.stacks = 3
+    
+    # This relic provides benefits when certain conditions are met

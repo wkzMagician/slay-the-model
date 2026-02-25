@@ -24,7 +24,7 @@ class JawWorm(Enemy):
     
     def __init__(self, is_hard: bool = False):
         super().__init__(
-            hp_range=(44, 48)
+            hp_range=(40, 44) # todo: 42-46 a7
         )
         self.is_hard = is_hard
         

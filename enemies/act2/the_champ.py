@@ -35,9 +35,9 @@ class TheChamp(Enemy):
         """
         # HP: 300 (320 on A9+)
         if ascension >= 9:
-            hp_max = 320
+            hp_max = 440
         else:
-            hp_max = 300
+            hp_max = 420
         super().__init__(hp_range=(hp_max, hp_max))
         
         self._ascension = ascension

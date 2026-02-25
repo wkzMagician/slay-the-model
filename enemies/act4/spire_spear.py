@@ -27,7 +27,7 @@ class SpireSpear(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(38, 42))
+        super().__init__(hp_range=(160, 160)) # todo: 180 a8
         self.add_intention(BurnStrike(self))
         self.add_intention(Skewer(self))
         self.add_intention(Piercer(self))

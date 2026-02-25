@@ -118,14 +118,16 @@ class AddCardAction(Action):
                         else:
                             follow_up_actions.append(result)
                 # Only show [Reward] for actual rewards, use appropriate prefix for others
+                # Localize pile name
+                pile_name = t(f'combat.{target_pile}', default=target_pile)
                 if self.source is None:
-                    print(f"Added {self.card.display_name.resolve()} to {target_pile}")
+                    print(f"{t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
                 elif self.source == "reward":
-                    print(f"[Reward] Added {self.card.display_name.resolve()} to {target_pile}")
+                    print(f"[{t('action.reward', default='Reward')}] {t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
                 elif self.source == "enemy":
-                    print(f"[Enemy] Added {self.card.display_name.resolve()} to {target_pile}")
+                    print(f"[{t('action.enemy', default='Enemy')}] {t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
                 else:
-                    print(f"[{self.source.title()}] Added {self.card.display_name.resolve()} to {target_pile}")
+                    print(f"[{self.source.title()}] {t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
                 if follow_up_actions:
                     for action in follow_up_actions:
                         action.execute()

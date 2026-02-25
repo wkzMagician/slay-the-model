@@ -100,11 +100,10 @@ from .global_relics import (
     Turnip,
     UnceasingTop,
     
-    # Boss (20)
+    # Boss (18)
     SneckoEye,
     Astrolabe,
     BlackStar,
-    BlackBlood,
     BustedCrown,
     CallingBell,
     CoffeeDripper,
@@ -117,7 +116,6 @@ from .global_relics import (
     PandorasBox,
     PhilosophersStone,
     RingOfSerpent,
-    RunicCube,
     RunicDome,
     RunicPyramid,
     SacredBark,
@@ -280,11 +278,10 @@ __all__ = [
     'Turnip',
     'UnceasingTop',
     
-    # Global Boss (20)
+    # Global Boss (18)
     'SneckoEye',
     'Astrolabe',
     'BlackStar',
-    'BlackBlood',
     'BustedCrown',
     'CallingBell',
     'CoffeeDripper',
@@ -297,7 +294,6 @@ __all__ = [
     'PandorasBox',
     'PhilosophersStone',
     'RingOfSerpent',
-    'RunicCube',
     'RunicDome',
     'RunicPyramid',
     'SacredBark',
@@ -350,10 +346,9 @@ __all__ = [
     'BlueKey',
     'GreenKey',
     
-    # Ironclad-specific (9)
+    # Ironclad-specific (8)
     'BurningBlood',
     'RedSkull',
-    'PaperPhrog',
     'ChampionBelt',
     'CharonsAshes',
     'MagicFlower',

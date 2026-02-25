@@ -23,7 +23,7 @@ class RedLouse(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(10, 15)
+            hp_range=(10, 15) # todo: 11-16 a7
         )
         
         # Random damage between 5-7 (chosen at combat start)
@@ -87,7 +87,7 @@ class GreenLouse(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(11, 17)
+            hp_range=(11, 17) # todo: 12-18 a7
         )
         
         # Random damage between 5-7 (chosen at combat start)

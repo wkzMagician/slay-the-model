@@ -15,10 +15,10 @@ class GremlinNob(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self, ascension: int = 0):
-        if ascension >= 18:
-            hp = random.randint(92, 97)
+        if ascension >= 8:
+            hp = random.randint(85, 90)
         else:
-            hp = random.randint(82, 87)
+            hp = random.randint(82, 86)
         
         super().__init__(hp_range=(hp, hp))
         self.ascension = ascension

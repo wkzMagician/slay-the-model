@@ -29,7 +29,7 @@ class Nemesis(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(180, 180))
+        super().__init__(hp_range=(185, 185)) # todo: 200 a8
         self.add_intention(TriAttack(self))
         self.add_intention(TriBurn(self))
         self.add_intention(Scythe(self))

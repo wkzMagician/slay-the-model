@@ -11,7 +11,7 @@ class Exploder(Enemy):
     enemy_type = EnemyType.NORMAL
 
     def __init__(self):
-        super().__init__(hp_range=(30, 30))
+        super().__init__(hp_range=(30, 30)) # todo: 30-35 a7
         self.add_intention(Attack(self))
         self.add_intention(Explode(self))
         self._turn_count = 0

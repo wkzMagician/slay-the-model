@@ -17,7 +17,7 @@ class ShelledParasite(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(68, 72)
+            hp_range=(68, 72) # todo: 70-75 a7
         )
         
         # Track stun state (can only happen once)

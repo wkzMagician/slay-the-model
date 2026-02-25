@@ -15,14 +15,24 @@ ui:
   invalid_option: 无效选项!
   invalid_number: 请输入有效数字
   room_type:
+    NORMAL: 普通
     MONSTER: 怪物
     ELITE: 精英
     BOSS: Boss
     REST: 休息
     MERCHANT: 商店
     TREASURE: 宝藏
+    EVENT: 事件
+    NEO: 尼奥
     UNKNOWN: '?'
     VICTORY: 胜利
+  rarity:
+    starter: 初始
+    common: 普通
+    uncommon: 罕见
+    rare: 稀有
+    special: 特殊
+    curse: 诅咒
   choose_blessings: 选择祝福
   potion_full_title: 选择一瓶药水交换
   skip_potion: 跳过
@@ -41,6 +51,11 @@ ui:
   player_turn: === 玩家回合 ===
   enemy_turn: === 敌人回合 ===
   end_turn: 结束回合
+  healed: 回复 {amount} 点生命值
+  selected: 已选择
+  max_hp_changed: 最大生命值改变 {amount} 点！
+  draw_pile: 抽牌堆
+  discard_pile: 弃牌堆
   draw_cards: 抽 {count} 张牌
   choose_random_card_to_add: 选择一张随机卡牌加入牌组
   choose_cards_to_upgrade: 选择一张卡牌升级
@@ -71,9 +86,11 @@ ui:
   floor_label: '第 {num} 层:'
   rarity_label: '稀有度: {rarity}'
   type_label: '类型: {type}'
-  category_label: '类别: {category}'
-  duration_label: '持续: {duration}'
-  amount_label: '数量: {amount}'
+  rarity_label: 稀有度
+  type_label: 类型
+  category_label: 类别
+  duration_label: 持续
+  amount_label: 数量
   buff: 增益
   debuff: 减益
   permanent: 永久
@@ -83,8 +100,23 @@ ui:
   neo_max_hp_change: 最大生命值改变 {amount} 点！
   open_menu: 打开菜单
   empty: 空
+  cost_label: 费用
+  card_type:
+    attack: 攻击
+    skill: 技能
+    power: 能力
+    status: 状态
+    curse: 诅咒
   skip_potion_option: 跳过
   combat_enter: === 战斗开始 ===
+  ssserpent_head_gold: 蛇头：获得 {amount} 金币！
+  received_potion: 获得药水：{name}！
+  shop_bought_item: 购买了 {item_name}，花费 {final_price} 金币！
+  character:
+    ironclad: 铁甲战士
+    silent: 静默猎人
+    defect: 故障机器人
+    watcher: 观者
 
 blessing:
   title: 选择祝福
@@ -377,6 +409,13 @@ combat:
   deal_damage_by_orb: 对 {target} 造成 {amount} 点伤害（{orb_count} {orb_type}）。
   heal: 恢复 {amount} 点生命值
   draw_cards: 抽 {count} 张牌
+  enemy_intends: 敌人
+  intends_to: 意图是
+  select_target: '=== 选择目标 ==='
+  enemy_killed: '{target_name} 已被击败！'
+  deck: 牌组
+  hand: 手牌
+  exhaust_pile: 消耗堆
   discard_non_zero_cost_drawn: 弃掉 {count} 张抽出的卡牌（消耗为 0）。
   gain_energy: 获得 {amount} 点能量
   double_energy: 双倍能量增加 {amount} 点能量（共 {total} 点）。
@@ -397,6 +436,19 @@ combat:
   remove_card: 从牌组移除 {card}
   no_cards_to_remove: 没有卡牌可移除
   exhaust_card: 移除此卡牌
+  play_card: 打出 {card}
+
+# === ACTION SECTION ===
+action:
+  card_added: 添加
+  to_pile: 到
+  reward: 奖励
+  enemy: 敌人
+  used_potion: 使用药水
+  received_potion: 获得药水
+  gained_gold: 获得金币
+  added_to_deck: 添加到牌组
+  on_target: 对
   upgrade_card: 升级此卡牌
   modify_card_value: 修改 {card} 的 {key} {amount} 点
   increase_card_stat_bonus: '{card} 的 {stat} 加成增加 {amount} 点（共 {total} 点）。'
@@ -878,13 +930,13 @@ powers:
     description: 攻击伤害增加 {amount} 点。
   VulnerablePower:
     name: 易伤
-    description: 受到的伤害增加 50%（每层）。
+    description: 受到的伤害增加 50%。
   FrailPower:
     name: 脆弱
-    description: 来自卡牌的格挡减少 25%（每层）。
+    description: 来自卡牌的格挡减少 25%。
   WeakPower:
     name: 虚弱
-    description: 攻击伤害减少 25%（每层）。
+    description: 攻击伤害减少 25%。
   ConfusedPower:
     name: 混乱
     description: 回合开始时随机化卡牌消耗。
@@ -898,6 +950,9 @@ powers:
     name: 人工制品
     description: 阻止下次 {amount} 次受到的减益效果。
   CurlUpPower:
+    name: 蜷身
+    description: 受到伤害时获得 {amount} 点格挡。
+  curl_up:
     name: 蜷身
     description: 受到伤害时获得 {amount} 点格挡。
   MetallicizePower:
@@ -1897,7 +1952,7 @@ enemies:
     intentions:
       bolt:
         name: 闪电
-        description: 向你弃牌堆添加 2 张迷茫。
+        description: 向你弃牌堆添加 2 张晕眩。
       beam:
         name: 光束
         description: 造成 {damage} 点伤害。
@@ -2302,6 +2357,32 @@ ai:
     - 目标是生存并击败敌人
     - 管理生命值、能量、卡牌、遗物和其他资源
     
+    ## ⚠️ 地图选择风险评估（极其重要）:
+    
+    **精英房间(ELITE)是高风险高回报的选择！**
+    - 精英敌人比普通敌人强得多，可能导致大量生命值损失甚至死亡
+    - 奖励：遗物和更好的卡牌奖励
+    
+    **在以下情况下，不要选择精英房间：**
+    - 当前生命值低于50%或低于30点
+    - 牌组中缺乏高质量攻击牌（如打击牌伤害不足）
+    - 牌组中缺乏防御牌（格挡牌太少）
+    - 没有强力遗物（如燃烧之血只能回复6点）
+    - 刚经历多场战斗，状态不佳
+    - 当前楼层有更安全的选择（如休息点、商店）
+    
+    **只有在以下情况下才考虑精英房间：**
+    - 生命值充足（>60%或>40点）
+    - 牌组已经有一定战斗力
+    - 有回复手段（药水、遗物、吸血卡牌）
+    - 有强力的遗物加成
+    - 没有更紧急的需求（如不需要立即休息回血）
+    
+    **优先级排序（生存第一）：**
+    1. 休息点（低血量时必须优先）> 商店 > 宝藏 > 普通怪物 > 精英
+    2. 高血量且牌组强时：可以考虑精英获取遗物
+    3. 永远不要在低血量时挑战精英！
+    
     ## 战斗策略指南:
     - **敌人意图**: 观察敌人下回合会做什么（攻击/防御/增益）
       - 如果敌人意图造成高伤害，优先打出格挡牌
@@ -2353,6 +2434,7 @@ ai:
 
 rooms:
   combat:
+    enter: === 战斗开始 ===
     victory: 胜利！所有敌人被击败！
     boss_enter: === Boss 战斗 ===
     rewards:
@@ -2404,3 +2486,45 @@ rooms:
     leave: 离开
   shop:
     enter: 你进入了一个神秘的商店。
+
+# === REWARDS SECTION ===
+rewards:
+  gold: 获得 {amount} 金币
+
+# === AI CONTEXT LABELS ===
+ai_context:
+  player_status: 玩家状态
+  hp: 生命值
+  energy: 能量
+  gold: 金币
+  floor: 层数
+  block: 格挡
+  deck: 牌组
+  cards_total: 张牌
+  max_energy: 最大能量
+  relics: 遗物
+  powers_on_you: 身上的能力
+  combat_status: 战斗状态
+  enemies: 敌人
+  no_enemies: 没有敌人
+  hand: 手牌
+  cards: 张牌
+  deck_status: 牌组状态
+  intent: 意图
+  power: 能力
+  dmg: 伤害
+  blk: 格挡
+  current_room: 当前房间
+  shop_items: 商店物品
+  cards_for_sale: 出售的卡牌
+  relics_for_sale: 出售的遗物
+  potions_for_sale: 出售的药水
+  services: 服务
+  remove_card_service: 移除一张卡牌（首次：50金币，每次增加25金币）
+  price: 价格
+  shop_room: 商店房间
+  rest_room: 休息房间
+  rest_options: 选项：休息（恢复30%生命值）或锻造（升级一张卡牌）
+  options: 选项
+  total: 共
+  select_one: 选择一个选项（只输出数字，如'2'）

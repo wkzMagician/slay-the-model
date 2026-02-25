@@ -26,7 +26,7 @@ class CorruptHeart(Enemy):
     enemy_type = EnemyType.BOSS
     
     def __init__(self):
-        super().__init__(hp_range=(750, 800))
+        super().__init__(hp_range=(750, 750)) # todo: 800 a9
         self.add_intention(Debilitate(self))
         self.add_intention(BloodShots(self))
         self.add_intention(Echo(self))

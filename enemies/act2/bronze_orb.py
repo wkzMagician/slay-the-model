@@ -15,7 +15,7 @@ class BronzeOrb(Enemy):
     enemy_type = EnemyType.NORMAL
 
     def __init__(self):
-        super().__init__(hp_range=(20, 21), is_minion=True)
+        super().__init__(hp_range=(52, 58), is_minion=True) # todo: 54-60 a7
         self.add_intention(Steal(self))
         self.add_intention(SupportBeam(self))
         self.add_intention(Beam(self))

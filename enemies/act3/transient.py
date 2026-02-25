@@ -20,7 +20,7 @@ class Transient(Enemy):
     enemy_type = EnemyType.NORMAL
 
     def __init__(self):
-        super().__init__(hp_range=(100, 100))
+        super().__init__(hp_range=(999, 999))
         self._turn_count = 0
 
         # Register intentions

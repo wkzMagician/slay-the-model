@@ -24,7 +24,7 @@ class BlueSlaver(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(46, 50)
+            hp_range=(46, 50) # todo: 48-52 a7
         )
         
         # Register intentions
@@ -78,7 +78,7 @@ class RedSlaver(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(46, 50)
+            hp_range=(46, 50) # todo: 48-52 a7
         )
         
         # Register intentions

@@ -17,7 +17,7 @@ class Snecko(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(69, 74)
+            hp_range=(114, 120) # todo: 120-125 a7
         )
         
         # Register intentions

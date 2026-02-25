@@ -17,7 +17,7 @@ class Chosen(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(55, 60)
+            hp_range=(95, 99) # todo: 98-103 a7
         )
         
         # Track pattern phase

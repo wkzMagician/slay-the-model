@@ -43,7 +43,7 @@ class Looter(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(46, 50)  # Ascension 7+ values
+            hp_range=(44, 48)  # todo: 46-50 a7
         )
         
         # Turn tracking for AI pattern
@@ -62,7 +62,7 @@ class Looter(Enemy):
         super().on_combat_start(floor)
         
         # Apply Thievery power (15 gold on normal, 20 on Ascension 7+)
-        thievery_amount = 15  # Ascension 7+ value
+        thievery_amount = 15  # todo: 20 in Ascension 7+
         thievery = ThieveryPower(amount=thievery_amount, owner=self)
         self.add_power(thievery)
     

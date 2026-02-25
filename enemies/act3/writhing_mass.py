@@ -25,7 +25,7 @@ class WrithingMass(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self):
-        super().__init__(hp_range=(130, 130))
+        super().__init__(hp_range=(160, 160)) # 175 a7
         self._turn_count = 0
         self._last_intention = None
         

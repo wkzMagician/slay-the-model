@@ -17,7 +17,7 @@ class Mystic(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(48, 52)
+            hp_range=(48, 56) # todo: 50-58 a7
         )
         
         # Track consecutive heal uses

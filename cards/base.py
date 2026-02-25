@@ -12,7 +12,7 @@ def get_game_state():
 from utils.types import CardType, TargetType, RarityType
 from cards.namespaces import get_color_for_namespace, namespace_from_module
 from localization import Localizable
-from localization import BaseLocalStr, LocalStr, ConcatLocalStr
+from localization import BaseLocalStr, LocalStr, ConcatLocalStr, t
 
 COST_X = -1
 COST_UNPLAYABLE = -2
@@ -305,7 +305,7 @@ class Card(Localizable):
             desc = self.description
         
         # 使用ConcatLocalStr拼接各个部分
-        return self.display_name + f" (Cost: {cost_str}, Type: {self.card_type.value}, Rarity: {self.rarity.value})\n" + desc
+            return self.display_name + f" ({t('ui.cost_label', default='Cost')}: {cost_str}, {t('ui.type_label', default='Type')}: {t('ui.card_type.' + self.card_type.value.lower(), default=self.card_type.value)}, {t('ui.rarity_label', default='Rarity')}: {t('ui.rarity.' + self.rarity.value.lower(), default=self.rarity.value)})\n" + desc
     
 
     def _resolve_target(self):

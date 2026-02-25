@@ -16,7 +16,7 @@ class Lagavulin(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self, ascension: int = 0, start_awake: bool = False):
-        if ascension >= 3:
+        if ascension >= 8:
             hp = random.randint(112, 115)
         else:
             hp = random.randint(109, 111)
@@ -42,6 +42,11 @@ class Lagavulin(Enemy):
         self.add_intention(StunnedIntention(self))
         self.add_intention(AttackIntention(self, damage))
         self.add_intention(SiphonSoulIntention(self, dex_loss, str_gain))
+    
+    def on_combat_start(self, floor: int = 1) -> None:
+        """Gain Metallicize 8 and Block 8 on combat start."""
+        super().on_combat_start(floor)
+        self.gain_block(8)
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on state.

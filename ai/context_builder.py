@@ -63,15 +63,15 @@ class AIContextBuilder:
         """Build player status section."""
         player = gs.player
         lines = [
-            "# Player Status",
-            f"- HP: {player.hp}/{player.max_hp} | Energy: {player.energy}/{player.max_energy} | Gold: {player.gold}",
-            f"- Floor: {gs.current_floor + 1} | Block: {player.block}",
-            f"- Deck: {len(player.deck)} cards total",
+            f"# {t('ai_context.player_status')}",
+            f"- {t('ai_context.hp')}: {player.hp}/{player.max_hp} | {t('ai_context.energy')}: {player.energy}/{player.max_energy} | {t('ai_context.gold')}: {player.gold}",
+            f"- {t('ai_context.floor')}: {gs.current_floor + 1} | {t('ai_context.block')}: {player.block}",
+            f"- {t('ai_context.deck')}: {len(player.deck)} {t('ai_context.cards_total')}",
         ]
         
         # Max energy (if different from base)
         if player.max_energy != 3:
-            lines.append(f"- Max Energy: {player.max_energy}")
+            lines.append(f"- {t('ai_context.max_energy')}: {player.max_energy}")
         
         return "\n".join(lines)
     
@@ -79,7 +79,7 @@ class AIContextBuilder:
     def _build_relics_info(gs: 'GameState') -> str:
         """Build relics section with full descriptions."""
         player = gs.player
-        lines = [f"## Relics ({len(player.relics)})"]
+        lines = [f"## {t('ai_context.relics')} ({len(player.relics)})"]
         
         for i, relic in enumerate(player.relics, 1):
             name = relic.local("name").resolve()
@@ -94,7 +94,7 @@ class AIContextBuilder:
     def _build_player_powers(gs: 'GameState') -> str:
         """Build player powers section with full descriptions."""
         player = gs.player
-        lines = ["## Powers on You"]
+        lines = [f"## {t('ai_context.powers_on_you')}"]
         
         for i, power in enumerate(player.powers, 1):
             name = power.local("name").resolve()
@@ -119,15 +119,15 @@ class AIContextBuilder:
         discard = list(player.card_manager.get_pile("discard_pile"))
         exhaust = list(player.card_manager.get_pile("exhaust_pile"))
         
-        sections = ["# Combat Status"]
+        sections = [f"# {t('ai_context.combat_status')}"]
         
         # Enemies with full info
         alive_enemies = [e for e in combat.enemies if not e.is_dead()]
         
         # Build enemy section
-        enemy_lines = ["## Enemies"]
+        enemy_lines = [f"## {t('ai_context.enemies')}"]
         if not alive_enemies:
-            enemy_lines.append("No enemies present.")
+            enemy_lines.append(t('ai_context.no_enemies'))
         else:
             for i, enemy in enumerate(alive_enemies, 1):
                 # Enemy name
@@ -137,8 +137,8 @@ class AIContextBuilder:
                     name = getattr(enemy, 'name', str(enemy.__class__.__name__))
                 
                 # HP and Block
-                hp_str = f"HP: {enemy.hp}/{enemy.max_hp}"
-                block_str = f"Block: {enemy.block}" if enemy.block > 0 else "Block: 0"
+                hp_str = f"{t('ai_context.hp')}: {enemy.hp}/{enemy.max_hp}"
+                block_str = f"{t('ai_context.block')}: {enemy.block}" if enemy.block > 0 else f"{t('ai_context.block')}: 0"
                 
                 enemy_lines.append(f"{i}. **{name}** - {hp_str} | {block_str}")
                 
@@ -146,7 +146,7 @@ class AIContextBuilder:
                 if hasattr(enemy, 'current_intention') and enemy.current_intention:
                     intent = enemy.current_intention
                     intent_str = AIContextBuilder._format_intent(intent)
-                    enemy_lines.append(f"   - Intent: {intent_str}")
+                    enemy_lines.append(f"   - {t('ai_context.intent')}: {intent_str}")
                 
                 # Enemy powers with descriptions
                 if enemy.powers:
@@ -155,12 +155,12 @@ class AIContextBuilder:
                         pdesc = power.local("description").resolve()
                         pdesc = pdesc.replace("{amount}", str(power.amount))
                         pamt = f" x{power.amount}" if power.amount > 0 else ""
-                        enemy_lines.append(f"   - Power: **{pname}{pamt}**: {pdesc}")
+                        enemy_lines.append(f"   - {t('ai_context.power')}: **{pname}{pamt}**: {pdesc}")
         
         sections.append("\n".join(enemy_lines))
         
         # Hand cards with full info
-        hand_lines = [f"## Hand ({len(hand)} cards)"]
+        hand_lines = [f"## {t('ai_context.hand')} ({len(hand)} {t('ai_context.cards')})"]
         
         for i, card in enumerate(hand, 1):
             card_info = AIContextBuilder._format_card_info(card)
@@ -180,7 +180,7 @@ class AIContextBuilder:
         exhaust_names = [AIContextBuilder._get_card_name(c) for c in exhaust]
         exhaust_line = f"{t('combat.exhaust_pile', default='Exhaust Pile')} ({len(exhaust)}): {', '.join(exhaust_names) if exhaust_names else t('ui.empty')}"
         
-        sections.append("## Deck Status\n" + "\n".join([draw_line, discard_line, exhaust_line]))
+        sections.append(f"## {t('ai_context.deck_status')}\n" + "\n".join([draw_line, discard_line, exhaust_line]))
         
         return "\n\n".join(sections)
     
@@ -192,50 +192,50 @@ class AIContextBuilder:
             return ""
         
         room_type = type(room).__name__
-        lines = [f"# Current Room: {room_type}"]
+        lines = [f"# {t('ai_context.current_room')}: {room_type}"]
         
         # Add room-specific info based on type
         if room_type == "ShopRoom":
             lines.append(AIContextBuilder._build_shop_info(room))
         elif room_type == "RestRoom":
-            lines.append("Options: Rest (heal 30% HP) or Smith (upgrade a card)")
+            lines.append(t('ai_context.rest_options'))
         
         return "\n".join(lines)
     
     @staticmethod
     def _build_shop_info(room) -> str:
         """Build shop item information."""
-        lines = ["## Shop Items"]
+        lines = [f"## {t('ai_context.shop_items')}"]
         
         # Cards for sale
         if hasattr(room, 'cards') and room.cards:
-            lines.append("### Cards for Sale:")
+            lines.append(f"### {t('ai_context.cards_for_sale')}:")
             for i, card in enumerate(room.cards, 1):
                 price = getattr(card, 'price', '?')
                 card_info = AIContextBuilder._format_card_info(card)
-                lines.append(f"{i}. {card_info} - Price: {price}g")
+                lines.append(f"{i}. {card_info} - {t('ai_context.price')}: {price}g")
         
         # Relics for sale
         if hasattr(room, 'relics') and room.relics:
-            lines.append("### Relics for Sale:")
+            lines.append(f"### {t('ai_context.relics_for_sale')}:")
             for i, relic in enumerate(room.relics, 1):
                 price = getattr(relic, 'price', '?')
                 name = relic.local("name").resolve()
                 desc = relic.local("description").resolve()
-                lines.append(f"{i}. **{name}**: {desc} - Price: {price}g")
+                lines.append(f"{i}. **{name}**: {desc} - {t('ai_context.price')}: {price}g")
         
         # Potions for sale
         if hasattr(room, 'potions') and room.potions:
-            lines.append("### Potions for Sale:")
+            lines.append(f"### {t('ai_context.potions_for_sale')}:")
             for i, potion in enumerate(room.potions, 1):
                 price = getattr(potion, 'price', '?')
                 name = potion.local("name").resolve()
                 desc = potion.local("description").resolve()
-                lines.append(f"{i}. **{name}**: {desc} - Price: {price}g")
+                lines.append(f"{i}. **{name}**: {desc} - {t('ai_context.price')}: {price}g")
         
         # Card removal service
-        lines.append("### Services:")
-        lines.append("- Remove a card from deck (first time: 50g, increases by 25g each use)")
+        lines.append(f"### {t('ai_context.services')}:")
+        lines.append(f"- {t('ai_context.remove_card_service')}")
         
         return "\n".join(lines)
     
@@ -259,18 +259,19 @@ class AIContextBuilder:
         else:
             cost_str = str(cost)
         
-        # Type
+        # Type - localize card type
         if hasattr(card, 'card_type'):
-            ctype = card.card_type.value if hasattr(card.card_type, 'value') else str(card.card_type)
+            ctype_val = card.card_type.value if hasattr(card.card_type, 'value') else str(card.card_type)
+            ctype = t(f'card_type.{ctype_val.lower()}', default=ctype_val)
         else:
-            ctype = "Unknown"
+            ctype = t('ui.unknown', default='Unknown')
         
         # Stats (damage, block)
         stats = []
         if hasattr(card, 'damage') and card.damage and card.damage > 0:
-            stats.append(f"DMG:{card.damage}")
+            stats.append(f"{t('ai_context.dmg')}:{card.damage}")
         if hasattr(card, 'block') and card.block and card.block > 0:
-            stats.append(f"BLK:{card.block}")
+            stats.append(f"{t('ai_context.blk')}:{card.block}")
         stats_str = f" ({', '.join(stats)})" if stats else ""
         
         # Description
@@ -281,11 +282,12 @@ class AIContextBuilder:
                 desc = desc.replace("{damage}", str(card.damage))
             if hasattr(card, 'block') and card.block:
                 desc = desc.replace("{block}", str(card.block))
-            if hasattr(card, 'magic_number'):
-                desc = desc.replace("{magic_number}", str(card.magic_number))
+            # Handle magic.XXX placeholders - need to access _magic dict
+            if hasattr(card, '_magic') and card._magic:
+                for magic_key, magic_val in card._magic.items():
+                    desc = desc.replace(f"{{magic.{magic_key}}}", str(magic_val))
         else:
             desc = ""
-        
         # Build formatted string
         result = f"**[{cost_str}] {name} [{ctype}]{stats_str}**"
         if desc:
@@ -307,7 +309,7 @@ class AIContextBuilder:
     def _format_intent(intent) -> str:
         """Format enemy intent for readability."""
         if not intent:
-            return "Unknown"
+            return t('ui.unknown', default='Unknown')
         
         # First try to get the description from the intent object
         if hasattr(intent, 'description'):

@@ -21,63 +21,205 @@ class LLMResponse:
     raw_response: Dict = field(default_factory=dict)
 
 
+import re
+import json
+import httpx
+import asyncio
+import logging
+from typing import Any, Dict, List, Optional, AsyncIterator
+from dataclasses import dataclass, field
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class LLMResponse:
+    answer: str
+    thinking: Optional[str] = None
+    raw_response: Any = field(default=None, repr=False)
+
+
 class LLMClient:
-    """LLM API client for OpenAI-compatible endpoints."""
-    
+    """
+    LLM API client，兼容 OpenAI / DeepSeek / 其他 OpenAI-compatible 端点。
+    支持流式与非流式，自动提取 thinking/reasoning 内容。
+    """
+
     def __init__(self, config: Dict[str, Any]):
         self.api_key = config.get("api_key", "")
-        self.api_base = config.get("api_base", "https://api.openai.com/v1")
+        self.api_base = config.get("api_base", "https://api.openai.com/v1").rstrip("/")
         self.model = config.get("model", "gpt-4o")
         self.temperature = config.get("temperature", 0.7)
-        self.max_tokens = config.get("max_tokens", 2048)
-        self.timeout = config.get("timeout", 60)
-    
+        # 兼容 max_token 和 max_tokens 两种写法
+        self.max_tokens = config.get("max_tokens") or 16384
+        self.timeout = config.get("timeout", 120)
+        self.stream = config.get("stream", False)
+
+    # ------------------------------------------------------------------
+    # 公共接口
+    # ------------------------------------------------------------------
+
     async def complete(self, messages: List[dict]) -> LLMResponse:
-        """Send request and return response."""
-        try:
-            import httpx
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                response = await client.post(
+        """发送请求并返回 LLMResponse。自动选择流式或非流式。"""
+        if self.stream:
+            return await self._complete_stream(messages)
+        else:
+            return await self._complete_sync(messages)
+
+    # ------------------------------------------------------------------
+    # 非流式
+    # ------------------------------------------------------------------
+
+    async def _complete_sync(self, messages: List[dict]) -> LLMResponse:
+        payload = self._build_payload(messages, stream=False)
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            try:
+                resp = await client.post(
                     f"{self.api_base}/chat/completions",
-                    headers={"Authorization": f"Bearer {self.api_key}",
-                             "Content-Type": "application/json"},
-                    json={
-                        "model": self.model,
-                        "messages": messages,
-                        "temperature": self.temperature,
-                        "max_tokens": self.max_tokens,
-                    }
+                    headers=self._headers(),
+                    json=payload,
                 )
-                response.raise_for_status()
-                return self._parse_response(response.json())
-        except Exception as e:
-            print(e.response.text)
-            raise
-    
-    def _parse_response(self, data: dict) -> LLMResponse:
-        """Parse OpenAI-compatible response."""
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                logger.error(f"HTTP error: {e.response.status_code} {e.response.text}")
+                raise
+            except httpx.TimeoutException:
+                logger.error("Request timed out (sync mode)")
+                raise
+
+        return self._parse_sync_response(resp.json())
+
+    def _parse_sync_response(self, data: dict) -> LLMResponse:
         choice = data.get("choices", [{}])[0]
         message = choice.get("message", {})
-        content = message.get("content", "")
-        
-        # DeepSeek R1 reasoning_content handling
+        content = message.get("content") or ""
+        # DeepSeek R1 非流式：thinking 在 reasoning_content 字段
         reasoning = message.get("reasoning_content")
+
         if reasoning:
-            return LLMResponse(thinking=reasoning, answer=content, raw_response=data)
-        
-        # Check for <think> tags
+            return LLMResponse(thinking=reasoning.strip(), answer=content.strip(), raw_response=data)
+
+        # 部分模型把 thinking 放在 <think>...</think> 标签里
         if "<think" in content:
-            thinking, answer = self._extract_thinking(content)
+            thinking, answer = self._extract_think_tags(content)
             return LLMResponse(thinking=thinking, answer=answer, raw_response=data)
-        
-        return LLMResponse(answer=content, raw_response=data)
-    
-    def _extract_thinking(self, content: str) -> tuple:
-        """Extract thinking from <think> tags."""
-        match = re.search(r'<think[^>]*>(.*?)</think>', content, re.DOTALL)
+
+        return LLMResponse(answer=content.strip(), raw_response=data)
+
+    # ------------------------------------------------------------------
+    # 流式
+    # ------------------------------------------------------------------
+
+    async def _complete_stream(self, messages: List[dict]) -> LLMResponse:
+        payload = self._build_payload(messages, stream=True)
+
+        thinking_chunks: List[str] = []
+        answer_chunks: List[str] = []
+        raw_chunks: List[dict] = []
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            try:
+                async with client.stream(
+                    "POST",
+                    f"{self.api_base}/chat/completions",
+                    headers=self._headers(),
+                    json=payload,
+                ) as resp:
+                    resp.raise_for_status()
+                    async for line in resp.aiter_lines():
+                        chunk = self._parse_sse_line(line)
+                        if chunk is None:
+                            continue
+                        raw_chunks.append(chunk)
+
+                        delta = self._extract_delta(chunk)
+                        # DeepSeek R1 流式：reasoning_content delta
+                        rc = delta.get("reasoning_content")
+                        if rc:
+                            thinking_chunks.append(rc)
+                        # 普通 content delta
+                        c = delta.get("content")
+                        if c:
+                            answer_chunks.append(c)
+
+            except httpx.TimeoutException:
+                logger.error("Request timed out (stream mode)")
+                raise
+            except httpx.HTTPStatusError as e:
+                logger.error(f"HTTP error: {e.response.status_code} {e.response.text}")
+                raise
+
+        thinking_text = "".join(thinking_chunks).strip() or None
+        answer_text = "".join(answer_chunks).strip()
+
+        # 如果 answer 里有 <think> 标签（某些模型流式也会这样输出）
+        if not thinking_text and "<think" in answer_text:
+            thinking_text, answer_text = self._extract_think_tags(answer_text)
+
+        return LLMResponse(
+            thinking=thinking_text,
+            answer=answer_text,
+            raw_response=raw_chunks,
+        )
+
+    # ------------------------------------------------------------------
+    # 工具方法
+    # ------------------------------------------------------------------
+
+    def _build_payload(self, messages: List[dict], stream: bool) -> dict:
+        return {
+            "model": self.model,
+            "messages": messages,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "stream": stream,
+        }
+
+    def _headers(self) -> dict:
+        return {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "Accept": "text/event-stream",  # 流式和非流式都带上没有副作用
+        }
+
+    @staticmethod
+    def _parse_sse_line(line: str) -> Optional[dict]:
+        """解析 SSE 行，返回 JSON dict 或 None（忽略心跳/结束标记）。"""
+        line = line.strip()
+        if not line or line == "data: [DONE]":
+            return None
+        if line.startswith("data:"):
+            line = line[5:].strip()
+        try:
+            return json.loads(line)
+        except json.JSONDecodeError:
+            logger.debug(f"Non-JSON SSE line (ignored): {line!r}")
+            return None
+
+    @staticmethod
+    def _extract_delta(chunk: dict) -> dict:
+        """从 chunk 中提取 delta 字段，兼容不同结构。"""
+        choices = chunk.get("choices", [])
+        if not choices:
+            return {}
+        return choices[0].get("delta", {})
+
+    @staticmethod
+    def _extract_think_tags(content: str):
+        """
+        从 content 中提取 <think>...</think> 标签内容。
+        返回 (thinking: str | None, answer: str)
+        """
+        match = re.search(r"<think[^>]*>(.*?)</think>", content, re.DOTALL)
         if match:
             thinking = match.group(1).strip()
-            answer = re.sub(r'<think[^>]*>.*?</think>', '', content, flags=re.DOTALL).strip()
+            answer = re.sub(r"<think[^>]*>.*?</think>", "", content, flags=re.DOTALL).strip()
+            return thinking, answer
+        # 标签未闭合时（流被截断），尽量提取已有思考内容
+        match_open = re.search(r"<think[^>]*>(.*)", content, re.DOTALL)
+        if match_open:
+            thinking = match_open.group(1).strip()
+            answer = content[: content.index("<think")].strip()
             return thinking, answer
         return None, content
 

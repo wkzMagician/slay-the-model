@@ -23,7 +23,7 @@ class Reptomancer(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self):
-        super().__init__(hp_range=(180, 180))
+        super().__init__(hp_range=(180, 190)) # todo: 190-200 a8
         self._turn_count = 0
         self._last_intention = None
         

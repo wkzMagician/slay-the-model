@@ -914,13 +914,13 @@ powers:
     description: Increases attack damage by {amount}.
   VulnerablePower:
     name: Vulnerable
-    description: Increases damage taken by 50% per stack.
+    description: Increases damage taken by 50%.
   FrailPower:
     name: Frail
-    description: Block from cards is reduced by 25% per stack.
+    description: Block from cards is reduced by 25%.
   WeakPower:
     name: Weak
-    description: Deals 25% less attack damage per stack.
+    description: Deals 25% less attack damage.
   FlexPower:
     name: Flex
     description: Gain {amount} Strength. Lose equal amount at end of turn.
@@ -2429,6 +2429,32 @@ ai:
     - This is a roguelike deck-building game
     - Goal is to survive and defeat enemies
     - Manage health, energy, cards, relics and other resources
+    
+    ## ⚠️ MAP SELECTION RISK ASSESSMENT (CRITICALLY IMPORTANT):
+    
+    **ELITE rooms are HIGH RISK, HIGH REWARD choices!**
+    - Elite enemies are MUCH stronger than regular enemies and can cause massive HP loss or death
+    - Rewards: Relics and better card rewards
+    
+    **DO NOT select Elite rooms when:**
+    - Current HP is below 50% or below 30 HP
+    - Deck lacks quality attack cards (Strike damage is insufficient)
+    - Deck lacks defense cards (too few Block cards)
+    - No strong relics (Burning Blood only heals 6 HP)
+    - Just finished multiple fights, condition is poor
+    - Safer options available (Rest sites, Shops)
+    
+    **Only consider Elite rooms when:**
+    - HP is sufficient (>60% or >40 HP)
+    - Deck has solid combat capability
+    - Have healing options (potions, relics, lifesteal cards)
+    - Have strong relic bonuses
+    - No urgent needs (don't need immediate rest for HP)
+    
+    **Priority ranking (SURVIVAL FIRST):**
+    1. Rest Site (MUST prioritize when low HP) > Shop > Treasure > Monster > Elite
+    2. High HP and strong deck: Can consider Elite for relics
+    3. NEVER challenge Elite with low HP!
     
     ## Combat Strategy Guidelines:
     - **Enemy Intentions**: Check what enemies will do next turn (Attack/Defend/Buff)

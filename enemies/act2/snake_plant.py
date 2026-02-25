@@ -17,7 +17,7 @@ class SnakePlant(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(75, 80)
+            hp_range=(75, 79) # todo: 78-82 a7
         )
         
         # Track pattern mode (A9+ changes pattern after first Enfeebling Spores)

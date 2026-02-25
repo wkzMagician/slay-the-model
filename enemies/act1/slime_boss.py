@@ -23,7 +23,7 @@ class SlimeBoss(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(140, 140)  # Boss has fixed HP
+            hp_range=(140, 140)  # todo: 150 a9
         )
         
         # Register intentions

@@ -1,48 +1,118 @@
-# Import all card packages to ensure they are registered at module load time
-import cards.ironclad  # noqa: F401
-import cards.colorless  # noqa: F401
+# Import all character packages to ensure they are registered at module load time
+import player.characters  # noqa: F401
+
+
+def _import_character_cards(character: str):
+    """Import cards for specified character to register them in registry.
+    
+    Args:
+        character: Character name (e.g., "ironclad", "silent")
+    """
+    character = character.lower()
+    if character in ("ironclad", "ironclad"):
+        import cards.ironclad  # noqa: F401
+    elif character in ("silent", "the_silent"):
+        # Add when Silent is implemented
+        pass
+    # Add other characters here as they are implemented
 
 
 def create_player(character=None):
-    """Create a player with character-specific starting deck and stats."""
-    from player.player import Player
+    """Create a player with character-specific starting deck and stats.
     
-    if character == "Ironclad":
-        return _create_ironclad()
-    else:
-        # Default player
-        player = Player()
-        if character:
-            player.character = character
-        return player
-
-
-def _create_ironclad():
-    """Create Ironclad character with starting deck."""
+    Args:
+        character: Character name (e.g., "Ironclad", "ironclad", "Silent")
+                 If None, uses default character from config
+    
+    Returns:
+        Initialized Player instance with character-specific configuration
+    
+    Raises:
+        ValueError: If character name is not found in registry
+    """
     from player.player import Player
+    from player.character_config import get_character_config
     from player.card_manager import CardManager
-    from cards.ironclad.strike import Strike
-    from cards.ironclad.defend import Defend
-    from cards.ironclad.bash import Bash
     from cards.namespaces import get_namespace_for_character
+    from utils.registry import get_registered_instance
     
-    # Create base player
-    player = Player()
-    player.character = "Ironclad"
-    player.namespace = get_namespace_for_character("Ironclad")
-    player._max_hp = 80
-    player.max_hp = 80
-    player.hp = 80
+    # Normalize character name
+    if not character:
+        from config.game_config import GameConfig
+        config = GameConfig.load("config/game_config.yaml")
+        character = config.character
     
-    # Ironclad starting deck: 5 Strike, 4 Defend, 1 Bash
+    # Get character configuration
+    char_config = get_character_config(character)
+    if char_config is None:
+        raise ValueError(f"Unknown character: {character}. "
+                       f"Available characters: {list_characters()}")
+    
+    # Import cards for this character BEFORE creating player
+    # This ensures cards are registered in the registry
+    _import_character_cards(character)
+    
+    # Create player with character stats
+    player = Player(
+        max_hp=char_config.max_hp,
+        max_energy=char_config.energy
+    )
+    player.character = char_config.display_name
+    player.namespace = get_namespace_for_character(char_config.display_name)
+    player._gold = char_config.gold
+    player.base_draw_count = char_config.draw_count
+    
+    # Create starting deck from card IDs
     starting_deck = []
-    for _ in range(5):
-        starting_deck.append(Strike())
-    for _ in range(4):
-        starting_deck.append(Defend())
-    starting_deck.append(Bash())
+    for card_id in char_config.deck:
+        # Card IDs in character_config are "namespace.ClassName" format
+        # Registry stores cards by class name only (capitalized)
+        # Extract class name from "namespace.ClassName" and capitalize it
+        if "." in card_id:
+            class_name = card_id.split(".")[-1].capitalize()
+        else:
+            class_name = card_id.capitalize()
+        
+        # Get card instance from registry
+        card = get_registered_instance("card", class_name)
+        if card is None:
+            raise ValueError(f"Card not found in registry: {card_id} (tried {class_name})")
+        starting_deck.append(card)
     
-    # Re-initialize card manager with the starting deck
+    # Initialize card manager with starting deck
     player.card_manager = CardManager(starting_deck)
     
+    # Add starting relics
+    from relics.relics import create_relic_instance
+    from utils.registry import get_registered
+    for relic_id in char_config.starting_relics:
+        # Get relic class from registry
+        relic_class = get_registered("relic", relic_id)
+        if relic_class is None:
+            raise ValueError(f"Relic not found in registry: {relic_id}")
+        relic = create_relic_instance(relic_class)
+        player.relics.append(relic)
+    
     return player
+
+
+def list_characters():
+    """List all available characters.
+    
+    Returns:
+        List of character names (display names)
+    """
+    from player.character_config import get_character_config
+    
+    # Get all registered character configs
+    from player.character_config import list_characters as list_char_names
+    char_names = list_char_names()
+    
+    # Return display names
+    display_names = []
+    for name in char_names:
+        config = get_character_config(name)
+        if config:
+            display_names.append(config.display_name)
+    
+    return display_names

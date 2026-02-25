@@ -37,7 +37,7 @@ class FatGremlin(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self, hp_range: tuple[int, int] = (13, 17)):
-        super().__init__(hp_range)
+        super().__init__(hp_range) # todo: 14-18 a7
         self.add_intention(FatGremlinSmashIntention(self))
     
     def determine_next_intention(self, current_floor: int = 1):
@@ -54,8 +54,8 @@ class SneakyGremlin(Enemy):
     
     enemy_type = EnemyType.NORMAL
     
-    def __init__(self, hp_range: tuple[int, int] = (9, 12)):
-        super().__init__(hp_range)
+    def __init__(self, hp_range: tuple[int, int] = (10, 14)):
+        super().__init__(hp_range) # todo: 11-15 a7
         self.add_intention(SneakyGremlinStabIntention(self))
     
     def determine_next_intention(self, current_floor: int = 1):
@@ -73,8 +73,8 @@ class MadGremlin(Enemy):
     
     enemy_type = EnemyType.NORMAL
     
-    def __init__(self, hp_range: tuple[int, int] = (9, 12)):
-        super().__init__(hp_range)
+    def __init__(self, hp_range: tuple[int, int] = (20, 24)):
+        super().__init__(hp_range) # todo: 21-25 a7
         self.add_intention(MadGremlinScratchIntention(self))
     
     def determine_next_intention(self, current_floor: int = 1):
@@ -113,7 +113,7 @@ class ShieldGremlin(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self, hp_range: tuple[int, int] = (12, 15)):
-        super().__init__(hp_range)
+        super().__init__(hp_range) # todo: 13-17 a7
         self.add_intention(ShieldGremlinProtectIntention(self))
         self.add_intention(ShieldGremlinBashIntention(self))
         self._use_protect_next = True
@@ -137,8 +137,8 @@ class GremlinWizard(Enemy):
     
     enemy_type = EnemyType.NORMAL
     
-    def __init__(self, hp_range: tuple[int, int] = (9, 12)):
-        super().__init__(hp_range)
+    def __init__(self, hp_range: tuple[int, int] = (21, 25)):
+        super().__init__(hp_range) # todo: 22-26 a7
         self.add_intention(GremlinWizardChargeIntention(self))
         self.add_intention(GremlinWizardUltimateBlastIntention(self))
         self._charge_count = 0

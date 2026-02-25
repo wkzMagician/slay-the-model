@@ -18,7 +18,7 @@ class TorchHead(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self):
-        super().__init__(hp_range=(20, 25), is_minion=True)
+        super().__init__(hp_range=(38, 40), is_minion=True) # todo: 40-45 a7
         
         # Register intentions
         from enemies.act2.the_collector_intentions import Tackle
@@ -42,7 +42,7 @@ class TheCollector(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(200, 200))
+        super().__init__(hp_range=(282, 282)) # todo: 300 a9
         self._turn_count = 0
         self._used_mega_debuff = False
         

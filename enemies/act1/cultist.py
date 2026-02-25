@@ -14,7 +14,7 @@ class Cultist(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(40, 44)
+            hp_range=(48, 54) # todo: 50-56 a7 (means >= ancension 7)
         )
         
         # Register intentions

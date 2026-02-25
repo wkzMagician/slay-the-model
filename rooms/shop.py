@@ -429,7 +429,7 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
             # Only show card removal option if player has enough gold
             if not game_state.player or game_state.player.gold >= price:
                 options.append(Option(
-                    name=self.local("ShopRoom.remove_card", price=price),
+                    name=self.local("remove_card", price=price),
                     actions=[ChooseRemoveCardAction(pile='hand')]
                 ))
 
@@ -440,23 +440,23 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
                 # Only show item if player has enough gold
                 if not game_state.player or game_state.player.gold >= final_price:
                     if shop_item.item_type == "card":
-                        name = self.local("ShopRoom.buy_card", card=shop_item.item.info(), price=final_price)
+                        name = self.local("buy_card", card=shop_item.item.info(), price=final_price)
                     elif shop_item.item_type == "relic":
-                        name = self.local("ShopRoom.buy_relic", relic=shop_item.item.info(), price=final_price)
+                        name = self.local("buy_relic", relic=shop_item.item.info(), price=final_price)
                     elif shop_item.item_type == "potion":
-                        name = self.local("ShopRoom.buy_potion", potion=shop_item.item.info(), price=final_price)
+                        name = self.local("buy_potion", potion=shop_item.item.info(), price=final_price)
                     else:
                         name = LocalStr(key="Buy for {final_price}")
                     options.append(Option(name=name, actions=[BuyItemAction(shop_item, idx)]))
 
         # Leave option
         options.append(Option(
-            name=self.local("ShopRoom.leave"),
+            name=self.local("leave"),
             actions=[LeaveRoomAction(room=self)]
         ))
 
         # Return SelectAction instead of adding to queue
         return SelectAction(
-            title=self.local("ShopRoom.title"),
+            title=self.local("title"),
             options=options
         )

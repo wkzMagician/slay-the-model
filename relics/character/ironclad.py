@@ -12,10 +12,10 @@ from relics.base import Relic
 from utils.types import RarityType, CardType
 from utils.registry import register
 
-# Common Relic
+# Common Relic - Ironclad starting relic
 @register("relic")
 class BurningBlood(Relic):
-    """At end of combat, heal 6 HP."""
+    """Ironclad starting relic: At end of combat, heal 6 HP."""
     
     def __init__(self):
         super().__init__()

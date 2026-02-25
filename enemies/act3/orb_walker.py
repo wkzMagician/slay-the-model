@@ -11,7 +11,7 @@ class OrbWalker(Enemy):
     enemy_type = EnemyType.NORMAL
 
     def __init__(self):
-        super().__init__(hp_range=(52, 58))
+        super().__init__(hp_range=(90, 96)) # todo: 92-102 a7
         self.add_intention(Laser(self))
         self.add_intention(Claw(self))
 

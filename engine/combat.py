@@ -14,7 +14,7 @@ from enemies.base import Enemy
 from utils.option import Option
 from utils.result_types import BaseResult, GameStateResult, NoneResult
 from utils.types import CombatType
-from localization import LocalStr, Localizable
+from localization import LocalStr, Localizable, t
 
 class Combat(Localizable):
     """
@@ -381,7 +381,7 @@ class Combat(Localizable):
                     else:
                         intent_desc = intent_desc_raw
                     if intent_desc:
-                        tui_print(f">> Enemy [{enemy_name}] intends to: {intent_desc}")
+                        tui_print(f">> {t('combat.enemy_intends', default='Enemy')} [{enemy_name}] {t('combat.intends_to', default='intends to')}: {intent_desc}")
                 game_state.action_queue.add_actions(enemy.execute_intention())
 
         # Process enemy turn-end effects (tick down power durations)
@@ -425,7 +425,23 @@ class Combat(Localizable):
         
         # Check if all enemies are dead
         if not self.enemies or all(e.is_dead() for e in self.enemies):
-            # tui_print(f"\n[COMBAT END] COMBAT_WIN - All enemies defeated!")
+            # Trigger on_combat_end for relics
+            for relic in game_state.player.relics:
+                game_state.action_queue.add_actions(relic.on_combat_end(
+                    player=game_state.player,
+                    entities=[e for e in self.enemies if e.hp > 0]
+                ))
+            
+            # Trigger on_combat_end for player powers
+            for power in game_state.player.powers:
+                game_state.action_queue.add_actions(power.on_combat_end(
+                    owner=game_state.player,
+                    entities=[e for e in self.enemies if e.hp > 0]
+                ))
+            
+            # Execute all queued actions before returning
+            game_state.execute_all_actions()
+            
             return GameStateResult("COMBAT_WIN")
         
         # Check if player is dead

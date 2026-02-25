@@ -20,7 +20,7 @@ class GremlinLeader(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(230, 230))
+        super().__init__(hp_range=(140, 148)) # todo: 145-155 a8
         
         # Register intentions
         self.add_intention(Encourage(self))

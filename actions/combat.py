@@ -4,6 +4,13 @@ from utils.result_types import BaseResult, BaseResult, NoneResult, SingleActionR
 from localization import t
 from utils.registry import register
 from entities.creature import Creature
+
+# Helper function to localize character names
+def _localize_character_name(raw_name: str) -> str:
+    """Convert English character name to localized version."""
+    if raw_name in ('Ironclad', 'Silent', 'Defect', 'Watcher'):
+        return t(f'ui.character.{raw_name.lower()}', default=raw_name)
+    return raw_name
 from utils.types import TargetType
 
 # Lazy import COST_X to avoid circular import
@@ -282,6 +289,8 @@ class DealDamageAction(Action):
         if hasattr(self.target, 'try_prevent_damage') and self.target.try_prevent_damage(damage_amount):
             from localization import t
             target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Unknown'))
+            target_name = _localize_character_name(target_name)
+            print(t("combat.buffer_prevented", default="{target_name}'s Buffer prevented the damage!", target_name=target_name))
             print(t("combat.buffer_prevented", default="{target_name}'s Buffer prevented the damage!", target_name=target_name))
             return NoneResult()
 
@@ -317,6 +326,14 @@ class DealDamageAction(Action):
         # Print damage dealt
         from localization import t, LocalStr
         target_name = getattr(self.target, 'name', None)
+        if target_name is None:
+            target_name = getattr(self.target, 'character', 'Unknown')
+        # Localize character name
+        target_name = _localize_character_name(target_name)
+        # Resolve LocalStr if needed
+        if isinstance(target_name, LocalStr):
+            target_name = target_name.resolve()
+        print(t("combat.deal_damage_enemy", default="Deal {amount} damage to {target_name}!", amount=damage_dealt, target_name=target_name))
         if target_name is None:
             target_name = getattr(self.target, 'character', 'Unknown')
         # Resolve LocalStr if needed
@@ -483,7 +500,10 @@ class GainBlockAction(Action):
         self.target.gain_block(block_amount, source=self.source, card=self.card)
         
         # Print block gained for player feedback
+        # Print block gained for player feedback
         target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Creature'))
+        target_name = _localize_character_name(target_name)
+        print(t('combat.gain_block').format(source=target_name, amount=block_amount))
         print(t('combat.gain_block').format(source=target_name, amount=block_amount))
 
         if actions_to_return:
@@ -990,12 +1010,12 @@ class UsePotionBHAction(Action):
         
         # Print usage info
         target_names = []
-        for t in self.targets:
-            name = getattr(t, 'name', None) or getattr(t, 'character', 'Unknown')
+        for target in self.targets:
+            name = getattr(target, 'name', None) or getattr(target, 'character', 'Unknown')
             if isinstance(name, LocalStr):
                 name = name.resolve()
             target_names.append(str(name))
-        print(f"Used potion: {self.potion.name} on {', '.join(target_names)}")
+        print(f"{t('action.used_potion', default='Used potion')}: {self.potion.name} {t('action.on_target', default='on')} {', '.join(target_names)}")
 
         all_actions = []
         if actions:

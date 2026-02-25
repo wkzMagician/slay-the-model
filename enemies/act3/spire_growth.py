@@ -19,7 +19,7 @@ class SpireGrowth(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self):
-        super().__init__(hp_range=(170, 170))
+        super().__init__(hp_range=(170, 170)) # todo: 190 a7
         self._turn_count = 0
         self._last_was_constrict = False
         self._consecutive_quick_tackle = 0

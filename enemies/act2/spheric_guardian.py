@@ -17,7 +17,7 @@ class SphericGuardian(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(65, 70)
+            hp_range=(20)
         )
         
         # Pattern: Activate -> Debuff Attack -> alternate Slam/Harden

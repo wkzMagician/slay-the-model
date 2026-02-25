@@ -13,10 +13,10 @@ ai:
   api_key: sk-843a37b4ef644274ba243015d30057be
   api_base: https://api.deepseek.com
   model: deepseek-reasoner
-  stream: False
+  stream: True
   temperature: 0.7
-  max_token: 8192
-  timeout: 60
+  max_tokens: 16384
+  timeout: 120
 
 debug:
   print: False

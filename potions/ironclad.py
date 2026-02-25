@@ -35,7 +35,6 @@ class Elixir(Potion):
     """Exhaust any number of cards from hand - Ironclad only"""
     rarity = RarityType.UNCOMMON
     category = "Ironclad"
-    name = "Elixir"
 
     def __init__(self):
         super().__init__()
@@ -57,7 +56,7 @@ class Elixir(Potion):
         # Let player choose which cards to exhaust (multi-select mode)
         # Use max_select=-1 to allow selecting all hand cards
         return [SelectAction(
-            title="Elixir",
+            title=self.local("name").resolve(),
             options=options,
             max_select=-1,  # Allow selecting all options
             must_select=False  # Allow stopping selection early
@@ -69,7 +68,6 @@ class HeartOfIron(Potion):
     """Gain 6 Metallicize (12 with Sacred Bark) - Ironclad only"""
     rarity = RarityType.RARE
     category = "Ironclad"
-    name = "Heart of Iron"
 
     def __init__(self):
         super().__init__()

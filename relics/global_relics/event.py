@@ -139,7 +139,7 @@ class NilrysCodex(Relic):
 
 @register("relic")
 class Enchiridion(Relic):
-    """At the start of each combat, add a random Power to your hand. It costs 0 Energy until end of turn."""
+    """At start of each combat, add a random Power to your hand. It costs 0 Energy until end of turn."""
     
     def __init__(self):
         super().__init__()
@@ -232,7 +232,7 @@ class SsserpentHead(Relic):
 
 @register("relic")
 class WarpedTongs(Relic):
-    """At the start of your turn, Upgrade a random Card in your hand for rest of combat."""
+    """At start of your turn, Upgrade a random Card in your hand for rest of combat."""
     
     def __init__(self):
         super().__init__()
@@ -251,7 +251,7 @@ class WarpedTongs(Relic):
 
 @register("relic")
 class RedMask(Relic):
-    """At the start of each combat, apply 1 Weakness to ALL enemies."""
+    """At start of each combat, apply 1 Weakness to ALL enemies."""
     
     def __init__(self):
         super().__init__()
@@ -286,4 +286,4 @@ class SpiritPoop(Relic):
         self.rarity = RarityType.EVENT
     
     # This is a cosmetic relic with no gameplay effect
-    # It represents a curse "reward" from the spirits
+    # It represents a curse "reward" from spirits

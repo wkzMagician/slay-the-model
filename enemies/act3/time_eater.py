@@ -26,7 +26,7 @@ class TimeEater(Enemy):
     enemy_type = EnemyType.BOSS
     
     def __init__(self):
-        super().__init__(hp_range=(1000, 1000))
+        super().__init__(hp_range=(456, 456)) # todo: 480 a9
         self.add_intention(Reverberate(self))
         self.add_intention(HeadSlam(self))
         self.add_intention(Ripple(self))

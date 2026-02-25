@@ -20,7 +20,7 @@ class Mugger(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(48, 52)
+            hp_range=(48, 52) # todo: 50-54 a7
         )
         
         # Register intentions
@@ -34,7 +34,7 @@ class Mugger(Enemy):
         super().on_combat_start(floor)
         
         # Apply Thievery power (15 gold on normal, 20 on Ascension 7+)
-        thievery_amount = 15  # Ascension 7+ value
+        thievery_amount = 15  # todo: Ascension 7+ value = 20
         thievery = ThieveryPower(amount=thievery_amount, owner=self)
         self.add_power(thievery)
     

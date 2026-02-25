@@ -5,7 +5,7 @@ from utils.result_types import BaseResult, GameStateResult, MultipleActionsResul
 from events.event_pool import register_event
 from actions.card import ChooseAddRandomCardAction, ChooseRemoveCardAction, ChooseTransformCardAction, ChooseUpgradeCardAction, AddRandomCardAction
 from actions.display import DisplayTextAction, SelectAction
-from actions.reward import AddGoldAction, AddRandomPotionAction, AddRandomRelicAction, AddRelicAction, LoseGoldAction, LoseRelicAction
+from actions.reward import AddGoldAction, AddRandomPotionAction, AddRandomRelicAction, AddRelicAction, AddRelicByNameAction, LoseGoldAction, LoseRelicAction
 from actions.combat import ModifyMaxHpAction, LoseHPAction
 from engine.game_state import game_state
 from engine.game_stats import game_stats
@@ -66,7 +66,7 @@ class NeoEvent(Event):
             ),
             Option(
                 name=LocalStr("blessing.neow_option"),
-                actions=[AddRelicAction(relic="Neow's Blessing")]
+                actions=[AddRelicByNameAction(relic_id="NeowsLament")]
             )
         ]
         
@@ -120,7 +120,7 @@ class NeoEvent(Event):
             ),
             Option(
                 name=LocalStr("blessing.neow_option"),
-                actions=[AddRelicAction(relic="Neow's Blessing")]
+                actions=[AddRelicByNameAction(relic_id="NeowsLament")]
             ),
             Option(
                 name=LocalStr("blessing.random_common_relic_option"),

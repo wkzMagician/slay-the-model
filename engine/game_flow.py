@@ -165,7 +165,7 @@ class GameFlow:
         tui_print(f"\n{t('ui.game_welcome', default='Welcome to the Spire!')}")
         tui_print(f"{t('ui.game_awaken', default='You awaken in a strange place...')}")
         tui_print(f"{t('ui.seed_display', seed=game_state.config.seed, default=f'Seed: {game_state.config.seed}')}")
-        tui_print(f"{t('ui.character_display', character=game_state.config.character, default=f'Character: {game_state.config.character}')}\n")
+        tui_print(f"{t('ui.character_display', character=t(f'ui.character.{game_state.config.character.lower()}', default=game_state.config.character), default=f'Character: {game_state.config.character}')}\n")
 
         # Update display panel with player info
         from tui import get_app, is_tui_mode

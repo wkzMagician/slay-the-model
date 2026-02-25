@@ -19,7 +19,7 @@ class Spiker(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self):
-        super().__init__(hp_range=(48, 52))
+        super().__init__(hp_range=(42, 56)) # todo: 44-60 a7
         self._turn_count = 0
         self._buff_thorns_count = 0
         self._last_was_attack = False

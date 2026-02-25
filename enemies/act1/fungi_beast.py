@@ -19,7 +19,7 @@ class FungiBeast(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(22, 28)
+            hp_range=(22, 28) # todo: 24-28 a7
         )
         
         # Register intentions

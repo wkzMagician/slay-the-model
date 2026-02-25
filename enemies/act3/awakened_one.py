@@ -35,7 +35,7 @@ class AwakenedOne(Enemy):
     enemy_type = EnemyType.BOSS
     
     def __init__(self):
-        super().__init__(hp_range=(300, 300))
+        super().__init__(hp_range=(300, 300)) # todo: 320 a9
         self.add_intention(Slash(self))
         self.add_intention(SoulStrike(self))
         self.add_intention(Rebirth(self))

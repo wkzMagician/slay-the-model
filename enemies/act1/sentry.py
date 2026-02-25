@@ -13,10 +13,10 @@ class Sentry(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self, ascension: int = 0, is_middle: bool = False):
-        if ascension >= 3:
-            hp = random.randint(40, 42)
+        if ascension >= 8:
+            hp = random.randint(39, 45)
         else:
-            hp = random.randint(38, 40)
+            hp = random.randint(38, 42)
         
         super().__init__(hp_range=(hp, hp))
         self.ascension = ascension

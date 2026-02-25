@@ -18,7 +18,7 @@ class Taskmaster(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(70, 70))
+        super().__init__(hp_range=(54, 46)) # todo: 57-64 a8
         
         # Register intentions
         self.add_intention(ScouringWhip(self))

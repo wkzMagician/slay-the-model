@@ -17,7 +17,7 @@ class Centurion(Enemy):
     
     def __init__(self):
         super().__init__(
-            hp_range=(76, 80)
+            hp_range=(76, 80) # todo: 78-83 a7
         )
         
         # Register intentions

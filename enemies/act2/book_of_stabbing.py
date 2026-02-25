@@ -20,7 +20,7 @@ class BookOfStabbing(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(160, 160))
+        super().__init__(hp_range=(160, 164)) # todo: 168-172 a8
         self.multi_stab_count = 0  # Number of times Multi Stab used
         
         # Register intentions
