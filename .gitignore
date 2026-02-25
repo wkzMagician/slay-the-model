@@ -225,3 +225,8 @@ docs/
 
 res.txt
 output/
+
+# AI knowledge base files
+AGENTS.md
+todo.md
+pyguide.md
