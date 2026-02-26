@@ -6,11 +6,26 @@ from typing import Dict, List, Optional
 import pickle
 import os
 import random
+import sys
 from actions.base import Action
 from utils.result_types import BaseResult, NoneResult, MultipleActionsResult, SingleActionResult, GameStateResult
 from localization import BaseLocalStr, LocalStr, t
 from utils.option import Option
 from utils.registry import register
+
+
+def _safe_print(text: str):
+    """安全的打印函数，处理 Windows 编码问题
+    
+    在 Windows 平台如果遇到 UnicodeEncodeError，会自动过滤掉无法编码的字符。
+    其他平台直接正常打印。
+    """
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        # 如果失败，过滤掉无法编码的字符
+        safe_text = text.encode('utf-8', errors='replace').decode('utf-8')
+        print(safe_text)
 
 def get_game_state():
     from engine.game_state import game_state
@@ -452,13 +467,6 @@ class SelectAction(Action):
         # Get TUI app for showing thinking message
         app = _get_tui_app()
         
-        # Show "AI thinking" message in selection panel if TUI is available
-        if app:
-            selection_panel = app.get_selection_panel()
-            if selection_panel:
-                thinking_msg = t("ai.ai_thinking", default="AI 正在思考中...")
-                selection_panel.show_thinking(thinking_msg)
-        
         # Build option descriptions
         option_texts = []
         for opt in options:
@@ -468,72 +476,122 @@ class SelectAction(Action):
         # Call AI decision engine
         actual_max_select = self.max_select if self.max_select != -1 else len(options)
         
-        # Check if engine supports thinking output
+        # Check if engine supports streaming
         thinking_result = None
-        if hasattr(engine, 'make_decision_with_thinking'):
-            # Use the version that returns thinking
-            selected_indices, thinking_result = engine.make_decision_with_thinking(
-                title=str(self.title),
-                options=option_texts,
-                context={"game_state": AIContextBuilder.build_context(game_state)},
-                max_select=actual_max_select,
-            )
+        is_stream_mode = hasattr(engine, 'client') and getattr(engine.client, 'stream', False)
+        
+        if app:
+            # TUI mode: show "AI thinking" message in selection panel
+            selection_panel = app.get_selection_panel()
+            if selection_panel:
+                thinking_msg = t("ai.ai_thinking", default="AI 正在思考中...")
+                selection_panel.show_thinking(thinking_msg)
+            
+            # Use non-streaming method for TUI (TUI has its own display mechanism)
+            if hasattr(engine, 'make_decision_with_thinking'):
+                selected_indices, thinking_result = engine.make_decision_with_thinking(
+                    title=str(self.title),
+                    options=option_texts,
+                    context={"game_state": AIContextBuilder.build_context(game_state)},
+                    max_select=actual_max_select,
+                )
+            else:
+                selected_indices = engine.make_decision(
+                    title=str(self.title),
+                    options=option_texts,
+                    context={"game_state": AIContextBuilder.build_context(game_state)},
+                    max_select=actual_max_select,
+                )
         else:
-            selected_indices = engine.make_decision(
-                title=str(self.title),
-                options=option_texts,
-                context={"game_state": AIContextBuilder.build_context(game_state)},
-                max_select=actual_max_select,
-            )
+            # no-TUI mode: print "AI thinking" before sending prompt
+            thinking_msg = t("ai.ai_thinking", default="AI 正在思考中...")
+            _safe_print(f"\n{thinking_msg}")
+            
+            # Streaming callback for real-time output
+            def streaming_callback(chunk_type: str, content: str):
+                """Callback for streaming output in no-TUI mode."""
+                if chunk_type == "thinking":
+                    # Real-time thinking output (no newline prefix, just print as-is)
+                    _safe_print(content)
+                elif chunk_type == "answer":
+                    # Real-time answer output
+                    _safe_print(content)
+            
+            # Use streaming method if available and stream mode is enabled
+            if is_stream_mode and hasattr(engine, 'make_decision_with_streaming'):
+                selected_indices, thinking_result = engine.make_decision_with_streaming(
+                    title=str(self.title),
+                    options=option_texts,
+                    context={"game_state": AIContextBuilder.build_context(game_state)},
+                    max_select=actual_max_select,
+                    streaming_callback=streaming_callback,
+                )
+                # Print newline after streaming completes
+                _safe_print("")
+            elif hasattr(engine, 'make_decision_with_thinking'):
+                selected_indices, thinking_result = engine.make_decision_with_thinking(
+                    title=str(self.title),
+                    options=option_texts,
+                    context={"game_state": AIContextBuilder.build_context(game_state)},
+                    max_select=actual_max_select,
+                )
+            else:
+                selected_indices = engine.make_decision(
+                    title=str(self.title),
+                    options=option_texts,
+                    context={"game_state": AIContextBuilder.build_context(game_state)},
+                    max_select=actual_max_select,
+                )
         
         # Show thinking and answer in output panel (TUI) or stdout (no-TUI)
-        if thinking_result or (hasattr(engine, 'client') and hasattr(engine, '_last_answer')):
-            # Get the answer from the engine if available
-            answer_text = getattr(engine, '_last_answer', None)
-            
-            if app:
-                # TUI mode: show in output panel
-                output_panel = app.get_output_panel()
-                if output_panel:
-                    finished_msg = t("ai.ai_thinking_finished", default="AI 思考完成")
-                    output_panel.add_combat_message(f"\n{finished_msg}")
-                    
-                    # Show thinking content (full content)
-                    if thinking_result and len(thinking_result) > 0:
-                        thinking_header = t("ai.thinking_header", default="=== AI 思考过程 ===")
-                        output_panel.add_state_message(thinking_header)
-                        # Split by newlines and add each line
-                        for line in thinking_result.split('\n'):
-                            if line.strip():
-                                output_panel.add_state_message(f"  {line}")
-                    
-                    # Show answer content
-                    if answer_text and len(answer_text) > 0:
-                        answer_header = t("ai.answer_header", default="=== AI 回答 ===")
-                        output_panel.add_combat_message(answer_header)
-                        for line in answer_text.split('\n'):
-                            if line.strip():
-                                output_panel.add_combat_message(f"  {line}")
-            else:
-                # no-TUI mode: print to stdout
+        # For streaming mode, content is already printed in real-time, so skip re-printing
+        answer_text = getattr(engine, '_last_answer', None)
+        
+        if app:
+            # TUI mode: show in output panel
+            output_panel = app.get_output_panel()
+            if output_panel:
                 finished_msg = t("ai.ai_thinking_finished", default="AI 思考完成")
-                print(f"\n{finished_msg}")
+                output_panel.add_combat_message(f"\n{finished_msg}")
                 
                 # Show thinking content (full content)
                 if thinking_result and len(thinking_result) > 0:
                     thinking_header = t("ai.thinking_header", default="=== AI 思考过程 ===")
-                    print(thinking_header)
+                    output_panel.add_state_message(thinking_header)
+                    # Split by newlines and add each line
                     for line in thinking_result.split('\n'):
                         if line.strip():
-                            print(f"  {line}")
+                            output_panel.add_state_message(f"  {line}")
                 
                 # Show answer content
                 if answer_text and len(answer_text) > 0:
                     answer_header = t("ai.answer_header", default="=== AI 回答 ===")
-                    print(answer_header)
+                    output_panel.add_combat_message(answer_header)
                     for line in answer_text.split('\n'):
                         if line.strip():
-                            print(f"  {line}")
+                            output_panel.add_combat_message(f"  {line}")
+        else:
+            # no-TUI mode: for non-streaming, print thinking and answer
+            # For streaming mode, content is already printed in real-time
+            if not is_stream_mode:
+                finished_msg = t("ai.ai_thinking_finished", default="AI 思考完成")
+                _safe_print(f"\n{finished_msg}")
+                
+                # Show thinking content (full content)
+                if thinking_result and len(thinking_result) > 0:
+                    thinking_header = t("ai.thinking_header", default="=== AI 思考过程 ===")
+                    _safe_print(thinking_header)
+                    for line in thinking_result.split('\n'):
+                        if line.strip():
+                            _safe_print(f"  {line}")
+                
+                # Show answer content
+                if answer_text and len(answer_text) > 0:
+                    answer_header = t("ai.answer_header", default="=== AI 回答 ===")
+                    _safe_print(answer_header)
+                    for line in answer_text.split('\n'):
+                        if line.strip():
+                            _safe_print(f"  {line}")
         
         if not selected_indices:
             # AI returned no valid selection

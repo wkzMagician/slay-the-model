@@ -2,32 +2,14 @@
 AI decision engine interface.
 Provides the interface for AI-based game decisions.
 """
-from typing import Dict, List, Optional, Any
 import json
 import re
-import logging
-import asyncio
 from dataclasses import dataclass, field
-import json
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class LLMResponse:
-    """Normalized LLM response format."""
-    thinking: Optional[str] = None
-    answer: str = ""
-    raw_response: Dict = field(default_factory=dict)
-
-
-import re
 import json
 import httpx
 import asyncio
 import logging
 from typing import Any, Dict, List, Optional, AsyncIterator
-from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +19,10 @@ class LLMResponse:
     answer: str
     thinking: Optional[str] = None
     raw_response: Any = field(default=None, repr=False)
+
+
+# Callback type for streaming output
+StreamingCallback = Optional[callable]  # Callable[[str, str], None] - (chunk_type, content)
 
 
 class LLMClient:
@@ -59,10 +45,21 @@ class LLMClient:
     # 公共接口
     # ------------------------------------------------------------------
 
-    async def complete(self, messages: List[dict]) -> LLMResponse:
-        """发送请求并返回 LLMResponse。自动选择流式或非流式。"""
+    async def complete(
+        self, 
+        messages: List[dict], 
+        streaming_callback: StreamingCallback = None
+    ) -> LLMResponse:
+        """发送请求并返回 LLMResponse。自动选择流式或非流式。
+        
+        Args:
+            messages: 消息列表
+            streaming_callback: 流式输出回调函数，接收 (chunk_type, content) 参数
+                - chunk_type: "thinking" 或 "answer"
+                - content: 当前 chunk 的内容
+        """
         if self.stream:
-            return await self._complete_stream(messages)
+            return await self._complete_stream(messages, streaming_callback)
         else:
             return await self._complete_sync(messages)
 
@@ -110,12 +107,19 @@ class LLMClient:
     # 流式
     # ------------------------------------------------------------------
 
-    async def _complete_stream(self, messages: List[dict]) -> LLMResponse:
+    async def _complete_stream(
+        self, 
+        messages: List[dict], 
+        streaming_callback: StreamingCallback = None
+    ) -> LLMResponse:
         payload = self._build_payload(messages, stream=True)
 
         thinking_chunks: List[str] = []
         answer_chunks: List[str] = []
         raw_chunks: List[dict] = []
+        
+        # Track if we're in thinking phase (for models that use <think tags)
+        in_think_tag = False
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
@@ -137,10 +141,33 @@ class LLMClient:
                         rc = delta.get("reasoning_content")
                         if rc:
                             thinking_chunks.append(rc)
+                            # 实时回调 - thinking 内容
+                            if streaming_callback:
+                                streaming_callback("thinking", rc)
                         # 普通 content delta
                         c = delta.get("content")
                         if c:
-                            answer_chunks.append(c)
+                            # 检查是否包含 <think 标签
+                            if "<think" in c:
+                                in_think_tag = True
+                            if "</think" in c:
+                                in_think_tag = False
+                                # 提取 </think 之前的内容作为 thinking
+                                thinking_chunks.append(c)
+                                if streaming_callback:
+                                    streaming_callback("thinking", c)
+                                continue
+                            
+                            if in_think_tag:
+                                # 在 think 标签内，作为 thinking 处理
+                                thinking_chunks.append(c)
+                                if streaming_callback:
+                                    streaming_callback("thinking", c)
+                            else:
+                                answer_chunks.append(c)
+                                # 实时回调 - answer 内容
+                                if streaming_callback:
+                                    streaming_callback("answer", c)
 
             except httpx.TimeoutException:
                 logger.error("Request timed out (stream mode)")
@@ -152,7 +179,7 @@ class LLMClient:
         thinking_text = "".join(thinking_chunks).strip() or None
         answer_text = "".join(answer_chunks).strip()
 
-        # 如果 answer 里有 <think> 标签（某些模型流式也会这样输出）
+        # 如果 answer 里有 ॖ 标签（某些模型流式也会这样输出）
         if not thinking_text and "<think" in answer_text:
             thinking_text, answer_text = self._extract_think_tags(answer_text)
 
@@ -420,18 +447,45 @@ class LLMDecisionEngine(AIDecisionEngine):
         """Sync interface that returns (indices, thinking)."""
         return asyncio.run(self._make_decision_async(title, options, context, max_select))
     
+    def make_decision_with_streaming(
+        self,
+        title: str,
+        options: List[str],
+        context: Optional[Dict[str, Any]] = None,
+        max_select: int = 1,
+        streaming_callback: StreamingCallback = None,
+    ) -> tuple:
+        """Sync interface with streaming callback support.
+        
+        Args:
+            title: Decision title
+            options: List of option descriptions
+            context: Optional context dict
+            max_select: Maximum number of selections
+            streaming_callback: Callback for streaming output (chunk_type, content)
+                - chunk_type: "thinking" or "answer"
+                - content: Current chunk content
+        
+        Returns:
+            tuple: (indices, thinking) where indices is 0-indexed list
+        """
+        return asyncio.run(self._make_decision_async(
+            title, options, context, max_select, streaming_callback
+        ))
+    
     async def _make_decision_async(
         self,
         title: str,
         options: List[str],
         context: Optional[Dict[str, Any]],
         max_select: int,
+        streaming_callback: StreamingCallback = None,
     ) -> tuple:
         """Async decision implementation. Returns (indices, thinking)."""
         messages = self._build_messages(title, options, context, max_select)
         
         try:
-            response = await self.client.complete(messages)
+            response = await self.client.complete(messages, streaming_callback)
             indices = self._parse_indices(response.answer, len(options))
             thinking = response.thinking
             
@@ -488,17 +542,17 @@ class LLMDecisionEngine(AIDecisionEngine):
         else:
             user_content += f"Select up to {max_select} options (output numbers separated by commas, e.g., '1, 3'):"
         
-        # Print full prompt for debugging
-        if self.debug:
-            print("\n" + "=" * 60)
-            print("[AI PROMPT] System Message:")
-            print("-" * 60)
-            print(system_prompt)
-            print("-" * 60)
-            print("[AI PROMPT] User Message:")
-            print("-" * 60)
-            print(user_content)
-            print("=" * 60 + "\n")
+        # # Print full prompt for debugging
+        # if self.debug:
+        #     print("\n" + "=" * 60)
+        #     print("[AI PROMPT] System Message:")
+        #     print("-" * 60)
+        #     print(system_prompt)
+        #     print("-" * 60)
+        #     print("[AI PROMPT] User Message:")
+        #     print("-" * 60)
+        #     print(user_content)
+        #     print("=" * 60 + "\n")
         
         return [
             {"role": "system", "content": system_prompt},

@@ -65,19 +65,68 @@ class Intention(ABC, Localizable):
             player = game_state.player
             variables['damage'] = resolve_potential_damage(self.base_damage, self.enemy, player)
         
-        # 其他数值
+        # 护盾值
         if self.base_block > 0:
             variables['block'] = self.base_block
+        
+        # 力量
         if self.base_strength_gain > 0:
             variables['strength_gain'] = self.base_strength_gain
+        
+        # 治疗值
         if self.base_heal > 0:
             variables['heal'] = self.base_heal
-        if self.base_amount > 0:
-            variables['amount'] = self.base_amount
+        
+        # 通用数量（支持多种命名方式：base_amount, weak_stacks, vulnerable_stacks, frail_stacks）
+        amount = self._get_amount()
+        if amount > 0:
+            variables['amount'] = amount
         
         # 卡牌数量 (用于 Corrosive Spit 等意图)
         if hasattr(self, 'base_cards') and self.base_cards > 0:
             variables['cards'] = self.base_cards
         
+        # 攻击次数 (多次攻击才显示)
+        hits = self._get_hits()
+        if hits > 1:
+            variables['hits'] = hits
+        
         # 返回带变量的LocalStr对象
         return self.local("description", **variables)
+    
+    def _get_amount(self) -> int:
+        """获取通用数量（支持多种命名方式）。
+        
+        优先级：base_amount > weak_stacks > vulnerable_stacks > frail_stacks
+        """
+        candidates = [
+            'base_amount',
+            'weak_stacks',
+            'vulnerable_stacks',
+            'frail_stacks',
+        ]
+        
+        for attr in candidates:
+            if hasattr(self, attr):
+                value = getattr(self, attr)
+                if isinstance(value, int) and value > 0:
+                    return value
+        
+        return 0
+    
+    def _get_hits(self) -> int:
+        """获取攻击次数（支持多种命名方式）。"""
+        candidates = [
+            'hits',
+            'base_hits',
+            'base_times',
+            '_hits',
+        ]
+        
+        for attr in candidates:
+            if hasattr(self, attr):
+                value = getattr(self, attr)
+                if isinstance(value, int) and value > 0:
+                    return value
+        
+        return 0

@@ -73,7 +73,10 @@ class ShopRoom(Room):
     def enter(self) -> BaseResult:
         """Enter shop room and handle purchasing loop"""
         # Display shop entry message
+        actions = []
         entry_action = DisplayTextAction(text_key="rooms.shop.enter")
+        actions.append(entry_action)
+        
         entry_bonus_actions = []
 
         # MealTicket: heal 15 HP on shop entry.
@@ -84,24 +87,19 @@ class ShopRoom(Room):
                     entry_bonus_actions.extend(
                         result if isinstance(result, list) else [result]
                     )
+        
+        actions.extend(entry_bonus_actions)
 
         # Main shop loop
         while not self.should_leave:
             # Build and display shop menu
             select_action = self._build_shop_menu()
 
-            if select_action:
-                # Return entry message on first iteration, then select action
-                if entry_action:
-                    actions = [entry_action] + entry_bonus_actions + [select_action]
-                    entry_action = None  # Only show entry message once
-                else:
-                    actions = [select_action]
-
-                return MultipleActionsResult(actions)
-            else:
-                # No actions to return, break loop
-                break
+            # execute the action
+            actions.append(select_action)
+            game_state.action_queue.add_actions(actions)
+            actions.clear()
+            game_state.execute_all_actions()
 
         # Display leaving message
         if not self.should_leave:

@@ -161,6 +161,8 @@ class AIContextBuilder:
         
         # Hand cards with full info
         hand_lines = [f"## {t('ai_context.hand')} ({len(hand)} {t('ai_context.cards')})"]
+        # Add note about damage/block calculation
+        hand_lines.append(f"*{t('ai_context.card_stats_note')}*")
         
         for i, card in enumerate(hand, 1):
             card_info = AIContextBuilder._format_card_info(card)

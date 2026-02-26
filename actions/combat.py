@@ -291,7 +291,6 @@ class DealDamageAction(Action):
             target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Unknown'))
             target_name = _localize_character_name(target_name)
             print(t("combat.buffer_prevented", default="{target_name}'s Buffer prevented the damage!", target_name=target_name))
-            print(t("combat.buffer_prevented", default="{target_name}'s Buffer prevented the damage!", target_name=target_name))
             return NoneResult()
 
         # Actually deal damage (Creature.take_damage only handles numerical changes)
@@ -330,12 +329,6 @@ class DealDamageAction(Action):
             target_name = getattr(self.target, 'character', 'Unknown')
         # Localize character name
         target_name = _localize_character_name(target_name)
-        # Resolve LocalStr if needed
-        if isinstance(target_name, LocalStr):
-            target_name = target_name.resolve()
-        print(t("combat.deal_damage_enemy", default="Deal {amount} damage to {target_name}!", amount=damage_dealt, target_name=target_name))
-        if target_name is None:
-            target_name = getattr(self.target, 'character', 'Unknown')
         # Resolve LocalStr if needed
         if isinstance(target_name, LocalStr):
             target_name = target_name.resolve()
@@ -500,10 +493,8 @@ class GainBlockAction(Action):
         self.target.gain_block(block_amount, source=self.source, card=self.card)
         
         # Print block gained for player feedback
-        # Print block gained for player feedback
         target_name = getattr(self.target, 'name', getattr(self.target, 'character', 'Creature'))
         target_name = _localize_character_name(target_name)
-        print(t('combat.gain_block').format(source=target_name, amount=block_amount))
         print(t('combat.gain_block').format(source=target_name, amount=block_amount))
 
         if actions_to_return:
@@ -1015,7 +1006,8 @@ class UsePotionBHAction(Action):
             if isinstance(name, LocalStr):
                 name = name.resolve()
             target_names.append(str(name))
-        print(f"{t('action.used_potion', default='Used potion')}: {self.potion.name} {t('action.on_target', default='on')} {', '.join(target_names)}")
+        potion_name = self.potion.local("name").resolve() if isinstance(self.potion.local("name"), LocalStr) else self.potion.local("name")
+        print(f"{t('action.used_potion', default='Used potion')}: {potion_name} {t('action.on_target', default='on')} {', '.join(target_names)}")
 
         all_actions = []
         if actions:

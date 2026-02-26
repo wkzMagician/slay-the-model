@@ -304,8 +304,13 @@ class Card(Localizable):
         else:
             desc = self.description
         
-        # 使用ConcatLocalStr拼接各个部分
-            return self.display_name + f" ({t('ui.cost_label', default='Cost')}: {cost_str}, {t('ui.type_label', default='Type')}: {t('ui.card_type.' + self.card_type.value.lower(), default=self.card_type.value)}, {t('ui.rarity_label', default='Rarity')}: {t('ui.rarity.' + self.rarity.value.lower(), default=self.rarity.value)})\n" + desc
+        # 使用字符串拼接，避免嵌套的 t() 调用
+        cost_label = "Cost"
+        type_label = "Type"
+        rarity_label = "Rarity"
+        
+        info_text = f"{self.display_name} ({cost_label}: {cost_str}, {type_label}: {self.card_type.value}, {rarity_label}: {self.rarity.value})\n{desc}"
+        return RawLocalStr(info_text)
     
 
     def _resolve_target(self):

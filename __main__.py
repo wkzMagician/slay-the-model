@@ -18,7 +18,7 @@ from engine.game_state import game_state
 
 
 def _import_character_cards(character: str):
-    """Import cards for the selected character to register them."""
+    """Import cards for selected character to register them."""
     if character == "Ironclad":
         import cards.ironclad
     # Add other characters here as they are implemented
@@ -40,7 +40,7 @@ def _import_relics():
 
 
 def run_cli_mode():
-    """Run the game in traditional CLI mode (no TUI)."""
+    """Run game in traditional CLI mode (no TUI)."""
     try:
         _import_character_cards(game_state.config.character)
         _import_potions()
@@ -59,7 +59,7 @@ def run_cli_mode():
 
 
 def run_tui_mode():
-    """Run the game in TUI mode with three-panel layout."""
+    """Run game in TUI mode with three-panel layout."""
     try:
         # Import all game components first
         _import_character_cards(game_state.config.character)
@@ -70,7 +70,7 @@ def run_tui_mode():
         # Import TUI app
         from tui.app import SlayTheModelApp
         
-        # Create and run the TUI app
+        # Create and run TUI app
         app = SlayTheModelApp()
         
         # Set AI mode based on config (mode is 'ai' or 'debug' for non-human modes)

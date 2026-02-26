@@ -2504,3 +2504,42 @@ ai:
     {options}
     
     Please output your selection (numbers):
+
+# === AI CONTEXT LABELS ===
+ai_context:
+  player_status: Player Status
+  hp: HP
+  energy: Energy
+  gold: Gold
+  floor: Floor
+  block: Block
+  deck: Deck
+  cards_total: cards
+  max_energy: Max Energy
+  relics: Relics
+  powers_on_you: Powers on You
+  combat_status: Combat Status
+  enemies: Enemies
+  no_enemies: No enemies
+  hand: Hand
+  cards: cards
+  deck_status: Deck Status
+  intent: Intent
+  power: Power
+  dmg: Dmg
+  blk: Blk
+  current_room: Current Room
+  shop_items: Shop Items
+  cards_for_sale: Cards for Sale
+  relics_for_sale: Relics for Sale
+  potions_for_sale: Potions for Sale
+  services: Services
+  remove_card_service: Remove a card (First time: 50g, increases by 25g each time)
+  price: Price
+  shop_room: Shop Room
+  rest_room: Rest Room
+  rest_options: Options: Rest (Recover 30% HP) or Smith (Upgrade a card)
+  options: Options
+  total: Total
+  select_one: Select one option (output only the number, e.g. '2')
+  card_stats_note: Note: Attack and Block values in hand have been calculated with player and enemy abilities/relics effects, but other powers (like Weak, Vulnerable, Frail, etc.) have not yet been applied.

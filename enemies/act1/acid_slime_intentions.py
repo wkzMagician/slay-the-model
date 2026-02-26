@@ -85,11 +85,11 @@ class LickIntention(Intention):
         if hasattr(enemy, '__class__'):
             enemy_class = enemy.__class__.__name__
             if enemy_class == 'AcidSlimeL':
-                self._weak_amount = 2
+                self.weak_stacks = 2
             else:
-                self._weak_amount = 1
+                self.weak_stacks = 1
         else:
-            self._weak_amount = 1
+            self.weak_stacks = 1
     
     def execute(self) -> List['Action']:
         """Execute Lick: applies Weak to player."""
@@ -102,7 +102,7 @@ class LickIntention(Intention):
         
         return [
             ApplyPowerAction(
-                WeakPower(amount=self._weak_amount, duration=2, owner=game_state.player),
+                WeakPower(amount=self.weak_stacks, duration=2, owner=game_state.player),
                 game_state.player
             )
         ]
