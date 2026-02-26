@@ -83,9 +83,9 @@ class Potion(Localizable):
             elif class_name == "BlockPotion":
                 variables['block'] = self.amount
             
-            # 能量药水 - 使用 energy 变量
+            # 能量药水 - 使用 energy_gain 变量
             elif class_name == "EnergyPotion":
-                variables['energy'] = self.amount
+                variables['energy_gain'] = self.amount
             
             # 抽牌药水 - 使用 amount 变量表示抽牌数
             elif class_name == "SwiftPotion":
@@ -116,6 +116,22 @@ class Potion(Localizable):
             # 邪教徒药水 - 使用 amount 变量
             elif class_name == "CultistPotion":
                 variables['amount'] = self.amount
+            
+            # 铁之心 - 使用 metallicize 变量
+            elif class_name == "HeartOfIron":
+                variables['metallicize'] = self.amount
+            
+            # 虚弱药水 - 使用 magic_number 变量
+            elif class_name == "WeakPotion":
+                variables['magic_number'] = self.amount
+            
+            # 毒药水 - 使用 magic_number 变量
+            elif class_name == "PoisonPotion":
+                variables['magic_number'] = self.amount
+            
+            # 专注药水 - 使用 magic_number 变量
+            elif class_name == "FocusPotion":
+                variables['magic_number'] = self.amount
         
         # 返回带有格式化变量的 LocalStr 对象
         return self.local("description", **variables)

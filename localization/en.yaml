@@ -963,6 +963,9 @@ powers:
   FlyingPower:
     name: Flying
     description: Reduce damage taken by {amount}. Lose 1 stack when attacked.
+  StrengthDownPower:
+    name: Strength Down
+    description: Lose {amount} Strength at the end of your turn.
   PlatedArmorPower:
     name: Plated Armor
     description: At the end of your turn, gain {amount} Block.
@@ -978,7 +981,7 @@ potions:
     description: Exhaust all cards in your hand.
   HeartOfIron:
     name: Heart of Iron
-    description: Gain {strength} Strength.
+    description: Gain {metallicize} Metallicize.
   PoisonPotion:
     name: Poison Potion
     description: Apply {magic_number} Poison.

@@ -975,11 +975,17 @@ powers:
     description: 每打出 12 张牌，结束回合并获得 1 点力量。
     counter: '时间扭曲: {counter}/{threshold}'
     trigger: 时间扭曲触发！回合结束，时间吞噬者获得力量！
+  FlyingPower:
+    name: 飞行
+    description: 受到的伤害减少 {amount} 点。被攻击时失去 1 层。
+  StrengthDownPower:
+    name: 力量衰减
+    description: 回合结束时失去 {amount} 点力量。
 
 potions:
   HeartOfIron:
     name: 铁之心
-    description: 获得 1 点力量。
+    description: 获得 {metallicize} 点金属化。
   BloodPotion:
     name: 鲜血药水
     description: 恢复 {heal_amount} 点生命值。
