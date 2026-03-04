@@ -800,7 +800,7 @@ cards:
       description: 无法打出。无法移除。
     DarkShackles:
       name: 黑暗镣铐
-      description: 敌人本回合失去 {magic.strength} 点力量。消耗。
+      description: 敌人本回合失去 {magic.strength_loss} 点力量。消耗。
     Decay:
       name: 腐朽
       description: 无法打出。回合结束时受到 2 点伤害。

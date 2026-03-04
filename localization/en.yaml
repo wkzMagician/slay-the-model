@@ -769,7 +769,7 @@ cards:
       description: Unplayable. Irremovable.
     DarkShackles:
       name: Dark Shackles
-      description: Enemy loses {magic.strength} Strength this turn. Exhaust.
+      description: Enemy loses {magic.strength_loss} Strength this turn. Exhaust.
 
     Decay:
       name: Decay
