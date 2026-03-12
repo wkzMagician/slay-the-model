@@ -1596,7 +1596,7 @@ enemies:
       bellow:
         name: 吼叫
         description: 获得 {strength_gain} 点力量和 {block} 点格挡。
-      trash:
+      thrash:
         name: 践踏
         description: 造成 {damage} 点伤害。获得 {block} 点格挡。
   FungiBeast:

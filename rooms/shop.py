@@ -126,14 +126,10 @@ class ShopRoom(Room):
         ):
             card_namespaces = None
         ascension = getattr(game_state, 'ascension_level', 0)
-        
-        # Generate 5 colored cards (2 attacks, 2 skills, 1 power)
-        for _ in range(2):
-            card = get_random_card(
-                rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-                card_types=[CardType.SKILL],
-                namespaces=card_namespaces
-            )
+        # === Colored cards: 5 total (2 Attacks, 2 Skills, 1 Power) ===
+        colored_cards = self._generate_colored_cards()
+        colored_start_idx = len(items)
+        for card in colored_cards:
             if card is None:
                 raise ValueError("unable to get card")
             
@@ -198,91 +194,33 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
                 price = random.randint(135, 165)
             items.append(ShopItem("card", card, price))
 
-        for _ in range(2):
-            card = get_random_card(
-                rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-                card_types=[CardType.SKILL],
-                namespaces=card_namespaces
-            )
+        # Apply 50% discount to one random colored card (if any)
+        colored_end_idx = len(items)
+        if colored_end_idx > colored_start_idx:
+            discounted_index = random.randint(colored_start_idx, colored_end_idx - 1)
+            items[discounted_index].discount = 0.5
+
+        # === Colorless cards: always 1 uncommon + 1 rare ===
+        colorless_cards = self._generate_colorless_cards()
+        for card in colorless_cards:
             if card is None:
-                raise ValueError("unable to get card")
-            # Correct pricing for colored cards
-            if card.rarity == RarityType.COMMON:
-                price = random.randint(45, 55)
-            elif card.rarity == RarityType.UNCOMMON:
-                price = random.randint(68, 83)
-            else:  # Rare
-                price = random.randint(135, 165)
+                continue
+            # Uncommon and Rare use higher price brackets (20% more than normal)
+            if card.rarity == RarityType.UNCOMMON:
+                price = random.randint(81, 99)
+            elif card.rarity == RarityType.RARE:
+                price = random.randint(162, 198)
+            else:
+                # Fallback: treat other rarities similar to uncommon range
+                price = random.randint(81, 99)
             items.append(ShopItem("card", card, price))
-
-        card = get_random_card(
-            rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-            card_types=[CardType.POWER],
-            namespaces=card_namespaces
-        )
-        if card is None:
-            raise ValueError("unable to get card")
-        # Correct pricing for colored cards
-        if card.rarity == RarityType.COMMON:
-            price = random.randint(45, 55)
-        elif card.rarity == RarityType.UNCOMMON:
-            price = random.randint(68, 83)
-        else:  # Rare
-            price = random.randint(135, 165)
-        items.append(ShopItem("card", card, price))
-
-        for _ in range(2):
-            card = get_random_card(
-                rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-                card_types=[CardType.SKILL],
-                namespaces=card_namespaces
-            )
-            if card is None:
-                raise ValueError("unable to get card")
-            # Correct pricing for colored cards
-            if card.rarity == RarityType.COMMON:
-                price = random.randint(45, 55)
-            elif card.rarity == RarityType.UNCOMMON:
-                price = random.randint(68, 83)
-            else:  # Rare
-                price = random.randint(135, 165)
-            items.append(ShopItem("card", card, price))
-
-        card = get_random_card(
-            rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-            card_types=[CardType.POWER],
-            namespaces=card_namespaces
-        )
-        if card is None:
-            raise ValueError("unable to get card")
-        # Correct pricing for colored cards
-        if card.rarity == RarityType.COMMON:
-            price = random.randint(45, 55)
-        elif card.rarity == RarityType.UNCOMMON:
-            price = random.randint(68, 83)
-        else:  # Rare
-            price = random.randint(135, 165)
-        items.append(ShopItem("card", card, price))
-        
-        # Apply 50% discount to one random card
-        if items:
-            random.choice(items[:5]).discount = 0.5
-        
-        # Generate 2 colorless cards (1 uncommon, 1 rare)
-        # Colorless cards cost 20% more than normal cards
-        card = get_random_card(rarities=[RarityType.UNCOMMON], card_types=[], namespaces=["colorless"])
-        price = random.randint(81, 99)
-        items.append(ShopItem("card", card, price))
-
-        card = get_random_card(rarities=[RarityType.RARE], card_types=[], namespaces=["colorless"])
-        price = random.randint(162, 198)
-        items.append(ShopItem("card", card, price))
         
         # Generate 3 potions
         for _ in range(3):
             rarity_roll = random.random()
             rarity = RarityType.COMMON if rarity_roll < 0.65 else RarityType.UNCOMMON if rarity_roll < 0.90 else RarityType.RARE
-            potion = get_random_potion(rarities=[rarity])
+            # Restrict potion pool to current character namespace + any
+            potion = get_random_potion(characters=[namespace], rarities=[rarity])
             # Correct pricing for potions
             if rarity == RarityType.COMMON:
                 price = random.randint(48, 53)
