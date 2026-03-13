@@ -3,7 +3,7 @@ Card base class - class-driven card system with namespace support
 """
 from typing import Any, Dict, List, Optional
 from actions.base import Action, LambdaAction
-from actions.combat import DealDamageAction
+from actions.combat import AttackAction
 from entities.creature import Creature
 # 延迟导入以避免循环导入
 def get_game_state():
@@ -376,9 +376,11 @@ class Card(Localizable):
                 hits = max(1, resolve_card_value(self, 'attack_times'))
                 for target in targets:
                     for _ in range(hits):
-                        action = DealDamageAction(
+                        # Use unified damage pipeline via AttackAction so Strength/Weak/Vulnerable etc. are applied correctly.
+                        action = AttackAction(
                             damage=self.damage,
                             target=target,
+                            source=source,
                             damage_type="attack",
                             card=self,
                         )

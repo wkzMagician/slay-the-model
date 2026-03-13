@@ -70,7 +70,7 @@ class RestRoom(Room):
         if _has_relic("AncientTeaSet", game_state):
             # set relic available for next combat
             for relic in game_state.player.relics:
-                if getattr(relic, "idstr", "").lower() == "AncientTeaSet":
+                if getattr(relic, "idstr", "").lower() == "ancientteaset":
                     relic.is_rest_last_room = True
                     break
     

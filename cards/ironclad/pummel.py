@@ -18,4 +18,6 @@ class Pummel(Card):
     base_damage = 2
     base_attack_times = 4
 
+    base_exhaust = True
+
     upgrade_attack_times = 5

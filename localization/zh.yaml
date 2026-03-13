@@ -985,10 +985,10 @@ powers:
 potions:
   HeartOfIron:
     name: 铁之心
-    description: 获得 {metallicize} 点金属化。
+    description: 获得 {amount} 点金属化。
   BloodPotion:
     name: 鲜血药水
-    description: 恢复 {heal_amount} 点生命值。
+    description: 回复你最大生命值的 {amount}% 。
   Elixir:
     name: 万灵药
     description: 消耗你手牌中的所有卡牌。
@@ -1111,6 +1111,9 @@ potions:
     description: 向你的空物品栏添加随机药水。
 
 relics:
+  AncientTeaSet:
+    name: 古老茶具
+    description: 每当你进入休息点时，下场战斗的第一个回合获得 2 点额外能量。
   Akabeko:
     name: 赤牛
     description: 你每场战斗首次攻击额外造成 8 点伤害。
@@ -1596,7 +1599,7 @@ enemies:
       bellow:
         name: 吼叫
         description: 获得 {strength_gain} 点力量和 {block} 点格挡。
-      trash:
+      thrash:
         name: 践踏
         description: 造成 {damage} 点伤害。获得 {block} 点格挡。
   FungiBeast:
@@ -2492,6 +2495,7 @@ rooms:
     rest: 你休息并恢复 {amount} 点生命值。
     smith: 你升级一张卡牌。
     recall: 你回想红钥匙。
+    title: 休息点
     options:
       rest: 休息（{amount} 点生命值）
       smith: 打铁（升级一张卡牌）
@@ -2507,6 +2511,7 @@ rooms:
     leave: 离开
   shop:
     enter: 你进入了一个神秘的商店。
+    title: 商店
 
 # === REWARDS SECTION ===
 rewards:

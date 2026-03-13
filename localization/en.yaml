@@ -976,13 +976,13 @@ powers:
 potions:
   BloodPotion:
     name: Blood Potion
-    description: Heal for {heal}% of your max HP.
+    description: Heal for {amount}% of your max HP.
   Elixir:
     name: Elixir
     description: Exhaust all cards in your hand.
   HeartOfIron:
     name: Heart of Iron
-    description: Gain {metallicize} Metallicize.
+    description: Gain {amount} Metallicize.
   PoisonPotion:
     name: Poison Potion
     description: Apply {magic_number} Poison.
@@ -1101,6 +1101,9 @@ potions:
     name: Entropic Brew
     description: Add 3 random potions to your inventory.
 relics:
+  AncientTeaSet:
+    name: Ancient Tea Set
+    description: Whenever you enter a Rest Site, start the next combat with 2 additional Energy.
   Akabeko:
     name: Akabeko
     description: Your first Attack each combat deals 8 additional damage.
@@ -2408,6 +2411,7 @@ rooms:
       smith: Smith (Upgrade a card)
       recall: Recall (Ruby Key)
       leave: Leave
+    title: Rest Site
   treasure:
     enter: You discovered a treasure room!
     title: Treasure Room
@@ -2418,6 +2422,7 @@ rooms:
     leave: Leave
   shop:
     enter: You enter a mysterious shop.
+    title: Shop
   ShopRoom:
     ShopRoom:
       title: Shop

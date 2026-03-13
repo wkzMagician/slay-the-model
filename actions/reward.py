@@ -32,6 +32,12 @@ class AddRelicAction(Action):
             # Track relic as obtained (even if removed later)
             game_state.obtained_relics.add(self.relic.idstr)
             tui_print(t("ui.received_relic", default=f"Received relic: {self.relic.idstr}!", name=self.relic.idstr))
+            # Trigger on_obtain hook so relic-specific pickup effects fire (e.g., Astrolabe, Orrery, Tiny House)
+            if hasattr(self.relic, "on_obtain"):
+                actions = self.relic.on_obtain()
+                if actions:
+                    for action in actions:
+                        game_state.action_queue.add_action(action)
         return NoneResult()
             
 @register("action")
@@ -54,6 +60,12 @@ class AddRelicByNameAction(Action):
                 # Track relic as obtained (even if removed later)
                 game_state.obtained_relics.add(relic.idstr)
                 tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
+                # Trigger on_obtain hook so relic-specific pickup effects fire (e.g., Astrolabe, Orrery)
+                if hasattr(relic, "on_obtain"):
+                    actions = relic.on_obtain()
+                    if actions:
+                        for action in actions:
+                            game_state.action_queue.add_action(action)
         return NoneResult()
 @register("action")
 class AddRandomRelicAction(Action):

@@ -97,19 +97,17 @@ class SplitIntention(Intention):
             RemoveEnemyAction(enemy=self.enemy),
         ]
         
-        # Spawn 2 Spike Slimes (M) with half current HP each
+        # Spawn 2 Spike Slimes (M); each gets parent's current HP
         try:
             from enemies.act1.spike_slime import SpikeSlimeM
             
             slime_m1 = SpikeSlimeM()
-            hp1 = max(1, current_hp // 2)
-            slime_m1.max_hp = hp1
-            slime_m1.hp = hp1
+            slime_m1.hp = current_hp
+            slime_m1.max_hp = current_hp
             
             slime_m2 = SpikeSlimeM()
-            hp2 = max(1, current_hp - current_hp // 2)
-            slime_m2.max_hp = hp2
-            slime_m2.hp = hp2
+            slime_m2.hp = current_hp
+            slime_m2.max_hp = current_hp
             
             actions.append(AddEnemyAction(enemy=slime_m1))
             actions.append(AddEnemyAction(enemy=slime_m2))
