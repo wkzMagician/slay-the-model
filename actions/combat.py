@@ -682,13 +682,21 @@ class PlayCardBHAction(Action):
                     prevent_exhaust = True
                     break
 
+        is_power_card = self.card.card_type == CardType.POWER
+
         if will_exhaust and prevent_exhaust:
             actions.append(DiscardCardAction(card=self.card))
         elif will_exhaust:
             actions.append(ExhaustCardAction(card=self.card))
         else:
-            # Move to discard pile
-            actions.append(DiscardCardAction(card=self.card))
+            if is_power_card:
+                # Normal Power cards should leave the hand and not go to discard or exhaust.
+                # Remove the card instance from hand without adding it to any pile.
+                from player.card_manager import CardManager  # type: ignore  # for static checkers
+                player.card_manager.remove_from_pile(self.card, 'hand')
+            else:
+                # Default: move non-Power cards to discard pile
+                actions.append(DiscardCardAction(card=self.card))
 
         if should_exhaust_curse:
             hp_loss = 1
