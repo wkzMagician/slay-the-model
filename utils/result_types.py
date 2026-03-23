@@ -24,6 +24,7 @@ class ResultType(str, Enum):
     SINGLE_ACTION = "single_action"
     MULTIPLE_ACTIONS = "multiple_actions"
     GAME_STATE = "game_state"
+    INPUT_REQUEST = "input_request"
 
 
 # ============================================================================
@@ -76,7 +77,7 @@ class SingleActionResult(BaseResult):
         action (Action): The action to queue next
 
     Example:
-        AddRandomCardAction, MoveToMapNodeAction, SelectAction for UI
+        AddRandomCardAction, MoveToMapNodeAction, InputRequestAction for UI
     """
 
     def __init__(self, action: 'Action'):
@@ -141,3 +142,16 @@ class GameStateResult(BaseResult):
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.state})"
+
+
+class InputRequestResult(BaseResult):
+    """Result for pausing action execution until an input request is fulfilled."""
+
+    def __init__(self, request):
+        super().__init__()
+        self.request = request
+        self.result_type = ResultType.INPUT_REQUEST
+
+    def __str__(self) -> str:
+        request_type = getattr(self.request, "request_type", "selection")
+        return f"{self.__class__.__name__}({request_type})"

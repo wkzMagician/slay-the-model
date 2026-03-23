@@ -3,7 +3,7 @@ Treasure room implementation.
 """
 import random
 from tui.print_utils import tui_print
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.misc import OpenChestAction
 from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult, SingleActionResult
 from engine.game_state import game_state
@@ -102,33 +102,22 @@ class TreasureRoom(Room):
         return actions
 
     def enter(self) -> BaseResult:
-        """Enter treasure room and handle chest opening"""
-        # Display entry message
-        tui_print(t("rooms.treasure.enter"))
-
-        # Main treasure loop
-        while not self.should_leave:
-            # Build treasure menu
-            select_action = self._build_treasure_menu()
-
-            if select_action:
-                return SingleActionResult(select_action)
-            else:
-                # No actions to return, break loop
-                break
-
-        return NoneResult()
+        """Enter treasure room and return the initial treasure actions."""
+        return MultipleActionsResult([
+            DisplayTextAction(text_key="rooms.TreasureRoom.enter"),
+            self._build_treasure_menu(),
+        ])
 
     def _build_treasure_menu(self):
-        """Build treasure room menu and return SelectAction"""
+        """Build treasure room menu and return InputRequestAction"""
         options = []
 
         # Open chest option
         if not self.chest_opened:
             if self.is_boss:
-                name = self.local("treasure.open_boss_chest")
+                name = self.local("open_boss_chest")
             else:
-                name = self.local("treasure.open_chest", chest_type=self.chest_type)
+                name = self.local("open_chest", chest_type=self.chest_type)
             options.append(Option(
                 name=name,
                 actions=[OpenChestAction(self)]
@@ -136,13 +125,13 @@ class TreasureRoom(Room):
         else:
             # Chest already opened, just leave
             options.append(Option(
-                name=self.local("treasure.leave"),
+                name=self.local("leave"),
                 actions=[]
             ))
 
-        # Create SelectAction and add to action queue
-        select_action = SelectAction(
-            title=self.local("treasure.boss_title") if self.is_boss else self.local("treasure.title"),
+        # Create InputRequestAction and add to action queue
+        select_action = InputRequestAction(
+            title=self.local("boss_title") if self.is_boss else self.local("title"),
             options=options
         )
         self.action_queue.add_action(select_action)

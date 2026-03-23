@@ -1,8 +1,10 @@
 ui:
-  choose_blessings: "Choose Blessings"
+  choose_blessings: Choose Blessings
   choose_cards_to_upgrade: Choose a card to upgrade
-  upgrade_comparison_header: "=== Before Upgrade ==="
-  upgrade_comparison_separator: "\n=== After Upgrade ==="
+  upgrade_comparison_header: === Before Upgrade ===
+  upgrade_comparison_separator: '
+
+    === After Upgrade ==='
   choose_cards_to_transform: Choose a card to transform
   choose_cards_to_remove: Choose a card to remove
   shop_removed_card: Removed {card} from deck for {price} gold
@@ -40,8 +42,79 @@ ui:
   neo_intro: I shall grant you a blessing to begin your journey.
   neo_goodbye: Your journey begins now. Good luck!
   neo_max_hp_change: Max HP changed by {amount}!
-  open_menu: "Open the menu"
-  room_entered: "Enter the room"
+  open_menu: Open the menu
+  room_entered: Enter the room
+  game_welcome: 欢迎来到杀戮尖塔！
+  game_awaken: 你在尖塔中醒来，准备开始攀登...
+  seed_display: '种子: {seed}'
+  character_display: '角色: {character}'
+  choose_enemy: '选择敌人:'
+  select_prompt: '选择 (1-{count}): '
+  select_move: 选择你的下一步
+  floor_position: 第 {act} 幕 - 第 {floor} 层，位置 {position}
+  act_complete: 第 {act} 幕完成!
+  entering_act: 进入第 {act} 幕
+  entering_act4: 集齐三把钥匙后，你解锁通往心脏的道路...
+  map_move_option: '{floor_pos} - {room_type}'
+  invalid_option: 无效选项!
+  invalid_number: 请输入有效数字
+  room_type:
+    NORMAL: 普通
+    MONSTER: 怪物
+    ELITE: 精英
+    BOSS: Boss
+    REST: 休息
+    MERCHANT: 商店
+    TREASURE: 宝藏
+    EVENT: 事件
+    NEO: 尼奥
+    UNKNOWN: '?'
+    VICTORY: 胜利
+  rarity:
+    starter: 初始
+    common: 普通
+    uncommon: 罕见
+    rare: 稀有
+    special: 特殊
+    curse: 诅咒
+  skip_potion: 跳过
+  game_over: 游戏结束！你在尖塔中倒下了。=
+  game_won: 恭喜！你征服了尖塔！<
+  player_hp: 生命值
+  player_block: 格挡
+  player_energy: 能量
+  hand: 手牌
+  powers: 能力
+  enemy: 敌人
+  enemy_hp: 生命值
+  enemy_block: 格挡
+  intention: 意图
+  player_turn: === 玩家回合 ===
+  enemy_turn: === 敌人回合 ===
+  end_turn: 结束回合
+  healed: 回复 {amount} 点生命值
+  selected: 已选择
+  max_hp_changed: 最大生命值改变 {amount} 点！
+  draw_pile: 抽牌堆
+  discard_pile: 弃牌堆
+  draw_cards: 抽 {count} 张牌
+  choose_random_card_to_add: 选择一张随机卡牌加入牌组
+  empty: 空
+  cost_label: 费用
+  card_type:
+    attack: 攻击
+    skill: 技能
+    power: 能力
+    status: 状态
+    curse: 诅咒
+  ssserpent_head_gold: 蛇头：获得 {amount} 金币！
+  received_potion: 获得药水：{name}！
+  shop_bought_item: 购买了 {item_name}，花费 {final_price} 金币！
+  character:
+    ironclad: 铁甲战士
+    silent: 静默猎人
+    defect: 故障机器人
+    watcher: 观者
 blessing:
   title: Choose blessings
   upgrade_card_option: Upgrade a card
@@ -49,7 +122,7 @@ blessing:
   uncommon_colorless_option: Choose an Uncommon colorless card
   random_rare_card_option: Obtain a random Rare card
   max_hp_option: Gain {amount} Max HP
-  neow_option: "Obtain Neow's Blessing relic: next 3 enemies have 1 hp"
+  neow_option: 'Obtain Neow''s Blessing relic: next 3 enemies have 1 hp'
   random_common_relic_option: Obtain a random Common relic
   receive_100_gold_option: Receive 100 gold
   three_random_potions_option: Obtain 3 random potions
@@ -66,8 +139,7 @@ blessing:
   big_max_hp_option: Gain {amount} Max HP
 events:
   neo:
-    welcome: Before you stands a dark shrine to Neow, the enigmatic spirit of the
-      Spire.
+    welcome: Before you stands a dark shrine to Neow, the enigmatic spirit of the Spire.
   ancient_writing:
     title: Ancient Writing
     elegance: Elegance
@@ -96,7 +168,7 @@ events:
     refuse: Refuse
   cursed_tome:
     title: Cursed Tome
-    "continue": Continue
+    continue: Continue
     take: Take
     stop: Stop
     leave: Leave
@@ -370,8 +442,7 @@ combat:
   play_card: Played {card}
   gain_gold: Gain {amount} gold
   deal_damage_all_heal: Deal {damage} damage to all enemies
-  place_card_on_top: The next card you play this turn will be placed on top of your
-    draw pile.
+  place_card_on_top: The next card you play this turn will be placed on top of your draw pile.
   reduce_card_cost: '{card} costs {amount} less this combat ({total} total).'
   gain_energy_if_discarded: Gain {amount} Energy (discard bonus)
   calculated_gamble: Discard hand and draw {count} cards.
@@ -383,11 +454,9 @@ combat:
   retrieve_zero_cost: Returned {count} zero-cost card(s) from discard to hand.
   discard_non_attack: Discarded {count} non-Attack card(s)
   gain_energy_next_turn: Gain {amount} energy next turn
-  gain_energy_next_turn_scheduled: Scheduled gain of {amount} energy next turn (stored
-    in player.pending_energy)
+  gain_energy_next_turn_scheduled: Scheduled gain of {amount} energy next turn (stored in player.pending_energy)
   gain_block_next_turn: Gain {block} block next turn
-  gain_block_next_turn_scheduled: Scheduled gain of {block} block next turn (stored
-    in player.pending_block)
+  gain_block_next_turn_scheduled: Scheduled gain of {block} block next turn (stored in player.pending_block)
   reboot_shuffle: Reboot shuffles your hand and discard pile into your draw pile.
   thievery_steal: '{enemy} stole {amount} gold!'
   thievery_return: Recovered {amount} stolen gold!
@@ -396,70 +465,77 @@ combat:
   powers: Powers
   relics: Relics
   potions: Potions
-  details: [ DETAILS ]
+  details:
+  - DETAILS
   card_details: Cards
   power_details: Powers
   relic_details: Relics
+  draw_pile: 抽牌堆
+  discard_pile: 弃牌堆
+  exhaust_pile: 消耗堆
+  enemy_defeated: '{enemy} 已被击败！'
+  artifact_blocked: '[人工制品] 阻止了减益效果！'
+  artifact_remaining: '剩余层数: {count}'
+  enemy_intends: 敌人
+  intends_to: 意图是
+  select_target: === 选择目标 ===
+  enemy_killed: '{target_name} 已被击败！'
+  deck: 牌组
+  card_added: 添加
+  to_pile: 到
+  reward: 奖励
+  enemy: 敌人
+  used_potion: 使用药水
+  received_potion: 获得药水
+  gained_gold: 获得金币
+  added_to_deck: 添加到牌组
+  on_target: 对
 cards:
   ironclad:
     Strike:
       name: Strike
       description: Deal {damage} damage.
-
     Defend:
       name: Defend
       description: Gain {block} Block.
-
     Bash:
       name: Bash
       description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable.
-
     Anger:
       name: Anger
       description: Deal {damage} damage. Add a copy of this card to your discard pile.
-
     IronWave:
       name: Iron Wave
       description: Gain {block} Block. Deal {damage} damage.
-
     PommelStrike:
       name: Pommel Strike
       description: Deal {damage} damage. Draw {draw} cards.
-
     HeavyBlade:
       name: Heavy Blade
-      description: Deal {damage} damage. Strength affects this {magic.strength_mult}
-        times.
-
+      description: Deal {damage} damage. Strength affects this {magic.strength_mult} times.
     Armaments:
       name: Armaments
       description: Gain {block} Block. Upgrade a card in your hand this combat.
-
+      upgrade_description: 获得 {block} 点格挡。本战斗升级你的所有手牌。
     Flex:
       name: Flex
-      description: Gain {magic.temp_strength} Strength. Lose {magic.temp_strength}
-        Strength at the end of your turn.
-
+      description: Gain {magic.temp_strength} Strength. Lose {magic.temp_strength} Strength at the end of your turn.
     Clothesline:
       name: Clothesline
       description: Deal {damage} damage. Apply {magic.weak} Weak.
-
     Inflame:
       name: Inflame
       description: Gain {magic.strength} Strength.
-
     BodySlam:
       name: Body Slam
       description: Deal damage equal to your Block.
-
+      combat_description: 造成等同于你当前格挡的伤害。（造成 {damage} 点伤害）
     Carnage:
       name: Carnage
       description: Deal {damage} damage. Ethereal.
-
     Bludgeon:
       name: Bludgeon
       description: Deal {damage} damage.
-
     LimitBreak:
       name: Limit Break
       description: Double your Strength. Exhaust,
@@ -467,16 +543,12 @@ cards:
     Pummel:
       name: Pummel
       description: Deal {damage} damage {attack_times} times.
-
     Uppercut:
       name: Uppercut
-      description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable and {magic.weak}
-        Weak.
-
+      description: Deal {damage} damage. Apply {magic.vulnerable} Vulnerable and {magic.weak} Weak.
     Offering:
       name: Offering
-      description: Lose 6 HP. Gain {energy_gain} Energy. Gain 2 Strength. Draw {draw}
-        cards.
+      description: Lose 6 HP. Gain {energy_gain} Energy. Gain 2 Strength. Draw {draw} cards.
     Barricade:
       name: Barricade
       description: Block no longer expires at the start of your turn.
@@ -484,19 +556,15 @@ cards:
     BattleTrance:
       name: Battle Trance
       description: Draw {draw} cards. You cannot draw any more cards this turn.
-
     Berserk:
       name: Berserk
       description: Gain {magic.vulnerable} Vulnerable. At the start of your turn, gain 1 Energy.
-
     BloodForBlood:
       name: Blood for Blood
       description: Deal {damage} damage. Costs 1 less energy for each HP lost this combat.
-
     Bloodletting:
       name: Bloodletting
       description: Lose 2 HP. Gain {energy_gain} Energy.
-
     Brutality:
       name: Brutality
       description: At the start of your turn, lose 1 HP and draw 1 card.
@@ -504,19 +572,15 @@ cards:
     BurningPact:
       name: Burning Pact
       description: Exhaust 1 card. Draw {draw} cards.
-
     Clash:
       name: Clash
       description: Can only be played if every card in your hand is an Attack. Deal {damage} damage.
-
     Cleave:
       name: Cleave
       description: Deal {damage} damage to ALL enemies.
-
     Combust:
       name: Combust
       description: At the end of your turn, lose 1 HP and deal {magic.damage} damage to ALL enemies.
-
     Corruption:
       name: Corruption
       description: Skills cost 0. Whenever you play a Skill, Exhaust it.
@@ -526,19 +590,16 @@ cards:
     DemonForm:
       name: Demon Form
       description: At the end of your turn, gain {magic.strength} Strength.
-
     Disarm:
       name: Disarm
       description: Enemy loses {magic.strength} Strength.
-
     DoubleTap:
       name: Double Tap
       description: The next {magic.double_tap} Attack(s) is(are) played twice.
-
+      upgrade_description: 接下来的 {magic.double_tap} 张攻击牌打出两次。
     Dropkick:
       name: Dropkick
       description: Deal {damage} damage. If the enemy has Vulnerable, gain 1 Energy and draw 1 card.
-
     DualWield:
       name: Dual Wield
       description: Choose a card in your hand. Add a copy of it to your hand.
@@ -549,136 +610,110 @@ cards:
     Evolve:
       name: Evolve
       description: Whenever you draw a Status card, draw {draw} card(s).
-
     Exhume:
       name: Exhume
       description: Choose a card from your Exhaust pile and put it into your hand. Exhaust.
     Feed:
       name: Feed
       description: Deal {damage} damage. If Fatal, gain {magic.max_hp} Max HP.
-
     FeelNoPain:
       name: Feel No Pain
       description: Whenever a card is Exhausted, gain {block} Block.
-
     FiendFire:
       name: Fiend Fire
       description: Exhaust all cards in your hand. Deal {damage} damage for each. Exhaust.
-
     FireBreathing:
       name: Fire Breathing
       description: Whenever you draw a Status or Curse card, deal {magic.damage} damage to ALL enemies.
-
     FlameBarrier:
       name: Flame Barrier
       description: Gain {block} Block. Whenever you are attacked this turn, deal {magic.damage} damage.
-
     GhostlyArmor:
       name: Ghostly Armor
       description: Ethereal. Gain {block} Block.
-
     Havoc:
       name: Havoc
       description: Play the top card of your draw pile and Exhaust it.
     Headbutt:
       name: Headbutt
       description: Deal {damage} damage. Put a card from your discard pile on top of your draw pile.
-
     Hemokinesis:
       name: Hemokinesis
       description: Lose 2 HP. Deal {damage} damage.
-
     Immolate:
       name: Immolate
       description: Deal {damage} damage to ALL enemies. Add a Burn into your discard pile.
-
     Impervious:
       name: Impervious
       description: Ethereal. Gain {block} Block. Exhaust.
-
+      upgrade_description: 获得 {block} 点格挡。消耗。
     InfernalBlade:
       name: Infernal Blade
       description: Add a random Attack into your hand. It costs 0 this turn. Exhaust.
-
     Intimidate:
       name: Intimidate
       description: Apply {magic.weak} Weak to ALL enemies.
-
     Juggernaut:
       name: Juggernaut
       description: Whenever you gain Block, deal {magic.damage} damage to a random enemy.
-
     Metallicize:
       name: Metallicize
       description: At the end of your turn, gain {block} Block.
-
     PerfectedStrike:
       name: Perfected Strike
-      description: Deal {damage} damage. Deals an additional {magic.damage_bonus} damage for each card in your deck containing "Strike".
-
+      description: Deal {damage} damage. Deals an additional {magic.damage_bonus} damage for each card in your deck containing
+        "Strike".
     PowerThrough:
       name: Power Through
       description: Gain {block} Block. Add 2 Wounds into your hand.
-
     Rage:
       name: Rage
       description: Whenever you play an Attack this turn, gain {block} Block.
-
     Rampage:
       name: Rampage
-      description: Deal {damage} damage. This combat, increase the damage of this card by {magic.damage_increase} every time it is played.
-
+      description: Deal {damage} damage. This combat, increase the damage of this card by {magic.damage_increase} every time
+        it is played.
     Reaper:
       name: Reaper
       description: Deal {damage} damage to ALL enemies. Heal HP equal to unblocked damage dealt. Exhaust.
-
     RecklessCharge:
       name: Reckless Charge
       description: Deal {damage} damage. Shuffle a Dazed into your draw pile.
-
     Rupture:
       name: Rupture
       description: Whenever you lose HP from a card, gain {magic.strength} Strength.
-
     SearingBlow:
       name: Searing Blow
       description: Deal {damage} damage. Can be upgraded any number of times.
-
     SecondWind:
       name: Second Wind
       description: Exhaust all non-Attack cards in your hand. Gain {block} Block for each.
-
     SeeingRed:
       name: Seeing Red
       description: Gain {energy_gain} Energy. Exhaust.
     Sentinel:
       name: Sentinel
       description: Gain {block} Block. If this card is Exhausted, gain {magic.energy} Energy.
-
     SeverSoul:
       name: Sever Soul
       description: Exhaust all non-Attack cards in your hand. Deal {damage} damage.
-
     Shockwave:
       name: Shockwave
       description: Apply {magic.vulnerable} Vulnerable and {magic.weak} Weak to ALL enemies. Exhaust.
-
     ShrugItOff:
       name: Shrug It Off
       description: Gain {block} Block. Draw 1 card.
-
+      upgrade_description: 获得 {block} 点格挡。抽 1 张牌。
     SpotWeakness:
       name: Spot Weakness
       description: If the enemy intends to attack, gain {magic.strength} Strength.
-
+      upgrade_description: 如果敌人打算攻击，获得 {magic.strength} 点力量。
     SwordBoomerang:
       name: Sword Boomerang
       description: Deal {damage} damage to a random enemy {attack_times} times.
-
     Thunderclap:
       name: Thunderclap
       description: Deal {damage} damage. Apply 1 Vulnerable to ALL enemies.
-
     TrueGrit:
       name: True Grit
       description: Gain {block} Block. Exhaust a random card from your hand.
@@ -686,19 +721,15 @@ cards:
     TwinStrike:
       name: Twin Strike
       description: Deal {damage} damage twice.
-
     WarCry:
       name: War Cry
       description: Draw {draw} card(s). Place a card from your hand on top of your draw pile.
-
     Whirlwind:
       name: Whirlwind
       description: Deal {damage} damage to ALL enemies X times.
-
     WildStrike:
       name: Wild Strike
       description: Deal {damage} damage. Shuffle a Wound into your draw pile.
-
   colorless:
     Slimed:
       name: Slimed
@@ -721,8 +752,7 @@ cards:
       description: Shuffle all cards into your draw pile. Draw {draw} cards.
     HandOfGreed:
       name: Hand of Greed
-      description: Deal {damage} damage. If this kills a non-minion enemy, gain {gold}
-        Gold.
+      description: Deal {damage} damage. If this kills a non-minion enemy, gain {gold} Gold.
     Impatience:
       name: Impatience
       description: If you have no Skills in hand, draw {draw_amount} cards.
@@ -745,11 +775,9 @@ cards:
     BandageUp:
       name: Bandage Up
       description: Heal {heal} HP. Exhaust.
-
     Bite:
       name: Bite
       description: Deal {damage} damage. Heal {heal} HP.
-
     Blind:
       name: Blind
       description: Apply 2 Weak to an enemy.
@@ -757,11 +785,9 @@ cards:
     Burn:
       name: Burn
       description: Unplayable. At the end of your turn, take {damage} damage.
-
     Chrysalis:
       name: Chrysalis
       description: Shuffle {magic.cards} random Skills into your draw pile. They cost 0 this combat. Exhaust.
-
     Clumsy:
       name: Clumsy
       description: Unplayable. Ethereal.
@@ -771,7 +797,6 @@ cards:
     DarkShackles:
       name: Dark Shackles
       description: Enemy loses {magic.strength_loss} Strength this turn. Exhaust.
-
     Decay:
       name: Decay
       description: Unplayable. At the end of your turn, take 2 damage.
@@ -785,7 +810,6 @@ cards:
     DramaticEntrance:
       name: Dramatic Entrance
       description: Deal {damage} damage to ALL enemies. Innate. Exhaust.
-
     Enlightenment:
       name: Enlightenment
       description: Set all cards in your hand to 1 cost this turn.
@@ -793,42 +817,35 @@ cards:
     Finesse:
       name: Finesse
       description: Gain {block} Block. Draw 1 card.
-
     FlashOfSteel:
       name: Flash of Steel
       description: Deal {damage} damage. Draw 1 card.
-
     Forethought:
       name: Forethought
       description: Put a card from your hand on the bottom of your draw pile. It costs 0 until played.
-      upgrade_description: Put any number of cards from your hand on the bottom of your draw pile. They cost 0 until played.
       upgrade_description: Put any cards from your hand on the bottom of your draw pile. It costs 0 until played.
     GoodInstincts:
       name: Good Instincts
       description: Gain {block} Block.
-
+      upgrade_description: 获得 {block} 点格挡。
     Injury:
       name: Injury
       description: Unplayable.
     JackOfAllTrades:
       name: Jack of All Trades
       description: Add {magic.cards} random colorless card(s) to your hand. Exhaust.
-
     JAX:
       name: JAX
       description: Lose 3 HP. Gain {magic.strength} Strength.
-
     Magnetism:
       name: Magnetism
       description: At the start of your turn, add a random colorless card to your hand.
     MasterOfStrategy:
       name: Master of Strategy
       description: Draw {draw} cards. Exhaust.
-
     Metamorphosis:
       name: Metamorphosis
       description: Shuffle {magic.cards} random Attacks into your draw pile. They cost 0 this combat. Exhaust.
-
     MindBlast:
       name: Mind Blast
       description: Deal damage equal to the number of cards in your draw pile. Innate.
@@ -841,33 +858,27 @@ cards:
     Panacea:
       name: Panacea
       description: Gain {magic.artifact} Artifact. Exhaust.
-
     Panache:
       name: Panache
       description: Every 5th card you play deals {damage} damage to ALL enemies.
-
     PanicButton:
       name: Panic Button
       description: Gain {block} Block. You cannot gain Block for the next {magic.turns} turns. Exhaust.
-
     Parasite:
       name: Parasite
       description: Unplayable. If removed from your deck, lose 3 Max HP.
     Purify:
       name: Purify
       description: Exhaust up to {magic.cards} cards from your hand. Exhaust.
-
     Regret:
       name: Regret
       description: Unplayable. At the end of your turn, lose 1 HP for each card in your hand.
     RitualDagger:
       name: Ritual Dagger
       description: Deal {damage} damage. If Fatal, permanently increase this card's damage by {magic.damage_increase}. Exhaust.
-
     SadisticNature:
       name: Sadistic Nature
       description: Whenever you apply a debuff to an enemy, deal {damage} damage.
-
     SecretTechnique:
       name: Secret Technique
       description: Put a Skill from your draw pile into your hand. Exhaust.
@@ -882,11 +893,9 @@ cards:
     SwiftStrike:
       name: Swift Strike
       description: Deal {damage} damage.
-
     TheBomb:
       name: The Bomb
       description: At the end of 3 turns, deal {damage} damage to ALL enemies.
-
     ThinkingAhead:
       name: Thinking Ahead
       description: Draw 2 cards. Put a card from your hand on top of your draw pile. Exhaust.
@@ -902,7 +911,6 @@ cards:
     Violence:
       name: Violence
       description: Put {magic.cards} random Attacks from your draw pile into your hand. Exhaust.
-
     Void:
       name: Void
       description: Unplayable. Ethereal. When drawn, lose 1 Energy.
@@ -931,6 +939,9 @@ powers:
   HeavyBladePower:
     name: Heavy Blade
     description: Gain {amount} Strength. Lose equal amount at end of turn.
+  Constricted:
+    name: Constricted
+    description: At the end of your turn, lose HP equal to Constricted.
   ConfusedPower:
     name: Confused
     description: Randomize card costs at start of turn.
@@ -951,8 +962,7 @@ powers:
     description: Steals {amount} gold when attacking. Gold returned on death.
   SlowPower:
     name: Slow
-    description: Player's cards cost +{amount} this combat (stacks with each card
-      played).
+    description: Player's cards cost +{amount} this combat (stacks with each card played).
   DrawReductionPower:
     name: Draw Reduction
     description: Draw 1 less card at the start of each turn for {amount} turn(s).
@@ -970,9 +980,12 @@ powers:
   PlatedArmorPower:
     name: Plated Armor
     description: At the end of your turn, gain {amount} Block.
-  Thievery:
-    name: Thievery
-    description: Steal {amount} Gold from enemies when you attack.
+  ArtifactPower:
+    name: Artifact
+    description: Negates the next {amount} debuff(s).
+  curl_up:
+    name: 蜷身
+    description: 受到伤害时获得 {amount} 点格挡。
 potions:
   BloodPotion:
     name: Blood Potion
@@ -1112,8 +1125,7 @@ relics:
     description: Start each combat with 10 Block.
   ArtOfWar:
     name: Art of War
-    description: If you do not play any Attacks during your turn, gain 1 extra Energy
-      next turn.
+    description: If you do not play any Attacks during your turn, gain 1 extra Energy next turn.
   BagOfMarbles:
     name: Bag of Marbles
     description: At start of each combat, apply 1 Vulnerable to ALL enemies.
@@ -1143,8 +1155,7 @@ relics:
     description: Gain 1 Energy on first turn of each combat.
   MawBank:
     name: Maw Bank
-    description: Whenever you climb a floor, gain 12 Gold. No longer works when you
-      spend any Gold at Shop.
+    description: Whenever you climb a floor, gain 12 Gold. No longer works when you spend any Gold at Shop.
   MealTicket:
     name: Meal Ticket
     description: Whenever you enter a Shop room, heal 15 HP.
@@ -1180,8 +1191,7 @@ relics:
     description: Upon pickup, raise your Max HP by 7.
   TheBoot:
     name: The Boot
-    description: Whenever you would deal 4 or less unblocked Attack damage, increase
-      it to 5.
+    description: Whenever you would deal 4 or less unblocked Attack damage, increase it to 5.
   TinyChest:
     name: Tiny Chest
     description: Every 4th Event room is a Treasure room.
@@ -1199,27 +1209,22 @@ relics:
     description: At start of your 2nd turn, gain 14 Block.
   BlueCandle:
     name: Blue Candle
-    description: Curse Cards can now be played. Playing a Curse will make you lose
-      1 HP and Exhaust Card.
+    description: Curse Cards can now be played. Playing a Curse will make you lose 1 HP and Exhaust Card.
   BottledFlame:
     name: Bottled Flame
-    description: Upon pick up, choose an Attack. Start each combat with this Card
-      in your hand.
+    description: 拾取时，选择一张攻击。每场战斗以该卡在手牌开始。
   BottledLightning:
     name: Bottled Lightning
-    description: Upon pick up, choose a Skill. Start each combat with this Card in
-      your hand.
+    description: Upon pick up, choose a Skill. Start each combat with this Card in your hand.
   BottledTornado:
     name: Bottled Tornado
-    description: Upon pick up, choose a Power. Start each combat with this Card in
-      your hand.
+    description: Upon pick up, choose a Power. Start each combat with this Card in your hand.
   DarkstonePeriapt:
     name: Darkstone Periapt
     description: Whenever you obtain a Curse, increase your Max HP by 6.
   EternalFeather:
     name: Eternal Feather
-    description: For every 5 Cards in your deck, heal 3 HP whenever you enter a Rest
-      Site.
+    description: For every 5 Cards in your deck, heal 3 HP whenever you enter a Rest Site.
   FrozenEgg:
     name: Frozen Egg
     description: Whenever you add a Power to your deck, it is Upgraded.
@@ -1234,8 +1239,7 @@ relics:
     description: Every time you play 3 Attacks in a single turn, gain 1 Dexterity.
   LetterOpener:
     name: Letter Opener
-    description: Every time you play 3 Skills in a single turn, deal 5 damage to ALL
-      enemies.
+    description: Every time you play 3 Skills in a single turn, deal 5 damage to ALL enemies.
   Matryoshka:
     name: Matryoshka
     description: The next 2 Chests you open contain 2 Relics.
@@ -1247,21 +1251,19 @@ relics:
     description: At start of your turn, deal 3 damage to ALL enemies.
   MoltenEgg:
     name: Molten Egg
-    description: Whenever you add an Attack to your deck, it is Upgraded.
+    description: 每当你向牌组添加一个攻击，它被升级。
   MummifiedHand:
     name: Mummified Hand
-    description: Whenever you play a Power, a random card in your hand costs 0 Energy
-      for turn.
+    description: Whenever you play a Power, a random card in your hand costs 0 Energy for turn.
   NinjaScroll:
     name: Ninja Scroll
     description: Start each combat with 3 Shivs in hand.
   OrnamentalFan:
     name: Ornamental Fan
-    description: Every time you play 3 Attacks in a single turn, gain 4 Block.
+    description: 每在单回合打出 3 次攻击，获得 4 点格挡。
   Pantograph:
     name: Pantograph
     description: At start of Boss combats, heal 25 HP.
-
   PaperFrog:
     name: Paper Frog
     description: Enemies dealing 75% or more of your Max HP have damage reduced by 50%.
@@ -1276,8 +1278,7 @@ relics:
     description: Raise your Max HP by 10.
   QuestionCard:
     name: Question Card
-    description: On future Card Reward screens you have 1 additional Card to choose
-      from.
+    description: On future Card Reward screens you have 1 additional Card to choose from.
   SelfFormingClay:
     name: Self-Forming Clay
     description: Whenever you lose HP in combat, gain 3 Block next turn.
@@ -1290,7 +1291,6 @@ relics:
   StrangeSpoon:
     name: Strange Spoon
     description: 50% chance for Exhaust cards to be removed from play instead.
-
   StrikeDummy:
     name: Strike Dummy
     description: Cards containing "Strike" deal 3 additional damage.
@@ -1299,8 +1299,7 @@ relics:
     description: Every 3 times you shuffle your Drawpile, gain 2 Energy.
   TheCourier:
     name: The Courier
-    description: The merchant no longer runs out of Cards, Relics, or Potions and
-      his prices are reduced by 20%.
+    description: The merchant no longer runs out of Cards, Relics, or Potions and his prices are reduced by 20%.
   ToxicEgg:
     name: Toxic Egg
     description: Whenever you add a Skill to your deck, it is Upgraded.
@@ -1321,8 +1320,7 @@ relics:
     description: Whenever you Exhaust a Card, add a random Card to your hand.
   DuVuDoll:
     name: Du-Vu Doll
-    description: For each Curse in your deck, start each combat with 1 additional
-      Strength.
+    description: For each Curse in your deck, start each combat with 1 additional Strength.
   FossilizedHelix:
     name: Fossilized Helix
     description: Prevent first time you would lose HP in combat.
@@ -1352,8 +1350,7 @@ relics:
     description: You can now remove Cards from your deck at Rest Sites.
   Pocketwatch:
     name: Pocketwatch
-    description: Whenever you play 3 or less Cards in a turn, draw 3 additional Cards
-      at start of your next turn.
+    description: Whenever you play 3 or less Cards in a turn, draw 3 additional Cards at start of your next turn.
   PrayerWheel:
     name: Prayer Wheel
     description: Normal enemies drop an additional Card reward.
@@ -1371,12 +1368,10 @@ relics:
     description: At start of each combat, gain 4 Plated Armor.
   Tingsha:
     name: Tingsha
-    description: Whenever you discard a card during your turn, deal 3 damage to a
-      random enemy for each card discarded.
+    description: Whenever you discard a card during your turn, deal 3 damage to a random enemy for each card discarded.
   Torii:
     name: Torii
-    description: Whenever you would receive 5 or less unblocked Attack damage, reduce
-      it to 1.
+    description: Whenever you would receive 5 or less unblocked Attack damage, reduce it to 1.
   ToughBandages:
     name: Tough Bandages
     description: Whenever you discard a Card during your turn, gain 3 Block.
@@ -1403,19 +1398,16 @@ relics:
     description: Replaces Burning Blood. At end of combat, heal 12 HP.
   BustedCrown:
     name: Busted Crown
-    description: Gain 1 Energy at start of each turn. On Card Reward screens, you
-      have 2 fewer Cards to choose from.
+    description: Gain 1 Energy at start of each turn. On Card Reward screens, you have 2 fewer Cards to choose from.
   CallingBell:
     name: Calling Bell
     description: Upon pickup, obtain a unique Curse and 3 Relics.
   CoffeeDripper:
     name: Coffee Dripper
-    description: Gain 1 Energy at start of each turn. You can no longer Rest at Rest
-      Sites.
+    description: Gain 1 Energy at start of each turn. You can no longer Rest at Rest Sites.
   CursedKey:
     name: Cursed Key
-    description: Gain 1 Energy at start of each turn. Whenever you open a non-boss
-      chest, obtain a Curse.
+    description: Gain 1 Energy at start of each turn. Whenever you open a non-boss chest, obtain a Curse.
   Ectoplasm:
     name: Ectoplasm
     description: Gain 1 Energy at start of each turn. You can no longer gain Gold.
@@ -1424,15 +1416,13 @@ relics:
     description: Upon pickup, remove 2 Cards from your Deck.
   FusionHammer:
     name: Fusion Hammer
-    description: Gain 1 Energy at start of each turn. You can no longer Smith at Rest
-      Sites.
+    description: Gain 1 Energy at start of each turn. You can no longer Smith at Rest Sites.
   HoveringKite:
     name: Hovering Kite
     description: The first time you discard a Card each turn, gain 1 Energy.
   MarkOfPain:
     name: Mark of Pain
-    description: Gain 1 Energy at start of each turn. Start combats with 2 Wounds
-      in your Drawpile.
+    description: Gain 1 Energy at start of each turn. Start combats with 2 Wounds in your Drawpile.
   PandorasBox:
     name: Pandora's Box
     description: Transform all Strikes and Defends.
@@ -1441,15 +1431,13 @@ relics:
     description: Gain 1 Energy at start of each turn. ALL enemies start with 1 Strength.
   RingOfSerpent:
     name: Ring of Serpent
-    description: Replaces Ring of Snake. At start of your turn, draw 1 additional
-      Card.
+    description: Replaces Ring of Snake. At start of your turn, draw 1 additional Card.
   RunicCube:
     name: Runic Cube
     description: Whenever you lose HP, draw 1 card.
   RunicDome:
     name: Runic Dome
-    description: Gain 1 Energy at start of each turn. You can no longer see enemy
-      Intents.
+    description: Gain 1 Energy at start of each turn. You can no longer see enemy Intents.
   RunicPyramid:
     name: Runic Pyramid
     description: At end of your turn, you no longer discard your hand.
@@ -1464,12 +1452,10 @@ relics:
     description: Gain 1 Energy at start of each turn. You can no longer obtain Potions.
   TinyHouse:
     name: Tiny House
-    description: Obtain 1 Potion. Gain 50 Gold. Raise your Max HP by 5. Obtain 1 Card.
-      Upgrade 1 Random Card.
+    description: Obtain 1 Potion. Gain 50 Gold. Raise your Max HP by 5. Obtain 1 Card. Upgrade 1 Random Card.
   VelvetChoker:
     name: Velvet Choker
-    description: Gain 1 Energy at start of each turn. You cannot play more than 6
-      Cards per turn.
+    description: Gain 1 Energy at start of each turn. You cannot play more than 6 Cards per turn.
   WristBlade:
     name: Wrist Blade
     description: Attacks that cost 0 Energy deal 4 additional damage.
@@ -1499,17 +1485,15 @@ relics:
     description: Status Cards can now be played. Playing a Status will Exhaust Card.
   MembershipCard:
     name: Membership Card
-    description: 50% discount on all products in Shop!
+    description: 商店所有产品 50% 折扣！
   PrismaticShard:
     name: Prismatic Shard
-    description: Combat reward screens now contain colorless cards and cards from
-      other colors.
+    description: Combat reward screens now contain colorless cards and cards from other colors.
   Orrery:
     name: Orrery
     description: Choose and add 5 Cards to your deck.
   PotionBeltShop:
-    name: Potion Belt (Shop)
-    description: Upon pick up, gain 2 Potion slots.
+    name: Potion Belt
   SlingOfCourage:
     name: Sling of Courage
     description: Start each Elite combat with 2 Strength. (Does not work against Bosses).
@@ -1545,16 +1529,14 @@ relics:
     description: Start each combat with 3 Strength that is lost at end of your turn.
   Necronomicon:
     name: Necronomicon
-    description: The first Attack played each turn that costs 2 or more is played
-      twice. When you take this Relic, become Cursed.
+    description: The first Attack played each turn that costs 2 or more is played twice. When you take this Relic, become
+      Cursed.
   NilrysCodex:
     name: Nilry's Codex
-    description: At end of each turn, you can choose 1 of 3 random Cards to shuffle
-      into your Drawpile.
+    description: At end of each turn, you can choose 1 of 3 random Cards to shuffle into your Drawpile.
   Enchiridion:
     name: Enchiridion
-    description: At start of each combat, add a random Power to your hand. It costs
-      0 Energy until end of turn.
+    description: At start of each combat, add a random Power to your hand. It costs 0 Energy until end of turn.
   NeowsLament:
     name: Neow's Lament
     description: Enemies in your first 3 combats will have 1 HP.
@@ -1569,15 +1551,13 @@ relics:
     description: Whenever you enter an Event room, gain 50 Gold.
   WarpedTongs:
     name: Warped Tongs
-    description: At start of your turn, Upgrade a random Card in your hand for rest
-      of combat.
+    description: At start of your turn, Upgrade a random Card in your hand for rest of combat.
   RedMask:
     name: Red Mask
     description: At start of each combat, apply 1 Weakness to ALL enemies.
   NlothGift:
     name: N'loth's Gift
     description: Triples chance of receiving rare Cards as monster rewards.
-
   RedKey:
     name: Red Key
     description: You need to obtain Red, Green and Blue Key. Why? Find out yourself!
@@ -1607,19 +1587,7 @@ relics:
     description: At start of your turn, gain 2 Strength and ALL enemies gain 1 Strength.
   OrangePellets:
     name: Orange Pellets
-    description: Whenever you play a Power, Attack, and Skill in same turn, remove
-      all of your Debuffs.
-  BottledFlame:
-    name: Bottled Flame
-  MembershipCard:
-    name: Membership Card
-  MoltenEgg:
-    name: Molten Egg
-  OrnamentalFan:
-    name: Ornamental Fan
-  PotionBeltShop:
-    name: Potion Belt
-
+    description: Whenever you play a Power, Attack, and Skill in same turn, remove all of your Debuffs.
 enemies:
   Cultist:
     name: Cultist
@@ -1632,6 +1600,7 @@ enemies:
         description: Deal {damage} damage.
       attack:
         description: Deal {damage} damage
+        name: 攻击
   JawWorm:
     name: Jaw Worm
     intentions:
@@ -1697,8 +1666,7 @@ enemies:
     intentions:
       corrosive_spit:
         name: Corrosive Spit
-        description: Deal {damage} damage. Add {cards} Slimed cards to your discard
-          pile.
+        description: Deal {damage} damage. Add {cards} Slimed cards to your discard pile.
       lick:
         name: Lick
         description: Apply {amount} Weak to you.
@@ -1713,8 +1681,7 @@ enemies:
     intentions:
       corrosive_spit:
         name: Corrosive Spit
-        description: Deal {damage} damage. Add {cards} Slimed cards to your discard
-          pile.
+        description: Deal {damage} damage. Add {cards} Slimed cards to your discard pile.
       lick:
         name: Lick
         description: Apply {amount} Weak to you.
@@ -1729,8 +1696,7 @@ enemies:
     intentions:
       corrosive_spit:
         name: Corrosive Spit
-        description: Deal {damage} damage. Add {cards} Slimed cards to your discard
-          pile.
+        description: Deal {damage} damage. Add {cards} Slimed cards to your discard pile.
       lick:
         name: Lick
         description: Apply {amount} Weak to you.
@@ -1804,6 +1770,21 @@ enemies:
       divider:
         name: Divider
         description: Deal {damage} damage {attack_times} times.
+      activate:
+        name: 激活
+        description: 正在蓄力...
+      sear:
+        name: 灼烧
+        description: 造成 {damage} 点伤害。向你的弃牌堆添加 1 层燃烧。
+      tackle:
+        name: 擒拿
+        description: 造成 {damage} 点伤害两次。
+      inflame:
+        name: 激怒
+        description: 获得 {strength_gain} 点力量。
+      inferno:
+        name: 地狱火
+        description: 造成 {damage} 点伤害。消耗你手牌和弃牌堆中的所有燃烧。
   Lagavulin:
     name: Lagavulin
     intentions:
@@ -1976,6 +1957,9 @@ enemies:
       Beam:
         name: Beam
         description: Deal {damage} damage twice.
+      Square of Protection:
+        name: 防护方阵
+        description: 所有敌人获得 {block} 点格挡。
   Deca:
     name: Deca
     intentions:
@@ -2039,18 +2023,15 @@ enemies:
   Nemesis:
     name: Nemesis
     intentions:
-      Attack:
-        name: Attack
+      Tri Attack:
+        name: Tri Attack
+        description: Deal {damage} damage 3 times.
+      Tri Burn:
+        name: Tri Burn
+        description: Add {amount} Burn to your discard pile.
+      Scythe:
+        name: Scythe
         description: Deal {damage} damage.
-      Hex:
-        name: Hex
-        description: Apply 1 Hex to you.
-      Torment:
-        name: Torment
-        description: Add 2 Dazed to your discard pile.
-      Invisible:
-        name: Invisible
-        description: Become intangible.
   Reptomancer:
     name: Reptomancer
     intentions:
@@ -2303,12 +2284,15 @@ enemies:
   GremlinLeader:
     name: Gremlin Leader
     intentions:
-      rally:
-        name: Rally
-        description: Summon Gremlins
-      attack:
-        name: Attack
-        description: Deal {damage} damage
+      Encourage:
+        name: Encourage
+        description: All enemies gain {strength_gain} Strength. Other enemies gain {block} Block.
+      Stab:
+        name: Stab
+        description: Deal {damage} damage {hits} times.
+      Rally!:
+        name: Rally!
+        description: Summon 2 random Gremlins.
   Taskmaster:
     name: Taskmaster
     intentions:
@@ -2382,151 +2366,92 @@ rooms:
     elite_enter: You enter an elite battle!
     enter: You enter combat!
   RestRoom:
-    RestRoom:
-      title: Rest Site
-      rest: Rest (Recover 30% HP)
-      smith: Smith (Upgrade a card)
-      lift: Lift (Gain 1 Strength)
-      toke: Toke (Remove a card)
-      dig: Dig (Obtain a random relic)
-      skip: Skip
-    skip:
-      name: Skip
-      description: Skip resting
-    smith:
-      name: Smith
-      description: Upgrade a card
-  TreasureRoom:
-    treasure:
-      title: Treasure Room
-      open_chest: Open chest
-      skip: Skip
-  rest:
-    enter: You enter a peaceful rest site.
-    rest: You rest and recover {amount} HP.
-    smith: You upgrade a card.
-    recall: You recall the Ruby Key.
-    options:
-      rest: Rest ({amount} HP)
-      smith: Smith (Upgrade a card)
-      recall: Recall (Ruby Key)
-      leave: Leave
+    skip: Skip
+    smith: Smith (Upgrade a card)
     title: Rest Site
-  treasure:
-    enter: You discovered a treasure room!
+    rest: Rest (Recover 30% HP)
+    lift: Lift (Gain 1 Strength)
+    toke: Toke (Remove a card)
+    dig: Dig (Obtain a random relic)
+    recall: 回忆（获得红宝石钥匙）
+    enter: 你进入一个安静的休息点。
+  TreasureRoom:
     title: Treasure Room
-    boss_title: Boss Treasure
-    open_chest: Open {chest_type} chest
-    open_small_chest: Open small chest
-    open_boss_chest: Open boss chest
-    leave: Leave
-  shop:
-    enter: You enter a mysterious shop.
-    title: Shop
+    open_chest: Open chest
+    skip: Skip
+    enter: 你发现了一个宝藏房间！
   ShopRoom:
-    ShopRoom:
-      title: Shop
-      buy_card: Buy {card} ({price} gold)
-      buy_relic: Buy {relic} ({price} gold)
-      buy_potion: Buy {potion} ({price} gold)
-      remove_card: Remove a card ({price} gold)
-      leave: Leave
-
+    title: Shop
+    buy_card: Buy {card} ({price} gold)
+    buy_relic: Buy {relic} ({price} gold)
+    buy_potion: Buy {potion} ({price} gold)
+    remove_card: Remove a card ({price} gold)
+    leave: Leave
+    enter: 你进入了一个神秘的商店。
+  EventRoom:
+    title: 事件
+    enter: 你遇到了一个事件。
 ai:
-  decision_system_prompt: |
-    You are an AI player for Slay the Spire game.
-    Based on the current game state, make the optimal choice from the given options.
-    
-    ## Chain-of-Thought Constraints (CRITICAL):
-    - Keep thinking concise, limit to 3-5 short sentences
-    - Focus directly on key decision factors, no redundant analysis
-    - Use "Problem → Key Factors → Conclusion" logic
-    - DO NOT repeat known information
-    - DO NOT list detailed analysis of all options
-    - Good example: "HP 30% low, elite risky, choose rest site" (1 sentence only)
-    - Bad example: "Let me analyze... first I have 30% HP... then elite has these risks... option 1 is... option 2 is..." (too long)
-    
-    Game context:
-    - This is a roguelike deck-building game
-    - Goal is to survive and defeat enemies
-    - Manage health, energy, cards, relics and other resources
-    
-    ## ⚠️ MAP SELECTION RISK ASSESSMENT (CRITICALLY IMPORTANT):
-    
-    **ELITE rooms are HIGH RISK, HIGH REWARD choices!**
-    - Elite enemies are MUCH stronger than regular enemies and can cause massive HP loss or death
-    - Rewards: Relics and better card rewards
-    
-    **DO NOT select Elite rooms when:**
-    - Current HP is below 50% or below 30 HP
-    - Deck lacks quality attack cards (Strike damage is insufficient)
-    - Deck lacks defense cards (too few Block cards)
-    - No strong relics (Burning Blood only heals 6 HP)
-    - Just finished multiple fights, condition is poor
-    - Safer options available (Rest sites, Shops)
-    
-    **Only consider Elite rooms when:**
-    - HP is sufficient (>60% or >40 HP)
-    - Deck has solid combat capability
-    - Have healing options (potions, relics, lifesteal cards)
-    - Have strong relic bonuses
-    - No urgent needs (don't need immediate rest for HP)
-    
-    **Priority ranking (SURVIVAL FIRST):**
-    1. Rest Site (MUST prioritize when low HP) > Shop > Treasure > Monster > Elite
-    2. High HP and strong deck: Can consider Elite for relics
-    3. NEVER challenge Elite with low HP!
-    
-    ## Combat Strategy Guidelines:
-    - **Enemy Intentions**: Check what enemies will do next turn (Attack/Defend/Buff)
-      - If enemy intends to attack for high damage, prioritize Block cards
-      - If enemy is vulnerable or low HP, consider attacking to finish them
-      - If enemy is buffing, consider applying debuffs or finishing quickly
-    
-    - **Energy Management**: 
-      - Don't waste energy - if no good plays remain, END TURN
-      - Priority: Defense > Damage > Utility when HP is low
-      - Use all energy efficiently when you have good cards
-    
-    - **Card Priority**:
-      - Block cards when enemy attack is incoming and you have low HP
-      - Attack cards when enemy is vulnerable or low HP
-      - Power cards for long-term advantage
-      - Skill cards for utility (draw, energy gain)
-    
-    - **When to End Turn**:
-      - No more playable cards or remaining cards are not worth playing
-      - Have Block but enemy isn't attacking
-      - Better to save cards for next turn
-    
-    ## Output Format:
-    Output ONLY the selected option numbers (1-indexed). NO explanation, NO text.
-    Examples: "1" or "2" or "3" for single selection, "1, 3, 5" for multiple.
-  
-  selection_single: |
-    **IMPORTANT: This is a SINGLE SELECTION task.**
+  decision_system_prompt: "You are an AI player for Slay the Spire game.\nBased on the current game state, make the optimal\
+    \ choice from the given options.\n\n## Chain-of-Thought Constraints (CRITICAL):\n- Keep thinking concise, limit to 3-5\
+    \ short sentences\n- Focus directly on key decision factors, no redundant analysis\n- Use \"Problem → Key Factors → Conclusion\"\
+    \ logic\n- DO NOT repeat known information\n- DO NOT list detailed analysis of all options\n- Good example: \"HP 30% low,\
+    \ elite risky, choose rest site\" (1 sentence only)\n- Bad example: \"Let me analyze... first I have 30% HP... then elite\
+    \ has these risks... option 1 is... option 2 is...\" (too long)\n\nGame context:\n- This is a roguelike deck-building\
+    \ game\n- Goal is to survive and defeat enemies\n- Manage health, energy, cards, relics and other resources\n\n## ⚠️ MAP\
+    \ SELECTION RISK ASSESSMENT (CRITICALLY IMPORTANT):\n\n**ELITE rooms are HIGH RISK, HIGH REWARD choices!**\n- Elite enemies\
+    \ are MUCH stronger than regular enemies and can cause massive HP loss or death\n- Rewards: Relics and better card rewards\n\
+    \n**DO NOT select Elite rooms when:**\n- Current HP is below 50% or below 30 HP\n- Deck lacks quality attack cards (Strike\
+    \ damage is insufficient)\n- Deck lacks defense cards (too few Block cards)\n- No strong relics (Burning Blood only heals\
+    \ 6 HP)\n- Just finished multiple fights, condition is poor\n- Safer options available (Rest sites, Shops)\n\n**Only consider\
+    \ Elite rooms when:**\n- HP is sufficient (>60% or >40 HP)\n- Deck has solid combat capability\n- Have healing options\
+    \ (potions, relics, lifesteal cards)\n- Have strong relic bonuses\n- No urgent needs (don't need immediate rest for HP)\n\
+    \n**Priority ranking (SURVIVAL FIRST):**\n1. Rest Site (MUST prioritize when low HP) > Shop > Treasure > Monster > Elite\n\
+    2. High HP and strong deck: Can consider Elite for relics\n3. NEVER challenge Elite with low HP!\n\n## Combat Strategy\
+    \ Guidelines:\n- **Enemy Intentions**: Check what enemies will do next turn (Attack/Defend/Buff)\n  - If enemy intends\
+    \ to attack for high damage, prioritize Block cards\n  - If enemy is vulnerable or low HP, consider attacking to finish\
+    \ them\n  - If enemy is buffing, consider applying debuffs or finishing quickly\n\n- **Energy Management**: \n  - Don't\
+    \ waste energy - if no good plays remain, END TURN\n  - Priority: Defense > Damage > Utility when HP is low\n  - Use all\
+    \ energy efficiently when you have good cards\n\n- **Card Priority**:\n  - Block cards when enemy attack is incoming and\
+    \ you have low HP\n  - Attack cards when enemy is vulnerable or low HP\n  - Power cards for long-term advantage\n  - Skill\
+    \ cards for utility (draw, energy gain)\n\n- **When to End Turn**:\n  - No more playable cards or remaining cards are\
+    \ not worth playing\n  - Have Block but enemy isn't attacking\n  - Better to save cards for next turn\n\n## Output Format:\n\
+    Output ONLY the selected option numbers (1-indexed). NO explanation, NO text.\nExamples: \"1\" or \"2\" or \"3\" for single\
+    \ selection, \"1, 3, 5\" for multiple.\n"
+  selection_single: '**IMPORTANT: This is a SINGLE SELECTION task.**
+
     You must select EXACTLY ONE option.
+
     Output format: Just the number (e.g., "2").
+
     DO NOT output multiple numbers like "1, 2" or "2, 3".
-  
-  selection_multiple: |
-    **This is a MULTI-SELECTION task.**
+
+    '
+  selection_multiple: '**This is a MULTI-SELECTION task.**
+
     You can select up to {max_select} options.
+
     Output format: Numbers separated by commas (e.g., "1, 3").
-  
-  decision_user_template: |
-    ## Decision Scenario
+
+    '
+  decision_user_template: '## Decision Scenario
+
     {title}
-    
+
+
     ## Game State
+
     {context}
-    
+
+
     ## Options
+
     {options}
-    
+
+
     Please output your selection (numbers):
 
-# === AI CONTEXT LABELS ===
+    '
 ai_context:
   player_status: Player Status
   hp: HP
@@ -2555,12 +2480,15 @@ ai_context:
   relics_for_sale: Relics for Sale
   potions_for_sale: Potions for Sale
   services: Services
-  remove_card_service: "Remove a card (First time: 50g, increases by 25g each time)"
+  remove_card_service: 'Remove a card (First time: 50g, increases by 25g each time)'
   price: Price
   shop_room: Shop Room
   rest_room: Rest Room
-  rest_options: "Options: Rest (Recover 30% HP) or Smith (Upgrade a card)"
+  rest_options: 'Options: Rest (Recover 30% HP) or Smith (Upgrade a card)'
   options: Options
   total: Total
-  select_one: "Select one option (output only the number, e.g. '2')"
-  card_stats_note: "Note: Attack and Block values in hand have been calculated with player and enemy abilities/relics effects, but other powers (like Weak, Vulnerable, Frail, etc.) have not yet been applied."
+  select_one: Select one option (output only the number, e.g. '2')
+  card_stats_note: 'Note: Attack and Block values in hand have been calculated with player and enemy abilities/relics effects,
+    but other powers (like Weak, Vulnerable, Frail, etc.) have not yet been applied.'
+rewards:
+  gold: 获得 {amount} 金币

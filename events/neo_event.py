@@ -4,7 +4,7 @@ Neo blessing event.
 from utils.result_types import BaseResult, GameStateResult, MultipleActionsResult, NoneResult
 from events.event_pool import register_event
 from actions.card import ChooseAddRandomCardAction, ChooseRemoveCardAction, ChooseTransformCardAction, ChooseUpgradeCardAction, AddRandomCardAction
-from actions.display import DisplayTextAction, SelectAction
+from actions.display import DisplayTextAction, InputRequestAction
 from actions.reward import AddGoldAction, AddRandomPotionAction, AddRandomRelicAction, AddRelicAction, AddRelicByNameAction, LoseGoldAction, LoseRelicAction
 from actions.combat import ModifyMaxHpAction, LoseHPAction
 from engine.game_state import game_state
@@ -44,7 +44,7 @@ class NeoEvent(Event):
                 actions.extend(basic_blessing_actions)
 
         # Execute actions using global queue
-        result = game_state.execute_all_actions()
+        result = game_state.drive_actions()
         if isinstance(result, GameStateResult):
             return result
 
@@ -71,7 +71,7 @@ class NeoEvent(Event):
         ]
         
         game_state.action_queue.add_action(
-            SelectAction(
+            InputRequestAction(
                 title=LocalStr("ui.choose_blessings"),
                 options=options
             )
@@ -219,7 +219,7 @@ class NeoEvent(Event):
             options = [card_blessing, non_card_blessing, mixed_blessing]
         
         game_state.action_queue.add_action(
-            SelectAction(
+            InputRequestAction(
                 title=LocalStr("ui.choose_blessings"),
                 options=options
             )

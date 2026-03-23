@@ -1,7 +1,7 @@
 """Test EventRoom basic functionality."""
 import pytest
 from rooms.event import EventRoom
-from actions.display import DisplayTextAction, SelectAction
+from actions.display import DisplayTextAction, InputRequestAction
 from utils.result_types import MultipleActionsResult, SingleActionResult, NoneResult
 from utils.registry import get_registered
 from utils.types import RoomType
@@ -37,7 +37,7 @@ class TestEventRoomBasic:
         assert get_registered("room", "EventRoom") is EventRoom
 
     def test_enter_with_multiple_events_returns_selection(self):
-        """When multiple events are available, room should return SelectAction."""
+        """When multiple events are available, room should return InputRequestAction."""
         room = EventRoom()
 
         class DummyEvent:
@@ -49,7 +49,7 @@ class TestEventRoomBasic:
 
         assert isinstance(result, MultipleActionsResult)
         assert isinstance(result.actions[0], DisplayTextAction)
-        assert isinstance(result.actions[1], SelectAction)
+        assert isinstance(result.actions[1], InputRequestAction)
         assert len(result.actions[1].options) == 2
 
     def test_trigger_event_marks_state(self):

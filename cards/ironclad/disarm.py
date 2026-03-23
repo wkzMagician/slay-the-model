@@ -20,9 +20,9 @@ class Disarm(Card):
     target_type = TargetType.ENEMY_SELECT
 
     base_cost = 1
-    base_magic = {"strength_debuff": 2}
+    base_magic = {"strength_debuff": 2, "strength": 2}
 
-    upgrade_magic = {"strength_debuff": 3}
+    upgrade_magic = {"strength_debuff": 3, "strength": 3}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

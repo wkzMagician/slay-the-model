@@ -6,7 +6,7 @@ Relic with 50% (100% A15+) Writhe curse chance.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddRandomRelicAction
 from localization import LocalStr
@@ -45,7 +45,7 @@ class TheMausoleum(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.the_mausoleum.title'),
             options=options
         ))

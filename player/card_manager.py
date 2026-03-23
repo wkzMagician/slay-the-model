@@ -22,6 +22,11 @@ class CardManager:
             'exhaust_pile': [],
         }
 
+    @property
+    def deck(self) -> List[Card]:
+        """Compatibility alias for older tests and call sites."""
+        return self.piles['deck']
+
     def reset_for_combat(self) -> None:
         # Gather all cards from all piles (they belong to the player's deck)
         

@@ -6,7 +6,7 @@ A choice event where you can remove a card or upgrade all Strikes and Defends.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import ChooseRemoveCardAction
 from actions.base import LambdaAction
 from localization import LocalStr
@@ -53,7 +53,7 @@ class AncientWriting(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.ancient_writing.title'),
             options=options
         ))

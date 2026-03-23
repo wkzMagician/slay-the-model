@@ -2,7 +2,7 @@
 from typing import List
 from actions.base import Action, LambdaAction
 from actions.card import AddCardAction
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from localization import LocalStr
 from player.player import Player
 from potions.base import Potion
@@ -61,7 +61,7 @@ class StancePotion(Potion):
                 actions=[LambdaAction(func=lambda: targets[0].status_manager.change_to_status(StatusType.WRATH))]
             )
         ]
-        return [SelectAction(options=options, title=LocalStr("stance.choose_stance"))]
+        return [InputRequestAction(options=options, title=LocalStr("stance.choose_stance"))]
 
 # Rare Potions
 @register("potion")

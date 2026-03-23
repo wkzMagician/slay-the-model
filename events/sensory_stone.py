@@ -6,7 +6,7 @@ Colorless cards for HP trade.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddRandomCardAction
 from actions.combat import LoseHPAction
 from localization import LocalStr
@@ -52,7 +52,7 @@ class SensoryStone(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.sensory_stone.title'),
             options=options
         ))

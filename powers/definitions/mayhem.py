@@ -32,7 +32,7 @@ class MayhemPower(Power):
 
         # Get top card from draw pile
         if game_state.player and hasattr(game_state.player, "card_manager"):
-            draw_cards = list(game_state.player.card_manager.get_pile("draw"))
+            draw_cards = list(game_state.player.card_manager.get_pile("draw_pile"))
             if draw_cards:
                 top_card = draw_cards[0]  # ? First card is top
                 return [PlayCardAction(card=top_card, is_auto=True, ignore_energy=True)]

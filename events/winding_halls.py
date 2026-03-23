@@ -6,7 +6,7 @@ Trade-offs for cards/heal (Madness, heal + Writhe, or lose HP).
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.combat import HealAction, LoseHPAction, ModifyMaxHpAction
 from localization import LocalStr
@@ -60,7 +60,7 @@ class WindingHalls(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.winding_halls.title'),
             options=options
         ))

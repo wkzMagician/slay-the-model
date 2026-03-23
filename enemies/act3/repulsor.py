@@ -19,7 +19,7 @@ class Repulsor(Enemy):
     enemy_type = EnemyType.NORMAL
     
     def __init__(self):
-        super().__init__(hp_range=(29, 35)) # todo: 31-38 a7
+        super().__init__(hp_range=(40, 45))
         self._turn_count = 0
         self._last_was_attack = False
         

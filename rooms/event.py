@@ -33,6 +33,8 @@ class EventRoom(Room):
         
         # The randomly selected event for this room (only one)
         self.selected_event = None
+        self.available_events = []
+        self.triggered_event = None
     
     def init(self):
         """
@@ -51,6 +53,7 @@ class EventRoom(Room):
         
         if selected_events:
             self.selected_event = selected_events[0]
+            self.available_events = selected_events
         else:
             # No events available, create a fallback event
             self._create_fallback_event()
@@ -67,6 +70,24 @@ class EventRoom(Room):
             text_key="rooms.event.enter",
             default="You encounter a mysterious event...",
         )
+
+        if self.available_events and len(self.available_events) > 1:
+            from actions.display import InputRequestAction
+            from utils.option import Option
+            from actions.base import LambdaAction
+
+            options = []
+            for event in self.available_events:
+                options.append(
+                    Option(
+                        name=event.local("name") if hasattr(event, "local") else str(event),
+                        actions=[LambdaAction(func=self._select_event, args=[event])],
+                    )
+                )
+            return MultipleActionsResult([display_action, InputRequestAction(options=options)])
+
+        if self.available_events and not self.selected_event:
+            self.selected_event = self.available_events[0]
 
         # Check if we have an event
         if not self.selected_event:
@@ -117,7 +138,10 @@ class EventRoom(Room):
                 from actions.display import DisplayTextAction
 
                 gold_gain = 10 + (game_state.current_floor * 5)
-                game_state.player.gold += gold_gain
+                player = getattr(game_state, "player", None)
+                current_gold = getattr(player, "gold", None)
+                if isinstance(current_gold, (int, float)):
+                    player.gold += gold_gain
 
                 return SingleActionResult(
                     DisplayTextAction(
@@ -126,7 +150,21 @@ class EventRoom(Room):
                     )
                 )
 
-        self.selected_event = FallbackEvent()
+        fallback = FallbackEvent()
+        self.selected_event = fallback
+        self.available_events = [fallback]
+
+    def _select_event(self, event):
+        self.selected_event = event
+        result = self._trigger_event(event)
+        if isinstance(result, SingleActionResult):
+            from engine.game_state import game_state
+
+            game_state.action_queue.add_action(result.action, to_front=True)
+        elif isinstance(result, MultipleActionsResult):
+            from engine.game_state import game_state
+
+            game_state.action_queue.add_actions(result.actions, to_front=True)
 
     def _merge_display_with_result(
         self, display_action: DisplayTextAction, event_result: BaseResult

@@ -8,7 +8,7 @@ import random
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddGoldAction, AddRandomRelicAction
 from actions.combat import StartFightAction
 from utils.registry import get_registered
@@ -143,7 +143,7 @@ class DeadAdventurer(Event):
             actions=[LambdaAction(lambda: self.end_event())]
         ))
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.dead_adventurer.title'),
             options=options
         ))

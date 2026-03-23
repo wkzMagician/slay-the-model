@@ -12,7 +12,7 @@ from utils.result_types import BaseResult, MultipleActionsResult
 from localization import t
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import RemoveCardAction
 from actions.combat import HealAction, ModifyMaxHpAction
 from actions.reward import AddRelicAction
@@ -77,7 +77,7 @@ class BonfireSpirits(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.bonfire_spirits.offer'),
             options=options
         ))

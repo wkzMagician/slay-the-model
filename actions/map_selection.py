@@ -3,7 +3,7 @@ Map selection action for choosing next node to visit.
 """
 from typing import List, Optional
 from actions.base import Action
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from utils.result_types import BaseResult, NoneResult, SingleActionResult
 from map.map_node import MapNode
 from utils.option import Option
@@ -93,9 +93,9 @@ class SelectMapNodeAction(Action):
     
     def _make_decision(self, map_manager, available_moves: List):
         """
-        Make decision in human mode by displaying options via SelectAction.
+        Make decision in human mode by displaying options via InputRequestAction.
         
-        This creates a SelectAction with options for each available move.
+        This creates a InputRequestAction with options for each available move.
         When the player selects an option, the corresponding MoveToMapNodeAction
         will be executed.
         
@@ -130,8 +130,8 @@ class SelectMapNodeAction(Action):
         # todo: 在 ai 模式下，获取额外的上下文
         # get_map_context_for_ai
         
-        # Return SelectAction to be added to caller's action_queue
-        select_action = SelectAction(
+        # Return InputRequestAction to be added to caller's action_queue
+        select_action = InputRequestAction(
             title=t("ui.select_move", default="Select your next move"),
             options=options
         )

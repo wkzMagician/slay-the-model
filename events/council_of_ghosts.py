@@ -6,7 +6,7 @@ Trade 50% Max HP for 5 Apparition cards (3 on A15+).
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.combat import LoseMaxHPAction
 from localization import LocalStr
@@ -46,7 +46,7 @@ class CouncilOfGhosts(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.council_of_ghosts.title'),
             options=options
         ))

@@ -16,10 +16,10 @@ class PerfectedStrike(Card):
 
     base_cost = 2
     base_damage = 6
-    base_magic = {"strike_damage": 2}
+    base_magic = {"strike_damage": 2, "damage_bonus": 2}
 
     upgrade_damage = 6
-    upgrade_magic = {"strike_damage": 3}
+    upgrade_magic = {"strike_damage": 3, "damage_bonus": 3}
 
     @property
     def damage(self) -> int:

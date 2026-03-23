@@ -6,7 +6,7 @@ Red Mask interaction (trade gold or wear for gold).
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddGoldAction, LoseGoldAction, AddRelicAction
 from localization import LocalStr
 from utils.option import Option
@@ -60,7 +60,7 @@ class TombOfLordRedMask(Event):
                 )
             ])
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.tomb_of_lord_red_mask.title'),
             options=options
         ))

@@ -7,7 +7,7 @@ import random
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddRandomRelicAction
 from actions.combat import LoseHPAction
 from localization import LocalStr
@@ -62,7 +62,7 @@ class ScrapOoze(Event):
             actions=[]
         ))
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.scrap_ooze.title'),
             options=options
         ))

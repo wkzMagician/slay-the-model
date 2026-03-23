@@ -46,7 +46,7 @@ class TestDualWield(unittest.TestCase):
         # Import the action class
         from actions.card import ChooseCopyCardAction
         from utils.result_types import SingleActionResult
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         
         # Setup
         player = self.helper.create_player(energy=3)
@@ -72,11 +72,11 @@ class TestDualWield(unittest.TestCase):
         # Execute the action
         result = action.execute()
         
-        # The action should return a SingleActionResult with a SelectAction
+        # The action should return a SingleActionResult with a InputRequestAction
         self.assertIsInstance(result, SingleActionResult)
-        self.assertIsInstance(result.action, SelectAction)
+        self.assertIsInstance(result.action, InputRequestAction)
         
-        # The SelectAction should have options only for Attack and Power cards (2 options)
+        # The InputRequestAction should have options only for Attack and Power cards (2 options)
         options = result.action.options
         self.assertEqual(len(options), 2, "Should only have options for Attack and Power cards, not Skill cards")
         
@@ -93,7 +93,7 @@ class TestDualWield(unittest.TestCase):
         # Import the action class
         from actions.card import ChooseCopyCardAction
         from utils.result_types import SingleActionResult
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         
         # Create a mock game state with different card types in hand
         player = self.helper.create_player(energy=3)
@@ -115,9 +115,9 @@ class TestDualWield(unittest.TestCase):
         # Execute the action
         result = action.execute()
         
-        # The action should return a SingleActionResult with a SelectAction
+        # The action should return a SingleActionResult with a InputRequestAction
         self.assertIsInstance(result, SingleActionResult)
-        self.assertIsInstance(result.action, SelectAction)
+        self.assertIsInstance(result.action, InputRequestAction)
         
         # Without filter, should have 3 options (all cards)
         options = result.action.options

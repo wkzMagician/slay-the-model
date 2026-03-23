@@ -1,6 +1,8 @@
-from typing import List
-from actions.base import Action
+from typing import List, TYPE_CHECKING
 from localization import BaseLocalStr
+
+if TYPE_CHECKING:
+    from actions.base import Action
 
 
 class Option:
@@ -12,7 +14,7 @@ class Option:
         enabled (bool): 选项是否可选，默认为True
     """
 
-    def __init__(self, name: BaseLocalStr, actions: List[Action], enabled: bool = True):
+    def __init__(self, name: BaseLocalStr, actions: List["Action"], enabled: bool = True):
         self.name = name
         self.actions = actions
         self.enabled = enabled

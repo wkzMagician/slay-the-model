@@ -46,6 +46,7 @@ from powers.definitions.enrage import EnragePower
 from powers.definitions.entangled import EntangledPower
 from powers.definitions.curiosity import CuriosityPower
 from powers.definitions.draw_reduction import DrawReductionPower
+from powers.definitions.constricted import ConstrictedPower
 from powers.definitions.flying import FlyingPower
 from powers.definitions.hex import HexPower
 from powers.definitions.focus import FocusPower
@@ -100,6 +101,7 @@ __all__ = [
     "EntangledPower",
     "CuriosityPower",
     "DrawReductionPower",
+    "ConstrictedPower",
     "StrengthUpPower",
     "FadingPower",
     "ShiftingPower",

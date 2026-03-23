@@ -19,9 +19,9 @@ class Rupture(Card):
     rarity = RarityType.UNCOMMON
 
     base_cost = 1
-    base_magic = {"strength_gain": 1}
+    base_magic = {"strength_gain": 1, "strength": 1}
 
-    upgrade_magic = {"strength_gain": 2}
+    upgrade_magic = {"strength_gain": 2, "strength": 2}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

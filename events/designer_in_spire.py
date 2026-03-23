@@ -6,7 +6,7 @@ Gold for deck services (upgrade, remove, transform).
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import ChooseRemoveCardAction, ChooseUpgradeCardAction, ChooseTransformCardAction, UpgradeRandomCardAction, TransformRandomCardAction
 from actions.reward import LoseGoldAction
 from actions.combat import LoseHPAction
@@ -82,7 +82,7 @@ class DesignerInSpire(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.designer_in_spire.title'),
             options=options
         ))

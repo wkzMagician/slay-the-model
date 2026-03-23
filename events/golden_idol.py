@@ -6,7 +6,7 @@ A relic event with trap consequences. Taking the idol triggers a trap.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddRelicAction
 from actions.combat import LoseHPAction, ModifyMaxHpAction
@@ -42,7 +42,7 @@ class GoldenIdolEvent(Event):
                 actions=[
                     AddRelicAction(relic=GoldenIdol()),
                     # Triggers trap - player must choose:
-                    SelectAction(
+                    InputRequestAction(
                         title=LocalStr('events.golden_idol.trap'),
                         options=[
                             Option(
@@ -67,7 +67,7 @@ class GoldenIdolEvent(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.golden_idol.title'),
             options=options
         ))

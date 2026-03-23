@@ -6,7 +6,7 @@ A shrine that allows the player to duplicate a card in their deck.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import ChooseCopyCardAction
 from localization import LocalStr
 from utils.option import Option
@@ -36,7 +36,7 @@ class Duplicator(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.duplicator.title'),
             options=options
         ))

@@ -4,7 +4,7 @@ from actions.base import Action
 from actions.card import ExhaustCardAction
 from actions.combat import ApplyPowerAction, HealAction
 from powers.definitions.metallicize import MetallicizePower
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from potions.base import Potion
 from utils.types import RarityType
 from utils.option import Option
@@ -41,7 +41,7 @@ class Elixir(Potion):
 
     def on_use(self, targets) -> List[Action]:
         from actions.card import ExhaustCardAction
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         from engine.game_state import game_state
         from localization import LocalStr
         
@@ -55,7 +55,7 @@ class Elixir(Potion):
         
         # Let player choose which cards to exhaust (multi-select mode)
         # Use max_select=-1 to allow selecting all hand cards
-        return [SelectAction(
+        return [InputRequestAction(
             title=self.local("name").resolve(),
             options=options,
             max_select=-1,  # Allow selecting all options

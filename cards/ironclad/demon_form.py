@@ -19,9 +19,9 @@ class DemonForm(Card):
     rarity = RarityType.RARE
 
     base_cost = 3
-    base_magic = {"strength_per_turn": 2}
+    base_magic = {"strength_per_turn": 2, "strength": 2}
 
-    upgrade_magic = {"strength_per_turn": 3}
+    upgrade_magic = {"strength_per_turn": 3, "strength": 3}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

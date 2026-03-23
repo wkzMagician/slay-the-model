@@ -3,7 +3,7 @@ from typing import List
 from actions.base import Action, LambdaAction
 from actions.card import ChooseAddRandomCardAction, ChooseReplaceCardAction, DiscardCardAction, DrawCardsAction
 from actions.combat import DealDamageAction, GainBlockAction, GainEnergyAction, ApplyPowerAction, HealAction
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from actions.misc import EscapeAction
 from actions.reward import AddRandomPotionAction
 from potions.base import Potion
@@ -422,7 +422,7 @@ class LiquidMemories(Potion):
     def on_use(self, targets) -> List[Action]:
         from actions.card import AddCardAction
         from actions.card import RemoveCardAction
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         from engine.game_state import game_state
         from localization import LocalStr
         
@@ -442,7 +442,7 @@ class LiquidMemories(Potion):
         ))
         
         # Let player choose which card to return to hand
-        return [SelectAction(title="Liquid Memories", options=options)]
+        return [InputRequestAction(title="Liquid Memories", options=options)]
 
 @register("potion")
 class RegenPotion(Potion):

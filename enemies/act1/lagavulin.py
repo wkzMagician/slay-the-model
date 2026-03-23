@@ -19,7 +19,7 @@ class Lagavulin(Enemy):
         if ascension >= 8:
             hp = random.randint(112, 115)
         else:
-            hp = random.randint(109, 111)
+            hp = 110
         
         super().__init__(hp_range=(hp, hp))
         self.ascension = ascension

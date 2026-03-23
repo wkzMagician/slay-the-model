@@ -6,7 +6,7 @@ HP for random boss relic (book type).
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddRandomRelicAction
 from utils.types import RarityType
 from actions.combat import LoseHPAction
@@ -82,7 +82,7 @@ class CursedTome(Event):
             actions=[]
         ))
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.cursed_tome.title'),
             options=options
         ))

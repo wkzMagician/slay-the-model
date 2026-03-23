@@ -1,17 +1,17 @@
 import pytest
 
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from utils.option import Option
 
 
-class TestSelectAction:
+class TestInputRequestAction:
     def test_build_selected_options_keeps_original_index(self):
         options = [
             Option(name="A", actions=[]),
             Option(name="B", actions=[]),
             Option(name="C", actions=[]),
         ]
-        action = SelectAction(title="test", options=options)
+        action = InputRequestAction(title="test", options=options)
 
         selected = action._build_selected_options(options, [2, 0])
 
@@ -25,7 +25,7 @@ class TestSelectAction:
             Option(name="B", actions=[]),
             Option(name="C", actions=[]),
         ]
-        action = SelectAction(title="test", options=options)
+        action = InputRequestAction(title="test", options=options)
         selected = action._build_selected_options(options, [2, 0])
 
         action.show_choose(selected)

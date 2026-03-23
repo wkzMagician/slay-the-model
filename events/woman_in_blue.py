@@ -3,7 +3,7 @@ Event 5 - The Woman in Blue
 """
 from utils.result_types import BaseResult
 from events.base_event import Event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import LoseGoldAction, AddRandomPotionAction
 from actions.combat import LoseHPAction
 from events.event_pool import register_event
@@ -84,7 +84,7 @@ class WomanInBlueEvent(Event):
         ))
         
         # Display options and wait for selection
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr("events.woman_in_blue.title"),
             options=options
         ))

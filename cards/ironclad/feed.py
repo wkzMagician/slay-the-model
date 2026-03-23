@@ -23,8 +23,8 @@ class Feed(Card):
 
     upgrade_damage = 12
     
-    base_magic = {"max_health_gain": 3}
-    upgrade_magic = {"max_health_gain": 4}
+    base_magic = {"max_health_gain": 3, "max_hp": 3}
+    upgrade_magic = {"max_health_gain": 4, "max_hp": 4}
 
     def on_fatal(self, damage: int, target: Creature, card: Card, damage_type: str) -> List[Action]:
         """When this card kills an enemy, gain max HP"""
@@ -33,7 +33,11 @@ class Feed(Card):
 
         actions = []
         # Gain max HP on fatal kill
-        max_hp_gain = get_magic_value(self, "max_health_gain")
+        max_hp_gain = get_magic_value(
+            self,
+            "max_hp",
+            get_magic_value(self, "max_health_gain"),
+        )
         actions.append(ModifyMaxHpAction(
             target=game_state.player,
             amount=max_hp_gain

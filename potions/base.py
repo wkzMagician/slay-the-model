@@ -1,4 +1,4 @@
-import random
+﻿import random
 from typing import List, Optional
 from actions.base import Action
 from entities.creature import Creature
@@ -35,103 +35,103 @@ class Potion(Localizable):
         return []
     
     def info(self):
-        """
-        获取药水的完整信息显示
-        
-        返回格式：
-        PotionName
-        Description text
-        """
-        result = self.local("name") # + f"\n{t('ui.rarity_label', 'Rarity: {rarity}', rarity=self.rarity.name.title())}"
-        # if hasattr(self, 'category') and self.category:
-        #     result += f"\n{t('ui.category_label', 'Category: {category}', category=self.category)}"
-        result += "\n" + self._get_dynamic_description()
-        return result
+        """Return a stable human-readable potion summary."""
+        name = str(self.local("name")) if self.has_local("name") else self.__class__.__name__
+        rarity = t("ui.rarity_label", "Rarity: {rarity}", rarity=self.rarity.value)
+        category = t("ui.category_label", "Category: {category}", category=self.category)
+        description = str(self._get_dynamic_description()).strip()
+
+        lines = [f"{name} ({rarity})", category]
+        if description:
+            lines.append(description)
+        return "\n".join(lines)
     
     def _get_dynamic_description(self):
         """
-        获取药水描述并动态替换变量
+        鑾峰彇鑽按鎻忚堪骞跺姩鎬佹浛鎹㈠彉閲?
         
         Returns:
-            替换变量后的描述文本
+            鏇挎崲鍙橀噺鍚庣殑鎻忚堪鏂囨湰
         """
-        # 检查是否有描述
+        # 妫€鏌ユ槸鍚︽湁鎻忚堪
         if not self.has_local("description"):
             from localization import LocalStr
             return LocalStr(key="")
         
-        # 构建变量字典
+        # 鏋勫缓鍙橀噺瀛楀吀
         variables = {}
         
-        # 基础变量 - amount, damage, block, energy 等
+        # 鍩虹鍙橀噺 - amount, damage, block, energy 绛?
         if hasattr(self, 'amount'):
             variables['amount'] = self.amount
         if hasattr(self, '_amount'):
-            variables['damage'] = self.amount  # 爆炸药水等使用 amount 作为伤害
-            variables['block'] = self.amount  # 格挡药水
-            variables['energy'] = self.amount  # 能量药水
+            variables['damage'] = self.amount  # 鐖嗙偢鑽按绛変娇鐢?amount 浣滀负浼ゅ
+            variables['block'] = self.amount  # 鏍兼尅鑽按
+            variables['energy'] = self.amount  # 鑳介噺鑽按
         
-        # 特殊变量
+        # 鐗规畩鍙橀噺
         if hasattr(self, '__class__'):
             class_name = self.__class__.__name__
             
-            # 爆炸药水 - 使用 damage 变量
+            # 鐖嗙偢鑽按 - 浣跨敤 damage 鍙橀噺
             if class_name == "ExplosivePotion":
                 variables['damage'] = self.amount
             
-            # 格挡药水 - 使用 block 变量
+            # 鏍兼尅鑽按 - 浣跨敤 block 鍙橀噺
             elif class_name == "BlockPotion":
                 variables['block'] = self.amount
             
-            # 能量药水 - 使用 energy_gain 变量
+            # 鑳介噺鑽按 - 浣跨敤 energy_gain 鍙橀噺
             elif class_name == "EnergyPotion":
                 variables['energy_gain'] = self.amount
             
-            # 抽牌药水 - 使用 amount 变量表示抽牌数
+            # 鎶界墝鑽按 - 浣跨敤 amount 鍙橀噺琛ㄧず鎶界墝鏁?
             elif class_name == "SwiftPotion":
                 variables['amount'] = self.amount
             
-            # 恐惧药水 - 使用 amount 和 duration 变量
+            # 鎭愭儳鑽按 - 浣跨敤 amount 鍜?duration 鍙橀噺
             elif class_name == "FearPotion":
                 variables['amount'] = self.amount
                 variables['duration'] = self.amount
             
-            # 火焰药水 - 使用 damage 变量
+            # 鐏劙鑽按 - 浣跨敤 damage 鍙橀噺
             elif class_name == "FirePotion":
                 variables['damage'] = self.amount
             
-            # 力量药水 - 使用 amount 变量
+            # 鍔涢噺鑽按 - 浣跨敤 amount 鍙橀噺
             elif class_name == "StrengthPotion":
                 variables['amount'] = self.amount
             
-            # 敏捷药水 - 使用 amount 变量
+            # 鏁忔嵎鑽按 - 浣跨敤 amount 鍙橀噺
             elif class_name == "DexterityPotion":
                 variables['amount'] = self.amount
             
-            # 赌徒酿造 - 需要特殊处理，因为这个药水让玩家选择弃牌
+            # 璧屽緬閰块€?- 闇€瑕佺壒娈婂鐞嗭紝鍥犱负杩欎釜鑽按璁╃帺瀹堕€夋嫨寮冪墝
             elif class_name == "GamblersBrew":
-                # 赌徒酿造的描述不需要动态值
+                # 璧屽緬閰块€犵殑鎻忚堪涓嶉渶瑕佸姩鎬佸€?
                 pass
             
-            # 邪教徒药水 - 使用 amount 变量
+            # 閭暀寰掕嵂姘?- 浣跨敤 amount 鍙橀噺
             elif class_name == "CultistPotion":
                 variables['amount'] = self.amount
             
-            # 铁之心 - 使用 metallicize 变量
+            # 閾佷箣蹇?- 浣跨敤 metallicize 鍙橀噺
             elif class_name == "HeartOfIron":
                 variables['metallicize'] = self.amount
             
-            # 虚弱药水 - 使用 magic_number 变量
+            # 铏氬急鑽按 - 浣跨敤 magic_number 鍙橀噺
             elif class_name == "WeakPotion":
                 variables['magic_number'] = self.amount
             
-            # 毒药水 - 使用 magic_number 变量
+            # 姣掕嵂姘?- 浣跨敤 magic_number 鍙橀噺
             elif class_name == "PoisonPotion":
                 variables['magic_number'] = self.amount
             
-            # 专注药水 - 使用 magic_number 变量
+            # 涓撴敞鑽按 - 浣跨敤 magic_number 鍙橀噺
             elif class_name == "FocusPotion":
                 variables['magic_number'] = self.amount
         
-        # 返回带有格式化变量的 LocalStr 对象
+        # 杩斿洖甯︽湁鏍煎紡鍖栧彉閲忕殑 LocalStr 瀵硅薄
         return self.local("description", **variables)
+
+

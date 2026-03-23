@@ -6,7 +6,7 @@ Trade for gold at the cost of receiving a curse.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddGoldAction
 from localization import LocalStr
@@ -45,7 +45,7 @@ class TheSsssserpent(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.the_ssssserpent.title'),
             options=options
         ))

@@ -3,7 +3,7 @@ Shop room implementation - manages purchasing loop.
 """
 import random
 from actions.card import ChooseRemoveCardAction
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddGoldAction, AddRandomPotionAction
 from actions.misc import BuyItemAction, LeaveRoomAction, _has_relic
 from utils.result_types import GameStateResult, NoneResult, MultipleActionsResult, SingleActionResult
@@ -71,12 +71,9 @@ class ShopRoom(Room):
         self.items = self._generate_items()
     
     def enter(self) -> BaseResult:
-        """Enter shop room and handle purchasing loop"""
-        # Display shop entry message
-        actions = []
-        entry_action = DisplayTextAction(text_key="rooms.shop.enter")
-        actions.append(entry_action)
-        
+        """Enter shop room and return the initial shop actions."""
+        actions = [DisplayTextAction(text_key="rooms.ShopRoom.enter")]
+
         entry_bonus_actions = []
 
         # MealTicket: heal 15 HP on shop entry.
@@ -89,24 +86,8 @@ class ShopRoom(Room):
                     )
         
         actions.extend(entry_bonus_actions)
-
-        # Main shop loop
-        while not self.should_leave:
-            # Build and display shop menu
-            select_action = self._build_shop_menu()
-
-            # execute the action
-            actions.append(select_action)
-            game_state.action_queue.add_actions(actions)
-            actions.clear()
-            game_state.execute_all_actions()
-
-        # Display leaving message
-        if not self.should_leave:
-            # This shouldn't normally happen, but handle it
-            pass
-
-        return NoneResult()
+        actions.append(self._build_shop_menu())
+        return MultipleActionsResult(actions)
     
     def leave(self):
         """Leave the shop room"""
@@ -350,7 +331,7 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
         return relics
     
     def _build_shop_menu(self):
-        """Build shop selection menu and return SelectAction"""
+        """Build shop selection menu and return InputRequestAction"""
         options = []
         ascension = getattr(game_state, 'ascension_level', 0)
 
@@ -394,8 +375,8 @@ Having both this and MembershipCard.png Membership Card will reduce prices by a 
             actions=[LeaveRoomAction(room=self)]
         ))
 
-        # Return SelectAction instead of adding to queue
-        return SelectAction(
+        # Return InputRequestAction instead of adding to queue
+        return InputRequestAction(
             title=self.local("title"),
             options=options
         )

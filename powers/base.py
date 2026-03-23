@@ -5,7 +5,7 @@ Powers modify creature stats, damage calculations, and combat flow.
 from enum import Enum, auto
 from typing import List, Optional, Any
 from actions.base import Action
-from localization import Localizable, t
+from localization import Localizable, LocalStr, has_translation, t
 from utils.types import TargetType
 from utils.damage_phase import DamagePhase
 
@@ -52,6 +52,54 @@ class Power(Localizable):
         self.stack_type = self.__class__.stack_type
         self.amount_equals_duration = self.__class__.amount_equals_duration
         self.is_buff = self.__class__.is_buff
+        if not hasattr(self, "localization_key"):
+            self.localization_key = f"{self.localization_prefix}.{self.__class__.__name__}"
+
+    @staticmethod
+    def _normalized_name_candidates(value: str) -> List[str]:
+        """Generate common localization key variants for power names."""
+        variants = []
+        if not value:
+            return variants
+        stripped = value.strip()
+        compact = stripped.replace(" ", "")
+        snake = stripped.replace(" ", "_")
+        lower_snake = snake.lower()
+        for candidate in (stripped, compact, snake, lower_snake):
+            if candidate and candidate not in variants:
+                variants.append(candidate)
+        return variants
+
+    def local(self, field: str, **kwargs: Any) -> LocalStr:
+        """Resolve power localization through canonical key plus compatibility aliases."""
+        candidates = []
+
+        localization_key = getattr(self, "localization_key", None)
+        if localization_key:
+            candidates.append(f"{localization_key}.{field}")
+
+        candidates.append(self._get_localized_key(field))
+
+        name = getattr(self, "name", None)
+        if isinstance(name, str):
+            for variant in self._normalized_name_candidates(name):
+                candidates.append(f"{self.localization_prefix}.{variant}.{field}")
+
+        unique_candidates = []
+        for candidate in candidates:
+            if candidate not in unique_candidates:
+                unique_candidates.append(candidate)
+
+        resolved_key = next(
+            (candidate for candidate in unique_candidates if has_translation(candidate)),
+            unique_candidates[0],
+        )
+
+        default = getattr(self, field, None)
+        if default is None:
+            default = name if field == "name" and isinstance(name, str) else self.__class__.__name__
+
+        return LocalStr(key=resolved_key, default=default, **kwargs)
     
     @property
     def stackable(self) -> bool:

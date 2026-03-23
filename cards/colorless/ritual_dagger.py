@@ -20,16 +20,19 @@ class RitualDagger(Card):
 
     base_cost = 1
     base_damage = 15
-    base_magic = {"fatal_bonus": 3}
+    base_magic = {"fatal_bonus": 3, "damage_increase": 3}
     base_exhaust = True
 
-    upgrade_magic = {"fatal_bonus": 5}
+    upgrade_magic = {"fatal_bonus": 5, "damage_increase": 5}
 
     def on_fatal(self) -> List[Action]:
         """If this kills enemy, permanently increase this Card's damage"""
         actions = []
 
-        fatal_bonus = self.get_magic_value("fatal_bonus")
+        fatal_bonus = self.get_magic_value(
+            "damage_increase",
+            self.get_magic_value("fatal_bonus"),
+        )
         # Permanently increase this card instance's damage
         self._damage += fatal_bonus
 

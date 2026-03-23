@@ -19,8 +19,8 @@ class Combust(Card):
     rarity = RarityType.UNCOMMON
 
     base_cost = 1
-    base_magic = {"combust_damage": 5}
-    upgrade_magic = {"combust_damage": 7}
+    base_magic = {"combust_damage": 5, "damage": 5}
+    upgrade_magic = {"combust_damage": 7, "damage": 7}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

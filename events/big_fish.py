@@ -5,7 +5,7 @@ from utils.result_types import BaseResult
 from events.base_event import Event
 from actions.card import AddCardAction
 from actions.combat import HealAction, ModifyMaxHpAction
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddRandomRelicAction
 from events.event_pool import register_event
 from localization import LocalStr
@@ -72,7 +72,7 @@ class BigFishEvent(Event):
         ))
         
         # Display options and wait for selection
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr("events.big_fish.title"),
             options=options
         ))

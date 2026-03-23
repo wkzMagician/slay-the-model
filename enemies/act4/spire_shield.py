@@ -28,7 +28,7 @@ class SpireShield(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(110, 110)) # todo: 125 a8
+        super().__init__(hp_range=(42, 48))
         self.add_intention(Bash(self))
         self.add_intention(Fortify(self))
         self.add_intention(Smash(self))
@@ -95,7 +95,7 @@ class SpireShield(Enemy):
         self._turn_number += 1
 
         if self._turn_number >= 3 and self._turn_number % 3 == 0:
-            return self.intentions["Smash"]
+            return "Smash"
 
         if self._pair_index >= len(self._pair_sequence):
             self._pair_sequence = random.choice(

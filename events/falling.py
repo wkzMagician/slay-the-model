@@ -6,7 +6,7 @@ Forced card loss by type (Skill, Power, or Attack).
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import RemoveRandomCardAction
 from localization import LocalStr
 from utils.option import Option
@@ -41,7 +41,7 @@ class Falling(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.falling.title'),
             options=options
         ))

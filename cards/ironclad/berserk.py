@@ -23,8 +23,8 @@ class Berserk(Card):
 
     base_cost = 0
     
-    base_magic = {"Vulnerable": 2}
-    upgrade_magic = {"Vulnerable": 1}
+    base_magic = {"Vulnerable": 2, "vulnerable": 2}
+    upgrade_magic = {"Vulnerable": 1, "vulnerable": 1}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

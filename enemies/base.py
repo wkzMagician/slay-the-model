@@ -1,6 +1,6 @@
 """Base enemy class for all monsters in combat."""
 
-from typing import Tuple, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Tuple, Dict, List, Optional, TYPE_CHECKING
 import random
 
 from entities.creature import Creature
@@ -102,6 +102,36 @@ class Enemy(Creature):
             if intention_list:
                 return random.choice(intention_list)
         raise ValueError("No intentions defined for enemy")
+
+    def _resolve_next_intention(self, selection: Any) -> 'Intention':
+        """Normalize intention selection results.
+
+        Enemy implementations in this codebase are inconsistent:
+        some return an Intention, some return a string key/name, and some
+        mutate ``self.current_intention`` directly and return ``None``.
+        """
+        if selection is None:
+            if self.current_intention is not None:
+                return self.current_intention
+            raise ValueError(f"{self.__class__.__name__} did not select an intention")
+
+        if hasattr(selection, "execute") and hasattr(selection, "name"):
+            return selection
+
+        if isinstance(selection, str):
+            if selection in self.intentions:
+                return self.intentions[selection]
+            for intention in self.intentions.values():
+                if intention.name == selection:
+                    return intention
+            raise KeyError(
+                f"{self.__class__.__name__} selected unknown intention '{selection}'"
+            )
+
+        raise TypeError(
+            f"Unsupported intention selection type for {self.__class__.__name__}: "
+            f"{type(selection).__name__}"
+        )
     
     def execute_intention(self) -> List['Action']:
         """Execute the current intention and update history.
@@ -129,7 +159,8 @@ class Enemy(Creature):
             floor: Current floor number
         """
         # Set initial intention when combat starts
-        self.current_intention = self.determine_next_intention(floor)
+        selection = self.determine_next_intention(floor)
+        self.current_intention = self._resolve_next_intention(selection)
     
     def on_player_turn_start(self) -> None:
         """Called at the start of player's turn.
@@ -138,7 +169,8 @@ class Enemy(Creature):
         """
         from engine.game_state import game_state
         current_floor = game_state.current_floor if game_state else 1
-        self.current_intention = self.determine_next_intention(current_floor)
+        selection = self.determine_next_intention(current_floor)
+        self.current_intention = self._resolve_next_intention(selection)
     
     def on_damage_taken(self, damage: int, source=None, card=None, damage_type=None) -> List['Action']:
         """Called when enemy takes damage.

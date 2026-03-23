@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 from utils.result_types import BaseResult, MultipleActionsResult, NoneResult, SingleActionResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.base import Action
 from utils.registry import get_registered, register
@@ -196,7 +196,7 @@ class MatchAndKeepAction(Action):
         # Show tries remaining
         tries_text = f"Tries remaining: {_matching_state['tries_remaining']}"
         
-        return SingleActionResult(SelectAction(
+        return SingleActionResult(InputRequestAction(
             title=LocalStr('events.match_and_keep.select_card', 
                           default=f"Select a card to flip. {tries_text}"),
             options=options,
@@ -216,15 +216,16 @@ class MatchAndKeepAction(Action):
         
         # Display results
         if _matching_state['matched_cards']:
-            card_names = ', '.join(c.info() for c in _matching_state['matched_cards'])
+            card_names = ', '.join(str(c.info()) for c in _matching_state['matched_cards'])
             actions.append(DisplayTextAction(
-                text=LocalStr('events.match_and_keep.won_cards',
-                             default=f"You matched: {card_names}")
+                text_key='events.match_and_keep.won_cards',
+                default=f"You matched: {card_names}",
+                cards=card_names,
             ))
         else:
             actions.append(DisplayTextAction(
-                text=LocalStr('events.match_and_keep.no_matches',
-                             default="You didn't match any cards.")
+                text_key='events.match_and_keep.no_matches',
+                default="You didn't match any cards.",
             ))
         
         # Clear state

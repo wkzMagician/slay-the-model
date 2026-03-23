@@ -19,9 +19,9 @@ class Juggernaut(Card):
     rarity = RarityType.RARE
 
     base_cost = 2
-    base_magic = {"damage_per_block": 5}
+    base_magic = {"damage_per_block": 5, "damage": 5}
 
-    upgrade_magic = {"damage_per_block": 7}
+    upgrade_magic = {"damage_per_block": 7, "damage": 7}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

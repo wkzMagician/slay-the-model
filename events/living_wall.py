@@ -6,7 +6,7 @@ A forced choice event where you must either remove, transform, or upgrade a card
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import ChooseRemoveCardAction, ChooseTransformCardAction, ChooseUpgradeCardAction
 from localization import LocalStr
 from utils.option import Option
@@ -40,7 +40,7 @@ class LivingWall(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.living_wall.title'),
             options=options
         ))

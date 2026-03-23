@@ -1,5 +1,4 @@
 from typing import Optional, Union, List, TYPE_CHECKING
-from actions.base import LambdaAction
 from entities.creature import Creature
 from utils.types import TargetType 
 
@@ -17,12 +16,8 @@ def resolve_target(target_type: TargetType) -> List[Optional[Creature]]:
     
     Returns:
         Creature instance or list of Creatures representing the resolved target
-        For ENEMY_SELECT with show_selection=True, returns a SelectAction that handles target selection
     """
     from engine.game_state import game_state
-    from actions.display import SelectAction
-    from utils.option import Option
-    from localization import LocalStr
     
     player = game_state.player
     # Access enemies through current_combat, not combat_state
@@ -42,27 +37,7 @@ def resolve_target(target_type: TargetType) -> List[Optional[Creature]]:
         return [e for e in enemies if e.hp > 0]
     elif target_type == TargetType.ENEMY_SELECT:
         alive_enemies = [e for e in enemies if e.hp > 0]
-        
-        # If only one enemy or not showing selection, auto-select
-        if len(alive_enemies) <= 1:
-            return alive_enemies
-        
-        # Use SelectAction for target selection instead of input()
-        options = []
-        for idx, enemy in enumerate(alive_enemies):
-            options.append(Option(
-                name=LocalStr("combat.select_enemy_option", default=f"{enemy.name} (HP: {enemy.hp}/{enemy.max_hp})"),
-                actions=[LambdaAction(func=lambda idx=idx: setattr(game_state, 'last_select_idx', idx))]
-            ))
-        
-        select_action = SelectAction(
-            title=LocalStr("combat.select_target", default="=== Select Target ==="),
-            options=options,
-            max_select=1,
-            must_select=True
-        )
-        select_action.execute()
-        return [alive_enemies[game_state.last_select_idx]]
+        return alive_enemies
     else:
         raise ValueError(f"Unsupported TargetType: {target_type}")
     

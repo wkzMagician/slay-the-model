@@ -20,8 +20,8 @@ class DoubleTap(Card):
 
     base_cost = 1
 
-    base_magic = {"double_card_num": 1}
-    upgrade_magic = {"double_card_num": 2}
+    base_magic = {"double_card_num": 1, "double_tap": 1}
+    upgrade_magic = {"double_card_num": 2, "double_tap": 2}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

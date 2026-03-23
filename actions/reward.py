@@ -171,7 +171,7 @@ class ChooseBossRelicAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         from relics.base import RarityType
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         
         # Generate boss relics (rare tier)
         relics = []
@@ -191,7 +191,7 @@ class ChooseBossRelicAction(Action):
                 'actions': [AddRelicAction(relic=relic)]
             })
         
-        return SingleActionResult(SelectAction(
+        return SingleActionResult(InputRequestAction(
             title="Choose a boss relic:",
             options=options
         ))
@@ -300,7 +300,7 @@ class AddPotionAction(Action):
     
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         player = game_state.player
         if not player:
             return NoneResult()
@@ -330,7 +330,7 @@ class AddPotionAction(Action):
                     )
                 )
             return SingleActionResult(
-                SelectAction(
+                InputRequestAction(
                     title="ui.potion_full_title",
                     options=options,
                 )

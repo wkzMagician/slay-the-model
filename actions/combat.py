@@ -92,9 +92,12 @@ class AddEnemyAction(Action):
     def execute(self) -> 'BaseResult':
         """Add enemy to combat state"""
         from engine.game_state import game_state
+        from enemies.base import Enemy
         
         if game_state.current_combat:
-            game_state.current_combat.add_enemy(self.enemy)
+            enemy = self.enemy() if isinstance(self.enemy, type) else self.enemy
+            if isinstance(enemy, Enemy):
+                game_state.current_combat.add_enemy(enemy)
         
         return NoneResult()
 
@@ -454,7 +457,11 @@ class GainBlockAction(Action):
         block (int or callable): Block amount to gain
         target (Creature): Target to gain block (defaults to player)
     """
-    def __init__(self, block, target: Creature, source=None, card=None):
+    def __init__(self, block=None, target: Creature = None, source=None, card=None, amount=None):
+        if block is None:
+            block = amount
+        if block is None:
+            raise ValueError("GainBlockAction requires 'block' or legacy 'amount'")
         self.block = block
         self.target = target
         self.source = source
@@ -549,10 +556,9 @@ class PlayCardAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
         from utils.combat import resolve_target
-        from utils.types import CardType
-        from utils.option import Option
         from localization import LocalStr
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
+        from utils.option import Option
         
         if not self.card:
             return NoneResult()
@@ -569,6 +575,30 @@ class PlayCardAction(Action):
         else:
             assert self.card.target_type is not None
             targets = resolve_target(self.card.target_type)
+            if self.card.target_type == TargetType.ENEMY_SELECT and len(targets) > 1:
+                options = []
+                for enemy in targets:
+                    options.append(
+                        Option(
+                            name=LocalStr(
+                                "combat.select_enemy_option",
+                                default=f"{enemy.name} (HP: {enemy.hp}/{enemy.max_hp})",
+                            ),
+                            actions=[
+                                PlayCardBHAction(
+                                    card=self.card,
+                                    targets=[enemy],
+                                    ignore_energy=self.ignore_energy,
+                                )
+                            ],
+                        )
+                    )
+                return SingleActionResult(
+                    InputRequestAction(
+                        title=LocalStr("combat.select_target", default="Select Target"),
+                        options=options,
+                    )
+                )
             return SingleActionResult(PlayCardBHAction(card=self.card, targets=targets, ignore_energy=self.ignore_energy))
      
     
@@ -726,8 +756,8 @@ class EndTurnAction(Action):
     def execute(self) -> 'BaseResult':
         from engine.game_state import game_state
 
-        # Transition to enemy action phase
-        game_state.current_combat.combat_state.current_phase = "enemy_action"
+        # Transition to the explicit player-end phase.
+        game_state.current_combat.combat_state.current_phase = "player_end"
         
         # Print turn ended for player feedback
         print(t('combat.end_turn'))
@@ -756,6 +786,7 @@ class ApplyPowerAction(Action):
         """Apply the power to the target creature"""
         from utils.registry import get_registered
         from engine.game_state import game_state
+        from powers.base import Power
         
         if not self.target:
             return NoneResult()
@@ -776,6 +807,8 @@ class ApplyPowerAction(Action):
                 raise ValueError(f"Power {self.power} not found")
             # Create power instance
             power_instance = power_class(amount=self.amount, duration=self.duration)
+        elif isinstance(self.power, type) and issubclass(self.power, Power):
+            power_instance = self.power(amount=self.amount, duration=self.duration)
         else:
             # Already a Power instance
             power_instance = self.power
@@ -914,7 +947,7 @@ class StartFightAction(Action):
             # Execute victory actions
             for action in self.victory_actions:
                 game_state.action_queue.add_action(action)
-            game_state.execute_all_actions()
+            game_state.drive_actions()
             return NoneResult()
         elif result.state == "GAME_LOSE":
             return result
@@ -965,15 +998,36 @@ class UsePotionAction(Action):
     
     def execute(self) -> 'BaseResult':
         """Resolve targets and delegate to UsePotionBHAction."""
-        from engine.game_state import game_state
         from utils.combat import resolve_target
-        
+        from actions.display import InputRequestAction
+        from localization import LocalStr
+        from utils.option import Option
+
         if self.target is not None:
             # Explicit single target provided
             targets = [self.target]
         else:
             # Resolve targets from potion's target_type
             targets = resolve_target(self.potion.target_type)
+
+        if getattr(self.potion, "target_type", None) == TargetType.ENEMY_SELECT and len(targets) > 1:
+            options = []
+            for enemy in targets:
+                options.append(
+                    Option(
+                        name=LocalStr(
+                            "combat.select_enemy_option",
+                            default=f"{enemy.name} (HP: {enemy.hp}/{enemy.max_hp})",
+                        ),
+                        actions=[UsePotionBHAction(potion=self.potion, targets=[enemy])],
+                    )
+                )
+            return SingleActionResult(
+                InputRequestAction(
+                    title=LocalStr("combat.select_target", default="Select Target"),
+                    options=options,
+                )
+            )
         
         return SingleActionResult(UsePotionBHAction(potion=self.potion, targets=targets))
 
@@ -1033,7 +1087,7 @@ class UsePotionBHAction(Action):
                 name = name.resolve()
             target_names.append(str(name))
         potion_name = self.potion.local("name").resolve() if isinstance(self.potion.local("name"), LocalStr) else self.potion.local("name")
-        print(f"{t('action.used_potion', default='Used potion')}: {potion_name} {t('action.on_target', default='on')} {', '.join(target_names)}")
+        print(f"{t('combat.used_potion', default='Used potion')}: {potion_name} {t('combat.on_target', default='on')} {', '.join(target_names)}")
 
         all_actions = []
         if actions:

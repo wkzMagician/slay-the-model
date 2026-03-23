@@ -109,8 +109,8 @@ class CombatTestHelper:
         """Create an enemy instance."""
         enemy = enemy_class()
         if hp is not None:
-            enemy.hp = hp
             enemy.max_hp = hp
+            enemy.hp = hp
         return enemy
     
     def start_combat(self, enemies: List[Enemy], floor: int = 1) -> Combat:
@@ -197,11 +197,12 @@ class CombatTestHelper:
         if result:
             self._execute_actions_recursive(result)
                     
-        # Move to discard or exhaust pile (card was already removed from hand)
-        if card.exhaust:
-            player.card_manager.piles['exhaust_pile'].append(card)
-        else:
-            player.card_manager.piles['discard_pile'].append(card)
+        # Only place the card if on_play actions did not already move it.
+        if player.card_manager.get_card_location(card) is None:
+            if card.exhaust:
+                player.card_manager.piles['exhaust_pile'].append(card)
+            else:
+                player.card_manager.piles['discard_pile'].append(card)
             
         return True
     

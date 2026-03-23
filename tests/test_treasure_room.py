@@ -1,7 +1,7 @@
 """Test TreasureRoom basic functionality."""
 import pytest
 from rooms.treasure import TreasureRoom
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from utils.types import RoomType
 
 
@@ -70,10 +70,10 @@ class TestTreasureRoomBasic:
         treasure_room.init()
         treasure_room._build_treasure_menu()
         
-        # Get SelectAction from queue
+        # Get InputRequestAction from queue
         select_action = None
         for action in treasure_room.action_queue.queue:
-            if isinstance(action, SelectAction):
+            if isinstance(action, InputRequestAction):
                 select_action = action
                 break
         

@@ -6,7 +6,7 @@ Gold or Ritual Dagger card for HP.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddGoldAction
 from actions.combat import LoseHPAction
@@ -51,7 +51,7 @@ class TheNest(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.the_nest.title'),
             options=options
         ))

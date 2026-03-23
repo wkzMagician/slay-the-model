@@ -6,7 +6,7 @@ A shrine that allows removing a card from the deck.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import ChooseRemoveCardAction
 from localization import LocalStr
 from utils.option import Option
@@ -36,7 +36,7 @@ class Purifier(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.purifier.title'),
             options=options
         ))

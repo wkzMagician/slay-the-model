@@ -6,7 +6,7 @@ Trade Strikes for Bites at Max HP cost.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction, RemoveAllStrikesAction
 from actions.reward import LoseRelicAction
 from actions.combat import LoseMaxHPAction
@@ -62,7 +62,7 @@ class Vampires(Event):
             )
         ])
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.vampires.title'),
             options=options
         ))

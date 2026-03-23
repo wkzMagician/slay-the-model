@@ -6,7 +6,7 @@ Bet 50 gold for 100 or 250 gold reward.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddGoldAction, LoseGoldAction
 from localization import LocalStr
 from utils.option import Option
@@ -52,7 +52,7 @@ class TheJoust(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.the_joust.title'),
             options=options
         ))

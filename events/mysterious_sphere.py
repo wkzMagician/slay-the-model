@@ -7,7 +7,7 @@ import random
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddRandomCardAction
 from actions.reward import AddGoldAction, AddRandomRelicAction
 from actions.combat import StartFightAction
@@ -53,7 +53,7 @@ class MysteriousSphere(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.mysterious_sphere.title'),
             options=options
         ))

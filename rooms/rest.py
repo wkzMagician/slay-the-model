@@ -6,10 +6,10 @@ from actions.card import (
     ChooseRemoveCardAction,
     ChooseUpgradeCardAction,
 )
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddRelicAction, AddRandomRelicAction
 from actions.misc import LeaveRoomAction, _has_relic
-from utils.result_types import GameStateResult, NoneResult
+from utils.result_types import GameStateResult, MultipleActionsResult, NoneResult
 from engine.game_state import game_state
 from localization import LocalStr
 from rooms.base import Room, BaseResult
@@ -32,36 +32,19 @@ class RestRoom(Room):
         pass
     
     def enter(self) -> BaseResult:
-        """Enter rest room and handle rest options"""
-        # Handle Eternal Feather - heal on enter (每5张牌回3血)
+        """Enter rest room and return the initial rest actions."""
+        actions = []
+
         if _has_relic("EternalFeather", game_state):
             deck = game_state.player.card_manager.get_pile('deck')
             deck_size = len(deck)
             heal_amount = (deck_size // 5) * 3
             if heal_amount > 0:
-                game_state.action_queue.add_action(HealAction(amount=heal_amount))
-        
-        # Display entry message
-        game_state.action_queue.add_action(DisplayTextAction(
-            text_key="rooms.rest.enter"
-        ))
+                actions.append(HealAction(amount=heal_amount))
 
-        # Main rest loop
-        while not self.should_leave:
-            # Build rest options
-            self._build_rest_menu()
-
-            # Execute actions
-            result = game_state.execute_all_actions()
-
-            if isinstance(result, GameStateResult):
-                return result
-
-            # Rebuild menu if not leaving
-            if not self.should_leave:
-                game_state.action_queue.clear()
-
-        return NoneResult()
+        actions.append(DisplayTextAction(text_key="rooms.RestRoom.enter"))
+        actions.append(self._build_rest_menu())
+        return MultipleActionsResult(actions)
     
     def leave(self):
         """Leave the rest room"""
@@ -95,7 +78,7 @@ class RestRoom(Room):
             )
         rest_actions.append(LeaveRoomAction(room=self))
         options.append(Option(
-            name=self.local("RestRoom.rest"),
+            name=self.local("rest"),
             actions=rest_actions
         ))
 
@@ -110,7 +93,7 @@ class RestRoom(Room):
                     break
         if can_smith:
             options.append(Option(
-                name=self.local("RestRoom.smith"),
+                name=self.local("smith"),
                 actions=[ChooseUpgradeCardAction(pile="deck"), LeaveRoomAction(room=self)]
             ))
         
@@ -128,35 +111,33 @@ class RestRoom(Room):
                 if getattr(relic, "idstr", None) == "Girya":
                     if hasattr(relic, "can_use_at_rest") and relic.can_use_at_rest():
                         options.append(Option(
-                            name=self.local("RestRoom.lift"),
+                            name=self.local("lift"),
                             actions=[TriggerRelicAction(relic_name="Lift"), LeaveRoomAction(room=self)],
                         ))
                     break
         
         if _has_relic("PeacePipe", game_state):
             options.append(Option(
-                name=self.local("RestRoom.toke"),
+                name=self.local("toke"),
                 actions=[ChooseRemoveCardAction(pile="deck"), LeaveRoomAction(room=self)]
             ))
         
         if _has_relic("Shovel", game_state):
             options.append(Option(
-                name=self.local("RestRoom.dig"),
+                name=self.local("dig"),
                 actions=[AddRandomRelicAction(rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]), LeaveRoomAction(room=self)]
             ))
         
         # Skip option
         options.append(Option(
-            name=self.local("RestRoom.skip"),
+            name=self.local("skip"),
             actions=[LeaveRoomAction(room=self)]
         ))
         
-        # Add selection action to global queue
-        game_state.action_queue.add_action(SelectAction(
-            title=self.local("RestRoom.title"),
+        return InputRequestAction(
+            title=self.local("title"),
             options=options
-        ))
-        # LeaveRoomAction is now part of each option's actions
+        )
 
     def _create_options(self):
         """Create and return rest options (for testing)."""
@@ -179,7 +160,7 @@ class RestRoom(Room):
             )
         rest_actions.append(LeaveRoomAction(room=self))
         options.append(Option(
-            name=self.local("RestRoom.rest"),
+            name=self.local("rest"),
             actions=rest_actions
         ))
 
@@ -193,32 +174,32 @@ class RestRoom(Room):
                     break
         if can_smith:
             options.append(Option(
-                name=self.local("RestRoom.smith"),
+                name=self.local("smith"),
                 actions=[ChooseUpgradeCardAction(pile="deck"), LeaveRoomAction(room=self)]
             ))
 
         # Special relic options (Girya, Peace Pipe, Shovel)
         if self._check_relic("Girya"):
             options.append(Option(
-                name=self.local("RestRoom.lift"),
+                name=self.local("lift"),
                 actions=[TriggerRelicAction(relic_name="Lift"), LeaveRoomAction(room=self)],
             ))
 
         if self._check_relic("PeacePipe"):
             options.append(Option(
-                name=self.local("RestRoom.toke"),
+                name=self.local("toke"),
                 actions=[ChooseRemoveCardAction(pile="deck"), LeaveRoomAction(room=self)]
             ))
 
         if self._check_relic("Shovel"):
             options.append(Option(
-                name=self.local("RestRoom.dig"),
+                name=self.local("dig"),
                 actions=[AddRandomRelicAction(rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]), LeaveRoomAction(room=self)]
             ))
 
         # Skip option
         options.append(Option(
-            name=self.local("RestRoom.skip"),
+            name=self.local("skip"),
             actions=[LeaveRoomAction(room=self)]
         ))
 

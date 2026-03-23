@@ -27,6 +27,12 @@ class TestAct2Monsters(unittest.TestCase):
         m = BronzeAutomaton()
         self.assertEqual(m.enemy_type, EnemyType.BOSS)
 
+    def test_bronze_automaton_sets_spawn_orbs_on_combat_start(self):
+        m = BronzeAutomaton()
+        m.on_combat_start(floor=1)
+        self.assertIsNotNone(m.current_intention)
+        self.assertEqual(m.current_intention.name, "Spawn Orbs")
+
     def test_bronze_orb_hp(self):
         m = BronzeOrb()
         self.assertGreaterEqual(m.hp, 20)

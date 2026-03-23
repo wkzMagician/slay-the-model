@@ -26,7 +26,7 @@ class Darkling(Enemy):
     enemy_type = EnemyType.NORMAL
 
     def __init__(self):
-        super().__init__(hp_range=(48, 56)) # todo: 50-59 a7
+        super().__init__(hp_range=(50, 56))
         self._turn_count = 0
         self._is_regrowing = False
         self._is_middle = False  # Set if this is the middle Darkling

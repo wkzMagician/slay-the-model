@@ -19,11 +19,9 @@ def test_seed(seed: int) -> bool:
         # This means: Floor 4 has MERCHANT and Floor 5 also has MERCHANT (bad)
         # But: Floor 4 has MERCHANT and Floor 5 has REST/ELITE (OK)
         for problem_type in {RoomType.ELITE, RoomType.REST, RoomType.MERCHANT}:
-            if problem_type in prev_types and problem_type in curr_types:
-                print(f"  FAILED: Seed {seed} - Consecutive {problem_type.name} on floors {f-1} and {f}")
-                return False
-    
-    return True
+            assert not (
+                problem_type in prev_types and problem_type in curr_types
+            ), f"Seed {seed} - Consecutive {problem_type.name} on floors {f-1} and {f}"
 
 if __name__ == "__main__":
     seeds = [1, 42, 100, 999, 12345, 666, 777, 8888]

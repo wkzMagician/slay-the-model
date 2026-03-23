@@ -19,8 +19,8 @@ class FireBreathing(Card):
     rarity = RarityType.UNCOMMON
 
     base_cost = 1
-    base_magic = {"damage_on_status": 7}
-    upgrade_magic = {"damage_on_status": 10}
+    base_magic = {"damage_on_status": 7, "damage": 7}
+    upgrade_magic = {"damage_on_status": 10, "damage": 10}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

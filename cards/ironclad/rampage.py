@@ -20,15 +20,18 @@ class Rampage(Card):
     base_cost = 1
     base_damage = 8
 
-    base_magic = {"damage_gain": 5}
-    upgrade_magic = {"damage_gain": 8}
+    base_magic = {"damage_gain": 5, "damage_increase": 5}
+    upgrade_magic = {"damage_gain": 8, "damage_increase": 8}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None
         actions = super().on_play(targets)
 
         # Increase this card's damage for the combat
-        damage_increase = self.get_magic_value("damage_gain")
+        damage_increase = self.get_magic_value(
+            "damage_increase",
+            self.get_magic_value("damage_gain"),
+        )
         self._damage += damage_increase
 
         return actions

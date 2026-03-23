@@ -6,7 +6,7 @@ Skip to boss if 800+ seconds elapsed.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.misc import SkipToBossAction
 from localization import LocalStr
 from utils.option import Option
@@ -42,7 +42,7 @@ class SecretPortal(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.secret_portal.title'),
             options=options
         ))

@@ -6,7 +6,7 @@ Remove all curses from the deck. Only appears if deck has at least one curse.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import RemoveCardAction
 from localization import LocalStr
 from utils.option import Option
@@ -50,7 +50,7 @@ class DivineFountain(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.divine_fountain.title'),
             options=options
         ))

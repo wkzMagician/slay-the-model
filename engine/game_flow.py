@@ -27,6 +27,8 @@ class GameFlow:
     
     def __init__(self):
         self.current_room = None
+        self.flow_phase = "init_act"
+        self.phase_act = None
     
     def _get_max_floor(self, game_state) -> int:
         """Get the maximum floor number for current act (0-indexed)."""        
@@ -46,29 +48,127 @@ class GameFlow:
         """
         # Display game welcome messages
         self._display_welcome()
-        
-        # Main act loop
-        while game_state.current_act <= MAX_ACTS:
-            # Initialize map for current act
-            game_state.initialize_map()
-            
-            # Start with Neo room (Act 1 only)
-            if game_state.current_act == 1:
-                self._start_neo_room()
-            
-            # Run this act
-            boss_defeated = self._run_act(game_state)
-            
-            if not boss_defeated:
-                # Player died during act
+        self.flow_phase = "init_act"
+        self.phase_act = None
+
+        while self.flow_phase != "finished":
+            result = self._execute_next_phase(game_state)
+            if isinstance(result, GameStateResult):
+                if result.state in ("GAME_EXIT",):
+                    self._handle_game_exit()
+                elif result.state in ("GAME_LOSE", "DEATH"):
+                    self._handle_game_over()
                 break
-            
-            # Handle act completion (boss treasure, act transition)
-            should_continue = self._handle_act_completion(game_state)
-            
-            if not should_continue:
-                # Game complete (no keys for act 4, or finished act 4)
-                break
+
+    def _execute_next_phase(self, game_state):
+        """Advance the global game flow by one explicit phase."""
+        if self.flow_phase == "init_act":
+            return self._execute_init_act_phase(game_state)
+        if self.flow_phase == "neo_room":
+            return self._execute_neo_room_phase(game_state)
+        if self.flow_phase == "select_room":
+            return self._execute_select_room_phase(game_state)
+        if self.flow_phase == "enter_room":
+            return self._execute_enter_room_phase(game_state)
+        if self.flow_phase == "complete_act":
+            return self._execute_complete_act_phase(game_state)
+        if self.flow_phase == "finished":
+            return None
+
+        raise ValueError(f"Unknown game flow phase: {self.flow_phase}")
+
+    def _execute_init_act_phase(self, game_state):
+        """Initialize the current act and choose the next top-level phase."""
+        if game_state.current_act > MAX_ACTS:
+            self.flow_phase = "finished"
+            return None
+
+        game_state.initialize_map()
+        self.phase_act = game_state.current_act
+        self.flow_phase = "neo_room" if game_state.current_act == 1 else "select_room"
+        return None
+
+    def _execute_neo_room_phase(self, game_state):
+        """Run the special Neo room once at the start of act 1."""
+        result = self._start_neo_room()
+        if isinstance(result, GameStateResult):
+            self.flow_phase = "finished"
+            return result
+        self.flow_phase = "select_room"
+        return None
+
+    def _execute_select_room_phase(self, game_state):
+        """Resolve the next room choice from the map."""
+        if self.phase_act is None:
+            self.phase_act = game_state.current_act
+
+        if game_state.current_act != self.phase_act:
+            self.flow_phase = "complete_act"
+            return None
+
+        cur_room = self._select_next_room(game_state)
+        if cur_room is None:
+            self.flow_phase = "complete_act"
+            return None
+
+        self.current_room = cur_room
+        self.flow_phase = "enter_room"
+        return None
+
+    def _execute_enter_room_phase(self, game_state):
+        """Initialize and execute the current room, then advance flow state."""
+        from utils.result_types import MultipleActionsResult
+        from rooms.victory import VictoryRoom
+
+        cur_room = self.current_room
+        if cur_room is None:
+            self.flow_phase = "select_room"
+            return None
+
+        cur_room.init()
+        result = cur_room.enter()
+
+        from tui import get_app, is_tui_mode
+        if is_tui_mode():
+            app = get_app()
+            if app:
+                from tui.handlers.display_handler import DisplayHandler
+                DisplayHandler(app).display_room(cur_room, game_state)
+
+        if isinstance(result, GameStateResult):
+            self.flow_phase = "finished"
+            return result
+
+        if isinstance(result, MultipleActionsResult):
+            game_state.action_queue.add_actions(result.actions)
+            result = game_state.drive_actions()
+        elif isinstance(result, SingleActionResult):
+            game_state.action_queue.add_action(result.action, to_front=True)
+            result = game_state.drive_actions()
+
+        if isinstance(result, GameStateResult):
+            self.flow_phase = "finished"
+            return result
+
+        cur_room.leave()
+
+        if isinstance(cur_room, VictoryRoom):
+            self.flow_phase = "complete_act"
+        else:
+            self.flow_phase = "select_room"
+        self.current_room = None
+        return None
+
+    def _execute_complete_act_phase(self, game_state):
+        """Resolve end-of-act transition or finish the run."""
+        should_continue = self._handle_act_completion(game_state)
+        if not should_continue:
+            self.flow_phase = "finished"
+            return None
+
+        self.flow_phase = "init_act"
+        self.phase_act = None
+        return None
         
     def _run_act(self, game_state) -> bool:
         """
@@ -114,10 +214,10 @@ class GameFlow:
             # Handle results from rooms
             if isinstance(result, MultipleActionsResult):
                 game_state.action_queue.add_actions(result.actions)
-                game_state.execute_all_actions()
+                game_state.drive_actions()
             elif isinstance(result, SingleActionResult):
                 game_state.action_queue.add_action(result.action, to_front=True)
-                game_state.execute_all_actions()
+                game_state.drive_actions()
             
             # Leave the room (cleanup)
             cur_room.leave()
@@ -185,9 +285,17 @@ class GameFlow:
         result = neo_room.enter()
         # Handle Neo room result
         if isinstance(result, GameStateResult) and result.state == "GAME_LOSE":
-            self._handle_game_over()
-            return
+            return result
+        if isinstance(result, SingleActionResult):
+            game_state.action_queue.add_action(result.action, to_front=True)
+            result = game_state.drive_actions()
+        elif hasattr(result, "actions"):
+            game_state.action_queue.add_actions(result.actions)
+            result = game_state.drive_actions()
+        if isinstance(result, GameStateResult):
+            return result
         neo_room.leave()
+        return None
     
     def _select_next_room(self, game_state):
         """
@@ -208,7 +316,7 @@ class GameFlow:
         # We need to add it to queue and execute
         if isinstance(result, SingleActionResult):
             game_state.action_queue.add_action(result.action)
-            game_state.execute_all_actions()
+            game_state.drive_actions()
         
         # After execution, get the current room from game_state
         room = game_state.current_room

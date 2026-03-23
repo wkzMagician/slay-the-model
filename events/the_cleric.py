@@ -8,7 +8,7 @@ Event 2 - The Cleric
 from utils.result_types import BaseResult
 from events.base_event import Event
 from actions.card import ChooseRemoveCardAction
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import LoseGoldAction
 from actions.combat import HealAction
 from events.event_pool import register_event
@@ -71,7 +71,7 @@ class TheClericEvent(Event):
         ))
 
         # Display options and wait for selection
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr("events.the_cleric.title"),
             options=options
         ))

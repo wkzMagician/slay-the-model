@@ -98,6 +98,11 @@ class TestMoreColorless(unittest.TestCase):
         card = PanicButton()
         self.assertEqual(card.cost, 0)
 
+    def test_panic_button_info_renders_turns(self):
+        card = PanicButton()
+        info = str(card.info())
+        self.assertIn("2", info)
+
     def test_purify(self):
         card = Purify()
         self.assertEqual(card.cost, 0)

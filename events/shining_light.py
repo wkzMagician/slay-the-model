@@ -6,7 +6,7 @@ Upgrade 2 random cards at the cost of Max HP.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import UpgradeRandomCardAction
 from actions.combat import LoseHPAction
 from localization import LocalStr
@@ -45,7 +45,7 @@ class ShiningLight(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.shining_light.title'),
             options=options
         ))

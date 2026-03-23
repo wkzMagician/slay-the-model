@@ -1,7 +1,7 @@
 from actions.base import Action
 from typing import Optional, Union, List, TYPE_CHECKING
 from actions.combat import ModifyMaxHpAction
-from actions.display import SelectAction
+from actions.display import InputRequestAction
 from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register, get_registered, list_registered
@@ -50,12 +50,24 @@ class AddCardAction(Action):
     Warning:
         This action doesn't copy the card
     """
-    def __init__(self, card, dest_pile: str = None, source: str = None, position: PilePosType = PilePosType.TOP, chance: float = 1.0):
+    def __init__(
+        self,
+        card,
+        dest_pile: str = None,
+        source: str = None,
+        position: PilePosType = PilePosType.TOP,
+        chance: float = 1.0,
+        target=None,
+    ):
         self.card = card
         self.dest_pile = dest_pile
         self.source = source
         self.position = position
         self.chance = chance
+        # Legacy call sites still pass target=player for AddCardAction.
+        # The action always resolves against game_state.player, so keep the
+        # argument for backward compatibility and ignore it.
+        self.target = target
 
     def execute(self) -> 'BaseResult':
         import random
@@ -71,7 +83,8 @@ class AddCardAction(Action):
             if hasattr(game_state.player, "card_manager"):
                 target_pile = self.dest_pile or "deck"
                 follow_up_actions = []
-
+    
+                # todo: 该遗物还没有被实现
                 # Omamori: negate curse cards that would be added to deck.
                 if (
                     target_pile in ("deck")
@@ -101,6 +114,8 @@ class AddCardAction(Action):
                             self.card.upgrade()
 
                 game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
+                
+                # todo: 改为事件系统
                 # Ceramic Fish: whenever a card is added to deck, gain 9 gold.
                 if target_pile in ("deck"):
                     from actions.reward import AddGoldAction
@@ -124,13 +139,13 @@ class AddCardAction(Action):
                 # Localize pile name
                 pile_name = t(f'combat.{target_pile}', default=target_pile)
                 if self.source is None:
-                    print(f"{t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
+                    print(f"{t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
                 elif self.source == "reward":
-                    print(f"[{t('action.reward', default='Reward')}] {t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
+                    print(f"[{t('combat.reward', default='Reward')}] {t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
                 elif self.source == "enemy":
-                    print(f"[{t('action.enemy', default='Enemy')}] {t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
+                    print(f"[{t('combat.enemy', default='Enemy')}] {t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
                 else:
-                    print(f"[{self.source.title()}] {t('action.card_added', default='Added')} {self.card.display_name.resolve()} {t('action.to_pile', default='to')} {pile_name}")
+                    print(f"[{self.source.title()}] {t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
                 if follow_up_actions:
                     for action in follow_up_actions:
                         action.execute()
@@ -190,6 +205,7 @@ class ExhaustCardAction(Action):
             # Trigger card's on_exhaust method
             card_actions = self.card.on_exhaust() if hasattr(self.card, 'on_exhaust') else []
             
+            # todo: 改为事件系统
             # Trigger on_exhaust powers before exhausting
             power_actions = []
             for power in list(game_state.player.powers):
@@ -388,7 +404,7 @@ class ChooseRemoveCardAction(Action):
     def execute(self) -> BaseResult:
         from engine.game_state import game_state
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(self.pile)
@@ -415,7 +431,7 @@ class ChooseRemoveCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_remove"),
             options = options,
             max_select = self.amount,
@@ -446,7 +462,7 @@ class ChooseTransformCardAction(Action):
         amount = self.amount
         
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(pile)
@@ -463,7 +479,7 @@ class ChooseTransformCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_transform"),
             options = options,
             max_select = amount,
@@ -496,7 +512,7 @@ class ChooseUpgradeCardAction(Action):
         amount = self.amount
         
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(pile)
@@ -550,7 +566,7 @@ class ChooseUpgradeCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_upgrade"),
             options = options,
             max_select = amount,
@@ -581,7 +597,7 @@ class ChooseExhaustCardAction(Action):
         amount = self.amount
         
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(pile)
@@ -600,7 +616,7 @@ class ChooseExhaustCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_exhaust"),
             options = options,
             max_select = amount,
@@ -637,7 +653,7 @@ class ChooseAddRandomCardAction(Action):
         if not game_state.player:
             return NoneResult()
 
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         selected_card_ids = []  # Track selected cards to avoid duplicates
@@ -666,7 +682,7 @@ class ChooseAddRandomCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options,
             max_select = 1,
@@ -813,7 +829,7 @@ class ChooseReplaceCardAction(Action):
     def execute(self) -> 'BaseResult':
         options = []
         from engine.game_state import game_state
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
         hand = game_state.player.card_manager.get_pile('hand')
         for card in hand:
             option_name = card.info() # card.display_name
@@ -827,7 +843,7 @@ class ChooseReplaceCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options,
             max_select = self.amount,
@@ -865,7 +881,7 @@ class ChooseMoveCardAction(Action):
         amount = self.amount
 
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(src_pile)
@@ -890,7 +906,9 @@ class ChooseMoveCardAction(Action):
 
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        if len(options) == 1 and amount == 1:
+            return MultipleActionsResult(options[0].actions)
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_move"),
             options = options,
             max_select = amount,
@@ -924,7 +942,7 @@ class ChooseCopyCardAction(Action):
         card_types = self.card_types
 
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(pile)
@@ -947,7 +965,7 @@ class ChooseCopyCardAction(Action):
 
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_copy"),
             options = options,
             max_select = copies,
@@ -1092,7 +1110,7 @@ class ChooseMoveAndSetCostAction(Action):
             return NoneResult()
 
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(self.src_pile)
@@ -1120,7 +1138,7 @@ class ChooseMoveAndSetCostAction(Action):
         # amount = -1 means any number of cards
         max_select = self.amount if self.amount > 0 else len(cards_in_pile)
         
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title=LocalStr("ui.choose_cards_to_set_cost"),
             options=options,
             max_select=max_select,
@@ -1450,7 +1468,7 @@ class ChooseTransformAndUpgradeAction(Action):
         amount = self.amount
         
         card_manager = game_state.player.card_manager
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         options = []
         cards_in_pile = card_manager.get_pile(pile)
@@ -1467,7 +1485,7 @@ class ChooseTransformAndUpgradeAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_transform_and_upgrade"),
             options = options,
             max_select = amount,
@@ -1509,7 +1527,7 @@ class ChooseObtainCardAction(Action):
         if not game_state.player:
             return NoneResult()
 
-        from actions.display import SelectAction
+        from actions.display import InputRequestAction
 
         reward_namespace = self.namespace
         has_prismatic_shard = any(
@@ -1561,7 +1579,7 @@ class ChooseObtainCardAction(Action):
             )
         if not options:
             return NoneResult()
-        select_action = SelectAction(
+        select_action = InputRequestAction(
             title = LocalStr("ui.choose_random_card_to_add"),
             options = options,
             max_select = 1,

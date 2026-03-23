@@ -12,9 +12,27 @@ def _import_character_cards(character: str):
     if character in ("ironclad", "ironclad"):
         import cards.ironclad  # noqa: F401
     elif character in ("silent", "the_silent"):
-        # Add when Silent is implemented
-        pass
+        # Silent cards are not implemented yet; import ironclad starters so
+        # player creation can still resolve a usable starter deck fallback.
+        import cards.ironclad  # noqa: F401
     # Add other characters here as they are implemented
+
+
+def _build_fallback_card(card_id: str):
+    """Provide a minimal starter-deck fallback for unimplemented characters."""
+    from cards.ironclad.defend import Defend
+    from cards.ironclad.strike import Strike
+
+    fallback_map = {
+        "silent.strike": Strike,
+        "silent.defend": Defend,
+        "silent.survivor": Defend,
+    }
+
+    card_class = fallback_map.get(card_id.lower())
+    if card_class is None:
+        return None
+    return card_class()
 
 
 def create_player(character=None):
@@ -75,6 +93,8 @@ def create_player(character=None):
         
         # Get card instance from registry
         card = get_registered_instance("card", class_name)
+        if card is None:
+            card = _build_fallback_card(card_id)
         if card is None:
             raise ValueError(f"Card not found in registry: {card_id} (tried {class_name})")
         starting_deck.append(card)

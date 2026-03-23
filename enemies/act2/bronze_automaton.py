@@ -41,13 +41,12 @@ class BronzeAutomaton(Enemy):
 
     def on_combat_start(self, floor: int):
         """Initialize combat state and add Artifact 3."""
-        super().on_combat_start(floor)
         self._pattern_index = 0
         self._first_turn = True
         # Add Artifact 3 at combat start
         from powers.definitions.artifact import ArtifactPower
         self.add_power(ArtifactPower(amount=3, owner=self))
-        self.current_intention = self.intentions["Spawn Orbs"]
+        super().on_combat_start(floor)
 
     def determine_next_intention(self, floor: int):
         """Determine next intention based on fixed pattern.
@@ -59,7 +58,7 @@ class BronzeAutomaton(Enemy):
         """
         if self._first_turn:
             self._first_turn = False
-            return  # First turn is always Spawn Orbs
+            return self.intentions["Spawn Orbs"]  # First turn is always Spawn Orbs
 
         # Pattern: 0=Flail, 1=Boost, 2=Flail, 3=Boost, 4=Hyper Beam, 5=Stunned
         pattern = ["Flail", "Boost", "Flail", "Boost", "Hyper Beam", "Stunned"]

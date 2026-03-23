@@ -6,7 +6,7 @@ Gold for relic or free relic with Shame curse.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddRandomRelicAction, LoseGoldAction
 from localization import LocalStr
@@ -55,7 +55,7 @@ class PleadingVagrant(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.pleading_vagrant.title'),
             options=options
         ))

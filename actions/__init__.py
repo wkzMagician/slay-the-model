@@ -25,7 +25,7 @@ from utils.result_types import (
 )
 
 # Import commonly used actions
-from actions.display import DisplayTextAction, SelectAction
+from actions.display import DisplayTextAction, InputRequestAction
 from actions.card import RemoveCardAction, ShuffleAction
 # Note: BuyItemAction, OpenChestAction, LeaveRoomAction imported from actions.misc
 # directly in modules that need them to avoid circular import with relics package
@@ -47,7 +47,7 @@ __all__ = [
     'GameStateResult',
 
     # Display actions
-    'DisplayTextAction', 'SelectAction',
+    'DisplayTextAction', 'InputRequestAction',
 
      # Card actions
      'RemoveCardAction',

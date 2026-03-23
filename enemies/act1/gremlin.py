@@ -73,8 +73,8 @@ class MadGremlin(Enemy):
     
     enemy_type = EnemyType.NORMAL
     
-    def __init__(self, hp_range: tuple[int, int] = (20, 24)):
-        super().__init__(hp_range) # todo: 21-25 a7
+    def __init__(self, hp_range: tuple[int, int] = (8, 15)):
+        super().__init__(hp_range)
         self.add_intention(MadGremlinScratchIntention(self))
     
     def determine_next_intention(self, current_floor: int = 1):

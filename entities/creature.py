@@ -56,6 +56,16 @@ class Creature(Localizable):
     def hp(self, value: int) -> None:
         self._hp = max(0, min(self.max_hp, int(value)))
 
+    @property
+    def strength(self) -> int:
+        """Backward-compatible aggregate Strength value."""
+        total = 0
+        for power in self.powers:
+            power_name = getattr(power, "name", "")
+            if power_name == "Strength" or power.__class__.__name__ == "StrengthPower":
+                total += int(getattr(power, "amount", 0) or 0)
+        return total
+
     def take_damage(self, amount: int, source=None, card=None, damage_type: str = "direct") -> int:
         """Take damage after block absorption. Returns actual damage dealt to HP."""
         # Defensive: handle case where amount is accidentally a list

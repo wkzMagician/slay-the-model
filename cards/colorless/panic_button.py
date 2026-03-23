@@ -22,8 +22,10 @@ class PanicButton(Card):
     base_cost = 0
     base_block = 30
     base_exhaust = True
+    base_magic = {"turns": 2}
 
     upgrade_block = 40
+    upgrade_magic = {"turns": 2}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

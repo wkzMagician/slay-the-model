@@ -59,14 +59,15 @@ ui:
   draw_cards: 抽 {count} 张牌
   choose_random_card_to_add: 选择一张随机卡牌加入牌组
   choose_cards_to_upgrade: 选择一张卡牌升级
-  upgrade_comparison_header: "=== 升级前 ==="
-  upgrade_comparison_separator: "\n=== 升级后 ==="
+  upgrade_comparison_header: === 升级前 ===
+  upgrade_comparison_separator: '
+
+    === 升级后 ==='
   choose_cards_to_transform: 选择一张卡牌转化
   choose_cards_to_remove: 选择一张卡牌移除
   skip_potion_option: 跳过
   combat_enter: === 战斗开始 ===
-  # === MISSING UI KEYS - ADDED ===
-  map_view: '地图 - 第 {act} 幕（第 {floor} 层）'
+  map_view: 地图 - 第 {act} 幕（第 {floor} 层）
   legend: '图例:'
   legend_monster: '[M]=怪物'
   legend_elite: '[E]=精英'
@@ -78,19 +79,17 @@ ui:
   legend_neo: '[N]=捏奥'
   legend_current: '*=当前位置'
   legend_available: '>=可前往'
-  legend_visited: '^=已访问'
+  legend_visited: ^=已访问
   connections: '连接:'
-  conn_left: '/=左'
+  conn_left: /=左
   conn_center: '|=中'
-  conn_right: '\\=右'
+  conn_right: \\=右
   floor_label: '第 {num} 层:'
-  rarity_label: '稀有度: {rarity}'
-  type_label: '类型: {type}'
-  rarity_label: 稀有度
-  type_label: 类型
-  category_label: 类别
-  duration_label: 持续
-  amount_label: 数量
+  rarity_label: '???: {rarity}'
+  type_label: '??: {type}'
+  category_label: '??: {category}'
+  duration_label: '??: {duration}'
+  amount_label: '??: {amount}'
   buff: 增益
   debuff: 减益
   permanent: 永久
@@ -107,8 +106,6 @@ ui:
     power: 能力
     status: 状态
     curse: 诅咒
-  skip_potion_option: 跳过
-  combat_enter: === 战斗开始 ===
   ssserpent_head_gold: 蛇头：获得 {amount} 金币！
   received_potion: 获得药水：{name}！
   shop_bought_item: 购买了 {item_name}，花费 {final_price} 金币！
@@ -117,7 +114,7 @@ ui:
     silent: 静默猎人
     defect: 故障机器人
     watcher: 观者
-
+  shop_removed_card: Removed {card} from deck for {price} gold
 blessing:
   title: 选择祝福
   upgrade_card_option: 升级一张卡牌
@@ -171,7 +168,7 @@ events:
     refuse: 拒绝
   cursed_tome:
     title: 诅咒之书
-    "continue": 继续
+    continue: 继续
     take: 拿取
     stop: 停止
     leave: 离开
@@ -380,7 +377,6 @@ events:
     title: 黏液世界
     gather: 收集
     leave: 离开
-
 combat:
   title: 战斗
   choose_action: 选择行动
@@ -411,11 +407,10 @@ combat:
   draw_cards: 抽 {count} 张牌
   enemy_intends: 敌人
   intends_to: 意图是
-  select_target: '=== 选择目标 ==='
+  select_target: === 选择目标 ===
   enemy_killed: '{target_name} 已被击败！'
   deck: 牌组
   hand: 手牌
-  exhaust_pile: 消耗堆
   discard_non_zero_cost_drawn: 弃掉 {count} 张抽出的卡牌（消耗为 0）。
   gain_energy: 获得 {amount} 点能量
   double_energy: 双倍能量增加 {amount} 点能量（共 {total} 点）。
@@ -437,18 +432,6 @@ combat:
   no_cards_to_remove: 没有卡牌可移除
   exhaust_card: 移除此卡牌
   play_card: 打出 {card}
-
-# === ACTION SECTION ===
-action:
-  card_added: 添加
-  to_pile: 到
-  reward: 奖励
-  enemy: 敌人
-  used_potion: 使用药水
-  received_potion: 获得药水
-  gained_gold: 获得金币
-  added_to_deck: 添加到牌组
-  on_target: 对
   upgrade_card: 升级此卡牌
   modify_card_value: 修改 {card} 的 {key} {amount} 点
   increase_card_stat_bonus: '{card} 的 {stat} 加成增加 {amount} 点（共 {total} 点）。'
@@ -469,7 +452,6 @@ action:
   foresight: '窥视 {amount} 张牌: {cards}'
   apply_mark: 对 {target} 施加 {amount} 点印记
   retain_card: 保留 {card}
-  play_card: 打出 {card}
   gain_gold: 获得 {amount} 金币
   deal_damage_all_heal: 对所有敌人造成 {damage} 点伤害
   place_card_on_top: 你本回合打出的下一张牌将被放置在你的抽牌堆顶端。
@@ -484,23 +466,30 @@ action:
   retrieve_zero_cost: 从弃牌堆取回 {count} 张零消耗卡牌到手牌。
   discard_non_attack: 弃掉 {count} 张非攻击牌
   gain_energy_next_turn: 下一回合获得 {amount} 点能量
-  gain_energy_next_turn_scheduled: 计划下一回合获得 {amount} 点能量（存储在 player.pending_energy
-    中）
+  gain_energy_next_turn_scheduled: 计划下一回合获得 {amount} 点能量（存储在 player.pending_energy 中）
   gain_block_next_turn: 下一回合获得 {block} 点格挡
   gain_block_next_turn_scheduled: 计划下一回合获得 {block} 点格挡（存储在 player.pending_block 中）
   reboot_shuffle: 重启动你的手牌和弃牌堆，将它们洗入抽牌堆。
   thievery_steal: '{enemy} 偷走了 {amount} 金币！'
   thievery_return: 追回 {amount} 枚被偷的金币！
   looter_escape: '{enemy} 带着你的金币逃跑了！'
-  hand: 手牌
   powers: 能力
   relics: 遗物
   potions: 药水
-  details: [ 详细信息 ]
+  details:
+  - 详细信息
   card_details: 卡牌
   power_details: 能力
   relic_details: 遗物
-
+  card_added: 添加
+  to_pile: 到
+  reward: 奖励
+  enemy: 敌人
+  used_potion: 使用药水
+  received_potion: 获得药水
+  gained_gold: 获得金币
+  added_to_deck: 添加到牌组
+  on_target: 对
 cards:
   ironclad:
     Strike:
@@ -563,6 +552,7 @@ cards:
     Barricade:
       name: 壁垒
       description: 格挡在回合开始时不再消失。
+      upgrade_description: Block no longer expires at the start of your turn. Costs 2.
     BattleTrance:
       name: 战斗专注
       description: 抽 {draw} 张牌。本回合无法再抽牌。
@@ -742,15 +732,19 @@ cards:
     Slimed:
       name: 粘液
       description: 消耗
+      rarity: special
     Dazed:
       name: 晕眩
       description: 无法打出。虚无。
+      rarity: common
     Wound:
       name: 伤口
       description: 无法打出。每当打出另一张牌，受到 1 点伤害。
+      rarity: common
     Pain:
       name: 疼痛
       description: 无法打出。每当打出另一张牌，受到 1 点伤害。
+      rarity: curse
     DeepBreath:
       name: 深呼吸
       description: 将所有卡牌洗入抽牌堆，抽 {draw} 张牌。
@@ -759,7 +753,7 @@ cards:
       description: 造成 {damage} 点伤害。如果斩杀，获得 {gold} 金币。
     Impatience:
       name: 急躁
-      description: 如果手牌中没有技能牌，抽 {draw} 张牌。
+      description: ?????????????? {draw_amount} ???
     Madness:
       name: 疯狂
       description: 手牌中一张随机牌本回合消耗变为 0。
@@ -826,8 +820,6 @@ cards:
       description: 造成 {damage} 点伤害。抽 1 张牌。
     Forethought:
       name: 预谋
-      description: 将一张手牌置于抽牌堆底。该牌在被打出前费用为0。
-      upgrade_description: 将任意张手牌置于抽牌堆底。这些牌在被打出前费用为0。
       description: 将手牌中的一张攻击牌放到抽牌堆底。直到打出前消耗为 0。
       upgrade_description: 将手牌中的任意张牌放到抽牌堆底。直到打出前消耗为 0。
     GoodInstincts:
@@ -923,7 +915,6 @@ cards:
     Writhe:
       name: 苦恼
       description: 无法打出。固有。
-
 powers:
   EnragePower:
     name: 激怒
@@ -940,6 +931,9 @@ powers:
   WeakPower:
     name: 虚弱
     description: 攻击伤害减少 25%。
+  Constricted:
+    name: ??
+    description: ???????????????????????
   ConfusedPower:
     name: 混乱
     description: 回合开始时随机化卡牌消耗。
@@ -981,7 +975,15 @@ powers:
   StrengthDownPower:
     name: 力量衰减
     description: 回合结束时失去 {amount} 点力量。
-
+  FlexPower:
+    name: Flex
+    description: Gain {amount} Strength. Lose equal amount at end of turn.
+  HeavyBladePower:
+    name: Heavy Blade
+    description: Gain {amount} Strength. Lose equal amount at end of turn.
+  PlatedArmorPower:
+    name: Plated Armor
+    description: At the end of your turn, gain {amount} Block.
 potions:
   HeartOfIron:
     name: 铁之心
@@ -997,7 +999,7 @@ potions:
     description: 施加 {magic_number} 层中毒。
   CunningPotion:
     name: 狡诈药水
-    description: 把三张小刀+放入手牌。
+    description: 获得 {block} 点格挡。
   GhostInAJar:
     name: 罐装幽灵
     description: 获得 1 层虚无。
@@ -1109,7 +1111,6 @@ potions:
   EntropicBrew:
     name: 混沌药水
     description: 向你的空物品栏添加随机药水。
-
 relics:
   AncientTeaSet:
     name: 古老茶具
@@ -1175,7 +1176,7 @@ relics:
     name: 药水腰带
     description: 拾取时获得 2 个药水槽。
   PreservedInsect:
-    name: '昆虫标本'
+    name: 昆虫标本
     description: 精英房间的敌人生命值减少 25%。
   RegalPillow:
     name: 皇家枕头
@@ -1576,7 +1577,14 @@ relics:
   OrangePellets:
     name: 橙色药丸
     description: 每当你打出能力牌、攻击牌和技能牌，移除所有你的减益。
-
+  PotionBeltShop:
+    name: Potion Belt
+  StrangeSpoonShop:
+    name: Strange Spoon (Shop)
+    description: Cards which Exhaust when played will instead discard 50% of time.
+  PaperPhrogIronclad:
+    name: Paper Frog
+    description: Enemies with Vulnerable take 75% more damage rather than 50%.
 enemies:
   Cultist:
     name: 邪教徒
@@ -1874,7 +1882,6 @@ enemies:
       debuff:
         name: 减益
         description: 施加 {stacks} 层虚弱和易伤
-
   TheGuardian:
     name: 守护者
     intentions:
@@ -1902,15 +1909,15 @@ enemies:
   SlimeBoss:
     name: 史莱姆老大
     intentions:
-      goop_pray:
-        name: 粘液祈求
-        description: 向你弃牌堆添加 3 张消瘦。
       preparing:
         name: 准备
         description: 准备一次大的攻击下回合。
       slime_boss_slam:
         name: 史莱姆猛击
         description: 造成 {damage} 点伤害。
+      goop_spray:
+        name: 粘液祈求
+        description: 向你弃牌堆添加 3 张消瘦。
   TheHexaghost:
     name: 六火亡魂
     intentions:
@@ -1919,7 +1926,7 @@ enemies:
         description: 正在蓄力...
       divider:
         name: 分割者
-        description: 造成 {damage} 点伤害分配给所有目标。
+        description: ?? {damage} ??? {attack_times} ??
       sear:
         name: 灼烧
         description: 造成 {damage} 点伤害。向你的弃牌堆添加 1 层燃烧。
@@ -2064,8 +2071,6 @@ enemies:
       Square of Protection:
         name: 防护方阵
         description: 所有敌人获得 {block} 点格挡。
-
-  # Act 3 Enemies
   TimeEater:
     name: 时间吞噬者
     intentions:
@@ -2081,7 +2086,6 @@ enemies:
       Haste:
         name: 急速
         description: 移除所有减益。恢复至 50% 生命值。
-
   AwakenedOne:
     name: 觉醒者
     intentions:
@@ -2103,7 +2107,6 @@ enemies:
       Tackle:
         name: 冲撞
         description: 造成 {damage} 点伤害。
-
   GiantHead:
     name: 大脑袋
     intentions:
@@ -2119,23 +2122,18 @@ enemies:
       Count:
         name: 计数
         description: 正在倒数...
-
   Nemesis:
-    name: 天罚
+    name: ??
     intentions:
-      Attack:
-        name: 攻击
-        description: 造成 {damage} 点伤害。
-      Hex:
-        name: 妖术
-        description: 对你施加 1 层妖术。
-      Torment:
-        name: 折磨
-        description: 向你的弃牌堆添加 2 张迷茫。
-      Invisible:
-        name: 隐形
-        description: 变得虚无缥缈。
-
+      Tri Attack:
+        name: ???
+        description: ?? {damage} ????? 3 ??
+      Tri Burn:
+        name: ????
+        description: ???????? {amount} ????
+      Scythe:
+        name: ????
+        description: ?? {damage} ????
   Reptomancer:
     name: 拜蛇术士
     intentions:
@@ -2148,7 +2146,6 @@ enemies:
       Summon:
         name: 召唤
         description: 召唤匕首。
-
   SpireGrowth:
     name: 塔内增生组织
     intentions:
@@ -2161,7 +2158,6 @@ enemies:
       QuickGrow:
         name: 快速生长
         description: 获得 1 点力量。
-
   Transient:
     name: 倏忽魔
     intentions:
@@ -2171,7 +2167,6 @@ enemies:
       Fade:
         name: 消散
         description: 逐渐消失...
-
   Darkling:
     name: 小黑
     intentions:
@@ -2187,8 +2182,6 @@ enemies:
       Rebirth:
         name: 重生
         description: 复活所有死亡的黑暗雏鸟。
-
-  # Act 4 Enemies
   SpireShield:
     name: 尖塔之盾
     intentions:
@@ -2201,7 +2194,6 @@ enemies:
       Defend:
         name: 防御
         description: 获得 {block} 点格挡。
-
   SpireSpear:
     name: 尖塔之矛
     intentions:
@@ -2214,7 +2206,6 @@ enemies:
       Pierce:
         name: 刺穿
         description: 造成 {damage} 点伤害。
-
   CorruptHeart:
     name: 腐化之心
     intentions:
@@ -2232,12 +2223,13 @@ enemies:
         description: 造成 {damage} 点伤害。
       Invincible:
         name: 无敌
+        description: Cannot take more than 200 damage per turn.
   SpikeSlimeL:
     name: 尖刺史莱姆 (大)
     intentions:
       lick:
         name: 舔舐
-        description: 对你施加 {amount} 层脆弱
+        description: ?? {debuff}?
       split:
         name: 分裂
         description: 分裂成 2 个尖刺史莱姆 (中)
@@ -2289,12 +2281,15 @@ enemies:
   GremlinLeader:
     name: 地精首领
     intentions:
-      rally:
-        name: 召集
-        description: 召唤格林姆
-      attack:
-        name: 攻击
-        description: 造成 {damage} 点伤害
+      Encourage:
+        name: 鼓舞
+        description: 所有敌人获得 {strength_gain} 点力量。其他敌人获得 {block} 点格挡。
+      Stab:
+        name: 刺击
+        description: 造成 {damage} 点伤害，共 {hits} 次。
+      Rally!:
+        name: 召集！
+        description: 召唤 2 个随机地精。
   Taskmaster:
     name: 奴隶头子
     intentions:
@@ -2358,104 +2353,52 @@ enemies:
       explode:
         name: 爆炸
         description: 造成 {damage} 点伤害
-
 ai:
-  decision_system_prompt: |
-    你是《杀戮尖塔》游戏的AI玩家。
-    根据当前游戏状态，从给定选项中做出最优选择。
-    
-    ## 思维链约束（极其重要）:
-    - 思考过程必须精简，控制在3-5个短句内
-    - 直接聚焦关键决策因素，不要冗余分析
-    - 采用"问题→关键因素→结论"的简洁逻辑
-    - 禁止重复描述已知信息
-    - 禁止列举所有选项的详细分析
-    - 示例好思维："血量30%低，精英风险大，选休息点回血"（仅1句）
-    - 示例坏思维："让我分析一下当前情况...首先我有30%血量...然后精英有这些风险...选项1是...选项2是..."（冗长）
-    
-    游戏背景:
-    - 这是一款Roguelike卡牌构建游戏
-    - 目标是生存并击败敌人
-    - 管理生命值、能量、卡牌、遗物和其他资源
-    
-    ## 地图选择风险评估（极其重要）:
-    
-    **精英房间(ELITE)是高风险高回报的选择！**
-    - 精英敌人比普通敌人强得多，可能导致大量生命值损失甚至死亡
-    - 奖励：遗物和更好的卡牌奖励
-    
-    **在以下情况下，不要选择精英房间：**
-    - 当前生命值低于50%或低于30点
-    - 牌组中缺乏高质量攻击牌（如打击牌伤害不足）
-    - 牌组中缺乏防御牌（格挡牌太少）
-    - 没有强力遗物（如燃烧之血只能回复6点）
-    - 刚经历多场战斗，状态不佳
-    - 当前楼层有更安全的选择（如休息点、商店）
-    
-    **只有在以下情况下才考虑精英房间：**
-    - 生命值充足（>60%或>40点）
-    - 牌组已经有一定战斗力
-    - 有回复手段（药水、遗物、吸血卡牌）
-    - 有强力的遗物加成
-    - 没有更紧急的需求（如不需要立即休息回血）
-    
-    **优先级排序（生存第一）：**
-    1. 休息点（低血量时必须优先）> 商店 > 宝藏 > 普通怪物 > 精英
-    2. 高血量且牌组强时：可以考虑精英获取遗物
-    3. 永远不要在低血量时挑战精英！
-    
-    ## 战斗策略指南:
-    - **敌人意图**: 观察敌人下回合会做什么（攻击/防御/增益）
-      - 如果敌人意图造成高伤害，优先打出格挡牌
-      - 如果敌人易伤或低血量，考虑攻击来击杀
-      - 如果敌人在增益，考虑施加减益或快速击杀
-    
-    - **能量管理（极其重要）**: 
-      - **能量每回合结束时会重置为最大值，不能累计到下回合！**
-      - **因此，每回合应该尽量把所有能量用完，不要保留能量**
-      - 如果有可打的好牌，一定要打出来，否则能量就浪费了
-      - 只有当剩余牌都不值得打出时才结束回合
-      - 优先级（低血量时）: 防御 > 伤害 > 功能牌
-      - 有好牌时高效使用所有能量
-    
-    - **出牌优先级**:
-      - 敌人即将攻击且你血量低时 → 格挡牌
-      - 敌人易伤或低血量时 → 攻击牌
-      - 长期优势 → 能力牌
-      - 功能性（抽牌、获得能量）→ 技能牌
-    
-    - **何时结束回合**:
-      - 没有可打的好牌，或剩余牌不值得打出
-      - 有格挡牌但敌人不攻击
-      - 保留牌到下回合更好
-    
-    ## 输出格式:
-    只输出选项编号（从1开始）。不要解释，不要文字。
-    示例: 单选输出"1"或"2"或"3"，多选输出"1, 3, 5"。
-  
-  selection_single: |
-    **重要：这是单选任务。**
+  decision_system_prompt: "你是《杀戮尖塔》游戏的AI玩家。\n根据当前游戏状态，从给定选项中做出最优选择。\n\n## 思维链约束（极其重要）:\n- 思考过程必须精简，控制在3-5个短句内\n- 直接聚焦关键决策因素，不要冗余分析\n\
+    - 采用\"问题→关键因素→结论\"的简洁逻辑\n- 禁止重复描述已知信息\n- 禁止列举所有选项的详细分析\n- 示例好思维：\"血量30%低，精英风险大，选休息点回血\"（仅1句）\n- 示例坏思维：\"让我分析一下当前情况...首先我有30%血量...然后精英有这些风险...选项1是...选项2是...\"\
+    （冗长）\n\n游戏背景:\n- 这是一款Roguelike卡牌构建游戏\n- 目标是生存并击败敌人\n- 管理生命值、能量、卡牌、遗物和其他资源\n\n## 地图选择风险评估（极其重要）:\n\n**精英房间(ELITE)是高风险高回报的选择！**\n\
+    - 精英敌人比普通敌人强得多，可能导致大量生命值损失甚至死亡\n- 奖励：遗物和更好的卡牌奖励\n\n**在以下情况下，不要选择精英房间：**\n- 当前生命值低于50%或低于30点\n- 牌组中缺乏高质量攻击牌（如打击牌伤害不足）\n\
+    - 牌组中缺乏防御牌（格挡牌太少）\n- 没有强力遗物（如燃烧之血只能回复6点）\n- 刚经历多场战斗，状态不佳\n- 当前楼层有更安全的选择（如休息点、商店）\n\n**只有在以下情况下才考虑精英房间：**\n- 生命值充足（>60%或>40点）\n\
+    - 牌组已经有一定战斗力\n- 有回复手段（药水、遗物、吸血卡牌）\n- 有强力的遗物加成\n- 没有更紧急的需求（如不需要立即休息回血）\n\n**优先级排序（生存第一）：**\n1. 休息点（低血量时必须优先）> 商店 > 宝藏 >\
+    \ 普通怪物 > 精英\n2. 高血量且牌组强时：可以考虑精英获取遗物\n3. 永远不要在低血量时挑战精英！\n\n## 战斗策略指南:\n- **敌人意图**: 观察敌人下回合会做什么（攻击/防御/增益）\n  - 如果敌人意图造成高伤害，优先打出格挡牌\n\
+    \  - 如果敌人易伤或低血量，考虑攻击来击杀\n  - 如果敌人在增益，考虑施加减益或快速击杀\n\n- **能量管理（极其重要）**: \n  - **能量每回合结束时会重置为最大值，不能累计到下回合！**\n  - **因此，每回合应该尽量把所有能量用完，不要保留能量**\n\
+    \  - 如果有可打的好牌，一定要打出来，否则能量就浪费了\n  - 只有当剩余牌都不值得打出时才结束回合\n  - 优先级（低血量时）: 防御 > 伤害 > 功能牌\n  - 有好牌时高效使用所有能量\n\n- **出牌优先级**:\n\
+    \  - 敌人即将攻击且你血量低时 → 格挡牌\n  - 敌人易伤或低血量时 → 攻击牌\n  - 长期优势 → 能力牌\n  - 功能性（抽牌、获得能量）→ 技能牌\n\n- **何时结束回合**:\n  - 没有可打的好牌，或剩余牌不值得打出\n\
+    \  - 有格挡牌但敌人不攻击\n  - 保留牌到下回合更好\n\n## 输出格式:\n只输出选项编号（从1开始）。不要解释，不要文字。\n示例: 单选输出\"1\"或\"2\"或\"3\"，多选输出\"1, 3, 5\"。\n"
+  selection_single: '**重要：这是单选任务。**
+
     你必须且只能选择一个选项。
+
     输出格式：只需数字（例如"2"）。
+
     不要输出多个数字如"1, 2"或"2, 3"。
-  
-  selection_multiple: |
-    **这是多选任务。**
+
+    '
+  selection_multiple: '**这是多选任务。**
+
     你最多可以选择 {max_select} 个选项。
+
     输出格式：用逗号分隔的数字（例如"1, 3"）。
-  
-  decision_user_template: |
-    ## 决策场景
+
+    '
+  decision_user_template: '## 决策场景
+
     {title}
-    
+
+
     ## 游戏状态
+
     {context}
-    
+
+
     ## 选项
+
     {options}
-    
+
+
     请输出你的选择（数字）:
 
+    '
 rooms:
   combat:
     enter: === 战斗开始 ===
@@ -2464,6 +2407,7 @@ rooms:
     rewards:
       gold: 获得 {amount} 金币
       card: 将 {card_name} 加入牌组
+    elite_enter: You enter an elite battle!
   RestRoom:
     title: 休息点
     rest: 休息（恢复 30% 生命值）
@@ -2490,34 +2434,8 @@ rooms:
   EventRoom:
     title: 事件
     enter: 你遇到了一个事件。
-  rest:
-    enter: 你进入一个安静的休息点。
-    rest: 你休息并恢复 {amount} 点生命值。
-    smith: 你升级一张卡牌。
-    recall: 你回想红钥匙。
-    title: 休息点
-    options:
-      rest: 休息（{amount} 点生命值）
-      smith: 打铁（升级一张卡牌）
-      recall: 回想（红钥匙）
-      leave: 离开
-  treasure:
-    enter: 你发现了一个宝藏房间！
-    title: 宝藏房间
-    boss_title: Boss 宝藏
-    open_chest: 打开 {chest_type} 宝箱
-    open_small_chest: 打开小宝箱
-    open_boss_chest: 打开 Boss 宝箱
-    leave: 离开
-  shop:
-    enter: 你进入了一个神秘的商店。
-    title: 商店
-
-# === REWARDS SECTION ===
 rewards:
   gold: 获得 {amount} 金币
-
-# === AI CONTEXT LABELS ===
 ai_context:
   player_status: 玩家状态
   hp: 生命值

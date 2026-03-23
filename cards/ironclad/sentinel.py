@@ -23,8 +23,8 @@ class Sentinel(Card):
 
     upgrade_block = 8
 
-    base_magic = {"energy_on_exhaust": 2}
-    upgrade_magic = {"energy_on_exhaust": 3}
+    base_magic = {"energy_on_exhaust": 2, "energy": 2}
+    upgrade_magic = {"energy_on_exhaust": 3, "energy": 3}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

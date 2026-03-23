@@ -51,6 +51,12 @@ def set_language(lang: str):
     if lang in translations:
         current_language = lang
 
+def has_translation(key: str, lang: str = None) -> bool:
+    """Return whether a localization key exists for the current or given language."""
+    language = lang or current_language
+    return key in translations.get(language, {})
+
+
 def t(key: str, default: Any = None, **kwargs) -> str:
     """Translate a key."""
     trans = translations.get(current_language, {}).get(key)
@@ -93,12 +99,13 @@ class ConcatLocalStr(BaseLocalStr):
         return left_str + right_str
 
 class LocalStr(BaseLocalStr):
-    def __init__(self, key: str, **kwargs: Any):
+    def __init__(self, key: str, default: Any = None, **kwargs: Any):
         self.key = key
+        self.default = default
         self.kwargs = kwargs
 
     def resolve(self) -> str:
-        return t(self.key, **self.kwargs)
+        return t(self.key, default=self.default, **self.kwargs)
     
 class Localizable:
     """Provide localized fields via prefix + class name."""

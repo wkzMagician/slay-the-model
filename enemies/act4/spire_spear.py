@@ -27,7 +27,7 @@ class SpireSpear(Enemy):
     enemy_type = EnemyType.ELITE
     
     def __init__(self):
-        super().__init__(hp_range=(160, 160)) # todo: 180 a8
+        super().__init__(hp_range=(38, 42))
         self.add_intention(BurnStrike(self))
         self.add_intention(Skewer(self))
         self.add_intention(Piercer(self))
@@ -56,10 +56,10 @@ class SpireSpear(Enemy):
         self._turn_number += 1
 
         if self._turn_number == 1:
-            return self.intentions["Burn Strike"]
+            return "Burn Strike"
 
         if self._turn_number >= 2 and (self._turn_number - 2) % 3 == 0:
-            return self.intentions["Skewer"]
+            return "Skewer"
 
         if self._pair_index >= len(self._pair_sequence):
             self._pair_sequence = random.choice(

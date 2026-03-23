@@ -6,7 +6,7 @@ A shrine that offers gold or gold with a curse.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.reward import AddGoldAction
 from actions.card import AddCardAction
 from localization import LocalStr
@@ -45,7 +45,7 @@ class GoldenShrine(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.golden_shrine.title'),
             options=options
         ))

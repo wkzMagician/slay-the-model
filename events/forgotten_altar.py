@@ -6,7 +6,7 @@ Trade Golden Idol for Bloody Idol, or sacrifice Max HP.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddRelicAction, LoseRelicAction
 from actions.combat import ModifyMaxHpAction as ModifyMaxHPAction, LoseHPAction
@@ -72,7 +72,7 @@ class ForgottenAltar(Event):
             )
         ])
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.forgotten_altar.title'),
             options=options
         ))

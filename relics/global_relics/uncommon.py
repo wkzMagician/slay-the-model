@@ -7,7 +7,7 @@ from actions.base import Action, LambdaAction
 from actions.card import DrawCardsAction
 from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDamageAction, ApplyPowerAction, ModifyMaxHpAction
 # GainGoldAction imported lazily when needed to avoid circular import
-from actions.misc import BottledCardSelectAction
+from actions.misc import BottledCardInputRequestAction
 from relics.base import Relic
 from utils.types import RarityType, CardType, PilePosType
 from utils.registry import register
@@ -63,7 +63,7 @@ class BottledFlame(Relic):
 
     def on_obtain(self) -> List[Action]:
         """Choose an Attack card when this relic is obtained."""
-        return [BottledCardSelectAction(self, CardType.ATTACK)]
+        return [BottledCardInputRequestAction(self, CardType.ATTACK)]
 
     def on_combat_start(self, player, entities) -> List[Action]:
         """Add selected card to hand at start of combat."""
@@ -85,7 +85,7 @@ class BottledLightning(Relic):
 
     def on_obtain(self) -> List[Action]:
         """Choose a Skill card when this relic is obtained."""
-        return [BottledCardSelectAction(self, CardType.SKILL)]
+        return [BottledCardInputRequestAction(self, CardType.SKILL)]
 
     def on_combat_start(self, player, entities) -> List[Action]:
         """Add selected card to hand at start of combat."""
@@ -107,7 +107,7 @@ class BottledTornado(Relic):
 
     def on_obtain(self) -> List[Action]:
         """Choose a Power card when this relic is obtained."""
-        return [BottledCardSelectAction(self, CardType.POWER)]
+        return [BottledCardInputRequestAction(self, CardType.POWER)]
 
     def on_combat_start(self, player, entities) -> List[Action]:
         """Add selected card to hand at start of combat."""

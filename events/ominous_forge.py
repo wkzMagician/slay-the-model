@@ -6,7 +6,7 @@ A forge that allows upgrading a card or obtaining Warped Tongs with a curse.
 from utils.result_types import BaseResult, MultipleActionsResult
 from events.base_event import Event
 from events.event_pool import register_event
-from actions.display import SelectAction, DisplayTextAction
+from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import ChooseUpgradeCardAction, AddCardAction
 from actions.reward import AddRelicAction
 from localization import LocalStr
@@ -46,7 +46,7 @@ class OminousForge(Event):
             )
         ]
         
-        actions.append(SelectAction(
+        actions.append(InputRequestAction(
             title=LocalStr('events.ominous_forge.title'),
             options=options
         ))

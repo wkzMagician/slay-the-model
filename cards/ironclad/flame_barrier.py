@@ -24,8 +24,8 @@ class FlameBarrier(Card):
 
     upgrade_block = 16
     
-    base_magic = {"counter_attack": 4}
-    upgrade_magic = {"counter_attack": 6}
+    base_magic = {"counter_attack": 4, "damage": 4}
+    upgrade_magic = {"counter_attack": 6, "damage": 6}
 
     def on_play(self, targets: List[Creature] = []) -> List[Action]:
         target = targets[0] if targets else None

@@ -23,7 +23,7 @@ class Action(Localizable):
         Returns:
             BaseResult: The result of this action execution.
                 NoneResult: Action completed with no follow-up
-                SingleActionResult: One action to queue next (includes UI selection via SelectAction)
+                SingleActionResult: One action to queue next (includes UI selection via InputRequestAction)
                 MultipleActionsResult: Multiple actions to queue next
                 GameStateResult: Game state transition (DEATH/WIN)
 

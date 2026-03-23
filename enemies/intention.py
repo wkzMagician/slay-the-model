@@ -1,8 +1,9 @@
 """Enemy intention system - defines what an enemy plans to do."""
 
+import re
 from typing import List, TYPE_CHECKING, Optional
 from abc import ABC, abstractmethod
-from localization import Localizable, BaseLocalStr
+from localization import Localizable, BaseLocalStr, LocalStr, has_translation
 
 if TYPE_CHECKING:
     from enemies.base import Enemy
@@ -51,6 +52,53 @@ class Intention(ABC, Localizable):
         # Get owner's class name (e.g., "Cultist")
         owner_class = self.enemy.__class__.__name__
         return f"{self.localization_prefix}.{owner_class}.intentions.{intention_name}.{field}"
+
+    @staticmethod
+    def _intention_key_candidates(name: str) -> List[str]:
+        """Generate common localization variants for runtime intention names."""
+        if not name:
+            return []
+
+        stripped = name.strip()
+        no_bang = stripped.replace("!", "")
+        snake = re.sub(r"[^A-Za-z0-9]+", "_", stripped).strip("_")
+        snake_no_bang = re.sub(r"[^A-Za-z0-9]+", "_", no_bang).strip("_")
+        lower_snake = snake.lower()
+        lower_snake_no_bang = snake_no_bang.lower()
+        compact = re.sub(r"[^A-Za-z0-9]+", "", stripped)
+        compact_no_bang = re.sub(r"[^A-Za-z0-9]+", "", no_bang)
+        pascal = "".join(part.capitalize() for part in snake_no_bang.split("_") if part)
+
+        variants = []
+        for candidate in (
+            stripped,
+            no_bang,
+            snake,
+            snake_no_bang,
+            lower_snake,
+            lower_snake_no_bang,
+            compact,
+            compact_no_bang,
+            pascal,
+        ):
+            if candidate and candidate not in variants:
+                variants.append(candidate)
+        return variants
+
+    def local(self, field: str, **kwargs) -> LocalStr:
+        """Resolve intention localization through normalized candidate keys."""
+        owner_class = self.enemy.__class__.__name__
+        candidates = [
+            f"{self.localization_prefix}.{owner_class}.intentions.{variant}.{field}"
+            for variant in self._intention_key_candidates(self.__dict__.get("name", "unknown"))
+        ]
+
+        resolved_key = next(
+            (candidate for candidate in candidates if has_translation(candidate)),
+            candidates[0] if candidates else self._get_localized_key(field),
+        )
+        default = self.name
+        return LocalStr(key=resolved_key, default=default, **kwargs)
     
     @property
     def description(self) -> 'BaseLocalStr':

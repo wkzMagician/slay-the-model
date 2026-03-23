@@ -81,6 +81,15 @@ class Player(Creature):
     def potion_limit(self, value: int) -> None:
         self.potions.trim_to_limit(value)
 
+    @property
+    def potion_slots(self) -> int:
+        """Backward-compatible alias for potion capacity."""
+        return self.potion_limit
+
+    @potion_slots.setter
+    def potion_slots(self, value: int) -> None:
+        self.potion_limit = value
+
     def gain_energy(self, amount=1):
         """Gain or lose energy. Positive amount gains energy, negative loses it."""
         self.energy += amount
