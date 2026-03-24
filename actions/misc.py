@@ -208,84 +208,13 @@ class BuyItemAction(Action):
 
     def _restock_shop_item(self, game_state) -> None:
         """Replace purchased shop slot with a new generated item."""
-        from rooms.shop import ShopItem
-        from utils.random import get_random_card, get_random_relic, get_random_potion
-        from utils.types import RarityType, CardType
-        import random
+        from rooms.shop_state import restock_shop_item
 
-        player = game_state.player
+        player = getattr(game_state, "player", None)
         if not player:
             return
 
-        namespace = player.namespace
-        if any(getattr(r, "idstr", None) == "PrismaticShard" for r in player.relics):
-            card_namespaces = None
-        else:
-            card_namespaces = [namespace]
-
-        if self.shop_item.item_type == "card":
-            card_type = random.choice([CardType.ATTACK, CardType.SKILL, CardType.POWER])
-            new_item = get_random_card(
-                rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-                card_types=[card_type],
-                namespaces=card_namespaces,
-            )
-            if not new_item:
-                return
-            if new_item.rarity == RarityType.COMMON:
-                base_price = random.randint(45, 55)
-            elif new_item.rarity == RarityType.UNCOMMON:
-                base_price = random.randint(68, 83)
-            else:
-                base_price = random.randint(135, 165)
-            self.shop_item.item = new_item
-            self.shop_item.base_price = base_price
-            self.shop_item.discount = 0
-            self.shop_item.purchased = False
-            return
-
-        if self.shop_item.item_type == "potion":
-            rarity_roll = random.random()
-            rarity = (
-                RarityType.COMMON
-                if rarity_roll < 0.65
-                else RarityType.UNCOMMON if rarity_roll < 0.90 else RarityType.RARE
-            )
-            new_item = get_random_potion(rarities=[rarity])
-            if not new_item:
-                return
-            if rarity == RarityType.COMMON:
-                base_price = random.randint(48, 53)
-            elif rarity == RarityType.UNCOMMON:
-                base_price = random.randint(71, 79)
-            else:
-                base_price = random.randint(95, 105)
-            self.shop_item.item = new_item
-            self.shop_item.base_price = base_price
-            self.shop_item.discount = 0
-            self.shop_item.purchased = False
-            return
-
-        if self.shop_item.item_type == "relic":
-            rarity_roll = random.random()
-            rarity = (
-                RarityType.COMMON
-                if rarity_roll < 0.50
-                else RarityType.UNCOMMON if rarity_roll < 0.83 else RarityType.RARE
-            )
-            new_item = get_random_relic(rarities=[rarity])
-            if not new_item:
-                return
-            if rarity == RarityType.COMMON:
-                base_price = random.randint(143, 158)
-            elif rarity == RarityType.UNCOMMON:
-                base_price = random.randint(238, 263)
-            else:
-                base_price = random.randint(285, 315)
-            self.shop_item.item = new_item
-            self.shop_item.base_price = base_price
-            self.shop_item.discount = 0
-            self.shop_item.purchased = False
+        restock_shop_item(self.shop_item, player)
 
 
 # ============================================================================
