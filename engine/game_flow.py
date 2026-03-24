@@ -1,4 +1,4 @@
-"""
+﻿"""
 Game flow controller - manages the main game loop by iterating over rooms.
 Supports multi-act progression (Acts 1-4).
 Rooms use global action queue for action management.
@@ -9,7 +9,7 @@ from localization import t, LocalStr
 from utils.types import RoomType
 from engine.game_state import game_state, MAX_ACTS
 from utils.result_types import BaseResult, GameStateResult, SingleActionResult
-from tui.print_utils import tui_print
+from engine.runtime_events import emit_text as tui_print
 
 
 class GameFlow:
@@ -340,3 +340,4 @@ class GameFlow:
         tui_print(t('ui.game_won', default='\n=== VICTORY! ==='))
         tui_print(t('ui.victory_message', default='You have conquered the Spire!'))
         tui_print(t('ui.congratulations', default='Congratulations!'))
+

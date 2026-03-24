@@ -1,11 +1,11 @@
-"""
+﻿"""
 Combat logic class - independent from rooms.
 Can be triggered by CombatRoom or Events.
 Uses global action queue for action management.
 """
 from collections import Counter
 from typing import List
-from tui.print_utils import tui_print
+from engine.runtime_events import emit_text as tui_print
 from actions.base import Action
 from actions.card import DiscardCardAction
 from actions.combat import EndTurnAction
@@ -622,3 +622,4 @@ class Combat(Localizable):
                 participants=self._message_participants(alive_enemies),
             )
         )
+

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+﻿from typing import TYPE_CHECKING, List
 
 from actions.base import Action
 from actions.combat_cards import AttackAction, PlayCardAction, PlayCardBHAction
@@ -6,6 +6,7 @@ from actions.combat_damage import DealDamageAction, GainBlockAction, HealAction,
 from actions.combat_status import ApplyPowerAction, RemovePowerAction, UsePotionAction, UsePotionBHAction
 from entities.creature import Creature
 from localization import t
+from engine.runtime_events import emit_text as print
 from utils.registry import register
 from utils.result_types import BaseResult, NoneResult
 from utils.types import CombatType
@@ -163,3 +164,7 @@ class LoseMaxHPAction(Action):
 
         print(f"Lost {self.amount} max HP. New max HP: {player.max_hp}")
         return NoneResult()
+
+
+
+
