@@ -59,6 +59,7 @@ def test_game_state_resolve_input_request_delegates_to_runtime_context():
 def test_human_selection_honors_game_state_helper_overrides(monkeypatch):
     gs = GameState()
     gs.config.mode = "manual"
+    gs.config.auto_select = False
 
     parsed_inputs = []
 
@@ -117,6 +118,7 @@ def test_drive_actions_resolves_input_request_in_debug_mode():
 def test_parse_selection_input_override_can_return_none(monkeypatch):
     gs = GameState()
     gs.config.mode = "manual"
+    gs.config.auto_select = False
 
     calls = []
     responses = iter(["first", "second"])
@@ -138,4 +140,4 @@ def test_parse_selection_input_override_can_return_none(monkeypatch):
     )
 
     assert len(submission.actions) == 1
-    assert calls == [("first", 2, 1, True), ("second", 2, 1, True)]
+    assert calls == [("first", 1, 1, True), ("second", 1, 1, True)]
