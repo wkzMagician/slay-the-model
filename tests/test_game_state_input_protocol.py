@@ -56,6 +56,39 @@ def test_game_state_resolve_input_request_delegates_to_runtime_context():
     assert seen_requests == [request]
 
 
+def test_human_selection_honors_game_state_helper_overrides(monkeypatch):
+    gs = GameState()
+    gs.config.mode = "manual"
+
+    parsed_inputs = []
+
+    def fake_augment(request):
+        return [
+            Option(
+                name=LocalStr("ui.menu_return", default="Return"),
+                actions=[LambdaAction(lambda: None)],
+            )
+        ]
+
+    def fake_parse(raw_input, option_count, max_select, must_select):
+        parsed_inputs.append((raw_input, option_count, max_select, must_select))
+        return [0]
+
+    gs._augment_human_options = fake_augment
+    gs._parse_selection_input = fake_parse
+    monkeypatch.setattr("builtins.input", lambda _prompt: "patched-input")
+
+    submission = gs.resolve_input_request(
+        InputRequest(
+            options=[Option(name="ignored", actions=[LambdaAction(lambda: None)])],
+            max_select=1,
+        )
+    )
+
+    assert len(submission.actions) == 1
+    assert parsed_inputs == [("patched-input", 1, 1, True)]
+
+
 def test_drive_actions_resolves_input_request_in_debug_mode():
     executed = []
 

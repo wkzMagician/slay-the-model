@@ -35,6 +35,27 @@ class RuntimeContext:
     def current_combat(self):
         return getattr(self.game_state, "current_combat", None)
 
+    def _call_game_state_override(self, hook_name, *args, **kwargs):
+        """Call an overridden GameState hook when one is present."""
+        if self.game_state is None:
+            return None
+
+        bound = getattr(self.game_state, hook_name, None)
+        if bound is None:
+            return None
+
+        try:
+            from engine.game_state import GameState
+            default_impl = getattr(GameState, hook_name, None)
+        except Exception:
+            default_impl = None
+
+        target_impl = getattr(bound, "__func__", bound)
+        if default_impl is not None and target_impl is default_impl:
+            return None
+
+        return bound(*args, **kwargs)
+
     def message_participants(self, enemies=None, include_hand=False, hand=None) -> List:
         """Build the standard runtime participant list for message dispatch."""
         participants = []
@@ -70,12 +91,21 @@ class RuntimeContext:
 
         mode = self.config.mode
         if mode == "ai":
-            selected_indices = self._resolve_ai_selection(request)
+            selected_indices = self._call_game_state_override("_resolve_ai_selection", request)
+            if selected_indices is None:
+                selected_indices = self._resolve_ai_selection(request)
         elif mode == "debug":
-            selected_indices = self._resolve_debug_selection(request)
+            selected_indices = self._call_game_state_override("_resolve_debug_selection", request)
+            if selected_indices is None:
+                selected_indices = self._resolve_debug_selection(request)
         else:
-            selected_indices = self._resolve_human_selection(request)
+            selected_indices = self._call_game_state_override("_resolve_human_selection", request)
+            if selected_indices is None:
+                selected_indices = self._resolve_human_selection(request)
 
+        submission = self._call_game_state_override("_build_submission", options, selected_indices)
+        if submission is not None:
+            return submission
         return self._build_submission(options, selected_indices)
 
     def _augment_human_options(self, request: InputRequest) -> List:
@@ -103,7 +133,9 @@ class RuntimeContext:
         from tui import get_app, is_tui_mode
         from tui.print_utils import tui_print
 
-        options = self._augment_human_options(request)
+        options = self._call_game_state_override("_augment_human_options", request)
+        if options is None:
+            options = self._augment_human_options(request)
         title = t(str(request.title), default=str(request.title)) if isinstance(request.title, str) else str(request.title or "")
 
         if is_tui_mode():
@@ -129,12 +161,20 @@ class RuntimeContext:
                 prompt = t("ui.select_prompt", default=f"Select (0-{len(options)}): ", count=len(options))
 
             raw = input(prompt)
-            parsed = self._parse_selection_input(
+            parsed = self._call_game_state_override(
+                "_parse_selection_input",
                 raw_input=raw,
                 option_count=len(options),
                 max_select=request.max_select,
                 must_select=request.must_select,
             )
+            if parsed is None:
+                parsed = self._parse_selection_input(
+                    raw_input=raw,
+                    option_count=len(options),
+                    max_select=request.max_select,
+                    must_select=request.must_select,
+                )
             if parsed is not None:
                 request.options = options
                 return parsed
@@ -148,6 +188,9 @@ class RuntimeContext:
             return []
 
         if self.decision_engine is None:
+            selected_indices = self._call_game_state_override("_resolve_debug_selection", request)
+            if selected_indices is not None:
+                return selected_indices
             return self._resolve_debug_selection(request)
 
         title = str(request.title or "")
@@ -200,10 +243,16 @@ class RuntimeContext:
             start = max(0, len(options) - actual_max_select)
             return list(range(start, len(options)))
 
-        heuristic_selection = self._resolve_debug_selection_with_heuristics(
+        heuristic_selection = self._call_game_state_override(
+            "_resolve_debug_selection_with_heuristics",
             options,
             actual_max_select,
         )
+        if heuristic_selection is None:
+            heuristic_selection = self._resolve_debug_selection_with_heuristics(
+                options,
+                actual_max_select,
+            )
         if heuristic_selection is not None:
             return heuristic_selection
 
@@ -221,7 +270,9 @@ class RuntimeContext:
 
         scored = []
         for idx, option in enumerate(options):
-            score = self._score_debug_option(option)
+            score = self._call_game_state_override("_score_debug_option", option)
+            if score is None:
+                score = self._score_debug_option(option)
             scored.append((score, idx))
 
         if not scored:
