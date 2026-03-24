@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Tests for room system."""
 
 import unittest
@@ -51,6 +50,17 @@ class TestRooms(unittest.TestCase):
         # Boss rooms are combat rooms with BOSS room_type
         room = CombatRoom(enemies=[], room_type="BOSS", encounter_name="test_boss")
         self.assertIsInstance(room, CombatRoom)
+
+    def test_rooms_do_not_keep_action_queues(self):
+        """Room instances should not keep their own action queues."""
+        for room in [
+            CombatRoom(enemies=[], room_type="MONSTER", encounter_name="test"),
+            RestRoom(),
+            ShopRoom(),
+            TreasureRoom(),
+            EventRoom(),
+        ]:
+            assert not hasattr(room, "action_queue")
 
 
 if __name__ == "__main__":

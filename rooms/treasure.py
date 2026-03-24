@@ -129,10 +129,7 @@ class TreasureRoom(Room):
                 actions=[]
             ))
 
-        # Create InputRequestAction and add to action queue
-        select_action = InputRequestAction(
+        return InputRequestAction(
             title=self.local("boss_title") if self.is_boss else self.local("title"),
             options=options
         )
-        self.action_queue.add_action(select_action)
-        return select_action

@@ -49,10 +49,10 @@ class TestShopRoomBasic:
         assert not _has_relic("AnyRelic")
         assert not _has_relic("")
     
-    def test_shop_has_action_queue(self):
-        """Test ShopRoom has action queue."""
+    def test_shop_does_not_keep_action_queue(self):
+        """Test ShopRoom does not keep a room-local action queue."""
         shop_room = ShopRoom()
-        assert shop_room.action_queue is not None
+        assert not hasattr(shop_room, "action_queue")
 
 
 if __name__ == "__main__":
