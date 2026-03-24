@@ -217,6 +217,7 @@ __marimo__/
 
 # Game saves
 saves/
+.worktrees/
 
 # docs
 docs/
