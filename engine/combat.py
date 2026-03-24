@@ -64,17 +64,15 @@ class Combat(Localizable):
         # Localization
         self.localization_prefix = "combat"
 
-    def _message_participants(self, enemies=None):
+    def _message_participants(self, enemies=None, include_hand=False, hand=None):
         from engine.game_state import game_state
 
         alive_enemies = enemies if enemies is not None else [e for e in self.enemies if e.hp > 0]
-        participants = [game_state.player]
-        participants.extend(list(getattr(game_state.player, "relics", [])))
-        participants.extend(list(getattr(game_state.player, "powers", [])))
-        participants.extend(alive_enemies)
-        for enemy in alive_enemies:
-            participants.extend(list(getattr(enemy, "powers", [])))
-        return participants
+        return game_state.message_participants(
+            enemies=alive_enemies,
+            include_hand=include_hand,
+            hand=hand,
+        )
 
     def start(self) -> GameStateResult:
         """
@@ -334,7 +332,7 @@ class Combat(Localizable):
                     enemies=alive_enemies,
                     hand_cards=list(hand),
                 ),
-                participants=self._message_participants(alive_enemies) + list(hand),
+                participants=self._message_participants(alive_enemies, include_hand=True, hand=list(hand)),
             )
         )
 
