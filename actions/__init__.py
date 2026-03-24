@@ -30,6 +30,7 @@ from actions.card import RemoveCardAction, ShuffleAction
 # Note: BuyItemAction, OpenChestAction, LeaveRoomAction imported from actions.misc
 # directly in modules that need them to avoid circular import with relics package
 from actions.combat import TriggerRelicAction
+from actions.combat import ApplyPowerAction, AttackAction, DealDamageAction, HealAction, UsePotionAction
 from actions.game_over import GameOverAction
 
 # Note: Orb actions are imported on-demand to avoid circular imports
@@ -73,4 +74,13 @@ __all__ = [
     'ExhaustRandomCardAction',
     'ChooseMoveCardAction',
     'ShuffleAction',
+
+    # Combat actions
+    'ApplyPowerAction',
+    'AttackAction',
+    'DealDamageAction',
+    'HealAction',
+    'TriggerRelicAction',
+    'UsePotionAction',
 ]
+

@@ -7,6 +7,16 @@ from tests.test_combat_utils import create_test_helper
 from utils.result_types import MultipleActionsResult, SingleActionResult
 
 
+def test_damage_actions_import_from_split_modules():
+    from actions.combat import DealDamageAction as CombatDealDamageAction
+    from actions.combat import HealAction as CombatHealAction
+    from actions.combat_damage import DealDamageAction as SplitDealDamageAction
+    from actions.combat_damage import HealAction as SplitHealAction
+
+    assert CombatDealDamageAction is SplitDealDamageAction
+    assert CombatHealAction is SplitHealAction
+
+
 def _execute_result(result):
     if result is None:
         return
@@ -85,3 +95,4 @@ def test_deal_damage_action_preserves_card_on_fatal(monkeypatch):
     assert "DamageResolvedMessage" in published
     assert "CreatureDiedMessage" in published
     assert player.max_hp == initial_max_hp + 3
+

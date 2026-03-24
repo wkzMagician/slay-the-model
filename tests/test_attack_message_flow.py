@@ -6,6 +6,16 @@ from tests.test_combat_utils import create_test_helper
 from utils.result_types import MultipleActionsResult, SingleActionResult
 
 
+def test_card_actions_import_from_split_modules():
+    from actions.combat import AttackAction as CombatAttackAction
+    from actions.combat import DealDamageAction as CombatDealDamageAction
+    from actions.combat_cards import AttackAction as SplitAttackAction
+    from actions.combat_damage import DealDamageAction as SplitDealDamageAction
+
+    assert CombatAttackAction is SplitAttackAction
+    assert CombatDealDamageAction is SplitDealDamageAction
+
+
 def _capture_published_message_types(game_state, monkeypatch):
     original_publish = game_state.publish_message
     published = []
@@ -57,3 +67,4 @@ def test_attack_action_places_attack_hook_actions_before_damage(monkeypatch):
     assert len(result.actions) == 2
     assert isinstance(result.actions[0], GainBlockAction)
     assert isinstance(result.actions[1], DealDamageAction)
+

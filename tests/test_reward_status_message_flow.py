@@ -12,6 +12,16 @@ from tests.test_combat_utils import create_test_helper
 from utils.result_types import MultipleActionsResult, SingleActionResult
 
 
+def test_status_actions_import_from_split_modules():
+    from actions.combat import ApplyPowerAction as CombatApplyPowerAction
+    from actions.combat import UsePotionBHAction as CombatUsePotionBHAction
+    from actions.combat_status import ApplyPowerAction as SplitApplyPowerAction
+    from actions.combat_status import UsePotionBHAction as SplitUsePotionBHAction
+
+    assert CombatApplyPowerAction is SplitApplyPowerAction
+    assert CombatUsePotionBHAction is SplitUsePotionBHAction
+
+
 def _execute_result(result):
     if result is None:
         return
@@ -184,3 +194,4 @@ def test_gain_block_action_publishes_block_gained_message(monkeypatch):
     assert "BlockGainedMessage" in published
     assert player.block == 7
     assert enemy.hp == 25
+
