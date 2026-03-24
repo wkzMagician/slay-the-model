@@ -1,9 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """Display actions and declarative input requests."""
 from typing import Dict, List
 
 from actions.base import Action, LambdaAction
 from engine.input_protocol import InputRequest
+from engine.runtime_events import emit_lines, emit_text
+from engine.runtime_presenter import flush_runtime_events
 from localization import BaseLocalStr, LocalStr, t
 from utils.option import Option
 from utils.registry import register
@@ -13,15 +15,6 @@ from utils.result_types import (
     InputRequestResult,
     NoneResult,
 )
-
-
-def _get_tui_app():
-    try:
-        from tui import get_app
-
-        return get_app()
-    except ImportError:
-        return None
 
 
 def _resolve_title(title: object) -> str:
@@ -45,7 +38,7 @@ def build_selected_options(
 
 
 def show_selected_options(selected_options: Dict[int, Option]):
-    """Print or log the selected options."""
+    """Emit the selected options through the runtime event layer."""
     if not selected_options:
         return
 
@@ -53,13 +46,8 @@ def show_selected_options(selected_options: Dict[int, Option]):
     for idx, option in selected_options.items():
         lines.append(f"  {idx + 1}. {option.name}")
 
-    app = _get_tui_app()
-    if app:
-        for line in lines:
-            app.add_output(line)
-    else:
-        for line in lines:
-            print(line)
+    emit_lines(lines)
+    flush_runtime_events()
 
 
 @register("action")
@@ -77,12 +65,8 @@ class DisplayTextAction(Action):
             default=fallback,
             **{k: v for k, v in self.fmt.items() if k != "default"},
         )
-
-        app = _get_tui_app()
-        if app:
-            app.add_output(text)
-        else:
-            print(text)
+        emit_text(text, end="")
+        flush_runtime_events()
         return NoneResult()
 
 
@@ -199,22 +183,21 @@ class MenuAction(Action):
 
     def _show_player_info(self, gs):
         player = gs.player
-        app = _get_tui_app()
         lines = [
             f"HP: {player.hp}/{player.max_hp}",
             f"Gold: {player.gold}",
             f"Energy: {getattr(player, 'energy', 0)}",
         ]
-        self._emit_lines(lines, app)
+        self._emit_lines(lines)
 
     def _show_deck_info(self, gs):
         deck = gs.player.card_manager.get_pile("deck")
         lines = ["Deck:"] + [f"- {card.info()}" for card in deck]
-        self._emit_lines(lines, _get_tui_app())
+        self._emit_lines(lines)
 
     def _show_relics_info(self, gs):
         lines = ["Relics:"] + [f"- {relic.info()}" for relic in gs.player.relics]
-        self._emit_lines(lines, _get_tui_app())
+        self._emit_lines(lines)
 
     def _save_game(self, gs):
         import os
@@ -223,16 +206,12 @@ class MenuAction(Action):
         save_path = os.path.join(os.path.dirname(__file__), "..", "savegame.pkl")
         with open(save_path, "wb") as f:
             pickle.dump(gs, f)
-        self._emit_lines(["Game saved."], _get_tui_app())
+        self._emit_lines(["Game saved."])
 
     def _exit_game(self):
         return GameStateResult("GAME_EXIT")
 
     @staticmethod
-    def _emit_lines(lines: List[str], app):
-        if app:
-            for line in lines:
-                app.add_output(line)
-        else:
-            for line in lines:
-                print(line)
+    def _emit_lines(lines: List[str]):
+        emit_lines(lines)
+        flush_runtime_events()

@@ -1,9 +1,8 @@
 """Shop room orchestration."""
-from actions.display import DisplayTextAction
-from engine.game_state import game_state
+from engine.runtime_events import emit_text
 from rooms.base import BaseResult, Room
 from rooms.shop_menu import build_shop_menu
-from rooms.shop_state import ShopItem, game_state_has_relic, generate_shop_items
+from rooms.shop_state import game_state_has_relic, generate_shop_items
 from utils.result_types import MultipleActionsResult
 from utils.types import RoomType
 
@@ -28,17 +27,15 @@ class ShopRoom(Room):
 
     def enter(self) -> BaseResult:
         """Enter the shop and present the initial menu."""
+        from engine.game_state import game_state
         from engine.messages import ShopEnteredMessage
 
-        actions = [DisplayTextAction(text_key="rooms.ShopRoom.enter")]
-        actions.extend(
-            game_state.publish_message(
-                ShopEnteredMessage(owner=game_state.player, room=self, entities=[]),
-                participants=list(game_state.player.relics),
-            )
+        emit_text(self.local("enter", default="Enter the room"))
+        game_state.publish_message(
+            ShopEnteredMessage(owner=game_state.player, room=self, entities=[]),
+            participants=list(game_state.player.relics),
         )
-        actions.append(self._build_shop_menu())
-        return MultipleActionsResult(actions)
+        return MultipleActionsResult([self._build_shop_menu()])
 
     def leave(self):
         """Leave the shop and reset single-visit state."""
@@ -47,10 +44,13 @@ class ShopRoom(Room):
 
     def _generate_items(self):
         """Generate the current shop inventory."""
+        from engine.game_state import game_state
         return generate_shop_items(player=getattr(game_state, "player", None))
 
     def _build_shop_menu(self):
         """Build the current shop menu."""
+        from engine.game_state import game_state
+
         player = getattr(game_state, "player", None)
         player_gold = getattr(player, "gold", None) if player else None
 

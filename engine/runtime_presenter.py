@@ -1,7 +1,7 @@
 ﻿"""Render structured runtime events to CLI or TUI output."""
 from __future__ import annotations
 
-from typing import Iterable
+import sys
 
 
 def _emit_text(text: str) -> None:
@@ -15,17 +15,25 @@ def _emit_text(text: str) -> None:
     except ImportError:
         pass
 
-    print(text)
+    sys.stdout.write(text)
+    sys.stdout.flush()
 
 
 def render_runtime_event(event) -> None:
     """Render a runtime event using the active output backend."""
-    kind = getattr(event, "kind", "text")
-    if kind == "lines":
-        for line in getattr(event, "lines", ()):
-            _emit_text(str(line))
-        return
-
     text = getattr(event, "text", "")
     if text:
-        _emit_text(str(text))
+        _emit_text(text)
+        return
+
+    lines = getattr(event, "lines", ())
+    if lines:
+        _emit_text("\n".join(str(line) for line in lines) + "\n")
+
+
+def flush_runtime_events() -> None:
+    """Render and clear all queued runtime events."""
+    from engine.runtime_events import drain_runtime_events
+
+    for event in drain_runtime_events():
+        render_runtime_event(event)

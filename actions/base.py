@@ -1,4 +1,4 @@
-"""
+﻿"""
 Base action system
 """
 from typing import TYPE_CHECKING, List
@@ -12,8 +12,10 @@ if TYPE_CHECKING:
 
 from tui.print_utils import tui_print
 
+
 class Action(Localizable):
     """Base action class - executable game logic unit"""
+
     def __init__(self):
         pass
 
@@ -26,12 +28,11 @@ class Action(Localizable):
                 SingleActionResult: One action to queue next (includes UI selection via InputRequestAction)
                 MultipleActionsResult: Multiple actions to queue next
                 GameStateResult: Game state transition (DEATH/WIN)
-
         """
         raise NotImplementedError
 
     def _get_localized_key(self, field: str) -> str:
-        """构建字段对应的本地化 key。"""
+        """Build the localization key for this action field."""
         return f"actions.{self.__class__.__name__}.{field}"
 
 
@@ -40,8 +41,10 @@ def _get_none_result():
     from utils.result_types import NoneResult
     return NoneResult()
 
+
 class LambdaAction(Action):
     """Action that executes a provided function"""
+
     def __init__(self, func, args=None, kwargs=None):
         super().__init__()
         self.func = func
@@ -57,8 +60,10 @@ class LambdaAction(Action):
             return result
         return _get_none_result()
 
+
 class ActionQueue:
     """Queue of actions to execute in loop"""
+
     def __init__(self):
         self.queue: List[Action] = []
 
@@ -92,6 +97,11 @@ class ActionQueue:
                 pass  # Debug mode not available
 
             result = action.execute()
+            try:
+                from engine.runtime_presenter import flush_runtime_events
+                flush_runtime_events()
+            except ImportError:
+                pass
             if result is not None:
                 # If action returned a result (BaseResult subclass), return it
                 if hasattr(result, 'result_type'):

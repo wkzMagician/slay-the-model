@@ -4,12 +4,15 @@ Event room definitions.
 Event rooms are rooms where random events occur when player enters.
 Events can offer choices, rewards, or challenges based on game state.
 """
-from actions.display import DisplayTextAction
+from actions.base import LambdaAction
+from actions.display import InputRequestAction
+from engine.runtime_events import emit_text
 from rooms.base import Room
-from utils.result_types import BaseResult, NoneResult, GameStateResult, MultipleActionsResult, SingleActionResult
-from utils.types import RoomType
+from utils.option import Option
 from utils.random import get_random_events
 from utils.registry import register
+from utils.result_types import BaseResult, GameStateResult, MultipleActionsResult, NoneResult, SingleActionResult
+from utils.types import RoomType
 
 
 @register("room")
@@ -46,7 +49,6 @@ class EventRoom(Room):
         from engine.game_state import game_state
         import events  # Ensure all @register_event decorators are loaded.
 
-        # Get a single random event from the current Act's pool
         selected_events = get_random_events(
             act=game_state.current_act,
             count=1
@@ -63,16 +65,11 @@ class EventRoom(Room):
         Returns:
             Execution result from event or NoneResult
         """
-        display_action = DisplayTextAction(
-            text_key="rooms.event.enter",
-            default="You encounter a mysterious event...",
+        emit_text(
+            self.local("enter", default="You encounter a mysterious event...")
         )
 
         if self.available_events and len(self.available_events) > 1:
-            from actions.display import InputRequestAction
-            from utils.option import Option
-            from actions.base import LambdaAction
-
             options = []
             for event in self.available_events:
                 options.append(
@@ -81,7 +78,7 @@ class EventRoom(Room):
                         actions=[LambdaAction(func=self._select_event, args=[event])],
                     )
                 )
-            return MultipleActionsResult([display_action, InputRequestAction(options=options)])
+            return MultipleActionsResult([InputRequestAction(options=options)])
 
         if self.available_events and not self.selected_event:
             self.selected_event = self.available_events[0]
@@ -90,7 +87,7 @@ class EventRoom(Room):
             return self._empty_pool_result()
 
         event_result = self._trigger_event(self.selected_event)
-        return self._merge_display_with_result(display_action, event_result)
+        return self._merge_display_with_result(event_result)
 
     def _trigger_event(self, event) -> BaseResult:
         """
@@ -113,33 +110,25 @@ class EventRoom(Room):
 
     def _empty_pool_result(self) -> BaseResult:
         """Return the explicit runtime result for an empty event pool."""
-        return SingleActionResult(
-            DisplayTextAction(
-                text_key="rooms.event.empty_pool",
-                default="The room is quiet. Nothing happens.",
-            )
+        emit_text(
+            self.local("empty_pool", default="The room is quiet. Nothing happens.")
         )
+        return NoneResult()
 
     def _select_event(self, event):
         self.selected_event = event
         result = self._trigger_event(event)
-        if isinstance(result, SingleActionResult):
+        if isinstance(result, GameStateResult):
+            return result
+        if hasattr(result, 'action'):
             from engine.game_state import game_state
-
             game_state.action_queue.add_action(result.action, to_front=True)
-        elif isinstance(result, MultipleActionsResult):
+        elif hasattr(result, 'actions'):
             from engine.game_state import game_state
-
             game_state.action_queue.add_actions(result.actions, to_front=True)
 
-    def _merge_display_with_result(
-        self, display_action: DisplayTextAction, event_result: BaseResult
-    ) -> BaseResult:
+    def _merge_display_with_result(self, event_result: BaseResult) -> BaseResult:
         """Attach room entry display to event execution result."""
         if isinstance(event_result, GameStateResult):
             return event_result
-        if isinstance(event_result, SingleActionResult):
-            return MultipleActionsResult([display_action, event_result.action])
-        if isinstance(event_result, MultipleActionsResult):
-            return MultipleActionsResult([display_action] + event_result.actions)
-        return SingleActionResult(display_action)
+        return event_result or NoneResult()

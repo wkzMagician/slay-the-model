@@ -1,4 +1,4 @@
-"""
+﻿"""
 Test info() functions for Relic, Potion, and Power classes.
 
 Note: Due to circular import issues, these tests import base modules directly using importlib
@@ -7,6 +7,8 @@ import unittest
 import sys
 import os
 import importlib.util
+from contextlib import redirect_stdout
+from io import StringIO
 
 # Import relic base module directly to avoid circular import
 spec = importlib.util.spec_from_file_location(
@@ -59,14 +61,14 @@ class TestRelicInfo(unittest.TestCase):
         class TestRelic(Relic):
             pass
         
-        relic = TestRelic()
-        info = relic.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            relic = TestRelic()
+            info = relic.info()
+            stdout = buffer.getvalue()
         
-        # Check that info contains name
+        self.assertEqual(stdout, "")
         self.assertIn("TestRelic", str(info))
-        # Check that info contains rarity
         self.assertIn("Rarity: Common", str(info))
-        # Check that info contains newline
         self.assertIn("\n", str(info))
         
     def test_relic_info_with_custom_rarity(self):
@@ -75,9 +77,12 @@ class TestRelicInfo(unittest.TestCase):
         class RareRelic(Relic):
             rarity = RarityType.RARE
         
-        relic = RareRelic()
-        info = relic.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            relic = RareRelic()
+            info = relic.info()
+            stdout = buffer.getvalue()
         
+        self.assertEqual(stdout, "")
         self.assertIn("Rarity: Rare", str(info))
 
 
@@ -90,16 +95,15 @@ class TestPotionInfo(unittest.TestCase):
         class TestPotion(Potion):
             pass
         
-        potion = TestPotion()
-        info = potion.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            potion = TestPotion()
+            info = potion.info()
+            stdout = buffer.getvalue()
         
-        # Check that info contains name
+        self.assertEqual(stdout, "")
         self.assertIn("TestPotion", str(info))
-        # Check that info contains rarity
         self.assertIn("Rarity: Common", str(info))
-        # Check that info contains category
         self.assertIn("Category: Global", str(info))
-        # Check that info contains newline
         self.assertIn("\n", str(info))
         
     def test_potion_info_with_custom_category(self):
@@ -108,9 +112,12 @@ class TestPotionInfo(unittest.TestCase):
         class CustomPotion(Potion):
             category = "Ironclad"
         
-        potion = CustomPotion()
-        info = potion.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            potion = CustomPotion()
+            info = potion.info()
+            stdout = buffer.getvalue()
         
+        self.assertEqual(stdout, "")
         self.assertIn("Category: Ironclad", str(info))
 
 
@@ -125,18 +132,16 @@ class TestPowerInfo(unittest.TestCase):
             # Use BOTH to show both amount and duration
             stack_type = StackType.BOTH
         
-        power = TestBuff(amount=5, duration=3)
-        info = power.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            power = TestBuff(amount=5, duration=3)
+            info = power.info()
+            stdout = buffer.getvalue()
         
-        # Check that info contains name
+        self.assertEqual(stdout, "")
         self.assertIn("TestBuff", str(info))
-        # Check that info contains amount
         self.assertIn("Amount: 5", str(info))
-        # Check that info contains duration
         self.assertIn("Duration: 3", str(info))
-        # Check that info shows it's a buff
         self.assertIn("Type: Buff", str(info))
-        # Check that info contains newline
         self.assertIn("\n", str(info))
         
     def test_power_info_debuff(self):
@@ -147,9 +152,12 @@ class TestPowerInfo(unittest.TestCase):
             # Use BOTH to show both amount and duration
             stack_type = StackType.BOTH
         
-        power = TestDebuff(amount=2, duration=5)
-        info = power.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            power = TestDebuff(amount=2, duration=5)
+            info = power.info()
+            stdout = buffer.getvalue()
         
+        self.assertEqual(stdout, "")
         self.assertIn("Amount: 2", str(info))
         self.assertIn("Duration: 5", str(info))
         self.assertIn("Type: Debuff", str(info))
@@ -162,11 +170,13 @@ class TestPowerInfo(unittest.TestCase):
             # Use BOTH to show both amount and duration
             stack_type = StackType.BOTH
         
-        power = TestPermanent(amount=10, duration=-1)
-        info = power.info()
+        with StringIO() as buffer, redirect_stdout(buffer):
+            power = TestPermanent(amount=10, duration=-1)
+            info = power.info()
+            stdout = buffer.getvalue()
         
+        self.assertEqual(stdout, "")
         self.assertIn("Amount: 10", str(info))
-        # Permanent is represented as -1 in the info string
         self.assertIn("Duration: Permanent", str(info))
 
 

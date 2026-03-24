@@ -1,8 +1,8 @@
 ﻿"""Structured runtime events emitted by execution code."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Sequence, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -12,41 +12,38 @@ class RuntimeEvent:
     kind: str
     text: str = ""
     lines: Tuple[str, ...] = ()
-    data: Dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, Any] = None
+
+    def __post_init__(self):
+        if self.data is None:
+            object.__setattr__(self, "data", {})
 
 
 _RUNTIME_EVENTS: List[RuntimeEvent] = []
 
 
 def emit_runtime_event(event: RuntimeEvent) -> RuntimeEvent:
-    """Record and render a runtime event."""
+    """Record a runtime event without rendering it."""
     _RUNTIME_EVENTS.append(event)
-    from engine.runtime_presenter import render_runtime_event
-
-    render_runtime_event(event)
     return event
 
 
 def emit_text(*args: Any, sep: str = " ", end: str = "\n", kind: str = "text", data: Dict[str, Any] | None = None) -> RuntimeEvent:
-    """Emit text like print, but through the runtime event layer."""
-    if not args:
-        return emit_blank_line()
-    text = sep.join(str(arg) for arg in args)
-    if end and end != "\n":
-        text = f"{text}{end}"
+    """Emit text using print-compatible concatenation semantics."""
+    text = sep.join(str(arg) for arg in args) + end
     return emit_runtime_event(RuntimeEvent(kind=kind, text=text, data=data or {}))
 
 
-def emit_lines(lines: Sequence[Any], *, kind: str = "lines", data: Dict[str, Any] | None = None) -> RuntimeEvent:
-    """Emit a multi-line event."""
-    return emit_runtime_event(
-        RuntimeEvent(kind=kind, lines=tuple(str(line) for line in lines), data=data or {})
-    )
+def emit_lines(lines: List[Any], *, kind: str = "lines", data: Dict[str, Any] | None = None) -> RuntimeEvent:
+    """Emit a multi-line runtime event."""
+    normalized = tuple(str(line) for line in lines)
+    text = "\n".join(normalized) + "\n"
+    return emit_runtime_event(RuntimeEvent(kind=kind, text=text, lines=normalized, data=data or {}))
 
 
 def emit_blank_line() -> RuntimeEvent:
     """Emit a blank line event."""
-    return emit_lines([""])
+    return emit_text("")
 
 
 def get_runtime_events() -> List[RuntimeEvent]:

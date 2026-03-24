@@ -1,4 +1,4 @@
-from actions.card_choice import (
+﻿from actions.card_choice import (
     ChooseAddRandomCardAction,
     ChooseCopyCardAction,
     ChooseExhaustCardAction,
@@ -36,6 +36,7 @@ from actions.card_transform import (
     UpgradeCardAction,
     UpgradeRandomCardAction,
 )
+from engine.runtime_events import emit_text as emit_card_output
 
 __all__ = [
     'AddCardAction',
@@ -70,4 +71,5 @@ __all__ = [
     'UpgradeAllCardsAction',
     'UpgradeCardAction',
     'UpgradeRandomCardAction',
+    'emit_card_output',
 ]

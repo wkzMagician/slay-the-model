@@ -1,17 +1,18 @@
-﻿"""
+"""
 Test P2-2 combat info display.
 """
 import types
 
 
-def test_combat_snapshot_uses_runtime_event_layer(capsys, monkeypatch):
+def test_combat_snapshot_uses_runtime_event_layer(monkeypatch):
     from engine import runtime_presenter
     from engine.combat import Combat
     from engine.game_state import game_state
-    from engine.runtime_events import drain_runtime_events
+    from engine.runtime_events import drain_runtime_events, get_runtime_events
+    from engine.runtime_presenter import flush_runtime_events
 
-    events = []
-    monkeypatch.setattr(runtime_presenter, "render_runtime_event", lambda event: events.append(event))
+    rendered = []
+    monkeypatch.setattr(runtime_presenter, "render_runtime_event", lambda event: rendered.append(event))
 
     class DummyCardManager:
         def get_pile(self, name):
@@ -37,9 +38,9 @@ def test_combat_snapshot_uses_runtime_event_layer(capsys, monkeypatch):
             self.max_energy = 3
             self.draw_count = 5
             self.card_manager = DummyCardManager()
-            self.current_intention = None
             self.relics = []
             self.powers = []
+            self.current_intention = None
 
         def is_dead(self):
             return False
@@ -50,7 +51,6 @@ def test_combat_snapshot_uses_runtime_event_layer(capsys, monkeypatch):
     original_player = game_state.player
     original_current_combat = game_state.current_combat
     original_config = game_state.config
-    original_mode = getattr(game_state.config, "mode", None) if game_state.config else None
     try:
         player = DummyCreature("Player")
         player.powers = [DummyPower()]
@@ -62,13 +62,17 @@ def test_combat_snapshot_uses_runtime_event_layer(capsys, monkeypatch):
         drain_runtime_events()
 
         game_state.current_combat._print_combat_state()
+        queued = get_runtime_events()
 
-        assert capsys.readouterr().out == ""
-        assert events, "expected runtime events instead of direct combat printing"
+        assert queued
+        assert queued[0].kind == "text"
+        assert rendered == []
+
+        flush_runtime_events()
+        assert len(rendered) == len(queued)
+        assert rendered[0].kind == queued[0].kind
     finally:
         drain_runtime_events()
         game_state.player = original_player
         game_state.current_combat = original_current_combat
         game_state.config = original_config
-
-

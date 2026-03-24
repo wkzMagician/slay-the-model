@@ -10,6 +10,7 @@ from utils.types import RoomType
 from engine.game_state import game_state, MAX_ACTS
 from utils.result_types import BaseResult, GameStateResult, SingleActionResult
 from engine.runtime_events import emit_text as tui_print
+from engine.runtime_presenter import flush_runtime_events
 
 
 class GameFlow:
@@ -127,6 +128,9 @@ class GameFlow:
 
         cur_room.init()
         result = cur_room.enter()
+
+        from engine.runtime_presenter import flush_runtime_events
+        flush_runtime_events()
 
         from tui import get_app, is_tui_mode
         if is_tui_mode():
@@ -258,6 +262,7 @@ class GameFlow:
         # Continue to next act
         tui_print(t('ui.entering_act', act=game_state.current_act, 
                default=f'\n=== Entering Act {game_state.current_act} ==='))
+        flush_runtime_events()
         return True
     
     def _display_welcome(self):
@@ -266,6 +271,7 @@ class GameFlow:
         tui_print(f"{t('ui.game_awaken', default='You awaken in a strange place...')}")
         tui_print(f"{t('ui.seed_display', seed=game_state.config.seed, default=f'Seed: {game_state.config.seed}')}")
         tui_print(f"{t('ui.character_display', character=t(f'ui.character.{game_state.config.character.lower()}', default=game_state.config.character), default=f'Character: {game_state.config.character}')}\n")
+        flush_runtime_events()
 
         # Update display panel with player info
         from tui import get_app, is_tui_mode
@@ -283,6 +289,8 @@ class GameFlow:
         assert isinstance(neo_room, Room)
         neo_room.init()
         result = neo_room.enter()
+        from engine.runtime_presenter import flush_runtime_events
+        flush_runtime_events()
         # Handle Neo room result
         if isinstance(result, GameStateResult) and result.state == "GAME_LOSE":
             return result
@@ -329,15 +337,18 @@ class GameFlow:
         tui_print(t('ui.death_message', default='You have fallen in the Spire...'))
         tui_print(t('ui.floor_reached', floor=game_state.current_floor, 
                default=f'Floor reached: {game_state.current_floor}'))
+        flush_runtime_events()
     
     def _handle_game_exit(self):
         """Handle game exit."""
         tui_print(t('ui.game_exit', default='\n=== GAME EXIT ==='))
         tui_print(t('ui.exit_message', default='Thanks for playing!'))
+        flush_runtime_events()
     
     def _handle_game_won(self):
         """Handle game victory."""
         tui_print(t('ui.game_won', default='\n=== VICTORY! ==='))
         tui_print(t('ui.victory_message', default='You have conquered the Spire!'))
         tui_print(t('ui.congratulations', default='Congratulations!'))
+        flush_runtime_events()
 
