@@ -2,9 +2,11 @@
 """Tests for event pool and registration."""
 
 import unittest
+from unittest.mock import patch
 
 from events.base_event import Event
 from events.event_pool import EventPool
+from rooms.event import EventRoom
 
 
 class TestEventPool(unittest.TestCase):
@@ -19,6 +21,16 @@ class TestEventPool(unittest.TestCase):
         """Test EventPool has get_event_by_id method."""
         pool = EventPool()
         self.assertTrue(hasattr(pool, 'get_event_by_id'))
+
+    def test_event_room_init_does_not_create_fallback_event_when_pool_is_empty(self):
+        """Runtime rooms should not invent fallback events when the pool is empty."""
+        room = EventRoom()
+
+        with patch("rooms.event.get_random_events", return_value=[]):
+            room.init()
+
+        self.assertIsNone(room.selected_event)
+        self.assertEqual(room.available_events, [])
 
 
 class TestEventDecorator(unittest.TestCase):

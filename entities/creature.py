@@ -77,10 +77,8 @@ class Creature(Localizable):
 
     def take_damage(self, amount: int, source=None, card=None, damage_type: str = "direct") -> int:
         """Take damage after block absorption. Returns actual damage dealt to HP."""
-        # Defensive: handle case where amount is accidentally a list
         if isinstance(amount, list):
-            print(f"[WARNING] take_damage received list instead of int: {amount}, taking first element")
-            amount = amount[0] if amount else 0
+            raise TypeError("take_damage expects int, got list")
         if amount <= 0:
             return 0
         
