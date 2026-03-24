@@ -69,6 +69,11 @@ def test_shop_room_enter_publishes_shop_entered_message(monkeypatch):
     monkeypatch.setattr(helper.game_state, "publish_message", wrapped)
 
     result = room.enter()
+    assert isinstance(result, MultipleActionsResult)
+    assert result.actions
+    assert isinstance(result.actions[0], GainBlockAction)
+    assert any(action.__class__.__name__ == "InputRequestAction" for action in result.actions)
+
     _execute_result(result)
     helper.game_state.drive_actions()
 
