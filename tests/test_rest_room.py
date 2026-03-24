@@ -18,10 +18,10 @@ class TestRestRoomBasic:
         assert rest_room.room_type.value == "Rest Site"
         assert rest_room.localization_prefix == "rooms"
 
-    def test_rest_room_has_action_queue(self):
-        """Test RestRoom has action queue."""
+    def test_rest_room_does_not_keep_action_queue(self):
+        """Test RestRoom does not keep a room-local action queue."""
         rest_room = RestRoom()
-        assert rest_room.action_queue is not None
+        assert not hasattr(rest_room, "action_queue")
 
     def test_relic_check_without_relics(self):
         """Test _has_relic returns False when player has no relics."""

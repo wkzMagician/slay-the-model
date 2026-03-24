@@ -65,19 +65,13 @@ class TestTreasureRoomBasic:
         assert boss_treasure.chest_type == "boss"
     
     def test_treasure_room_builds_menu(self):
-        """Test _build_treasure_menu creates menu options."""
+        """Test _build_treasure_menu returns menu options directly."""
         treasure_room = TreasureRoom()
         treasure_room.init()
-        treasure_room._build_treasure_menu()
-        
-        # Get InputRequestAction from queue
-        select_action = None
-        for action in treasure_room.action_queue.queue:
-            if isinstance(action, InputRequestAction):
-                select_action = action
-                break
-        
-        assert select_action is not None
+
+        select_action = treasure_room._build_treasure_menu()
+
+        assert isinstance(select_action, InputRequestAction)
         assert len(select_action.options) >= 1  # At least Open Chest or Leave
     
     def test_treasure_room_leave(self):
