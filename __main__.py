@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Entry point for Slay the Model game.
 Supports both TUI mode (default) and CLI mode (--no-tui flag).
@@ -15,6 +15,7 @@ import os
 import argparse
 from engine.game_flow import GameFlow
 from engine.game_state import game_state
+from engine.runtime_context import configure_noninteractive_cli_mode
 
 
 def _import_character_cards(character: str):
@@ -39,9 +40,19 @@ def _import_relics():
     import relics
 
 
+def _is_interactive_stdin():
+    """Return True when stdin can accept interactive input."""
+    try:
+        return bool(sys.stdin and sys.stdin.isatty())
+    except (AttributeError, OSError, ValueError):
+        return False
+
+
 def run_cli_mode():
     """Run game in traditional CLI mode (no TUI)."""
     try:
+        if not _is_interactive_stdin():
+            configure_noninteractive_cli_mode(game_state)
         _import_character_cards(game_state.config.character)
         _import_potions()
         _import_powers()

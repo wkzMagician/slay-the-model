@@ -1,11 +1,42 @@
-import random as rd
+﻿import random as rd
+import sys
 from typing import List, Optional
 
 from engine.input_protocol import InputRequest, InputSubmission
 
-
 NO_OVERRIDE = object()
 
+
+
+
+def is_stdin_interactive(stdin=None) -> bool:
+    """Return True when stdin can accept interactive CLI input."""
+    stream = stdin if stdin is not None else sys.stdin
+    if stream is None:
+        return False
+    try:
+        return bool(stream.isatty())
+    except (AttributeError, OSError, ValueError):
+        return False
+
+
+def configure_noninteractive_cli_mode(game_state, stdin=None) -> bool:
+    """Switch the game into a stable non-interactive CLI mode when stdin is unavailable."""
+    if is_stdin_interactive(stdin):
+        return False
+
+    config = getattr(game_state, "config", None)
+    if config is None:
+        return False
+
+    config.mode = "debug"
+    config.auto_select = True
+    debug = getattr(config, "debug", None)
+    if not isinstance(debug, dict):
+        debug = {}
+        config.debug = debug
+    debug["select_type"] = "first"
+    return True
 
 class RuntimeContext:
     """Shared runtime helpers for participant assembly and input resolution."""
@@ -398,3 +429,5 @@ class RuntimeContext:
             if 0 <= idx < len(options):
                 actions.extend(options[idx].actions)
         return InputSubmission(actions)
+
+

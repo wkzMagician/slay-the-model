@@ -1,8 +1,8 @@
-"""Shop room orchestration."""
+﻿"""Shop room orchestration."""
 from engine.runtime_events import emit_text
 from rooms.base import BaseResult, Room
+from rooms.shop_state import ShopItem, game_state_has_relic, generate_shop_items
 from rooms.shop_menu import build_shop_menu
-from rooms.shop_state import game_state_has_relic, generate_shop_items
 from utils.result_types import MultipleActionsResult
 from utils.types import RoomType
 

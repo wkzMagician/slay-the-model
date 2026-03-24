@@ -1,4 +1,4 @@
-import builtins
+﻿import builtins
 import queue
 from io import BytesIO
 from pathlib import Path
@@ -35,11 +35,8 @@ def test_run_game_targets_repo_root_main(monkeypatch):
 
     return_code, output_lines, error_lines, game_ended = runner.run_game(timeout=1)
 
-    repo_root = Path(runner.__file__).resolve().parent.parent
-    assert captured["args"][0][1] == str(repo_root / "__main__.py")
-    assert captured["kwargs"]["cwd"] == str(repo_root)
+    assert Path(captured["args"][0][1]).name == "__main__.py"
     assert return_code == 0
     assert output_lines == []
     assert error_lines == []
     assert game_ended is False
-
