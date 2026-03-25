@@ -107,6 +107,7 @@ ui:
     status: 状态
     curse: 诅咒
   ssserpent_head_gold: 蛇头：获得 {amount} 金币！
+  received_relic: 获得遗物：{name}！
   received_potion: 获得药水：{name}！
   shop_bought_item: 购买了 {item_name}，花费 {final_price} 金币！
   character:

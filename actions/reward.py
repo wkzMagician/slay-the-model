@@ -23,7 +23,7 @@ def _handle_obtained_relic(relic: "Relic"):
 
     game_state.player.relics.append(relic)
     game_state.obtained_relics.add(relic.idstr)
-    tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.idstr))
+    tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.local("name")))
     game_state.action_queue.add_actions(
         game_state.publish_message(
             RelicObtainedMessage(owner=game_state.player, relic=relic),
