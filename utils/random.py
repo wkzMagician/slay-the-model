@@ -30,7 +30,7 @@ def get_random_card(namespaces: Optional[List[str]] = None,
         card_type (Optional[List[CardType]]): List of card types to filter cards.
         target_set (Optional[List[str]]): List of target set to include.
         exclude_set (Optional[List[str]]): List of set to exclude.
-        exclude_card_ids (Optional[List[str]]): List of card idstrs to exclude (prevents duplicates).
+        exclude_card_ids (Optional[List[str]]): Card.idstr values to exclude (prevents duplicates).
         exclude_starter (bool): If True, exclude STARTER rarity cards.
         
     returns:
@@ -58,7 +58,7 @@ def get_random_card(namespaces: Optional[List[str]] = None,
             continue
         if exclude_set and card_instance.set in exclude_set:
             continue
-        if exclude_card_ids and card_idstr in exclude_card_ids:
+        if exclude_card_ids and card_instance.idstr in exclude_card_ids:
             continue
         if exclude_starter and card_instance.rarity == RarityType.STARTER:
             continue
@@ -94,7 +94,7 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
         namespaces (Optional[List[str]]): List of namespaces to filter cards.
         encounter_type (str): Type of encounter for rarity weights ("normal", "elite", "shop").
         use_rolling_offset (bool): If True, adjust rare chance based on common cards gained.
-        exclude_set (Optional[List[str]]): List of card idstrs to exclude (prevents duplicates).
+        exclude_set (Optional[List[str]]): Card.idstr values to exclude (prevents duplicates).
         allow_upgraded (bool): If True, card can roll as upgraded based on act/ascension.
 
     returns:
@@ -145,8 +145,8 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
         if card_instance.rarity == RarityType.STARTER:
             continue
 
-        # Exclude already selected cards (prevent duplicates)
-        if exclude_set and card_idstr in exclude_set:
+        # Exclude already selected cards (prevent duplicates); values must be Card.idstr.
+        if exclude_set and card_instance.idstr in exclude_set:
             continue
 
         # Group cards by rarity

@@ -296,3 +296,47 @@ class TestRewardCardUpgradeChance:
 
         assert card is mock_card
         mock_card.upgrade.assert_not_called()
+
+
+class TestExcludeByCardIdstr:
+    """exclude_set / exclude_card_ids use Card.idstr only."""
+
+    def setup_method(self):
+        import cards.ironclad  # noqa: F401 — registers Ironclad cards in global registry
+
+    def test_get_random_card_reward_respects_idstr_exclude(self):
+        from utils.random import get_random_card_reward
+
+        c1 = get_random_card_reward(
+            namespaces=["ironclad"],
+            encounter_type="normal",
+            allow_upgraded=False,
+        )
+        assert c1 is not None
+        for _ in range(100):
+            c2 = get_random_card_reward(
+                namespaces=["ironclad"],
+                encounter_type="normal",
+                allow_upgraded=False,
+                exclude_set=[c1.idstr],
+            )
+            assert c2 is None or c2.idstr != c1.idstr
+
+    def test_get_random_card_respects_idstr_exclude(self):
+        from utils.random import get_random_card
+        from utils.types import RarityType
+
+        c1 = get_random_card(
+            namespaces=["ironclad"],
+            rarities=[RarityType.COMMON],
+            exclude_starter=True,
+        )
+        assert c1 is not None
+        for _ in range(100):
+            c2 = get_random_card(
+                namespaces=["ironclad"],
+                rarities=[RarityType.COMMON],
+                exclude_starter=True,
+                exclude_card_ids=[c1.idstr],
+            )
+            assert c2 is None or c2.idstr != c1.idstr

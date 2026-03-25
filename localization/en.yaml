@@ -44,77 +44,77 @@ ui:
   neo_max_hp_change: Max HP changed by {amount}!
   open_menu: Open the menu
   room_entered: Enter the room
-  game_welcome: 欢迎来到杀戮尖塔！
-  game_awaken: 你在尖塔中醒来，准备开始攀登...
-  seed_display: '种子: {seed}'
-  character_display: '角色: {character}'
-  choose_enemy: '选择敌人:'
-  select_prompt: '选择 (1-{count}): '
-  select_move: 选择你的下一步
-  floor_position: 第 {act} 幕 - 第 {floor} 层，位置 {position}
-  act_complete: 第 {act} 幕完成!
-  entering_act: 进入第 {act} 幕
-  entering_act4: 集齐三把钥匙后，你解锁通往心脏的道路...
+  game_welcome: Welcome to Slay the Spire!
+  game_awaken: You awaken in the Spire, ready to begin your climb...
+  seed_display: 'Seed: {seed}'
+  character_display: 'Character: {character}'
+  choose_enemy: 'Choose an enemy:'
+  select_prompt: 'Choose (1-{count}): '
+  select_move: Choose your next move
+  floor_position: Act {act} - Floor {floor}, Position {position}
+  act_complete: Act {act} complete!
+  entering_act: Entering Act {act}
+  entering_act4: With all three keys, you unlock the path to the Heart...
   map_move_option: '{floor_pos} - {room_type}'
-  invalid_option: 无效选项!
-  invalid_number: 请输入有效数字
+  invalid_option: Invalid option!
+  invalid_number: Please enter a valid number
   room_type:
-    NORMAL: 普通
-    MONSTER: 怪物
-    ELITE: 精英
+    NORMAL: Normal
+    MONSTER: Monster
+    ELITE: Elite
     BOSS: Boss
-    REST: 休息
-    MERCHANT: 商店
-    TREASURE: 宝藏
-    EVENT: 事件
-    NEO: 尼奥
+    REST: Rest
+    MERCHANT: Merchant
+    TREASURE: Treasure
+    EVENT: Event
+    NEO: Neow
     UNKNOWN: '?'
-    VICTORY: 胜利
+    VICTORY: Victory
   rarity:
-    starter: 初始
-    common: 普通
-    uncommon: 罕见
-    rare: 稀有
-    special: 特殊
-    curse: 诅咒
-  skip_potion: 跳过
-  game_over: 游戏结束！你在尖塔中倒下了。=
-  game_won: 恭喜！你征服了尖塔！<
-  player_hp: 生命值
-  player_block: 格挡
-  player_energy: 能量
-  hand: 手牌
-  powers: 能力
-  enemy: 敌人
-  enemy_hp: 生命值
-  enemy_block: 格挡
-  intention: 意图
-  player_turn: === 玩家回合 ===
-  enemy_turn: === 敌人回合 ===
-  end_turn: 结束回合
-  healed: 回复 {amount} 点生命值
-  selected: 已选择
-  max_hp_changed: 最大生命值改变 {amount} 点！
-  draw_pile: 抽牌堆
-  discard_pile: 弃牌堆
-  draw_cards: 抽 {count} 张牌
-  choose_random_card_to_add: 选择一张随机卡牌加入牌组
-  empty: 空
-  cost_label: 费用
+    starter: Starter
+    common: Common
+    uncommon: Uncommon
+    rare: Rare
+    special: Special
+    curse: Curse
+  skip_potion: Skip
+  game_over: Game Over! You have fallen in the Spire.=
+  game_won: Congratulations! You conquered the Spire!<
+  player_hp: HP
+  player_block: Block
+  player_energy: Energy
+  hand: Hand
+  powers: Powers
+  enemy: Enemy
+  enemy_hp: HP
+  enemy_block: Block
+  intention: Intent
+  player_turn: === Player Turn ===
+  enemy_turn: === Enemy Turn ===
+  end_turn: End Turn
+  healed: Healed {amount} HP
+  selected: Selected
+  max_hp_changed: Max HP changed by {amount}!
+  draw_pile: Draw Pile
+  discard_pile: Discard Pile
+  draw_cards: Draw {count} cards
+  choose_random_card_to_add: Choose a random card to add to your deck
+  empty: Empty
+  cost_label: Cost
   card_type:
-    attack: 攻击
-    skill: 技能
-    power: 能力
-    status: 状态
-    curse: 诅咒
-  ssserpent_head_gold: 蛇头：获得 {amount} 金币！
-  received_potion: 获得药水：{name}！
-  shop_bought_item: 购买了 {item_name}，花费 {final_price} 金币！
+    attack: Attack
+    skill: Skill
+    power: Power
+    status: Status
+    curse: Curse
+  ssserpent_head_gold: 'Serpent Head: Gain {amount} gold!'
+  received_potion: 'Obtained Potion: {name}!'
+  shop_bought_item: Bought {item_name} for {final_price} gold!
   character:
-    ironclad: 铁甲战士
-    silent: 静默猎人
-    defect: 故障机器人
-    watcher: 观者
+    ironclad: Ironclad
+    silent: Silent
+    defect: Defect
+    watcher: Watcher
 blessing:
   title: Choose blessings
   upgrade_card_option: Upgrade a card
@@ -470,26 +470,26 @@ combat:
   card_details: Cards
   power_details: Powers
   relic_details: Relics
-  draw_pile: 抽牌堆
-  discard_pile: 弃牌堆
-  exhaust_pile: 消耗堆
-  enemy_defeated: '{enemy} 已被击败！'
-  artifact_blocked: '[人工制品] 阻止了减益效果！'
-  artifact_remaining: '剩余层数: {count}'
-  enemy_intends: 敌人
-  intends_to: 意图是
-  select_target: === 选择目标 ===
-  enemy_killed: '{target_name} 已被击败！'
-  deck: 牌组
-  card_added: 添加
-  to_pile: 到
-  reward: 奖励
-  enemy: 敌人
-  used_potion: 使用药水
-  received_potion: 获得药水
-  gained_gold: 获得金币
-  added_to_deck: 添加到牌组
-  on_target: 对
+  draw_pile: Draw Pile
+  discard_pile: Discard Pile
+  exhaust_pile: Exhaust Pile
+  enemy_defeated: '{enemy} was defeated!'
+  artifact_blocked: '[Artifact] Blocked a debuff!'
+  artifact_remaining: 'Stacks remaining: {count}'
+  enemy_intends: Enemy
+  intends_to: intends to
+  select_target: === Select Target ===
+  enemy_killed: '{target_name} was defeated!'
+  deck: Deck
+  card_added: Added
+  to_pile: to
+  reward: Reward
+  enemy: Enemy
+  used_potion: Used potion
+  received_potion: Obtained potion
+  gained_gold: Gained gold
+  added_to_deck: Added to deck
+  on_target: on
 cards:
   ironclad:
     Strike:
@@ -516,7 +516,7 @@ cards:
     Armaments:
       name: Armaments
       description: Gain {block} Block. Upgrade a card in your hand this combat.
-      upgrade_description: 获得 {block} 点格挡。本战斗升级你的所有手牌。
+      upgrade_description: Gain {block} Block. Upgrade all cards in your hand this combat.
     Flex:
       name: Flex
       description: Gain {magic.temp_strength} Strength. Lose {magic.temp_strength} Strength at the end of your turn.
@@ -529,7 +529,7 @@ cards:
     BodySlam:
       name: Body Slam
       description: Deal damage equal to your Block.
-      combat_description: 造成等同于你当前格挡的伤害。（造成 {damage} 点伤害）
+      combat_description: Deal damage equal to your current Block. (Deals {damage} damage)
     Carnage:
       name: Carnage
       description: Deal {damage} damage. Ethereal.
@@ -596,7 +596,7 @@ cards:
     DoubleTap:
       name: Double Tap
       description: The next {magic.double_tap} Attack(s) is(are) played twice.
-      upgrade_description: 接下来的 {magic.double_tap} 张攻击牌打出两次。
+      upgrade_description: The next {magic.double_tap} Attack cards you play are played twice.
     Dropkick:
       name: Dropkick
       description: Deal {damage} damage. If the enemy has Vulnerable, gain 1 Energy and draw 1 card.
@@ -646,7 +646,7 @@ cards:
     Impervious:
       name: Impervious
       description: Ethereal. Gain {block} Block. Exhaust.
-      upgrade_description: 获得 {block} 点格挡。消耗。
+      upgrade_description: Gain {block} Block. Exhaust.
     InfernalBlade:
       name: Infernal Blade
       description: Add a random Attack into your hand. It costs 0 this turn. Exhaust.
@@ -703,11 +703,11 @@ cards:
     ShrugItOff:
       name: Shrug It Off
       description: Gain {block} Block. Draw 1 card.
-      upgrade_description: 获得 {block} 点格挡。抽 1 张牌。
+      upgrade_description: Gain {block} Block. Draw 1 card.
     SpotWeakness:
       name: Spot Weakness
       description: If the enemy intends to attack, gain {magic.strength} Strength.
-      upgrade_description: 如果敌人打算攻击，获得 {magic.strength} 点力量。
+      upgrade_description: If the enemy intends to Attack, gain {magic.strength} Strength.
     SwordBoomerang:
       name: Sword Boomerang
       description: Deal {damage} damage to a random enemy {attack_times} times.
@@ -827,7 +827,7 @@ cards:
     GoodInstincts:
       name: Good Instincts
       description: Gain {block} Block.
-      upgrade_description: 获得 {block} 点格挡。
+      upgrade_description: Gain {block} Block.
     Injury:
       name: Injury
       description: Unplayable.
@@ -951,6 +951,9 @@ powers:
   BufferPower:
     name: Buffer
     description: Prevents the next {amount} times you would lose HP.
+  ArtifactPower:
+    name: Artifact
+    description: Negates the next {amount} debuff(s).
   CurlUpPower:
     name: Curl Up
     description: On damage, gains {amount} Block.
@@ -984,8 +987,8 @@ powers:
     name: Artifact
     description: Negates the next {amount} debuff(s).
   curl_up:
-    name: 蜷身
-    description: 受到伤害时获得 {amount} 点格挡。
+    name: Curl Up
+    description: When you take damage, gain {amount} Block.
 potions:
   BloodPotion:
     name: Blood Potion
@@ -1212,7 +1215,7 @@ relics:
     description: Curse Cards can now be played. Playing a Curse will make you lose 1 HP and Exhaust Card.
   BottledFlame:
     name: Bottled Flame
-    description: 拾取时，选择一张攻击。每场战斗以该卡在手牌开始。
+    description: Upon pickup, choose an Attack card. Start each combat with that card in your hand.
   BottledLightning:
     name: Bottled Lightning
     description: Upon pick up, choose a Skill. Start each combat with this Card in your hand.
@@ -1251,7 +1254,7 @@ relics:
     description: At start of your turn, deal 3 damage to ALL enemies.
   MoltenEgg:
     name: Molten Egg
-    description: 每当你向牌组添加一个攻击，它被升级。
+    description: Whenever you add an Attack card to your deck, it is upgraded.
   MummifiedHand:
     name: Mummified Hand
     description: Whenever you play a Power, a random card in your hand costs 0 Energy for turn.
@@ -1260,7 +1263,7 @@ relics:
     description: Start each combat with 3 Shivs in hand.
   OrnamentalFan:
     name: Ornamental Fan
-    description: 每在单回合打出 3 次攻击，获得 4 点格挡。
+    description: Every time you play 3 Attacks in a single turn, gain 4 Block.
   Pantograph:
     name: Pantograph
     description: At start of Boss combats, heal 25 HP.
@@ -1485,7 +1488,7 @@ relics:
     description: Status Cards can now be played. Playing a Status will Exhaust Card.
   MembershipCard:
     name: Membership Card
-    description: 商店所有产品 50% 折扣！
+    description: 50% off all products at the shop!
   PrismaticShard:
     name: Prismatic Shard
     description: Combat reward screens now contain colorless cards and cards from other colors.
@@ -1600,7 +1603,7 @@ enemies:
         description: Deal {damage} damage.
       attack:
         description: Deal {damage} damage
-        name: 攻击
+        name: Attack
   JawWorm:
     name: Jaw Worm
     intentions:
@@ -1771,20 +1774,20 @@ enemies:
         name: Divider
         description: Deal {damage} damage {attack_times} times.
       activate:
-        name: 激活
-        description: 正在蓄力...
+        name: Activate
+        description: Charging up...
       sear:
-        name: 灼烧
-        description: 造成 {damage} 点伤害。向你的弃牌堆添加 1 层燃烧。
+        name: Sear
+        description: Deal {damage} damage. Add 1 Burn to your discard pile.
       tackle:
-        name: 擒拿
-        description: 造成 {damage} 点伤害两次。
+        name: Tackle
+        description: Deal {damage} damage twice.
       inflame:
-        name: 激怒
-        description: 获得 {strength_gain} 点力量。
+        name: Inflame
+        description: Gain {strength_gain} Strength.
       inferno:
-        name: 地狱火
-        description: 造成 {damage} 点伤害。消耗你手牌和弃牌堆中的所有燃烧。
+        name: Inferno
+        description: Deal {damage} damage. Exhaust all Burns in your hand and discard pile.
   Lagavulin:
     name: Lagavulin
     intentions:
@@ -1958,8 +1961,8 @@ enemies:
         name: Beam
         description: Deal {damage} damage twice.
       Square of Protection:
-        name: 防护方阵
-        description: 所有敌人获得 {block} 点格挡。
+        name: Square of Protection
+        description: All enemies gain {block} Block.
   Deca:
     name: Deca
     intentions:
@@ -2373,13 +2376,13 @@ rooms:
     lift: Lift (Gain 1 Strength)
     toke: Toke (Remove a card)
     dig: Dig (Obtain a random relic)
-    recall: 回忆（获得红宝石钥匙）
-    enter: 你进入一个安静的休息点。
+    recall: Recall (Obtain Ruby Key)
+    enter: You enter a quiet rest site.
   TreasureRoom:
     title: Treasure Room
     open_chest: Open chest
     skip: Skip
-    enter: 你发现了一个宝藏房间！
+    enter: You find a treasure room!
   ShopRoom:
     title: Shop
     buy_card: Buy {card} ({price} gold)
@@ -2387,10 +2390,10 @@ rooms:
     buy_potion: Buy {potion} ({price} gold)
     remove_card: Remove a card ({price} gold)
     leave: Leave
-    enter: 你进入了一个神秘的商店。
+    enter: You enter a mysterious shop.
   EventRoom:
-    title: 事件
-    enter: 你遇到了一个事件。
+    title: Event
+    enter: You encounter an event.
 ai:
   decision_system_prompt: "You are an AI player for Slay the Spire game.\nBased on the current game state, make the optimal\
     \ choice from the given options.\n\n## Chain-of-Thought Constraints (CRITICAL):\n- Keep thinking concise, limit to 3-5\
@@ -2491,4 +2494,4 @@ ai_context:
   card_stats_note: 'Note: Attack and Block values in hand have been calculated with player and enemy abilities/relics effects,
     but other powers (like Weak, Vulnerable, Frail, etc.) have not yet been applied.'
 rewards:
-  gold: 获得 {amount} 金币
+  gold: Gained {amount} gold

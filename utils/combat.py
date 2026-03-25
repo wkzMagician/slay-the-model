@@ -1,5 +1,6 @@
 from typing import Optional, Union, List, TYPE_CHECKING
 from entities.creature import Creature
+from utils.result_types import MultipleActionsResult
 from utils.types import TargetType 
 
 if TYPE_CHECKING:
