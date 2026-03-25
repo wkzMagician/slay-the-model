@@ -334,9 +334,6 @@ class Combat(Localizable):
             for card in hand:
                 game_state.action_queue.add_action(DiscardCardAction(card=card, source_pile="hand"))
 
-        # Reset player block
-        game_state.player.block = 0
-
         return game_state.execute_all_actions()
 
     def execute_enemy_phase(self) -> BaseResult:
