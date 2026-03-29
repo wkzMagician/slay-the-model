@@ -39,7 +39,7 @@ jobs:
             timeout: 60
           debug:
             print: false
-            select_type: first
+            select_type: random
             god_mode: false
           EOF
 
