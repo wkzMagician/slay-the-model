@@ -38,6 +38,12 @@ class ConfusedPower(Power):
         import random as rd
         # Randomize between 0 and 3 (like original Slay the Spire)
         # Use LambdaAction to modify card cost via action pattern
-        from engine.game_state import game_state
-        add_actions([LambdaAction(func=lambda: setattr(card, 'cost', rd.randint(0, 3)))])
+        def _randomize_card_cost() -> None:
+            randomized_cost = rd.randint(0, 3)
+            if hasattr(card.__class__, 'cost') and isinstance(getattr(card.__class__, 'cost'), property):
+                setattr(card, '_cost', randomized_cost)
+                return
+            setattr(card, 'cost', randomized_cost)
+
+        add_actions([LambdaAction(func=_randomize_card_cost)])
         return

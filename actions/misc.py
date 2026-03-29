@@ -337,7 +337,7 @@ class SkipToBossAction(Action):
         
         # Set flag to skip to boss
         game_state.skip_to_boss = True
-        tui_print("[Event] Skipping to boss!")
+        tui_print(t("ui.event_skip_to_boss", default="[Event] Skipping to boss!"))
 
 @register("action")
 class BottledCardInputRequestAction(Action):

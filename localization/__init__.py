@@ -2,6 +2,7 @@
 Localization module for multi-language support.
 """
 import os
+from enum import Enum
 from typing import Dict, Any, Tuple
 import yaml
 # from tui.print_utils import tui_print  # Removed: causes import issues in CLI mode
@@ -117,6 +118,33 @@ def resolve_text(value: Any) -> str:
     if isinstance(value, str):
         return t(value, default=value)
     return str(value)
+
+
+def localize_room_type(room_type: Any) -> str:
+    """Resolve a RoomType enum or raw room type value to localized text."""
+    if isinstance(room_type, Enum):
+        key = f"ui.room_type.{room_type.name}"
+        default = str(room_type.value)
+        return t(key, default=default)
+    return str(room_type)
+
+
+def localize_card_type(card_type: Any) -> str:
+    """Resolve a CardType enum or raw card type value to localized text."""
+    if isinstance(card_type, Enum):
+        key = f"ui.card_type.{card_type.name.lower()}"
+        default = str(card_type.value)
+        return t(key, default=default)
+    return str(card_type)
+
+
+def localize_rarity(rarity: Any) -> str:
+    """Resolve a RarityType enum or raw rarity value to localized text."""
+    if isinstance(rarity, Enum):
+        key = f"ui.rarity.{rarity.name.lower()}"
+        default = str(rarity.value)
+        return t(key, default=default)
+    return str(rarity)
     
 class Localizable:
     """Provide localized fields via prefix + class name."""
@@ -136,7 +164,9 @@ class Localizable:
         # Enemy.name is a property that calls local(), so we must avoid it here.
         name = self.__dict__.get('name') if 'name' in self.__dict__ else None
         identifier = name or self.idstr
-        return f"{self.localization_prefix}.{identifier}.{field}"
+        if self.localization_prefix:
+            return f"{self.localization_prefix}.{identifier}.{field}"
+        return f"{identifier}.{field}"
 
     def local(self, field: str, **kwargs: Any) -> LocalStr:
         """返回字段对应的本地化字符串对象。"""

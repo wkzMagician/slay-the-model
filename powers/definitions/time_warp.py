@@ -59,14 +59,26 @@ class TimeWarpPower(Power):
         self.card_counter += 1
         
         # Print counter progress
-        tui_print(t("powers.time_warp_counter", default=f"Time Warp: {self.card_counter}/{self.CARD_THRESHOLD}"))
+        tui_print(
+            t(
+                "powers.TimeWarpPower.counter",
+                default=f"Time Warp: {self.card_counter}/{self.CARD_THRESHOLD}",
+                counter=self.card_counter,
+                threshold=self.CARD_THRESHOLD,
+            )
+        )
         
         if self.card_counter >= self.CARD_THRESHOLD:
             # Reset counter
             self.card_counter = 0
             
             # Print trigger message
-            tui_print(t("powers.time_warp_trigger", default="Time Warp triggers! Turn ended and Time Eater gains Strength!"))
+            tui_print(
+                t(
+                    "powers.TimeWarpPower.trigger",
+                    default="Time Warp triggers! Turn ended and Time Eater gains Strength!",
+                )
+            )
             
             # Return actions: end turn and gain strength
             actions = []

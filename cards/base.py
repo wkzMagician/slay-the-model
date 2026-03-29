@@ -15,7 +15,7 @@ def get_game_state():
 from utils.types import CardType, TargetType, RarityType
 from cards.namespaces import get_color_for_namespace, namespace_from_module
 from localization import Localizable
-from localization import BaseLocalStr, LocalStr, ConcatLocalStr, t
+from localization import BaseLocalStr, LocalStr, ConcatLocalStr, localize_card_type, localize_rarity, t
 
 COST_X = -1
 COST_UNPLAYABLE = -2
@@ -255,6 +255,7 @@ class Card(Localizable):
             替换变量后的描述文本
         """
         # 特殊处理：如果是战斗描述且已升级，检查是否有升级后的战斗描述
+        original_desc_key = desc_key
         if desc_key == "combat_description" and self.upgrade_level > 0:
             if self.has_local("upgrade_combat_description"):
                 desc_key = "upgrade_combat_description"
@@ -268,13 +269,17 @@ class Card(Localizable):
                 return LocalStr(key="")
         
         # 构建变量字典
-        from utils.dynamic_values import resolve_card_value, get_magic_value
+        from utils.dynamic_values import resolve_card_value
         variables = {}
+        is_combat_description = original_desc_key == "combat_description"
         
         # 基础变量
         value_types = ['damage', 'block', 'heal', 'draw', 'energy_gain', 'attack_times']
         for vt in value_types:
-            variables[vt] = resolve_card_value(self, vt)
+            if is_combat_description:
+                variables[vt] = resolve_card_value(self, vt)
+            else:
+                variables[vt] = getattr(self, vt)
         
         # magic变量 - create nested dict for format() to access via {magic.key}
         if hasattr(self, '_magic'):
@@ -309,11 +314,11 @@ class Card(Localizable):
             desc = self.description
         
         # 使用字符串拼接，避免嵌套的 t() 调用
-        cost_label = "Cost"
-        type_label = "Type"
-        rarity_label = "Rarity"
-        
-        info_text = f"{self.display_name} ({cost_label}: {cost_str}, {type_label}: {self.card_type.value}, {rarity_label}: {self.rarity.value})\n{desc}"
+        cost_label = t("ui.cost_label", default="Cost")
+        type_label = t("ui.type_label", default="Type: {type}", type=localize_card_type(self.card_type))
+        rarity_label = t("ui.rarity_label", default="Rarity: {rarity}", rarity=localize_rarity(self.rarity))
+
+        info_text = f"{self.display_name} ({cost_label}: {cost_str}, {type_label}, {rarity_label})\n{desc}"
         return RawLocalStr(info_text)
     
 

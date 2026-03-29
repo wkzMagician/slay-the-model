@@ -13,6 +13,7 @@ class Room(Localizable):
     
     Rooms use the global action queue for action management.
     """
+    localization_prefix = "rooms"
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs

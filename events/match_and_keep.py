@@ -200,8 +200,11 @@ class MatchAndKeepAction(Action):
         
         add_action(
             InputRequestAction(
-                title=LocalStr('events.match_and_keep.select_card', 
-                              default=f"Select a card to flip. {tries_text}"),
+                title=LocalStr(
+                    'events.match_and_keep.select_card',
+                    default=f"Select a card to flip. {tries_text}",
+                    tries=_matching_state['tries_remaining'],
+                ),
                 options=options,
                 max_select=1,
                 must_select=True,

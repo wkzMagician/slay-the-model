@@ -90,8 +90,6 @@ class CombatRoom(Room):
         from engine.game_state import game_state
         from engine.messages import EliteVictoryMessage
         from actions.misc import _has_relic
-        combat = self.combat
-        assert combat is not None
         actions = []
         
         # Display victory message
@@ -122,6 +120,9 @@ class CombatRoom(Room):
             and game_state.current_act in (3, 4)
         ):
             return actions
+
+        combat = self.combat
+        assert combat is not None
 
         # Calculate gold reward
         gold_amount = self._calculate_gold_reward()

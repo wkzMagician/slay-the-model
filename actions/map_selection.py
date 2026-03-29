@@ -7,7 +7,7 @@ from actions.base import Action
 from actions.display import InputRequestAction
 from map.map_node import MapNode
 from utils.option import Option
-from localization import BaseLocalStr, LocalStr, t
+from localization import BaseLocalStr, LocalStr, localize_room_type, t
 from typing import List
 
 from utils.registry import register
@@ -49,7 +49,15 @@ class MoveToMapNodeAction(Action):
         
         # Print which room player moved to
         from localization import t
-        tui_print(t("ui.room_entered").format(room_type=new_room.room_type.value, floor=self.floor, position=self.position))
+        tui_print(
+            t(
+                "ui.room_entered",
+                default="Entered room: {room_type} (Floor {floor}, Position {position})",
+                room_type=localize_room_type(new_room.room_type),
+                floor=self.floor,
+                position=self.position,
+            )
+        )
         
 
 @register("action")
@@ -147,8 +155,6 @@ class SelectMapNodeAction(Action):
             Localizable string for option name
         """
         # Use localization key for room type
-        room_type_key = f"ui.room_type.{node.room_type.value}"
-        
         # Build a descriptive option name
         # Format: "Act X - Floor Y, Position Z - RoomType"
         from engine.game_state import game_state
@@ -163,7 +169,7 @@ class SelectMapNodeAction(Action):
             floor=true_floor,
             position=node.position
         )
-        room_type_text = t(room_type_key, default=node.room_type.value)
+        room_type_text = localize_room_type(node.room_type)
         
         return LocalStr(
             key="ui.map_move_option",

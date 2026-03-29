@@ -1,5 +1,5 @@
 ui:
-  room_entered: 进入房间
+  room_entered: 进入房间：{room_type}（第 {floor} 层，位置 {position}）
   game_welcome: 欢迎来到杀戮尖塔！
   game_awaken: 你在尖塔中醒来，准备开始攀登...
   seed_display: '种子: {seed}'
@@ -18,7 +18,7 @@ ui:
     NORMAL: 普通
     MONSTER: 怪物
     ELITE: 精英
-    BOSS: Boss
+    BOSS: 首领
     REST: 休息
     MERCHANT: 商店
     TREASURE: 宝藏
@@ -75,21 +75,22 @@ ui:
   legend_event: '[?]=事件'
   legend_rest: '[R]=休息'
   legend_treasure: '[T]=宝藏'
-  legend_boss: '[B]=Boss'
-  legend_neo: '[N]=捏奥'
+  legend_boss: '[B]=首领'
+  legend_neo: '[N]=尼奥'
   legend_current: '*=当前位置'
   legend_available: '>=可前往'
   legend_visited: ^=已访问
+  map_connection_help: 节点上方为索引。连线精确表示通往下一层的位置。
   connections: '连接:'
   conn_left: /=左
   conn_center: '|=中'
   conn_right: \\=右
   floor_label: '第 {num} 层:'
-  rarity_label: '???: {rarity}'
-  type_label: '??: {type}'
-  category_label: '??: {category}'
-  duration_label: '??: {duration}'
-  amount_label: '??: {amount}'
+  rarity_label: '稀有度: {rarity}'
+  type_label: '类型: {type}'
+  category_label: '类别: {category}'
+  duration_label: '持续: {duration}'
+  amount_label: '数值: {amount}'
   buff: 增益
   debuff: 减益
   permanent: 永久
@@ -100,6 +101,16 @@ ui:
   open_menu: 打开菜单
   empty: 空
   cost_label: 费用
+  event_skip_to_boss: '[事件] 直接前往首领！'
+  act3_victory: === 尖塔崩塌！ ===
+  act3_victory_message: 你击败了第三幕首领，征服了尖塔！
+  keys_hint: （收集三把钥匙后，可在第四幕挑战心脏）
+  keys_collected: === 三把钥匙共鸣！ ===
+  keys_collected_message: 当你手握红、绿、蓝三把钥匙时，
+  heart_entrance: 你解锁了通往腐化之心的道路……
+  heart_defeated: === 腐化之心陨落！ ===
+  heart_defeated_message: 尖塔腐化的源头已被摧毁！
+  true_victory: 你获得了真正的胜利！
   card_type:
     attack: 攻击
     skill: 技能
@@ -144,68 +155,120 @@ events:
     title: 古老文字
     elegance: 优雅
     simplicity: 简洁
+    description: '在攀爬城市区时，你注意到一面墙壁上写满了 先古之民 的文字。你正在努力推理这些奇怪的符号和图案可能的意思，却发现文字开始 发起了光 。
+
+      突然之间，文字的意义变得清晰了……'
   augmenter:
-    title: 强化机
+    title: 增益研究者
     test_jax: 测试JAX
     transform: 转化
     mutagens: 变异剂
+    description: '一个戴着眼罩的邪笑着的男人大摇大摆地走到你面前：
+
+      “嘿陌生人，想不想试试高端的科技？ 可会让你变得比任何训练和祝福都要强哦。 如果你是那种一心求死的英雄的话可不能没有它呢。
+
+      你说怎么样？ 想不想试一下？”'
   a_note_for_yourself:
     title: 留给自己的讯息
     take_and_give: 取舍
     ignore: 忽略
+    description: 一根柱子吸引了你的注意，你发现上面有一块松动的砖块。
+    take_only: 只拿走
+    give_only: 只留下
   big_fish:
     title: 大鱼
     option1: 香蕉  回复最大生命值的1/3
     option2: 甜甜圈  最大生命值 +5
     option3: 盒子  获得一件遗物。被诅咒——诅咒牌(悔恨)
+    description: '当你走过一条长廊时，你看见空中 漂浮 着 一根香蕉 ， 一个甜甜圈 ， 和 一个盒子 。 不……仔细一看，它们都是被用绳子系着，从天花板上的几个洞里悬挂下来的。你在接近这几样东西时，上方似乎传来一阵 咯咯 的笑声。
+
+      你会怎么做？'
   bonfire_spirits:
     title: 篝火精灵
     offer: 向精灵献上一张卡牌
     leave: 离开
+    description: 你遇见一群看似是 紫色火精灵 的东西在一个巨大的篝火堆旁 起舞 。
   council_of_ghosts:
     title: 幽灵议会
     accept: 接受
     refuse: 拒绝
+    description: '在你向上攀升时，突然四周的墙壁和地面开始冒出 浓重的黑烟 ，逐渐聚成了三个戴着面具的形状，它们交头接耳地说起话来。 “看来这又是一个 涅奥 的玩偶。”
+
+      “我看也是！ 她总能做出最有趣的玩具！”
+
+
+      你注意到第三个存在有着巨大的嘴，它露出了一个大到夸张的微笑对你说：
+
+      “别管那两个家伙……总之，你想不想尝试一下我们的 力量 呢？”'
   cursed_tome:
-    title: 诅咒之书
+    title: 诅咒书本
     continue: 继续
     take: 拿取
     stop: 停止
     leave: 离开
+    description: '在一所被遗弃的神庙里，你找到一本翻开着的巨大书本，里面满是 神秘的文字 。
+
+
+      你刚试着想要解读这些复杂的文本，它就自己开始 移动变化 成了你熟悉的文字。'
   dead_adventurer:
     title: 冒险者尸体
     search: 搜索
     leave: 离开
+    description: 在搜刮冒险者时你被偷袭了！
+    elite_appears: 一名精英从阴影中现身！
+    nothing: 你什么有价值的东西都没有找到。
   designer_in_spire:
-    title: 尖塔设计师
+    title: “尖端”设计师
     adjustments: 调整
     clean_up: 清理
     full_service: 全面服务
     punch: 拳击
+    description: '你发现一家 五彩斑斓 的店，横幅上挂着大大的“尖端”两个字，就走进去想看看里面有什么。
+
+      “等等，别，不行。你不能进来！”
+
+
+      一个穿着打扮无比荒唐的男人出现在门口把你拦了下来。'
   divine_fountain:
     title: 神圣泉水
     drink: 喝泉水
     leave: 离开
+    description: 你经过墙壁上的一处饮水池，里面流淌着源源不断 闪着光的水 。
   duplicator:
-    title: 复制机
+    title: 复制祭坛
     pray: 祈祷
     leave: 离开
+    description: 在你面前是一个用来崇拜某种古老存在的华丽祭坛。
   face_trader:
     title: 换脸商
     touch: 触摸
     trade: 交易
     leave: 离开
+    description: '你经过一尊举着许多不同的面具的奇怪雕像，但没走几步……
+
+      你就听见身后传来一个轻柔的声音：
+
+      “请留步。”'
   falling:
     title: 坠落
     land: 着陆
     channel: 引导
     strike: 打击
+    description: '你在悬浮在空中的平台上往上跳跃时，不慎滑了一跤。
+
+
+      你开始坠落。'
   forgotten_altar:
     title: 被遗忘的祭坛
     offer_golden_idol: 献上金神像
     sacrifice: 献祭
     desecrate: 亵渎
     leave: 离开
+    description: '在你面前是一个早已被遗忘的神祇的祭坛。
+
+      在祭坛上方，是一尊双手伸出的精致女性雕像。
+
+      她呼唤着你，要求你献上祭品。'
   GoldenIdol:
     title: 金神像
     take: 拿走神像
@@ -214,74 +277,136 @@ events:
     smash: 粉碎
     hide: 躲藏
     leave: 离开
+    description: '在一个不引人注意的小高台上，你发现了一个 闪闪发光的金神像 安然放置在上面，看起来非常值钱。
+
+
+      周围看起来完全没有什么陷阱的样子。'
   golden_shrine:
     title: 金色神龛
     pray: 在神龛祈祷
     desecrate: 亵渎神龛
     leave: 离开
+    description: 在你面前是一座古老神灵的精巧神龛。
   hypnotizing_mushrooms:
     title: 蘑菇
     stomp: 踩扁
     eat: 吃下
+    description: '你顺从了这份不自然的食欲，吃下一个又一个蘑菇后，你觉得自己有点晕晕的，然后就失去了意识。当你醒来时，你觉得有点怪怪的
+
+      你 回复 生命值的 25% ，但同时被 感染 了。'
   knowing_skull:
     title: 全知头骨
     potion: 药水
     riches: 财富
     success: 成功
     leave: 离开
+    description: 你发现自己在一个古老的有装饰的房间里，在房间正中央，有一个巨大的头骨被放在精致的高台上，在你靠近时，头骨 迸发出火焰 转向了你。
   lab:
     title: 实验室
     search: 搜索实验室
+    description: '你发现了一个满是试管、烧杯、烧瓶、药瓶、钳子、夹子、玻璃棒、手术钳、眼镜、漏斗、吸液管、玻璃筒、冷凝器甚至还有螺旋玻璃管的房间。
+
+
+      你怎么会知道这些工具都叫什么名字的？这不重要，你四处翻找了起来。'
   living_wall:
-    title: 活墙
+    title: 活墙壁
     forget: 遗忘
     change: 改变
     grow: 成长
+    description: '你走进一条死路，正准备要回头时，四周突然有墙壁从天花板上 哐 地一下 砸了下来 ！
+
+
+      三张脸出现在墙壁上，开始对你说话：
+
+      “忘记你所知道的，我就让你走。”
+
+      “有所改变，我就让你看见新的道路。”
+
+      “如果你想要从我这里通过，你就必须有所成长。”'
   masked_bandits:
     title: 蒙面强盗
     pay: 付钱
     fight: 战斗
+    description: '嘿嘿嘿……谢谢你的 金币 啦！
+
+      哎呀，我最喜欢 金币 了，那是多好的东西啊。
+
+      闪闪亮的 小可爱们！'
   match_and_keep:
     title: 对对碰！
     play: 玩游戏
     leave: 离开
+    description: '“ 十二张牌！ 搭对就拿走！ 五次机会，没有重来！
+
+      准备好了吗？开始！”'
+    select_card: 选择一张卡牌翻开。剩余尝试次数：{tries}
+    no_matches: 你没有配对成功任何卡牌。
+    won_cards: 你配对成功：{cards}
   mind_bloom:
     title: 心灵绽放
-    i_am_war: 我是战争
-    i_am_awake: 我是觉醒
-    i_am_rich: 我是财富
-    i_am_healthy: 我是健康
+    i_am_war: 我必凯旋
+    i_am_awake: 我已觉醒
+    i_am_rich: 我将富有
+    i_am_healthy: 我无伤痛
+    description: '你在高塔的混沌深处不断攀行，不知不觉间，你愕然发现自己的思绪开始变得非常…… 真实……
+
+
+      各种 怪物 与 财宝 的影像开始有了实体。
+
+      这些感觉稍纵即逝，你准备怎么做？'
   mysterious_sphere:
     title: 神秘圆球
     open_sphere: 打开圆球
     leave: 离开
+    description: '在四周混乱的地形中间，一个骨质圆球伫立在地上，似乎包裹着一样神秘的发光物体。
+
+      你很好奇里面有什么东西，但你注意到圆球周围有一些哨兵正在看守。'
   nloth:
     title: 恩洛斯
     leave: 离开
+    description: '一个驼着背、背后长出几条触手的奇怪生物正在你面前的垃圾堆和废墟里来回地翻找些什么。当你靠近时，他可怜巴巴地拖着脚走到了你面前。
+
+      “恩洛斯好饿，喂喂恩洛斯。”'
   old_beggar:
     title: 老乞丐
     offer_gold: 给金币
     leave: 离开
+    description: 一个裹着毛衣的老乞丐在你经过时向你伸出了双手，他对你说：“施舍点钱吧，孩子？”
   pleading_vagrant:
-    title: 乞讨流浪者
+    title: 流浪汉的恳求
     offer_gold: 给金币
     rob: 抢劫
     leave: 离开
+    description: '你想要从一群披着斗篷的人旁边偷偷潜行过去，其中一个跑到了你面前。
+
+      “你能给我点儿什么吗，朋友？ 求求你了……一点 小钱 就好？”
+
+      “我只是需要找个地方过夜，我身上有财宝可以交换……”
+
+      他看起来有点疯疯癫癫的，但似乎并不危险。'
   ominous_forge:
-    title: 不祥熔炉
+    title: 邪恶熔炉
     forge: 锻造卡牌
     rummage: 翻找
     leave: 离开
+    description: 你钻进一个小屋，在里面似乎有一个锻造熔炉，旁边的铁匠工具都已经布满了灰尘，可是炉中的火却仍然熊熊燃烧。你觉得有些不安……
   purifier:
-    title: 净化台
+    title: 净化
     pray: 祈祷
     leave: 离开
+    description: 在你面前是一个被遗忘神灵的精致神龛。
   scrap_ooze:
-    title: 腐蚀软泥
+    title: 破烂软泥
     reach: 伸手
     leave: 离开
+    description: 你刚走进房间，就听见奇怪的 咕嘟声 和金属的 摩擦声 。在你面前的是一个史莱姆状的生物，它显然是吃了太多的破铜烂铁，消化不良了。 你在这个生物的中央见到了奇怪的光芒，或许是什么有魔法的物品？看起来只要你愿意把手伸进这东西的……开口，你就能得到什么
+      财宝 。当然，酸液和尖锐的破烂有可能会让你 受伤。
   secret_portal:
     title: 秘密传送门
+    description: '在你面前有一样与周围奇异景观完全不符合的东西：在深处地区一面活墙壁上，奇怪地出现了一道石做的拱门，里面有一个 旋转的魔法传送门 。
+
+
+      你不知道它会通向哪里，但它应该能够节约你爬塔的时间。'
     enter: 进入传送门
     leave: 离开
   sensory_stone:
@@ -289,94 +414,185 @@ events:
     recall_1: 回忆1
     recall_2: 回忆2
     recall_3: 回忆3
+    description: 你在高塔深处前进时，你遇到一个悬浮在空中缓慢 旋转 且 变幻 着的 发光超立方体 。
   shining_light:
     title: 闪耀之光
     enter: 进入
     leave: 离开
+    description: '你发现在房间中央围绕着 一束很粗的光柱 。
+
+
+      光柱上有着 温暖而闪烁的美丽花纹 仿佛在邀请你进入。'
   the_cleric:
     title: 牧师
     option1: 选项1
     option2: 选项2
     option3: 选项3
+    description: '一个戴着金头盔（？）的奇怪蓝色人形生物脸上带着大大的微笑走到了你面前。
+
+      “ 你好啊朋友！ 我是 牧师 ！你想不想试试我的服务呐？！”那个生物大声喊叫起来。'
   the_colosseum:
     title: 竞技场
     fight: 为荣誉而战
     leave: 离开
     victory: 胜利
     cowardice: 懦弱
+    description: '哐！！！
+
+      …
+
+      ………
+
+      ……
+
+      你被 打晕了 ……'
   the_joust:
-    title: 骑士决斗
+    title: 长枪决斗
     murderer: 凶手
     owner: 主人
+    description: '你在巨大的建筑物间穿行时，遇见了一条长长的窄桥，两头似乎都有一名骑士彼此对望着。你走上前去……
+
+      “停步！”
+
+
+      一名骑士用手中的长枪对你比划着，强硬地让你停下。'
   the_library:
     title: 大图书馆
     read: 阅读书籍
     sleep: 睡觉
+    description: '你经过一栋被遗弃的华美建筑物。
+
+      墙上的标牌掉在了地上，上面写着 “大图书馆” 几个大字。
+
+      你走进建筑物中，看见了无数卷轴、手稿和书籍。
+
+      你拿起一本，舒服地坐在沙发椅上看了好一会儿。'
   the_mausoleum:
     title: 陵墓
     open_coffin: 打开棺材
     leave: 离开
+    description: '你在一系列坟墓间穿行，前方出现了一个圆形房间，中间是一口 镶嵌着许多宝石的 巨大石棺。
+
+      你辨认不出石棺上的字迹，但你能注意到有 黑色的雾气 从石棺的两侧渗透出来。'
   the_moai_head:
     title: 摩艾石像
     offer_golden_idol: 献上金神像
     jump_inside: 跳进去
     leave: 离开
+    description: '你遇到了一个和四周*完全不搭*的东西。在你面前有一道与周围不同，没有在移动和变化的墙壁，一个巨大的石制头像从墙壁上凸出来。
+
+      石像的嘴大张着，里面有许多巨大的染着血迹的牙齿。石像表面上写着许多象形文字，似乎是说有许多人会自己跳进嘴里被石像吞噬。为什么会有人这样做呢？'
   the_nest:
     title: 巢穴
     smash_and_grab: 砸碎并抢夺
     stay_in_line: 排队
+    description: 你看见一长串 戴着兜帽的人们 正鱼贯走进一座 看起来没什么特别的大教堂。
   the_ssssserpent:
-    title: 巨蛇
+    title: 蛇～
     agree: 同意
     disagree: 不同意
+    description: '你走进一间房间，看见地上有一个大洞。当你靠近洞时，一条巨大的蛇形生物从里面钻了出来。
+
+
+      “嚯嚯嚯！你好，你好啊！这是谁呀？ 哎呀呀，你好冒险者，我就问一个简单的问题。
+
+      最幸福的人生当然就是 什么东西都能买得起 的土豪生活了！　
+
+      你同意吗？”'
   tomb_of_lord_red_mask:
     title: 红面具大人之墓
     don_mask: 戴上面具
     leave: 离开
     offer_gold: 给金币
+    description: 在一条悬浮道路的尽头，你可以看见一处装饰华丽的古墓，当你到达古墓时，你看到有一个可以投放 金币 的开口，但上面的铭文已经被划得看不清楚了。
   transmogrifier:
-    title: 转化机
+    title: 转化神龛
     pray: 祈祷
     leave: 离开
+    description: 在你面前是一个被遗忘神灵的精致神龛。
   upgrade_shrine:
     title: 升级神龛
     pray: 升级卡牌
     leave: 离开
     upgraded: 你的 {card_name} 已升级！
+    description: 在你面前是一个被遗忘神灵的精致神龛。
   vampires:
-    title: 吸血鬼
+    title: 吸血鬼（？）
     offer_blood_vial: 献上血瓶
     accept: 接受
     refuse: 拒绝
+    description: '在一条昏暗的街上，你遇见几个戴着兜帽的人在进行某种黑暗的仪式。当你靠近时，他们全都同时转身面对你，让你觉得十分诡异。 其中个子最高的一个微微一笑，露出了长长的尖牙，向你伸出了一只苍白而瘦长的手：
+
+      “加入我们，兄弟。一起来感受高塔的温暖吧。”'
   wheel_of_change:
     title: 变化大转盘
     play: 玩
+    description: '你见到一位穿着帅气、满面笑容的地精。
+
+      “是时候转动转盘了！ 你准备好了吗？ 你当然准备好了！”'
   we_meet_again:
-    title: 再次相遇
+    title: 我们又见面了！
     give_potion: 给药水
     give_gold: 给金币
     give_card: 给卡牌
     attack: 攻击
+    description: '“我们又见面了！”
+
+      一个蓬头垢面的男子欢快地出现在你面前向你问好。你不认识这个男人。
+
+
+      “是我， 兰伟德 啊！所以今天有什么好东西给我吗？和往常一样？哎呀呀，像我这样的人，独自一个可实在不好混啊，对不对？”
+
+      你满腹狐疑地打量着他，开始思考应该怎么做……'
   winding_halls:
     title: 蜿蜒走廊
     embrace_madness: 拥抱疯狂
     focus: 专注
     retrace: 回溯
+    description: '你沿着弯曲的道路慢慢前进，却多次发现自己迷失了方向，仿佛墙壁和地面就在你的眼前突然移动了位置。
+
+
+      更糟糕的是，你的脑中似乎还有许多声音在对你轻声低语。'
   wing_statue:
     title: 翅膀雕像
     pray: 向雕像祈祷
     destroy: 摧毁
     leave: 离开
+    description: '在形状不同的巨石之间，你看见一尊做工精细的翅膀形状的蓝色雕像。
+
+      你可以看见雕像的裂缝中有 金币 掉出来。或许里面还有更多……'
   woman_in_blue:
     title: 蓝衣女子
     option1: 选项1
     option2: 选项2
     option3: 选项3
     option4: 选项4
+    description: '从黑暗中，一只手伸出来把你拉进了一家小店。眼睛适应了这里的亮度之后，你看见一个穿着鲜艳衣服的苍白女子正伸手展示整整一墙壁的药水。
+
+      “来买药水，快点！”她对你说。'
   world_of_goop:
     title: 黏液世界
     gather: 收集
     leave: 离开
+    description: '你掉进了一个水坑里。
+
+      可是坑里 全是 史莱姆黏液 ！
+
+      你感觉到这黏液似乎会灼伤你，便拼命想要从坑中脱身。
+
+      你的耳朵、鼻子和全身都被黏液给浸透了。
+
+
+      爬出来后，你发现自己的 金币 似乎变少了。你回头一看，发现水坑里不但有你掉落的钱，还有不少其他不幸的冒险者们落下的 金币 。'
+  golden_idol:
+    title: 金色偶像
+    description: 你面前站着一座献给遭遗忘精魂的精致神龛。
+    take: 拿走
+    leave: 离开
+    trap: 陷阱被触发了！选择你的逃脱方式：
+    outrun: 逃离
+    smash: 砸碎
+    hide: 躲藏
 combat:
   title: 战斗
   choose_action: 选择行动
@@ -499,7 +715,7 @@ cards:
       name: 防御
       description: 获得 {block} 点格挡。
     Bash:
-      name: 重击
+      name: 痛击
       description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 易伤。
     Anger:
       name: 愤怒
@@ -544,7 +760,7 @@ cards:
       name: 连续拳
       description: 造成 {damage} 点伤害，{attack_times} 次。
     Uppercut:
-      name: 上钩拳
+      name: 上勾拳
       description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 易伤和 {magic.weak} 虚弱。
     Offering:
       name: 祭品
@@ -611,7 +827,7 @@ cards:
       name: 进化
       description: 每当抽到状态牌时，抽 {draw} 张牌。
     Exhume:
-      name: 挖掘
+      name: 发掘
       description: 从消耗堆选择一张牌加入手牌。消耗。
     Feed:
       name: 狂宴
@@ -620,7 +836,7 @@ cards:
       name: 无惧疼痛
       description: 每当一张牌被消耗时，获得 {block} 点格挡。
     FiendFire:
-      name: 恶魔之火
+      name: 恶魔之焰
       description: 消耗手牌中的所有牌。每张造成 {damage} 点伤害。消耗。
     FireBreathing:
       name: 火焰吐息
@@ -629,13 +845,13 @@ cards:
       name: 火焰屏障
       description: 获得 {block} 点格挡。本回合每当被攻击时，造成 {magic.damage} 点伤害。
     GhostlyArmor:
-      name: 幽灵护甲
+      name: 幽灵铠甲
       description: 虚无。获得 {block} 点格挡。
     Havoc:
       name: 破灭
       description: 打出抽牌堆顶的牌并消耗它。
     Headbutt:
-      name: 头锤
+      name: 头槌
       description: 造成 {damage} 点伤害。将弃牌堆中的一张牌放到抽牌堆顶。
     Hemokinesis:
       name: 御血术
@@ -666,7 +882,7 @@ cards:
       name: 硬撑
       description: 获得 {block} 点格挡。向手牌添加 2 张伤口。
     Rage:
-      name: 暴怒
+      name: 狂怒
       description: 本回合每当打出攻击牌时，获得 {block} 点格挡。
     Rampage:
       name: 暴走
@@ -681,7 +897,7 @@ cards:
       name: 撕裂
       description: 每当因卡牌失去生命值时，获得 {magic.strength} 点力量。
     SearingBlow:
-      name: 灼热打击
+      name: 灼热攻击
       description: 造成 {damage} 点伤害。可以升级任意次数。
     SecondWind:
       name: 重振精神
@@ -703,7 +919,7 @@ cards:
       description: 获得 {block} 点格挡。抽 1 张牌。
       upgrade_description: 获得 {block} 点格挡。抽 1 张牌。
     SpotWeakness:
-      name: 发现弱点
+      name: 观察弱点
       description: 如果敌人打算攻击，获得 {magic.strength} 点力量。
       upgrade_description: 如果敌人打算攻击，获得 {magic.strength} 点力量。
     SwordBoomerang:
@@ -730,7 +946,7 @@ cards:
       description: 造成 {damage} 点伤害。向抽牌堆洗入一张伤口。
   colorless:
     Slimed:
-      name: 粘液
+      name: 黏液
       description: 消耗
       rarity: special
     Dazed:
@@ -753,7 +969,7 @@ cards:
       description: 造成 {damage} 点伤害。如果斩杀，获得 {gold} 金币。
     Impatience:
       name: 急躁
-      description: ?????????????? {draw_amount} ???
+      description: 如果你手牌中没有技能牌，抽 {draw_amount} 张牌。
     Madness:
       name: 疯狂
       description: 手牌中一张随机牌本回合消耗变为 0。
@@ -790,7 +1006,7 @@ cards:
       name: 笨拙
       description: 无法打出。虚无。
     CurseOfTheBell:
-      name: 铃铛诅咒
+      name: 铃铛的诅咒
       description: 无法打出。无法移除。
     DarkShackles:
       name: 黑暗镣铐
@@ -806,7 +1022,7 @@ cards:
       name: 疑虑
       description: 无法使用。回合结束时获得 1 层虚弱。
     DramaticEntrance:
-      name: 华丽登场
+      name: 闪亮登场
       description: 对所有敌人造成 {damage} 点伤害。固有。消耗。
     Enlightenment:
       name: 开悟
@@ -833,7 +1049,7 @@ cards:
       name: 花样百出
       description: 向手牌添加 {magic.cards} 张随机无色牌。消耗。
     JAX:
-      name: JAX
+      name: J.A.X.
       description: 失去 3 点生命值。获得 {magic.strength} 点力量。
     Magnetism:
       name: 磁力
@@ -854,7 +1070,7 @@ cards:
       name: 凡庸
       description: 无法打出。本回合无法打出超过 3 张牌。
     Panacea:
-      name: 万灵药
+      name: 万能药
       description: 获得 {magic.artifact} 层人工制品。消耗。
     Panache:
       name: 神气制胜
@@ -875,7 +1091,7 @@ cards:
       name: 仪式匕首
       description: 造成 {damage} 点伤害。如果斩杀，永久增加此牌 {magic.damage_increase} 点伤害。消耗。
     SadisticNature:
-      name: 施虐天性
+      name: 残虐天性
       description: 每当对敌人施加负面效果时，造成 {damage} 点伤害。
     SecretTechnique:
       name: 秘密技法
@@ -932,13 +1148,13 @@ powers:
     name: 虚弱
     description: 攻击伤害减少 25%。
   Constricted:
-    name: ??
-    description: ???????????????????????
+    name: 缠绕
+    description: 在你的回合结束时，失去等同于紧缚层数的生命值。
   ConfusedPower:
     name: 混乱
     description: 回合开始时随机化卡牌消耗。
   EntangledPower:
-    name: 纠缠
+    name: 缠身
     description: 本回合无法打出攻击牌。
   BufferPower:
     name: 缓冲
@@ -956,13 +1172,13 @@ powers:
     name: 金属化
     description: 回合结束时获得 {amount} 点格挡。
   ThieveryPower:
-    name: 贪婪
+    name: 偷窃
     description: 攻击时偷取 {amount} 金币。死亡时追回。
   SlowPower:
     name: 缓慢
     description: 每当你打出一张牌，本回合该敌人受到的攻击伤害增加 10%。
   DrawReductionPower:
-    name: 抽牌减少
+    name: 抽牌变少
     description: 每回合开始少抽 1 张牌，持续 {amount} 回合。
   TimeWarpPower:
     name: 时间扭曲
@@ -976,13 +1192,13 @@ powers:
     name: 力量衰减
     description: 回合结束时失去 {amount} 点力量。
   FlexPower:
-    name: Flex
+    name: 活动肌肉
     description: Gain {amount} Strength. Lose equal amount at end of turn.
   HeavyBladePower:
     name: Heavy Blade
     description: Gain {amount} Strength. Lose equal amount at end of turn.
   PlatedArmorPower:
-    name: Plated Armor
+    name: 多层护甲
     description: At the end of your turn, gain {amount} Block.
 potions:
   HeartOfIron:
@@ -1113,7 +1329,7 @@ potions:
     description: 向你的空物品栏添加随机药水。
 relics:
   AncientTeaSet:
-    name: 古老茶具
+    name: 古茶具套装
     description: 每当你进入休息点时，下场战斗的第一个回合获得 2 点额外能量。
   Akabeko:
     name: 赤牛
@@ -1143,7 +1359,7 @@ relics:
     name: 捕梦网
     description: 每次休息时，你可以向牌组添加一张卡牌。
   HappyFlower:
-    name: 幸运小花
+    name: 开心小花
     description: 每 3 回合获得 1 点能量。
   JuzuBracelet:
     name: 佛珠手链
@@ -1152,22 +1368,22 @@ relics:
     name: 灯笼
     description: 每场战斗第一回合获得 1 点能量。
   MawBank:
-    name: 巨口储钱罐
+    name: 巨口储蓄罐
     description: 每爬一层获得 12 金币。当你在商店花费任何金币时不再生效。
   MealTicket:
     name: 餐券
     description: 每次进入商店房间时恢复 15 点生命值。
   Nunchaku:
-    name: 双截棍
+    name: 双节棍
     description: 每打出 10 次攻击，获得 1 点能量。
   OddlySmoothStone:
-    name: 奇异常平滑的石头
+    name: 意外光滑的石头
     description: 每场战斗开始时获得 1 点敏捷。
   Omamori:
     name: 御守
     description: 获得的下 2 个诅咒将变成正效果。
   Orichalcum:
-    name: 奥利哈刚
+    name: 奥利哈钢
     description: 如果你在回合结束时没有格挡，获得 6 点格挡。
   PenNib:
     name: 钢笔尖
@@ -1197,7 +1413,7 @@ relics:
     name: 玩具扑翼飞机
     description: 每次饮用药水时恢复 5 点生命值。
   WarPaint:
-    name: 战争颜料
+    name: 战纹涂料
     description: 拾取时升级 2 张随机技能。
   Whetstone:
     name: 磨刀石
@@ -1209,13 +1425,13 @@ relics:
     name: 蓝蜡烛
     description: 诅咒卡牌现在可以打出。打出诅咒牌会使你失去 1 点生命值并移除卡牌。
   BottledFlame:
-    name: 瓶中火焰
+    name: 瓶装火焰
     description: 拾取时，选择一张攻击。每场战斗以该卡在手牌开始。
   BottledLightning:
-    name: 瓶中闪电
+    name: 瓶装闪电
     description: 拾取时，选择一张技能。每场战斗以该卡在手牌开始。
   BottledTornado:
-    name: 瓶中旋风
+    name: 瓶装旋风
     description: 拾取时，选择一个能力。每场战斗以该能力在手牌开始。
   DarkstonePeriapt:
     name: 黑石护符
@@ -1227,7 +1443,7 @@ relics:
     name: 冻结之蛋
     description: 每当你向牌组添加一个能力时，它被升级。
   GremlinHorn:
-    name: 地精角
+    name: 地精之角
     description: 每当一个敌人死亡，获得 1 点能量并抽 1 张牌。
   InkBottle:
     name: 墨水瓶
@@ -1245,16 +1461,16 @@ relics:
     name: 带骨肉
     description: 如果战斗结束时你的生命值在或低于 50%，恢复 12 点生命值。
   MercuryHourglass:
-    name: 水银时漏
+    name: 水银沙漏
     description: 回合开始时对所有敌人造成 3 点伤害。
   MoltenEgg:
-    name: 熔化之蛋
+    name: 熔火之蛋
     description: 每当你向牌组添加一个攻击，它被升级。
   MummifiedHand:
     name: 干瘪之手
     description: 每当你打出一张能力牌，你手牌中的一张随机卡牌消耗变为 0 能量，持续回合。
   NinjaScroll:
-    name: 忍者卷轴
+    name: 忍术卷轴
     description: 每场战斗开始时手牌中有 3 把小刀。
   OrnamentalFan:
     name: 精致折扇
@@ -1269,13 +1485,13 @@ relics:
     name: 纸蛙
     description: 易伤敌人受到 75% 伤害，而不是 50%。
   Pear:
-    name: 梨
+    name: 梨子
     description: 最大生命值增加 10 点。
   QuestionCard:
     name: 问号牌
     description: 在未来的卡牌奖励屏幕上，你有 1 个额外卡牌可选择。
   SelfFormingClay:
-    name: 塑形陶土
+    name: 自成型黏土
     description: 战斗中失去生命值时，下一回合获得 3 点格挡。
   Shuriken:
     name: 手里剑
@@ -1299,19 +1515,19 @@ relics:
     name: 白兽雕像
     description: 战斗后总是掉落药水。
   BirdFacedUrn:
-    name: 鸟面翁
+    name: 鸟面瓮
     description: 每当你打出一张能力牌，恢复 2 点生命值。
   Calipers:
     name: 外卡钳
     description: 回合开始时失去 15 点格挡，而不是全部格挡。
   CaptainsWheel:
-    name: 舵轮
+    name: 舵盘
     description: 第三回合开始时获得 18 点格挡。
   DeadBranch:
     name: 枯木树枝
     description: 每当你消耗一张卡牌，向手牌添加一张随机卡牌。
   DuVuDoll:
-    name: 巫毒娃娃
+    name: 毒巫娃娃
     description: 牌组中的每个诅咒使每场战斗开始时获得 1 点额外力量。
   FossilizedHelix:
     name: 螺类化石
@@ -1320,13 +1536,13 @@ relics:
     name: 生姜
     description: 你不再能被激怒。
   Girya:
-    name: 哑铃
+    name: 壶铃
     description: 你现在可以在休息点获得力量（最多 3 次）。
   IceCream:
-    name: 冰激凌
+    name: 冰淇淋
     description: 能量在回合之间得到保留。
   LizardTail:
-    name: 蜥蜴尾
+    name: 蜥蜴尾巴
     description: 当你濒死时，恢复到你最大生命值的 50%（只生效一次）。
   MagicFlower:
     name: 魔法花
@@ -1335,10 +1551,10 @@ relics:
     name: 芒果
     description: 拾取时最大生命值增加 14 点。
   OldCoin:
-    name: 古币
+    name: 古钱币
     description: 获得 300 金币。
   PeacePipe:
-    name: 和平烟斗
+    name: 宁静烟斗
     description: 你现在可以在休息点从牌组移除卡牌。
   Pocketwatch:
     name: 怀表
@@ -1353,19 +1569,19 @@ relics:
     name: 历石
     description: 回合 7 结束时对所有敌人造成 52 点伤害。
   TheSpecimen:
-    name: 生物标本
+    name: 生物样本
     description: 每当一个敌人死亡，将它的任何中毒转移给随机敌人。
   ThreadAndNeedle:
     name: 针线
     description: 每场战斗开始时获得 4 点镀层护甲。
   Tingsha:
-    name: 铜拨
+    name: 铜钹
     description: 每回合弃一张牌时，对随机敌人造成 3 点伤害。
   Torii:
     name: 鸟居
     description: 每当你要受到 5 点或更少的未格挡攻击伤害时，将其减少到 1 点。
   ToughBandages:
-    name: 坚固绑带
+    name: 结实绷带
     description: 每回合弃一张牌时，获得 3 点格挡。
   TungstenRod:
     name: 钨合金棍
@@ -1386,46 +1602,46 @@ relics:
     name: 黑星
     description: 精英掉落额外遗物。
   BlackBlood:
-    name: 黑血
+    name: 黑暗之血
     description: 替代燃烧之血。战斗结束时恢复 12 点生命值。
   BustedCrown:
-    name: 破碎王冠
+    name: 破碎金冠
     description: 每回合开始时获得 1 点能量。在卡牌奖励屏幕上，你有 2 张更少卡牌可选择。
   CallingBell:
     name: 召唤铃铛
     description: 拾取时，获得一个独特诅咒和 3 个遗物。
   CoffeeDripper:
-    name: 咖啡杯
+    name: 咖啡滤杯
     description: 每回合开始时获得 1 点能量。你不能再在休息点休息。
   CursedKey:
-    name: 诅咒之钥
+    name: 诅咒钥匙
     description: 每回合开始时获得 1 点能量。打开非 Boss 宝箱时获得诅咒。
   Ectoplasm:
     name: 灵体外质
     description: 每回合开始时获得 1 点能量。你不能再获得金币。
   EmptyCage:
-    name: 空笼
+    name: 空鸟笼
     description: 拾取时，从你的牌组移除 2 张卡牌。
   FusionHammer:
     name: 融合之锤
     description: 每回合开始时获得 1 点能量。你不能再在休息点打铁。
   HoveringKite:
-    name: 悬停风筝
+    name: 悬浮风筝
     description: 每回合第一张弃牌时获得 1 点能量。
   MarkOfPain:
-    name: 痛苦印记
+    name: 痛楚印记
     description: 每回合开始时获得 1 点能量。战斗开始时手牌中有 2 把创伤。
   PandorasBox:
-    name: 潘多拉魔盒
+    name: 潘多拉的魔盒
     description: 转化所有的打击和防御。
   PhilosophersStone:
     name: 贤者之石
     description: 每回合开始时获得 1 点能量。所有敌人开始时有 1 点力量。
   RingOfSerpent:
-    name: 巨蛇戒指
+    name: 长蛇戒指
     description: 替代巨蛇戒指。回合开始时额外抽 1 张牌。
   RunicCube:
-    name: 符文立方
+    name: 符文立方体
     description: 每当失去生命值时，抽 1 张牌。
   RunicDome:
     name: 符文圆顶
@@ -1437,25 +1653,25 @@ relics:
     name: 神圣树皮
     description: 大多数药水的效果翻倍。
   SlaversCollar:
-    name: 奴隶项圈
+    name: 奴隶贩子颈环
     description: Boss 和精英战斗回合开始时获得 1 点能量。
   Sozu:
     name: 添水
     description: 每回合开始时获得 1 点能量。你不能再获得药水。
   TinyHouse:
-    name: 小房子
+    name: 小屋子
     description: 获得 1 瓶药水。获得 50 金币。最大生命值增加 5 点。获得 1 张卡牌。升级 1 张随机卡牌。
   VelvetChoker:
-    name: 天鹅绒项圈
+    name: 天鹅绒颈圈
     description: 每回合开始时获得 1 点能量。你每回合不能打出超过 6 张牌。
   WristBlade:
     name: 袖剑
     description: 消耗 0 能量的攻击额外造成 4 点伤害。
   Cauldron:
-    name: 坩埚
+    name: 大锅
     description: 拾取时，酿造 5 瓶随机药水。
   ChemicalX:
-    name: 化学物 X
+    name: 化学物X
     description: 每当你打出一张消耗 X 的卡牌，其效果增加 2 倍。
   ClockworkSouvenir:
     name: 齿轮工艺品
@@ -1464,7 +1680,7 @@ relics:
     name: 多利之镜
     description: 拾取时，获得你牌组中一张卡牌的额外复制。
   FrozenEye:
-    name: 冰冻之眼
+    name: 冻结之眼
     description: 查看你的抽牌堆时，卡牌现在按顺序显示。
   HandDrill:
     name: 手钻
@@ -1473,7 +1689,7 @@ relics:
     name: 李家华夫饼
     description: 最大生命值增加 7 点并恢复所有生命值。
   MedicalKit:
-    name: 医疗包
+    name: 医药箱
     description: 状态卡现在可以打出。打出状态牌会移除卡牌。
   MembershipCard:
     name: 会员卡
@@ -1485,10 +1701,10 @@ relics:
     name: 星系仪
     description: 选择并向你的牌组添加 5 张卡牌。
   SlingOfCourage:
-    name: 勇气吊索
+    name: 勇气投石索
     description: 每场精英战斗开始时获得 2 点力量。（对 Boss 无效）。
   StrangeSpoon:
-    name: 奇怪勺子
+    name: 奇怪的勺子
     description: 打出的卡牌消耗时，50% 的机会将其移除而不是弃掉。
   TheAbacus:
     name: 算盘
@@ -1497,10 +1713,10 @@ relics:
     name: 扭曲漏斗
     description: 回合开始时对所有敌人施加 4 层中毒。
   CultistHeadpiece:
-    name: 邪教徒头颅
+    name: 邪教徒头套
     description: CAW CAW CAW CAW WAWWWW!
   FaceOfCleric:
-    name: 牧师面具
+    name: 牧师的脸
     description: 每次战斗后最大生命值增加 1 点。
   GoldenIdol:
     name: 金神像
@@ -1509,43 +1725,43 @@ relics:
     name: 鲜血神像
     description: 每当你获得金币时，恢复 5 点生命值。
   GremlinVisage:
-    name: 地精脸
+    name: 地精容貌
     description: 每场战斗开始时获得 1 层虚弱。
   MarkOfBloom:
     name: 绽放印记
     description: 你不能再治疗。
   MutagenicStrength:
-    name: 突变力量
+    name: 突变之力
     description: 每场战斗开始时获得 3 点力量，回合结束时失去。
   Necronomicon:
     name: 死灵之书
     description: 每回合打出的第一张消耗 2 或更多的牌时被播放两次。获得此遗物时，你被诅咒。
   NilrysCodex:
-    name: 尼利法典
+    name: 尼利的宝典
     description: 回合结束时，你可以从 3 张随机卡牌中选择 1 张洗入你的抽牌堆。
   Enchiridion:
     name: 英雄宝典
     description: 回合开始时，向你的手牌添加一个随机能力，持续到回合结束。
   NeowsLament:
-    name: 涅奥的祝福
+    name: 涅奥的悲恸
     description: 你最初 3 场战斗中的敌人有 1 点生命值。
   NlothHungryFace:
-    name: 恩洛斯的饥饿脸
+    name: 恩洛斯的饥饿的脸
     description: 下一个非 Boss 宝箱是空的。
   OddMushroom:
     name: 奇怪蘑菇
     description: 易伤时受到 50% 更多伤害，而不是 75%。
   SsserpentHead:
-    name: 巨蛇头颅
+    name: 蛇的头
     description: 每当你进入事件房间时，获得 50 金币。
   WarpedTongs:
-    name: 扭曲之钳
+    name: 弯曲铁钳
     description: 回合开始时，为休息回合升级你手牌中的一张随机卡牌。
   RedMask:
     name: 红面具
     description: 每场战斗开始时，对所有敌人施加 1 层虚弱。
   NlothGift:
-    name: 恩洛斯的馈赠
+    name: 恩洛斯的礼物
     description: 作为怪物奖励获得稀有卡牌的几率x3。
   RedKey:
     name: 红钥匙
@@ -1578,12 +1794,12 @@ relics:
     name: 橙色药丸
     description: 每当你打出能力牌、攻击牌和技能牌，移除所有你的减益。
   PotionBeltShop:
-    name: Potion Belt
+    name: 药水腰带
   StrangeSpoonShop:
-    name: Strange Spoon (Shop)
+    name: 奇怪的勺子
     description: Cards which Exhaust when played will instead discard 50% of time.
   PaperPhrogIronclad:
-    name: Paper Frog
+    name: 纸蛙
     description: Enemies with Vulnerable take 75% more damage rather than 50%.
 enemies:
   Cultist:
@@ -1620,7 +1836,7 @@ enemies:
         name: 生长
         description: 获得 {strength_gain} 点力量。
   RedLouse:
-    name: 红虱虫
+    name: 虱虫
     intentions:
       bite:
         name: 撕咬
@@ -1629,7 +1845,7 @@ enemies:
         name: 生长
         description: 获得 {strength_gain} 点力量。
   GreenLouse:
-    name: 绿虱虫
+    name: 虱虫
     intentions:
       bite:
         name: 撕咬
@@ -1638,7 +1854,7 @@ enemies:
         name: 吐丝
         description: 对你施加 1 层虚弱。
   BlueSlaver:
-    name: 蓝奴隶主
+    name: 奴隶贩子
     intentions:
       stab:
         name: 刺击
@@ -1647,7 +1863,7 @@ enemies:
         name: 耙击
         description: 造成 {damage} 点伤害。对你施加 1 层虚弱。
   RedSlaver:
-    name: 红奴隶主
+    name: 奴隶贩子
     intentions:
       stab:
         name: 刺击
@@ -1659,7 +1875,7 @@ enemies:
         name: 纠缠
         description: 对你施加 1 层纠缠。
   AcidSlimeL:
-    name: 酸液史莱姆 (大)
+    name: 酸液史莱姆（大）
     intentions:
       corrosive_spit:
         name: 腐蚀唾液
@@ -1674,7 +1890,7 @@ enemies:
         name: 分裂
         description: 分裂成两个较小的史莱姆。
   AcidSlimeM:
-    name: 酸液史莱姆 (中)
+    name: 酸液史莱姆（中）
     intentions:
       corrosive_spit:
         name: 腐蚀唾液
@@ -1689,7 +1905,7 @@ enemies:
         name: 分裂
         description: 分裂成两个较小的史莱姆。
   AcidSlimeS:
-    name: 酸液史莱姆 (小)
+    name: 酸液史莱姆（小）
     intentions:
       corrosive_spit:
         name: 腐蚀唾液
@@ -1701,7 +1917,7 @@ enemies:
         name: 冲撞
         description: 造成 {damage} 点伤害。
   SpikeSlimeM:
-    name: 尖刺史莱姆 (中)
+    name: 尖刺史莱姆（中）
     intentions:
       lick:
         name: 舔舐
@@ -1715,7 +1931,7 @@ enemies:
       tackle:
         description: 造成 {damage} 点伤害
   SpikeSlimeS:
-    name: 尖刺史莱姆 (小)
+    name: 尖刺史莱姆（小）
     intentions:
       lick:
         name: 舔舐
@@ -1726,7 +1942,7 @@ enemies:
       tackle:
         description: 造成 {damage} 点伤害
   Spiker:
-    name: 尖刺机
+    name: 钉刺机
     intentions:
       spike_attack:
         name: 尖刺攻击
@@ -2126,17 +2342,17 @@ enemies:
         name: 凝视
         description: 施加 {amount} 层虚弱。
   Nemesis:
-    name: ??
+    name: 天罚
     intentions:
       Tri Attack:
-        name: ???
-        description: ?? {damage} ????? 3 ??
+        name: 三连击
+        description: 造成 {damage} 点伤害，3 次。
       Tri Burn:
-        name: ????
-        description: ???????? {amount} ????
+        name: 三重燃烧
+        description: 向你的弃牌堆加入 {amount} 张燃烧。
       Scythe:
-        name: ????
-        description: ?? {damage} ????
+        name: 镰刀
+        description: 造成 {damage} 点伤害。
   Reptomancer:
     name: 拜蛇术士
     intentions:
@@ -2150,7 +2366,7 @@ enemies:
         name: 召唤
         description: 召唤匕首。
   SpireGrowth:
-    name: 塔内增生组织
+    name: 扭曲团块
     intentions:
       Attack:
         name: 攻击
@@ -2186,7 +2402,7 @@ enemies:
         name: 重生
         description: 复活所有死亡的黑暗雏鸟。
   SpireShield:
-    name: 尖塔之盾
+    name: 高塔之盾
     intentions:
       Bash:
         name: 重击
@@ -2198,7 +2414,7 @@ enemies:
         name: 防御
         description: 获得 {block} 点格挡。
   SpireSpear:
-    name: 尖塔之矛
+    name: 高塔之矛
     intentions:
       Skewer:
         name: 穿刺
@@ -2228,11 +2444,11 @@ enemies:
         name: 无敌
         description: Cannot take more than 200 damage per turn.
   SpikeSlimeL:
-    name: 尖刺史莱姆 (大)
+    name: 尖刺史莱姆（大）
     intentions:
       lick:
         name: 舔舐
-        description: ?? {debuff}?
+        description: 施加 {debuff} 层脆弱。
       split:
         name: 分裂
         description: 分裂成 2 个尖刺史莱姆 (中)
@@ -2240,7 +2456,7 @@ enemies:
         name: 冲撞
         description: 造成 {damage} 点伤害
   TorchHead:
-    name: 火把头
+    name: 火炬头
     intentions:
       tackle:
         name: 冲撞
@@ -2306,7 +2522,7 @@ enemies:
         name: 保护
         description: 获得 {block} 点格挡
   BronzeAutomaton:
-    name: 铜质机械人偶
+    name: 铜制机械人偶
     intentions:
       hyperbeam:
         name: 超级光束
@@ -2406,11 +2622,11 @@ rooms:
   combat:
     enter: === 战斗开始 ===
     victory: 胜利！所有敌人被击败！
-    boss_enter: === Boss 战斗 ===
+    boss_enter: === 首领战斗 ===
     rewards:
       gold: 获得 {amount} 金币
       card: 将 {card_name} 加入牌组
-    elite_enter: You enter an elite battle!
+    elite_enter: 你进入了一场精英战斗！
   RestRoom:
     title: 休息点
     rest: 休息（恢复 30% 生命值）
