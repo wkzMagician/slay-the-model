@@ -16,6 +16,33 @@ jobs:
           cache: "pip"
           cache-dependency-path: "requirements.txt"
 
+      - name: Create CI game config
+        run: |
+          mkdir -p config
+          cat <<'EOF' > config/game_config.yaml
+          mode: debug
+          language: en
+          seed: 1
+          character: Ironclad
+          ascension: 0
+          select_overflow: truncate
+          auto_select: true
+          human:
+            show_menu_option: false
+          ai:
+            api_key: ""
+            api_base: "https://api.openai.com/v1"
+            model: "gpt-4o"
+            stream: false
+            temperature: 0.7
+            max_tokens: 2048
+            timeout: 60
+          debug:
+            print: false
+            select_type: first
+            god_mode: false
+          EOF
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

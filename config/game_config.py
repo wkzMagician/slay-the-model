@@ -5,7 +5,7 @@ class GameConfig:
     def __init__(self, **kwargs):
         # Set default values matching game_config.yaml structure
         defaults = {
-            "mode": "human",
+            "mode": "debug",
             "language": "en",
             "seed": -1,
             "character": "Ironclad",
