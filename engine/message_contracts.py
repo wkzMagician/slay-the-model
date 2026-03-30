@@ -123,6 +123,7 @@ def _bind_with_previous_hp(*value_getters: Callable[[Callable, GameMessage], obj
 
 _OWNER = lambda _bound_method, message: message.owner
 _ENEMIES = lambda _bound_method, message: message.enemies
+_TARGETS = lambda _bound_method, message: message.targets
 _FLOOR = lambda _bound_method, message: message.floor
 _MESSAGE = lambda _bound_method, message: message
 _AMOUNT = lambda _bound_method, message: message.amount
@@ -287,7 +288,7 @@ def _build_contracts() -> dict[type[GameMessage], MessageContract]:
         CardPlayedMessage: MessageContract(
             message_type=CardPlayedMessage,
             default_variants=(
-                _VARIANT(("card", "player", "entities"), _bind(_CARD, _OWNER, _ENEMIES)),
+                _VARIANT(("card", "player", "targets"), _bind(_CARD, _OWNER, _TARGETS)),
                 _VARIANT(("card",), _bind(_CARD)),
                 _VARIANT(("message",), _bind(_MESSAGE)),
                 _VARIANT((), _bind()),

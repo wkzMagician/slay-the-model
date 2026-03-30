@@ -139,6 +139,7 @@ class PlayCardBHAction(Action):
         enemies = current_combat.enemies
         resolved_targets = [target for target in self.targets if target is not None]
         message_targets: List[Optional[Creature]] = list(resolved_targets)
+        current_combat.combat_state.last_card_targets = list(resolved_targets)
 
         cost = self.card.cost
         if getattr(self.card, "_cost", None) == COST_X:
@@ -147,6 +148,7 @@ class PlayCardBHAction(Action):
         if cost > 0 and not self.ignore_energy:
             player.gain_energy(-cost)
             current_combat.combat_state.player_energy_spent_this_turn += cost
+        self.card.cost_until_played = None
 
         if len(resolved_targets) == 1:
             target = resolved_targets[0]
@@ -165,11 +167,12 @@ class PlayCardBHAction(Action):
                 card=self.card,
                 owner=player,
                 targets=message_targets,
-                enemies=enemies,
             )
         )
 
         current_combat.combat_state.turn_cards_played += 1
+        if self.card.card_type == CardType.ATTACK:
+            current_combat.combat_state.turn_attack_cards_played += 1
         current_combat.combat_state.player_actions_this_turn += 1
 
         card_name = self.card.display_name.resolve() if hasattr(self.card, "display_name") else str(self.card)
@@ -194,14 +197,14 @@ class PlayCardBHAction(Action):
         is_power_card = self.card.card_type == CardType.POWER
 
         if will_exhaust and prevent_exhaust:
-            add_action(DiscardCardAction(card=self.card))
+            add_action(DiscardCardAction(card=self.card, trigger_effects=False))
         elif will_exhaust:
             add_action(ExhaustCardAction(card=self.card))
         else:
             if is_power_card:
                 player.card_manager.remove_from_pile(self.card, "hand")
             else:
-                add_action(DiscardCardAction(card=self.card))
+                add_action(DiscardCardAction(card=self.card, trigger_effects=False))
 
         if should_exhaust_curse:
             hp_loss = 1

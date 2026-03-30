@@ -194,28 +194,6 @@ class FusionHammer(Relic):
     # Implement logic in RestRoom
 
 @register("relic")
-class HoveringKite(Relic):
-    """The first time you discard a Card each turn, gain 1 Energy."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.BOSS
-        self.discarded_this_turn = False
-
-    def on_combat_start(self, player, entities):
-        """Reset discard flag at start of each turn"""
-        from engine.game_state import game_state
-        add_actions([LambdaAction(func=lambda: setattr(self, 'discarded_this_turn', False))])
-        return
-    def on_card_discard(self, card, player, entities):
-        """Trigger energy on first discard each turn"""
-        if not self.discarded_this_turn:
-            self.discarded_this_turn = True
-            from engine.game_state import game_state
-            add_actions([GainEnergyAction(energy=1)])
-            return
-        return
-@register("relic")
 class MarkOfPain(Relic):
     """Gain 1 Energy at start of each turn. Start combats with 2 Wounds in your Drawpile."""
     
@@ -277,19 +255,6 @@ class PhilosophersStone(Relic):
 
         add_actions(actions)
 
-        return
-@register("relic")
-class RingOfSerpent(Relic):
-    """Replaces Ring of Snake. At the start of your turn, draw 1 additional Card."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.BOSS
-
-    def on_player_turn_start(self, player, entities):
-        """Draw 1 additional card at start of each turn"""
-        from engine.game_state import game_state
-        add_actions([DrawCardsAction(count=1)])
         return
 @register("relic")
 class RunicCube(Relic):
@@ -417,17 +382,3 @@ class VelvetChoker(Relic):
     # Card play limit implemented in Card.can_play() in cards/base.py
     # Checks combat_state.turn_cards_played >= 6 and blocks further card plays
 
-@register("relic")
-class WristBlade(Relic):
-    """Attacks that cost 0 Energy deal 4 additional damage."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.BOSS
-    
-    def modify_damage_dealt(self, base_damage: int, card=None, target=None) -> int:
-        """Add 4 damage to 0-cost Attack cards."""
-        if card and hasattr(card, 'card_type') and card.card_type == CardType.ATTACK:
-            if hasattr(card, 'cost') and card.cost == 0:
-                return base_damage + 4
-        return base_damage

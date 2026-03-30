@@ -4,7 +4,7 @@ Test map generation with multiple seeds to verify constraint enforcement.
 from map.map_manager import MapManager
 from utils.types import RoomType
 
-def test_seed(seed: int) -> bool:
+def test_seed(seed: int) -> None:
     """Test map generation with a specific seed."""
     mm = MapManager(seed=seed, act_id=1)
     mm.generate_map()
@@ -22,7 +22,6 @@ def test_seed(seed: int) -> bool:
             assert not (
                 problem_type in prev_types and problem_type in curr_types
             ), f"Seed {seed} - Consecutive {problem_type.name} on floors {f-1} and {f}"
-    return True
 
 if __name__ == "__main__":
     seeds = [1, 42, 100, 999, 12345, 666, 777, 8888]
@@ -31,16 +30,10 @@ if __name__ == "__main__":
     print("Testing Multiple Seeds")
     print("=" * 60)
     
-    all_passed = True
     for seed in seeds:
-        passed = test_seed(seed)
-        if not passed:
-            all_passed = False
+        test_seed(seed)
     
     print()
     print("=" * 60)
-    if all_passed:
-        print("SUCCESS: All seeds passed!")
-    else:
-        print("FAILURE: Some seeds failed!")
+    print("SUCCESS: All seeds passed!")
     print("=" * 60)

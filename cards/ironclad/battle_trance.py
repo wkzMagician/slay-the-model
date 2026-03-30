@@ -33,8 +33,8 @@ class BattleTrance(Card):
 
         actions = []
         # Apply "Cannot Draw" power for this turn (draw already handled by base class)
-        from powers.definitions.battle_trance_draw_power import BattleTranceDrawPower
-        actions.append(ApplyPowerAction(power="BattleTranceDrawPower", target=target, amount=1, duration=1))
+        from powers.definitions.no_draw import NoDrawPower
+        actions.append(ApplyPowerAction(power=NoDrawPower(duration=1, owner=target), target=target, amount=1, duration=1))
 
         from engine.game_state import game_state
 

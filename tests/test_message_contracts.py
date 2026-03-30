@@ -5,6 +5,7 @@ from engine.message_bus import MessageBus
 from engine.message_contracts import get_message_contract, validate_subscription
 from engine.messages import (
     EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES,
+    CardPlayedMessage,
     CardDrawnMessage,
     CombatStartedMessage,
     DamageResolvedMessage,
@@ -64,6 +65,11 @@ def test_contract_registry_exposes_declared_variants():
     assert contract.message_type is CardDrawnMessage
     assert ("message",) in {variant.param_names for variant in contract.default_variants}
     assert ("card", "player", "entities") in {variant.param_names for variant in contract.default_variants}
+
+
+def test_card_played_contract_uses_targets_form():
+    card_play_contract = get_message_contract(CardPlayedMessage)
+    assert ("card", "player", "targets") in {variant.param_names for variant in card_play_contract.default_variants}
 
 
 

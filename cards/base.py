@@ -6,7 +6,14 @@ from typing import Any, Dict, List, Optional
 from actions.base import Action, LambdaAction
 from actions.combat import AttackAction
 from entities.creature import Creature
-from engine.messages import CardDiscardedMessage, CardDrawnMessage, CardPlayedMessage, DamageResolvedMessage, PlayerTurnEndedMessage
+from engine.messages import (
+    CardDiscardedMessage,
+    CardDrawnMessage,
+    CardPlayedMessage,
+    DamageResolvedMessage,
+    HpLostMessage,
+    PlayerTurnEndedMessage,
+)
 from engine.subscriptions import MessagePriority, subscribe
 # 延迟导入以避免循环导入
 def get_game_state():
@@ -116,9 +123,11 @@ class Card(Localizable):
 
         # Computed properties
         self.target_type = self._resolve_target()
+        self.retain_this_turn = False
         
-        # temporary cost for this turn (e.g. from Corruption)
-        self.temp_cost: Optional[int] = None
+        # temporary cost until end of turn (e.g. from Corruption/Bullet Time)
+        self.cost_until_end_of_turn: Optional[int] = None
+        self.cost_until_played: Optional[int] = None
         self._x_cost_energy = 0
         
         # Handle optional kwargs for testing
@@ -150,8 +159,10 @@ class Card(Localizable):
         if self._cost == COST_X:
             from engine.game_state import game_state
             return game_state.player.energy
-        if self.temp_cost is not None:
-            return self.temp_cost
+        if self.cost_until_end_of_turn is not None:
+            return self.cost_until_end_of_turn
+        if self.cost_until_played is not None:
+            return self.cost_until_played
         return self._cost
     
     @cost.setter
@@ -209,6 +220,15 @@ class Card(Localizable):
     def innate(self) -> bool:
         """是否固有"""
         return self._innate
+
+    @property
+    def retain_for_this_turn(self) -> bool:
+        return self.retain_this_turn
+
+    @retain_for_this_turn.setter
+    def retain_for_this_turn(self, value: bool):
+        self.retain_this_turn = bool(value)
+
     
     # ============ 动态值获取 ============
     
@@ -437,17 +457,17 @@ class Card(Localizable):
         return
     
     @subscribe(CardPlayedMessage, priority=MessagePriority.REACTION)
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Called when another card is played while this card is active."""
         return
 
     def on_player_turn_start(self):
         """
         卡牌在回合开始时触发。
-        默认：如果temp_cost不为None，重置为None（只影响当前回合）
+        默认：如果本回合费用覆写不为None，重置为None（只影响当前回合）
         """
         from engine.game_state import game_state
-        add_action(LambdaAction(lambda: setattr(self, 'temp_cost', None)))
+        add_action(LambdaAction(lambda: setattr(self, 'cost_until_end_of_turn', None)))
         return
     
     @subscribe(PlayerTurnEndedMessage, priority=MessagePriority.CARD)
@@ -458,6 +478,16 @@ class Card(Localizable):
     @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)
     def on_damage_dealt(self, damage: int, target=None, card=None, damage_type: str = "direct"):
         """Called when this card deals damage."""
+        return
+
+    @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)
+    def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type: str = "direct"):
+        """Called when damage is resolved while this card is active."""
+        return
+
+    @subscribe(HpLostMessage, priority=MessagePriority.REACTION)
+    def on_lose_hp(self, amount: int, source=None, card=None):
+        """Called when HP loss is resolved while this card is active."""
         return
 
     @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)

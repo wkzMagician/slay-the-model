@@ -6,6 +6,7 @@ from utils.registry import get_registered, list_registered
 def test_registered_card_info_renders_without_missing_magic_fields():
     importlib.import_module("cards.colorless")
     importlib.import_module("cards.ironclad")
+    importlib.import_module("cards.silent")
 
     failures = []
     for card_name in list_registered("card"):

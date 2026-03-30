@@ -39,7 +39,7 @@ class Madness(Card):
                 random_card = random.choice(hand_cards)
                 # Set its cost to 0 for the entire combat
                 # We need a way to track "cost 0 for this combat"
-                # For now, use a very negative temp_cost as a marker
+                # For now, use a very negative turn-scoped cost override as a marker
                 # A proper implementation would use a power or special flag
                 random_card.cost = 0
 

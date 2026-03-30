@@ -1,16 +1,14 @@
-"""
+﻿"""
 Global relics package - relics available to all character classes.
 Organized by rarity.
 """
 
-# Import all global relics from rarity-based files
 from .common import (
     Akabeko,
     Anchor,
     AncientTeaSet,
     BagOfPreparation,
     Vajra,
-    # Additional Common Relics
     ArtOfWar,
     BagOfMarbles,
     BloodVial,
@@ -37,12 +35,11 @@ from .common import (
     TinyChest,
     ToyOrnithopter,
     WarPaint,
-    Whetstone
+    Whetstone,
 )
 
 from .uncommon import (
     HornCleat,
-    # Additional Uncommon Relics
     BlueCandle,
     BottledFlame,
     BottledLightning,
@@ -59,10 +56,8 @@ from .uncommon import (
     MercuryHourglass,
     MoltenEgg,
     MummifiedHand,
-    NinjaScroll,
     OrnamentalFan,
     Pantograph,
-    PaperKrane,
     PaperPhrog,
     Pear,
     QuestionCard,
@@ -73,12 +68,11 @@ from .uncommon import (
     Sundial,
     TheCourier,
     ToxicEgg,
-    WhiteBeastStatue
+    WhiteBeastStatue,
 )
 
 from .rare import (
     BirdFacedUrn,
-    # Additional Rare Relics
     Calipers,
     CaptainsWheel,
     DeadBranch,
@@ -95,19 +89,15 @@ from .rare import (
     PrayerWheel,
     Shovel,
     StoneCalendar,
-    TheSpecimen,
     ThreadAndNeedle,
-    Tingsha,
     Torii,
-    ToughBandages,
     TungstenRod,
     Turnip,
-    UnceasingTop
+    UnceasingTop,
 )
 
 from .boss import (
     SneckoEye,
-    # Additional Boss Relics
     Astrolabe,
     BlackStar,
     BlackBlood,
@@ -118,11 +108,9 @@ from .boss import (
     Ectoplasm,
     EmptyCage,
     FusionHammer,
-    HoveringKite,
     MarkOfPain,
     PandorasBox,
     PhilosophersStone,
-    RingOfSerpent,
     RunicCube,
     RunicDome,
     RunicPyramid,
@@ -131,11 +119,9 @@ from .boss import (
     Sozu,
     TinyHouse,
     VelvetChoker,
-    WristBlade
 )
 
 from .shop import (
-    # Shop Relics
     Cauldron,
     ChemicalX,
     ClockworkSouvenir,
@@ -151,12 +137,10 @@ from .shop import (
     SlingOfCourage,
     StrangeSpoonShop,
     TheAbacus,
-    TwistedFunnel,
-    Toolbox
+    Toolbox,
 )
 
 from .event import (
-    # Event Relics
     CultistHeadpiece,
     FaceOfCleric,
     GoldenIdol,
@@ -178,176 +162,37 @@ from .event import (
 )
 
 from .special import (
-    # Special Relics
     RedKey,
     BlueKey,
-    GreenKey
+    GreenKey,
 )
 
 __all__ = [
-    # Common (29)
-    'Akabeko',
-    'Anchor',
-    'AncientTeaSet',
-    'BagOfPreparation',
-    'Vajra',
-    'ArtOfWar',
-    'BagOfMarbles',
-    'BloodVial',
-    'BronzeScales',
-    'CentennialPuzzle',
-    'CeramicFish',
-    'DreamCatcher',
-    'HappyFlower',
-    'JuzuBracelet',
-    'Lantern',
-    'MawBank',
-    'MealTicket',
-    'Nunchaku',
-    'OddlySmoothStone',
-    'Omamori',
-    'Orichalcum',
-    'PenNib',
-    'PotionBelt',
-    'PreservedInsect',
-    'RegalPillow',
-    'SmilingMask',
-    'Strawberry',
-    'TheBoot',
-    'TinyChest',
-    'ToyOrnithopter',
-    'WarPaint',
-    'Whetstone',
-
-    # Uncommon (22)
-    'HornCleat',
-    'BlueCandle',
-    'BottledFlame',
-    'BottledLightning',
-    'BottledTornado',
-    'DarkstonePeriapt',
-    'EternalFeather',
-    'FrozenEgg',
-    'GremlinHorn',
-    'InkBottle',
-    'Kunai',
-    'LetterOpener',
-    'Matryoshka',
-    'MeatOnBone',
-    'MercuryHourglass',
-    'MoltenEgg',
-    'MummifiedHand',
-    'NinjaScroll',
-    'OrnamentalFan',
-    'Pantograph',
-    'PaperKrane',
-    'PaperPhrog',
-    'Pear',
-    'QuestionCard',
-    'SelfFormingClay',
-    'Shuriken',
-    'SingingBowl',
-    'StrikeDummy',
-    'Sundial',
-    'TheCourier',
-    'ToxicEgg',
-    'WhiteBeastStatue',
-
-    # Rare (21)
-    'BirdFacedUrn',
-    'Calipers',
-    'CaptainsWheel',
-    'DeadBranch',
-    'DuVuDoll',
-    'FossilizedHelix',
-    'Ginger',
-    'Girya',
-    'IceCream',
-    'LizardTail',
-    'Mango',
-    'OldCoin',
-    'PeacePipe',
-    'Pocketwatch',
-    'PrayerWheel',
-    'Shovel',
-    'StoneCalendar',
-    'TheSpecimen',
-    'ThreadAndNeedle',
-    'Tingsha',
-    'Torii',
-    'ToughBandages',
-    'TungstenRod',
-    'Turnip',
-    'UnceasingTop',
-
-    # Boss (20)
-    'SneckoEye',
-    'Astrolabe',
-    'BlackStar',
-    'BlackBlood',
-    'BustedCrown',
-    'CallingBell',
-    'CoffeeDripper',
-    'CursedKey',
-    'Ectoplasm',
-    'EmptyCage',
-    'FusionHammer',
-    'HoveringKite',
-    'MarkOfPain',
-    'PandorasBox',
-    'PhilosophersStone',
-    'RingOfSerpent',
-    'RunicCube',
-    'RunicDome',
-    'RunicPyramid',
-    'SacredBark',
-    'SlaversCollar',
-    'Sozu',
-    'TinyHouse',
-    'VelvetChoker',
-    'WristBlade',
-
-    # Shop (14)
-    'Cauldron',
-    'ChemicalX',
-    'ClockworkSouvenir',
-    'DollysMirror',
-    'FrozenEye',
-    'HandDrill',
-    'LeesWaffle',
-    'MedicalKit',
-    'MembershipCard',
-    'PrismaticShard',
-    'Orrery',
-    'PotionBeltShop',
-    'SlingOfCourage',
-    'StrangeSpoonShop',
-    'TheAbacus',
-    'TwistedFunnel',
-    'Toolbox',
-
-    # Event (14)
-    'CultistHeadpiece',
-    'FaceOfCleric',
-    'GoldenIdol',
-    'BloodyIdol',
-    'GremlinVisage',
-    'MarkOfBloom',
-    'MutagenicStrength',
-    'Necronomicon',
-    'NilrysCodex',
-    'Enchiridion',
-    'NeowsLament',
-    'NlothHungryFace',
-    'OddMushroom',
-    'SsserpentHead',
-    'WarpedTongs',
-    'RedMask',
-    'NlothGift',
-    'SpiritPoop',
-
-    # Special (3)
-    'RedKey',
-    'BlueKey',
-    'GreenKey',
+    'Akabeko', 'Anchor', 'AncientTeaSet', 'BagOfPreparation', 'Vajra', 'ArtOfWar',
+    'BagOfMarbles', 'BloodVial', 'BronzeScales', 'CentennialPuzzle', 'CeramicFish',
+    'DreamCatcher', 'HappyFlower', 'JuzuBracelet', 'Lantern', 'MawBank', 'MealTicket',
+    'Nunchaku', 'OddlySmoothStone', 'Omamori', 'Orichalcum', 'PenNib', 'PotionBelt',
+    'PreservedInsect', 'RegalPillow', 'SmilingMask', 'Strawberry', 'TheBoot', 'TinyChest',
+    'ToyOrnithopter', 'WarPaint', 'Whetstone',
+    'HornCleat', 'BlueCandle', 'BottledFlame', 'BottledLightning', 'BottledTornado',
+    'DarkstonePeriapt', 'EternalFeather', 'FrozenEgg', 'GremlinHorn', 'InkBottle', 'Kunai',
+    'LetterOpener', 'Matryoshka', 'MeatOnBone', 'MercuryHourglass', 'MoltenEgg',
+    'MummifiedHand', 'OrnamentalFan', 'Pantograph', 'PaperPhrog', 'Pear', 'QuestionCard',
+    'SelfFormingClay', 'Shuriken', 'SingingBowl', 'StrikeDummy', 'Sundial', 'TheCourier',
+    'ToxicEgg', 'WhiteBeastStatue',
+    'BirdFacedUrn', 'Calipers', 'CaptainsWheel', 'DeadBranch', 'DuVuDoll', 'FossilizedHelix',
+    'Ginger', 'Girya', 'IceCream', 'LizardTail', 'Mango', 'OldCoin', 'PeacePipe',
+    'Pocketwatch', 'PrayerWheel', 'Shovel', 'StoneCalendar', 'ThreadAndNeedle', 'Torii',
+    'TungstenRod', 'Turnip', 'UnceasingTop',
+    'SneckoEye', 'Astrolabe', 'BlackStar', 'BlackBlood', 'BustedCrown', 'CallingBell',
+    'CoffeeDripper', 'CursedKey', 'Ectoplasm', 'EmptyCage', 'FusionHammer', 'MarkOfPain',
+    'PandorasBox', 'PhilosophersStone', 'RunicCube', 'RunicDome', 'RunicPyramid',
+    'SacredBark', 'SlaversCollar', 'Sozu', 'TinyHouse', 'VelvetChoker',
+    'Cauldron', 'ChemicalX', 'ClockworkSouvenir', 'DollysMirror', 'FrozenEye', 'HandDrill',
+    'LeesWaffle', 'MedicalKit', 'MembershipCard', 'PrismaticShard', 'Orrery',
+    'PotionBeltShop', 'SlingOfCourage', 'StrangeSpoonShop', 'TheAbacus', 'Toolbox',
+    'CultistHeadpiece', 'FaceOfCleric', 'GoldenIdol', 'BloodyIdol', 'GremlinVisage',
+    'MarkOfBloom', 'MutagenicStrength', 'Necronomicon', 'NilrysCodex', 'Enchiridion',
+    'NeowsLament', 'NlothHungryFace', 'OddMushroom', 'SsserpentHead', 'WarpedTongs',
+    'RedMask', 'NlothGift', 'SpiritPoop', 'RedKey', 'BlueKey', 'GreenKey',
 ]

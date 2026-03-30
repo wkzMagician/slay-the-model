@@ -28,7 +28,7 @@ class BeatOfDeathPower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Deal damage to player when they play a card."""
         if player is None or self.owner is None:
             return

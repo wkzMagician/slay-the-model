@@ -68,7 +68,7 @@ class GameConfig:
     @staticmethod
     def load(config_path):
         if os.path.exists(config_path):
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8-sig") as f:
                 data = yaml.safe_load(f)
                 return GameConfig(**data)
         return GameConfig()

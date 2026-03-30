@@ -31,7 +31,7 @@ class Discovery(Card):
         actions.append(ChooseAddRandomCardAction(
             total=3,
             namespace="colorless",
-            temp_cost=0  # Cards cost 0 this turn
+            cost_until_end_of_turn=0  # Cards cost 0 this turn
         ))
 
         from engine.game_state import game_state

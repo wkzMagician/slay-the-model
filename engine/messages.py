@@ -32,7 +32,6 @@ class CardPlayedMessage(GameMessage):
     card: "Card"
     owner: "Creature"
     targets: List[Optional["Creature"]]
-    enemies: List["Creature"]
 
 
 @dataclass(frozen=True)

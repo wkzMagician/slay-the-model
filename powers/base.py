@@ -136,7 +136,10 @@ class Power(Localizable):
     
     @amount.setter
     def amount(self, value: int):
-        self._amount = max(0, int(value))
+        normalized = max(0, int(value))
+        self._amount = normalized
+        if self.amount_equals_duration:
+            self._duration = normalized
         
     @property
     def duration(self) -> int:
@@ -185,7 +188,7 @@ class Power(Localizable):
         return
     
     @subscribe(CardPlayedMessage, priority=MessagePriority.REACTION)
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Called when a card is played.
         
         Returns:
@@ -194,7 +197,7 @@ class Power(Localizable):
         return
 
     @subscribe(CardPlayedMessage, priority=MessagePriority.REACTION)
-    def on_play_card(self, card, player, entities):
+    def on_play_card(self, card, player, targets):
         """Compatibility alias for card-play triggers."""
         return
     

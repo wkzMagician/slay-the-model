@@ -34,6 +34,12 @@ class LinkedPower(Power):
     amount_equals_duration = True
 
 
+class SynchronizedIntensityPower(Power):
+    name = "Synchronized Intensity Test"
+    stack_type = StackType.INTENSITY
+    amount_equals_duration = True
+
+
 class MultiInstancePower(Power):
     name = "Multi Test"
     stack_type = StackType.MULTI_INSTANCE
@@ -99,3 +105,14 @@ def test_multi_instance_allows_duplicates():
 
     matches = [p for p in creature.powers if p.name == "Multi Test"]
     assert len(matches) == 2
+
+
+def test_intensity_stacking_keeps_amount_and_duration_in_sync_when_linked_by_property():
+    creature = Creature(max_hp=100)
+    creature.add_power(SynchronizedIntensityPower(amount=1, duration=1))
+    creature.add_power(SynchronizedIntensityPower(amount=2, duration=2))
+
+    power = creature.get_power("Synchronized Intensity Test")
+    assert power is not None
+    assert power.amount == 3
+    assert power.duration == 3

@@ -910,7 +910,7 @@ cards:
       description: At the end of your turn, gain {block} Block.
     PerfectedStrike:
       name: Perfected Strike
-      description: Deal {damage} damage. Deals an additional {magic.damage_bonus} damage for each card in your deck containing
+      description: Deal {damage} damage. Deals an additional {magic.strike_damage} damage for each card in your deck containing
         "Strike".
     PowerThrough:
       name: Power Through
@@ -979,6 +979,238 @@ cards:
     WildStrike:
       name: Wild Strike
       description: Deal {damage} damage. Shuffle a Wound into your draw pile.
+  silent:
+    Strike:
+      name: Strike
+      description: Deal {damage} damage.
+    Defend:
+      name: Defend
+      description: Gain {block} Block.
+    Neutralize:
+      name: Neutralize
+      description: Deal {damage} damage. Apply {magic.weak} Weak.
+    Survivor:
+      name: Survivor
+      description: Gain {block} Block. Discard 1 card.
+    Shiv:
+      name: Shiv
+      description: Deal {damage} damage. Exhaust.
+    Accuracy:
+      name: Accuracy
+      description: Shivs deal {magic.damage} additional damage.
+    Adrenaline:
+      name: Adrenaline
+      description: Draw {draw} cards. Gain {energy_gain} Energy. Exhaust.
+    AllOutAttack:
+      name: All Out Attack
+      description: Deal {damage} damage to ALL enemies. Discard 1 random card.
+    BladeDance:
+      name: Blade Dance
+      description: Add {magic.shivs} Shivs into your hand.
+    CloakAndDagger:
+      name: Cloak and Dagger
+      description: Gain {block} Block. Add {magic.shivs} Shiv into your hand.
+    Backflip:
+      name: Backflip
+      description: Gain {block} Block. Draw {draw} cards.
+    Backstab:
+      name: Backstab
+      description: Innate. Deal {damage} damage.
+    Caltrops:
+      name: Caltrops
+      description: When attacked, deal {magic.thorns} damage back.
+    Choke:
+      name: Choke
+      description: Deal {damage} damage. Whenever you play a card this turn, the enemy loses {magic.followup} HP.
+    CripplingCloud:
+      name: Crippling Cloud
+      description: Apply {magic.weak} Weak and {magic.poison} Poison to ALL enemies. Exhaust.
+    DaggerThrow:
+      name: Dagger Throw
+      description: Deal {damage} damage. Draw {draw} cards. Discard 1 card.
+    Deflect:
+      name: Deflect
+      description: Gain {block} Block.
+    DodgeAndRoll:
+      name: Dodge and Roll
+      description: Gain {block} Block. Next turn, gain {block} Block.
+    FlyingKnee:
+      name: Flying Knee
+      description: Deal {damage} damage. Next turn, gain 1 Energy.
+    HeelHook:
+      name: Heel Hook
+      description: Deal {damage} damage. If the enemy is Weak, gain 1 Energy and draw 1 card.
+    Outmaneuver:
+      name: Outmaneuver
+      description: Next turn, gain {magic.energy} Energy.
+    Prepared:
+      name: Prepared
+      description: Draw {draw} cards. Discard {magic.discard} card.
+    Predator:
+      name: Predator
+      description: Deal {damage} damage. Next turn, draw {magic.draw_next_turn} cards.
+    QuickSlash:
+      name: Quick Slash
+      description: Deal {damage} damage. Draw {draw} cards.
+    Slice:
+      name: Slice
+      description: Deal {damage} damage.
+    SuckerPunch:
+      name: Sucker Punch
+      description: Deal {damage} damage. Apply {magic.weak} Weak.
+    Acrobatics:
+      name: Acrobatics
+      description: Draw {draw} cards. Discard 1 card.
+    DeadlyPoison:
+      name: Deadly Poison
+      description: Apply {magic.poison} Poison.
+    PoisonedStab:
+      name: Poisoned Stab
+      description: Deal {damage} damage. Apply {magic.poison} Poison.
+    Bane:
+      name: Bane
+      description: Deal {damage} damage. If the enemy has Poison, deal {damage} damage again.
+    BouncingFlask:
+      name: Bouncing Flask
+      description: Apply {magic.poison} Poison to random enemies {magic.hits} times.
+    Catalyst:
+      name: Catalyst
+      description: Double an enemy's Poison.
+      upgrade_description: Triple an enemy's Poison.
+    DaggerSpray:
+      name: Dagger Spray
+      description: Deal {damage} damage to ALL enemies twice.
+    Dash:
+      name: Dash
+      description: Gain {block} Block. Deal {damage} damage.
+    DieDieDie:
+      name: Die Die Die
+      description: Deal {damage} damage to ALL enemies. Exhaust.
+    InfiniteBlades:
+      name: Infinite Blades
+      description: At the start of your turn, add 1 Shiv into your hand.
+    Footwork:
+      name: Footwork
+      description: Gain {magic.dexterity} Dexterity.
+    LegSweep:
+      name: Leg Sweep
+      description: Gain {block} Block. Apply {magic.weak} Weak.
+    NoxiousFumes:
+      name: Noxious Fumes
+      description: At the start of your turn, apply {magic.poison} Poison to ALL enemies.
+    PiercingWail:
+      name: Piercing Wail
+      description: ALL enemies lose {magic.strength_loss} Strength this turn. Exhaust.
+    RiddleWithHoles:
+      name: Riddle With Holes
+      description: Deal {damage} damage {attack_times} times.
+    AfterImage:
+      name: After Image
+      description: Whenever you play a card, gain {magic.block} Block.
+    Alchemize:
+      name: Alchemize
+      description: Obtain a random potion. Exhaust.
+    Distraction:
+      name: Distraction
+      description: Choose 1 of 3 random Skills to add to your hand. It costs 0 this turn. Exhaust.
+    Envenom:
+      name: Envenom
+      description: Whenever an Attack deals unblocked damage, apply {magic.poison} Poison.
+    Expertise:
+      name: Expertise
+      description: Draw until you have 6 cards in hand.
+    GlassKnife:
+      name: Glass Knife
+      description: Deal {damage} damage {attack_times} times. Decrease this card's damage by {magic.decay} this combat.
+    Terror:
+      name: Terror
+      description: Apply {magic.vulnerable} Vulnerable.
+    ThousandCuts:
+      name: A Thousand Cuts
+      description: Whenever you play a card, deal {magic.damage} damage to ALL enemies.
+    Blur:
+      name: Blur
+      description: Gain {block} Block. Block is not removed next turn.
+    Concentrate:
+      name: Concentrate
+      description: Discard {magic.discard} cards. Gain {magic.energy} Energy.
+    Eviscerate:
+      name: Eviscerate
+      description: Costs 1 less for each card discarded this turn. Deal {damage} damage {attack_times} times.
+    Finisher:
+      name: Finisher
+      description: Deal {damage} damage for each Attack played this turn.
+    Flechettes:
+      name: Flechettes
+      description: Deal {damage} damage for each Skill in your hand.
+    Skewer:
+      name: Skewer
+      description: Deal {damage} damage X times.
+    SneakyStrike:
+      name: Sneaky Strike
+      description: Deal {damage} damage. If you have discarded a card this turn, gain 2 Energy.
+    EndlessAgony:
+      name: Endless Agony
+      description: When you draw this card, add a copy of it to your hand. Deal {damage} damage. Exhaust.
+    EscapePlan:
+      name: Escape Plan
+      description: Draw 1 card. If it is a Skill, gain {magic.block} Block.
+    PhantasmalKiller:
+      name: Phantasmal Killer
+      description: Next turn, your Attacks deal double damage.
+    Reflex:
+      name: Reflex
+      description: Unplayable. If this card is discarded from your hand, draw {magic.draw} cards.
+    Tactician:
+      name: Tactician
+      description: Unplayable. If this card is discarded from your hand, gain {magic.energy} Energy.
+    WraithForm:
+      name: Wraith Form
+      description: Gain {magic.intangible} Intangible. At the end of your turn, lose {magic.dex_down} Dexterity. Exhaust.
+    BulletTime:
+      name: Bullet Time
+      description: Your cards in hand cost 0 this turn. You cannot draw additional cards this turn.
+    Burst:
+      name: Burst
+      description: This turn, your next {magic.copies} Skill is played twice.
+      upgrade_description: This turn, your next {magic.copies} Skills are played twice.
+    CalculatedGamble:
+      name: Calculated Gamble
+      description: Discard your hand, then draw that many cards. Exhaust.
+    CorpseExplosion:
+      name: Corpse Explosion
+      description: Apply {magic.poison} Poison. When the enemy dies, deal damage equal to its max HP to ALL enemies.
+    Doppelganger:
+      name: Doppelganger
+      description: Next turn, draw X cards and gain X Energy.
+    GrandFinale:
+      name: Grand Finale
+      description: Can only be played if there are no cards in your draw pile. Deal {damage} damage to ALL enemies.
+    Malaise:
+      name: Malaise
+      description: Enemy loses X Strength. Apply X Weak. Exhaust.
+    MasterfulStab:
+      name: Masterful Stab
+      description: Costs 1 more whenever you lose HP this combat. Deal {damage} damage.
+    Nightmare:
+      name: Nightmare
+      description: Choose a card. Next turn, add 3 copies of that card into your hand.
+    Setup:
+      name: Setup
+      description: Put a card from your hand on top of your draw pile. It costs 0 until played.
+    StormOfSteel:
+      name: Storm of Steel
+      description: Discard your hand. Add a Shiv to your hand for each card discarded.
+    ToolsOfTheTrade:
+      name: Tools of the Trade
+      description: At the start of your turn, draw 1 card and discard 1 card.
+    Unload:
+      name: Unload
+      description: Deal {damage} damage. Discard all non-Attack cards in your hand.
+    WellLaidPlans:
+      name: Well-Laid Plans
+      description: At the end of your turn, retain up to {magic.retain} card.
+      upgrade_description: At the end of your turn, retain up to {magic.retain} cards.
   colorless:
     Slimed:
       name: Slimed

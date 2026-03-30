@@ -142,6 +142,15 @@ class RuntimeContext:
             for power in list(getattr(creature, "powers", []) or []):
                 add_participant(power)
 
+        def add_player_cards():
+            player = self.player
+            card_manager = getattr(player, "card_manager", None)
+            if card_manager is None:
+                return
+            for pile_name in ("hand", "draw_pile", "discard_pile", "exhaust_pile"):
+                for pile_card in list(card_manager.get_pile(pile_name) or []):
+                    add_participant(pile_card)
+
         if type(message).__name__ == "CreatureDiedMessage":
             add_creature(getattr(message, "creature", None))
             add_participant(getattr(message, "card", None))
@@ -168,6 +177,9 @@ class RuntimeContext:
         add_participant(getattr(message, "power", None))
         add_participant(getattr(message, "potion", None))
         add_participant(getattr(message, "relic", None))
+
+        if type(message).__name__ in {"DamageResolvedMessage", "HpLostMessage"}:
+            add_player_cards()
 
         return participants
 

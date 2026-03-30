@@ -22,7 +22,7 @@ class Pain(Card):
     base_magic = {"damage_on_card_play": 1}
     upgradeable = False
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Lose 1 HP when other cards are played"""
         # Only trigger when OTHER cards are played (not itself)
         if card is not self:

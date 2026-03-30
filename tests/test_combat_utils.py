@@ -17,7 +17,8 @@ from player.player import Player
 from player.card_manager import CardManager
 from engine.combat import Combat
 from engine.game_state import GameState
-from utils.types import TargetType
+from utils.types import TargetType, CardType
+from engine.messages import CardPlayedMessage
 class CombatTestHelper:
     """Helper class for setting up and running combat tests."""
     
@@ -33,6 +34,9 @@ class CombatTestHelper:
         gs.game_state.__init__()
         self.game_state = gs.game_state
         self.game_state.player = Player()
+        self.game_state.config.mode = "debug"
+        self.game_state.config.auto_select = True
+        self.game_state.config.debug["select_type"] = "first"
         # Disable god_mode to avoid interference with tests
         self.game_state.config.debug["god_mode"] = False
         # Clear relics and powers to avoid interference with tests
@@ -180,8 +184,18 @@ class CombatTestHelper:
                     target = combat.enemies[0]
             elif card.target_type == TargetType.ENEMY_ALL:
                 # For ENEMY_ALL, pass all enemies as targets
-                card.on_play(combat.enemies)
+                resolved_targets = list(combat.enemies)
+                combat.combat_state.last_card_targets = resolved_targets
+                card.on_play(resolved_targets)
+                self.game_state.publish_message(
+                    CardPlayedMessage(
+                        card=card,
+                        owner=player,
+                        targets=resolved_targets,
+                    )
+                )
                 self.game_state.drive_actions()
+                card.cost_until_played = None
                 # Move to discard or exhaust pile
                 if card.exhaust:
                     player.card_manager.piles['exhaust_pile'].append(card)
@@ -189,8 +203,21 @@ class CombatTestHelper:
                     player.card_manager.piles['discard_pile'].append(card)
                 return True
                 
-        card.on_play([target] if target else [])
+        resolved_targets = [target] if target else []
+        combat.combat_state.last_card_targets = resolved_targets
+        card.on_play(resolved_targets)
+        combat.combat_state.turn_cards_played += 1
+        if getattr(card, 'card_type', None) == CardType.ATTACK:
+            combat.combat_state.turn_attack_cards_played += 1
+        self.game_state.publish_message(
+            CardPlayedMessage(
+                card=card,
+                owner=player,
+                targets=resolved_targets,
+            )
+        )
         self.game_state.drive_actions()
+        card.cost_until_played = None
                     
         # Only place the card if on_play actions did not already move it.
         if player.card_manager.get_card_location(card) is None:

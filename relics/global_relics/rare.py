@@ -23,7 +23,7 @@ class BirdFacedUrn(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """When a Power is played, heal 2 HP"""
         if card.card_type == CardType.POWER:
             from engine.game_state import game_state
@@ -223,7 +223,7 @@ class Pocketwatch(Relic):
         self.cards_played_this_turn = 0
         self.extra_draw_next_turn = False
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track cards played"""
         self.cards_played_this_turn += 1
         return
@@ -291,33 +291,6 @@ class StoneCalendar(Relic):
                 return
         return
 @register("relic")
-class TheSpecimen(Relic):
-    """Whenever an enemy dies, transfer any Poison it has to a random enemy."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.RARE
-
-    def on_damage_dealt(self, damage, target, player, entities):
-        """Transfer Poison when enemy dies"""
-        if target.is_dead():
-            # Find Poison power on target
-            poison_amount = 0
-            for power in target.powers:
-                if power.idstr == 'PoisonPower':
-                    poison_amount = power.amount
-                    break
-            if poison_amount > 0:
-                # Transfer to random alive enemy
-                alive_enemies = [e for e in entities if not e.is_dead()]
-                if alive_enemies:
-                    import random
-                    target_enemy = random.choice(alive_enemies)
-                    from engine.game_state import game_state
-                    add_actions([ApplyPowerAction(power="Poison", target=target_enemy, amount=poison_amount)])
-                    return
-        return
-@register("relic")
 class ThreadAndNeedle(Relic):
     """At the start of each combat, gain 4 Plated Armor."""
     
@@ -329,26 +302,6 @@ class ThreadAndNeedle(Relic):
         """Gain 4 Plated Armor at start of combat"""
         from engine.game_state import game_state
         add_actions([ApplyPowerAction(power="PlatedArmor", target=player, amount=4)])
-        return
-@register("relic")
-class Tingsha(Relic):
-    """Whenever you discard a card during your turn, deal 3 damage to a random enemy for each card discarded."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.RARE
-
-    def on_card_discard(self, card, player, entities):
-        """Deal damage on discard"""
-        from engine.game_state import game_state
-        assert game_state.current_combat is not None
-        alive_enemies = [e for e in game_state.current_combat.enemies if not e.is_dead()]
-        if alive_enemies:
-            import random
-            target_enemy = random.choice(alive_enemies)
-            from engine.game_state import game_state
-            add_actions([DealDamageAction(damage=3, target=target_enemy)])
-            return
         return
 @register("relic")
 class Torii(Relic):
@@ -367,19 +320,6 @@ class Torii(Relic):
             return 1
         return base_damage
 
-@register("relic")
-class ToughBandages(Relic):
-    """Whenever you discard a Card during your turn, gain 3 Block."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.RARE
-
-    def on_card_discard(self, card, player, entities):
-        """Gain Block on card discard"""
-        from engine.game_state import game_state
-        add_actions([GainBlockAction(block=3, target=player)])
-        return
 @register("relic")
 class TungstenRod(Relic):
     """Whenever you lose HP, lose 1 less."""
@@ -430,7 +370,7 @@ class UnceasingTop(Relic):
         self.rarity = RarityType.RARE
         self.triggered_this_empty = False
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Check if hand is empty after playing a card"""
         from engine.game_state import game_state
         if game_state.current_combat is not None:

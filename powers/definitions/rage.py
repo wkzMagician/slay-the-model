@@ -27,7 +27,7 @@ class RagePower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_play_card(self, card, player, entities):
+    def on_play_card(self, card, player, targets):
         """Gain block when an Attack card is played."""
         from engine.game_state import game_state
         from utils.types import CardType

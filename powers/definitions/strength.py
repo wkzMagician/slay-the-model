@@ -25,6 +25,10 @@ class StrengthPower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
+    @Power.amount.setter
+    def amount(self, value: int):
+        self._amount = int(value)
+
     def modify_damage_dealt(self, base_damage: int) -> int:
         """Increase damage dealt by strength amount."""
         return base_damage + self.amount

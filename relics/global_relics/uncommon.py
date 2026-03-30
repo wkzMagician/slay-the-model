@@ -195,7 +195,7 @@ class InkBottle(Relic):
         self.rarity = RarityType.UNCOMMON
         self.cards_played = 0
     
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track cards played"""
         self.cards_played += 1
         if self.cards_played >= 10:
@@ -217,7 +217,7 @@ class Kunai(Relic):
         """Reset attack counter at start of each turn"""
         self.attacks_played_this_turn = 0
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track attacks played and gain Dexterity on 3rd attack"""
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
@@ -239,15 +239,19 @@ class LetterOpener(Relic):
         """Reset skill counter at start of each turn"""
         self.skills_played_this_turn = 0
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track skills played and deal damage on 3rd skill"""
         if card.card_type == CardType.SKILL:
             self.skills_played_this_turn += 1
             if self.skills_played_this_turn == 3:
-                actions = []
-                for enemy in entities:
-                    actions.append(DealDamageAction(damage=5, target=enemy))
                 from engine.game_state import game_state
+                current_combat = getattr(game_state, "current_combat", None)
+                enemies = getattr(current_combat, "enemies", []) if current_combat is not None else []
+                actions = [
+                    DealDamageAction(damage=5, target=enemy)
+                    for enemy in enemies
+                    if getattr(enemy, "hp", 0) > 0
+                ]
                 add_actions(actions)
                 return
         return
@@ -364,7 +368,7 @@ class MummifiedHand(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Make random card in hand cost 0 for turn"""
         if card.card_type == CardType.POWER:
             from engine.game_state import game_state
@@ -374,17 +378,6 @@ class MummifiedHand(Relic):
                 target_card = random.choice(hand)
                 target_card.temp_cost = 0
         return
-@register("relic")
-class NinjaScroll(Relic):
-    """Start each combat with 3 Shivs in hand."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.UNCOMMON
-
-    # Silent-specific; no-op in current card pool (no Shiv card registered).
-
-
 @register("relic")
 class OrnamentalFan(Relic):
     """Every time you play 3 Attacks in a single turn, gain 4 Block."""
@@ -398,7 +391,7 @@ class OrnamentalFan(Relic):
         """Reset attack counter at start of each turn"""
         self.attacks_played_this_turn = 0
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track attacks played and gain Block on 3rd attack"""
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
@@ -426,25 +419,6 @@ class Pantograph(Relic):
                 add_actions([ApplyPowerAction(power="Regeneration", target=player, amount=25, duration=1)])
                 return
         return
-@register("relic")
-class PaperKrane(Relic):
-    """Enemies with Weak deal 50% less damage rather than 25%."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.UNCOMMON
-        self.damage_phase = DamagePhase.MULTIPLICATIVE  # Weak multiplier adjustment
-
-    def modify_damage_taken(self, base_damage: int, source=None) -> int:
-        """Weak reduces enemy damage by 40% instead of 25%."""
-        if source and hasattr(source, "powers"):
-            for power in source.powers:
-                if getattr(power, "name", "") == "Weak":
-                    # Weak already applied as x0.75; convert to x0.60 via x4/5.
-                    return int(base_damage * 4 / 5)
-        return base_damage
-
-
 @register("relic")
 class PaperPhrog(Relic):
     """Enemies with Vulnerable take 75% more damage rather than 50%."""
@@ -526,7 +500,7 @@ class Shuriken(Relic):
         """Reset attack counter at start of each turn"""
         self.attacks_played_this_turn = 0
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track attacks played and gain Strength on 3rd attack"""
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1

@@ -196,7 +196,7 @@ class OrangePellets(Relic):
         from engine.game_state import game_state
         add_actions([LambdaAction(func=lambda: self._reset_counters())])
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track cards played and remove debuffs when all 3 types played"""
         from utils.types import CardType
         from actions.combat import RemovePowerAction

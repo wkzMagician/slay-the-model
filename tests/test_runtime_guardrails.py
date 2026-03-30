@@ -5,9 +5,6 @@ from entities.creature import Creature
 from player.player_factory import create_player
 
 
-UNIMPLEMENTED_SILENT_ERROR = "Character 'Silent' is not playable yet: starter cards are unavailable"
-
-
 def test_take_damage_rejects_list_input():
     creature = Creature(max_hp=10)
 
@@ -15,6 +12,9 @@ def test_take_damage_rejects_list_input():
         creature.take_damage([3])  # pyright: ignore[reportArgumentType]
 
 
-def test_create_player_rejects_unimplemented_character_starter_cards():
-    with pytest.raises(ValueError, match=UNIMPLEMENTED_SILENT_ERROR):
-        create_player("Silent")
+def test_create_player_builds_silent_successfully():
+    player = create_player("Silent")
+
+    assert player.character == "Silent"
+    assert player.namespace == "silent"
+    assert len(player.card_manager.get_pile("deck")) == 12

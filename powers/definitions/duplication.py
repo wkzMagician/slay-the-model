@@ -26,7 +26,12 @@ class DuplicationPower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card: Card, player, entities):
-        for _ in range(self.amount):
-            card.on_play()
+    def on_card_play(self, card: Card, player, targets):
+        from engine.game_state import game_state
+
+        resolved_targets = getattr(game_state.current_combat.combat_state, "last_card_targets", []) if game_state.current_combat else []
+        card.on_play(targets=resolved_targets)
+        self.amount -= 1
+        if self.owner is not None and self.amount <= 0:
+            self.owner.remove_power(self.name)
         return

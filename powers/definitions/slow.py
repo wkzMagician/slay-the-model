@@ -35,7 +35,7 @@ class SlowPower(Power):
         """Reset the counter at the start of each turn."""
         self.amount = 0
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Increment damage multiplier when player plays a card."""
         self.amount += 1
         return
