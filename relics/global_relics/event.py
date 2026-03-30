@@ -171,7 +171,7 @@ class Enchiridion(Relic):
             pile='hand',
             card_type=CardType.POWER,
             namespace=game_state.player.namespace,
-            temp_cost=0
+            cost_until_end_of_turn=0
         )]
         )
         return

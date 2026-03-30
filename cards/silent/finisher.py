@@ -29,6 +29,9 @@ class Finisher(Card):
         from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
-        times = game_state.current_combat.combat_state.turn_attack_cards_played
+        combat = game_state.current_combat
+        if combat is None:
+            return
+        times = combat.combat_state.turn_attack_cards_played
         actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(times)]
         add_actions(actions)

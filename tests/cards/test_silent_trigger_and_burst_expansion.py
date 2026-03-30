@@ -22,7 +22,9 @@ class TestSilentTriggerAndBurstExpansion:
         self.player.card_manager.get_pile('draw_pile').clear()
         card = EndlessAgony()
         self.player.card_manager.add_to_pile(card, 'draw_pile', PilePosType.TOP)
-        self.helper.game_state.current_combat._start_player_turn()
+        combat = self.helper.game_state.current_combat
+        assert combat is not None
+        combat._start_player_turn()
         self.helper.game_state.drive_actions()
         hand = self.player.card_manager.get_pile('hand')
         assert sum(1 for c in hand if isinstance(c, EndlessAgony)) == 2

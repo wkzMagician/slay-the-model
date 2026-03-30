@@ -251,7 +251,7 @@ class Toolbox(Relic):
         [AddRandomCardAction(
             pile='hand', 
             namespace='colorless',
-            temp_cost=0
+            cost_until_end_of_turn=0
         )]
         )
         return

@@ -113,8 +113,12 @@ class AddCardAction(Action):
 
                 game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
                 get_card_location = getattr(game_state.player.card_manager, "get_card_location", None)
-                actual_pile = get_card_location(self.card) if callable(get_card_location) else target_pile
-                actual_pile = actual_pile or target_pile
+                actual_pile_obj = (
+                    get_card_location(self.card)
+                    if callable(get_card_location)
+                    else target_pile
+                )
+                actual_pile = actual_pile_obj if isinstance(actual_pile_obj, str) else target_pile
 
                 # Ceramic Fish: whenever a card is added to deck, gain 9 gold.
                 publish_message(

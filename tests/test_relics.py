@@ -40,10 +40,11 @@ class TestRelics(unittest.TestCase):
         self.assertEqual(relic.idstr, "RingOfTheSerpent")
 
     def test_ninja_scroll_adds_three_shivs(self):
-        self.player.relics = [NinjaScroll()]
+        relic = NinjaScroll()
+        self.player.relics = [relic]
         self.player.card_manager.piles["hand"] = []
 
-        self.player.relics[0].on_combat_start(self.player, [])
+        relic.on_combat_start(self.player, [])
         self.helper.game_state.drive_actions()
 
         shivs = [card for card in self.player.card_manager.piles["hand"] if card.__class__.__name__ == "Shiv"]
@@ -59,6 +60,7 @@ class TestRelics(unittest.TestCase):
 
         poison = next((power for power in enemy.powers if power.idstr == "PoisonPower"), None)
         self.assertIsNotNone(poison)
+        assert poison is not None
         self.assertEqual(poison.amount, 6)
 
 

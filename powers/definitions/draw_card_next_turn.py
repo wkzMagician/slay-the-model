@@ -19,10 +19,11 @@ class DrawCardNextTurnPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
     def on_turn_start(self):
-        if self.owner is None:
+        owner = self.owner
+        if owner is None:
             return
         add_actions([
             DrawCardsAction(count=self.amount),
-            LambdaAction(func=lambda: self.owner.remove_power(self.name)),
+            LambdaAction(func=lambda: owner.remove_power(self.name)),
         ])
         return

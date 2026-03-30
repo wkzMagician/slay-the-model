@@ -376,7 +376,7 @@ class MummifiedHand(Relic):
             if hand:
                 import random
                 target_card = random.choice(hand)
-                target_card.temp_cost = 0
+                target_card.cost_until_end_of_turn = 0
         return
 @register("relic")
 class OrnamentalFan(Relic):

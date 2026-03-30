@@ -2,7 +2,7 @@
 Ironclad Uncommon Attack card - Blood for Blood
 """
 
-from typing import List
+from typing import List, Optional
 from actions.base import Action
 from cards.base import Card
 from entities.creature import Creature
@@ -22,7 +22,13 @@ class BloodForBlood(Card):
 
     upgrade_damage = 22
 
-    def on_damage_taken(self, damage: int, source: Creature = None, player: Creature = None, entities=None):
+    def on_damage_taken(
+        self,
+        damage: int,
+        source: Optional[Creature] = None,
+        player: Optional[Creature] = None,
+        entities=None,
+    ):
         """Track HP taken to reduce card cost"""
         from engine.game_state import game_state
 
