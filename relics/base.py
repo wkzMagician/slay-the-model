@@ -135,7 +135,7 @@ class Relic(Localizable):
     # ==================== Card Hooks ====================
     
     @subscribe(CardPlayedMessage, priority=MessagePriority.REACTION)
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Called when a card is played.
         
         Returns:

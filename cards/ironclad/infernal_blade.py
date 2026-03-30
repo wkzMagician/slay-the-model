@@ -35,6 +35,6 @@ class InfernalBlade(Card):
 
         from engine.game_state import game_state
 
-        add_actions([ChooseAddRandomCardAction(namespace=namespace, card_type=CardType.ATTACK, temp_cost=0)])
+        add_actions([ChooseAddRandomCardAction(namespace=namespace, card_type=CardType.ATTACK, cost_until_end_of_turn=0)])
 
         return

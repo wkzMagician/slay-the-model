@@ -44,7 +44,7 @@ class Transmutation(Card):
             actions.append(AddRandomCardAction(
                 pile="hand",
                 namespace="colorless",
-                temp_cost=0,  # Cost 0 this turn
+                cost_until_end_of_turn=0,  # Cost 0 this turn
                 upgrade=use_upgraded  # Add upgrade parameter
             ))
 

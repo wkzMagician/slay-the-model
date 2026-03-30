@@ -33,7 +33,7 @@ class Enlightenment(Card):
             for card in hand_cards:
                 if self.upgrade_level == 0:
                     # Set temporary cost to 1 for all cards
-                    card.temp_cost = 1
+                    card.cost_until_end_of_turn = 1
                 else:
                     # last for combat
                     card.cost = 1

@@ -50,12 +50,12 @@ class Forethought(Card):
             amount = 1  # Only 1 card
             must_select = True  # Must choose 1 card
 
-        # Create the choose action that moves cards and sets temp cost to 0
+        # Create the choose action that moves cards and sets cost-until-played to 0
         choose_action = ChooseMoveAndSetCostAction(
             src_pile="hand",
             dst_pile="draw_pile",
             amount=amount,
-            temp_cost=0,
+            cost_until_played=0,
             position=PilePosType.BOTTOM,
             must_select=must_select
         )

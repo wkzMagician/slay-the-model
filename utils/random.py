@@ -315,10 +315,13 @@ def get_random_potion(characters: Optional[List[str]] = None,
     returns:
         Optional[Any]: A random potion matching criteria, or None if none found.
     """
-    # Ensure "any" namespace is included
-    if characters and "any" not in characters:
-        characters.append("any")
-    
+    import potions  # Ensure potion classes are registered before querying the registry.
+
+    normalized_characters = None
+    if characters:
+        normalized_characters = {str(character).lower() for character in characters}
+        normalized_characters.update({"any", "global"})
+
     all_potion_idstrs = list_registered("potion")
     filtered_potion_idstrs = []
     for potion_idstr in all_potion_idstrs:
@@ -326,17 +329,18 @@ def get_random_potion(characters: Optional[List[str]] = None,
         if not potion_cls:
             continue
         potion_instance = potion_cls()
-        
-        if characters and potion_instance.category not in characters:
+        category = str(getattr(potion_instance, "category", "")).lower()
+
+        if normalized_characters and category not in normalized_characters:
             continue
         if rarities and potion_instance.rarity not in rarities:
             continue
-        
+
         filtered_potion_idstrs.append(potion_idstr)
-        
+
     if not filtered_potion_idstrs:
         return None
-    
+
     selected_potion_idstr = random.choice(filtered_potion_idstrs)
     selected_potion_cls = get_registered("potion", selected_potion_idstr)
     return selected_potion_cls() if selected_potion_cls else None

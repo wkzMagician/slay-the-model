@@ -1,4 +1,4 @@
-"""Silent character configuration (example for extensibility)."""
+"""Silent character configuration."""
 from player.character_config import register_character
 
 
@@ -18,22 +18,16 @@ from player.character_config import register_character
         "silent.defend",
         "silent.defend",
         "silent.defend",
+        "silent.defend",
+        "silent.neutralize",
         "silent.survivor",
     ],
-    starting_relics=[
-        "CeramicFish",  # Temporary placeholder - Silent starting relic
-    ],
+    starting_relics=["RingOfTheSnake"],
     orb_slots=1,
     potion_limit=3,
     draw_count=5,
-    playable=False,
-    unplayable_reason="Character 'Silent' is not playable yet: starter cards are unavailable",
 )
 class SilentConfig:
-    """Silent character configuration.
+    """Silent character configuration."""
 
-    Silent: A huntress who excels in poison, shivs, and precision.
-    Starting relic: Ring of the Snake (gain 1 dexterity)
-    Starting deck: 5 Strike, 4 Defend, 1 Survivor
-    """
     pass

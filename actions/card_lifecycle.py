@@ -9,6 +9,11 @@ from utils.random import get_random_card, get_random_card_reward
 if TYPE_CHECKING:
     from cards.base import Card
 
+def _print_hand_full_redirect(card) -> None:
+    discard_name = t("combat.discard_pile", default="Discard Pile")
+    print(f"[{t('ui.hand', default='Hand')}] {t('combat.hand_full', default='is full')}. {card.display_name.resolve()} {t('combat.to_pile', default='to')} {discard_name}")
+
+
 @register("action")
 class RemoveCardAction(Action):
     """Choose a card to remove from src pile
@@ -107,20 +112,23 @@ class AddCardAction(Action):
                             self.card.upgrade()
 
                 game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
-                
+                get_card_location = getattr(game_state.player.card_manager, "get_card_location", None)
+                actual_pile = get_card_location(self.card) if callable(get_card_location) else target_pile
+                actual_pile = actual_pile or target_pile
+
                 # Ceramic Fish: whenever a card is added to deck, gain 9 gold.
                 publish_message(
                     CardAddedToPileMessage(
                         card=self.card,
                         owner=game_state.player,
-                        dest_pile=target_pile,
+                        dest_pile=actual_pile,
                         source=self.source,
                         position=self.position,
                     )
                 )
                 # Only show [Reward] for actual rewards, use appropriate prefix for others
                 # Localize pile name
-                pile_name = t(f'combat.{target_pile}', default=target_pile)
+                pile_name = t(f'combat.{actual_pile}', default=actual_pile)
                 if self.source is None:
                     print(f"{t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
                 elif self.source == "reward":
@@ -129,6 +137,9 @@ class AddCardAction(Action):
                     print(f"[{t('combat.enemy', default='Enemy')}] {t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
                 else:
                     print(f"[{self.source.title()}] {t('combat.card_added', default='Added')} {self.card.display_name.resolve()} {t('combat.to_pile', default='to')} {pile_name}")
+
+                if target_pile == "hand" and actual_pile == "discard_pile":
+                    _print_hand_full_redirect(self.card)
 
 @register("action")
 class ExhaustCardAction(Action):
@@ -174,15 +185,24 @@ class DiscardCardAction(Action):
 
     Optional:
         source_pile (str): Source pile name
+        trigger_effects (bool): Whether this counts as a real discard trigger
     """
-    def __init__(self, card: "Card", source_pile: Optional[str] = None):
+    def __init__(self, card: "Card", source_pile: Optional[str] = None, trigger_effects: bool = True):
         self.card = card
         self.source_pile = source_pile
+        self.trigger_effects = trigger_effects
 
     def execute(self) -> None:
         from engine.game_state import game_state
         from engine.messages import CardDiscardedMessage
         if self.card and game_state.player and hasattr(game_state.player, "card_manager"):
+            if (
+                not self.trigger_effects
+                and (getattr(self.card, "retain", False) or getattr(self.card, "retain_this_turn", False))
+            ):
+                if getattr(self.card, "retain_this_turn", False):
+                    setattr(self.card, "retain_this_turn", False)
+                return
             # Find source pile if not specified
             if self.source_pile is None:
                 self.source_pile = game_state.player.card_manager.get_card_location(self.card)
@@ -190,7 +210,9 @@ class DiscardCardAction(Action):
             # Actually discard card
             discarded = game_state.player.card_manager.discard(self.card, src=self.source_pile)
             
-            if discarded:
+            if discarded and self.trigger_effects:
+                if game_state.current_combat is not None:
+                    game_state.current_combat.combat_state.discarded_cards_this_turn += 1
                 publish_message(
                     CardDiscardedMessage(
                         card=self.card,
@@ -217,6 +239,8 @@ class DrawCardsAction(Action):
         from engine.messages import CardDrawnMessage
 
         if game_state.player and hasattr(game_state.player, "card_manager"):
+            if any(getattr(power, "prevents_draw", False) for power in getattr(game_state.player, "powers", [])):
+                return
             # Handle callable count (dynamic card draw amounts)
             count = self.count() if callable(self.count) else self.count
             # Draw cards from draw pile to hand
@@ -235,6 +259,8 @@ class DrawCardsAction(Action):
                         owner=game_state.player,
                     )
                 )
+                if game_state.player.card_manager.get_card_location(card) == "discard_pile":
+                    _print_hand_full_redirect(card)
 
 @register("action")
 class ReplaceCardAction(Action):

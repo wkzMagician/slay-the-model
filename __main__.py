@@ -18,13 +18,6 @@ from engine.game_state import game_state
 from engine.runtime_context import configure_noninteractive_cli_mode
 
 
-def _import_character_cards(character: str):
-    """Import cards for selected character to register them."""
-    if character == "Ironclad":
-        import cards.ironclad
-    # Add other characters here as they are implemented
-
-
 def _import_potions():
     """Import potions to register them in the registry."""
     import potions
@@ -53,7 +46,6 @@ def run_cli_mode():
     try:
         if not _is_interactive_stdin():
             configure_noninteractive_cli_mode(game_state)
-        _import_character_cards(game_state.config.character)
         _import_potions()
         _import_powers()
         _import_relics()
@@ -73,7 +65,6 @@ def run_tui_mode():
     """Run game in TUI mode with three-panel layout."""
     try:
         # Import all game components first
-        _import_character_cards(game_state.config.character)
         _import_potions()
         _import_powers()
         _import_relics()

@@ -1,4 +1,4 @@
-"""
+﻿"""
 All game power definitions.
 Powers are temporary or permanent combat effects.
 """
@@ -39,6 +39,7 @@ from powers.definitions.feel_no_pain import FeelNoPainPower
 from powers.definitions.juggernaut import JuggernautPower
 from powers.definitions.metallicize import MetallicizePower
 from powers.definitions.rage import RagePower
+from powers.definitions.no_draw import NoDrawPower
 from powers.definitions.battle_trance_draw_power import BattleTranceDrawPower
 from powers.definitions.buffer import BufferPower
 from powers.definitions.rupture import RupturePower
@@ -55,7 +56,14 @@ from powers.definitions.fading import FadingPower
 from powers.definitions.shifting import ShiftingPower
 from powers.definitions.beat_of_death import BeatOfDeathPower
 from powers.definitions.painful_stabs import PainfulStabsPower
- 
+from powers.definitions.accuracy import AccuracyPower
+from powers.definitions.infinite_blades import InfiniteBladesPower
+from powers.definitions.noxious_fumes import NoxiousFumesPower
+from powers.definitions.energized import EnergizedPower
+from powers.definitions.draw_card_next_turn import DrawCardNextTurnPower
+from powers.definitions.next_turn_block import NextTurnBlockPower
+from powers.definitions.choke import ChokePower
+
 __all__ = [
     "StrengthPower",
     "VulnerablePower",
@@ -94,6 +102,7 @@ __all__ = [
     "JuggernautPower",
     "MetallicizePower",
     "RagePower",
+    "NoDrawPower",
     "BattleTranceDrawPower",
     "BufferPower",
     "RupturePower",
@@ -107,9 +116,41 @@ __all__ = [
     "ShiftingPower",
     "BeatOfDeathPower",
     "PainfulStabsPower",
+    "AccuracyPower",
+    "InfiniteBladesPower",
+    "NoxiousFumesPower",
+    "EnergizedPower",
+    "DrawCardNextTurnPower",
+    "NextTurnBlockPower",
+    "ChokePower",
     "FlyingPower",
     "FocusPower",
     "HexPower",
+    "AfterImagePower",
+    "EnvenomPower",
+    "ThousandCutsPower",
+    "BlurPower",
+    "DexterityDownPower",
+    "EscapePlanCheckPower",
+    "PhantasmalKillerPower",
+    "PhantasmalNextTurnPower",
+    "BurstPower",
+    "CorpseExplosionPower",
+    "NightmarePower",
+    "ToolsOfTheTradePower",
+    "WellLaidPlansPower",
 ]
+from powers.definitions.after_image import AfterImagePower
+from powers.definitions.envenom import EnvenomPower
+from powers.definitions.thousand_cuts import ThousandCutsPower
 
-
+from powers.definitions.blur import BlurPower
+from powers.definitions.dexterity_down import DexterityDownPower
+from powers.definitions.escape_plan_check import EscapePlanCheckPower
+from powers.definitions.phantasmal_killer import PhantasmalKillerPower
+from powers.definitions.phantasmal_next_turn import PhantasmalNextTurnPower
+from powers.definitions.burst import BurstPower
+from powers.definitions.corpse_explosion import CorpseExplosionPower
+from powers.definitions.nightmare import NightmarePower
+from powers.definitions.tools_of_the_trade import ToolsOfTheTradePower
+from powers.definitions.well_laid_plans import WellLaidPlansPower

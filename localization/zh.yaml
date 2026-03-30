@@ -877,7 +877,7 @@ cards:
       description: 回合结束时获得 {block} 点格挡。
     PerfectedStrike:
       name: 完美打击
-      description: 造成 {damage} 点伤害。牌组中每张含“打击”的牌额外造成 {magic.damage_bonus} 点伤害。
+      description: 造成 {damage} 点伤害。牌组中每张含“打击”的牌额外造成 {magic.strike_damage} 点伤害。
     PowerThrough:
       name: 硬撑
       description: 获得 {block} 点格挡。向手牌添加 2 张伤口。
@@ -944,6 +944,238 @@ cards:
     WildStrike:
       name: 狂野打击
       description: 造成 {damage} 点伤害。向抽牌堆洗入一张伤口。
+  silent:
+    Strike:
+      name: 打击
+      description: 造成 {damage} 点伤害。
+    Defend:
+      name: 防御
+      description: 获得 {block} 点格挡。
+    Neutralize:
+      name: 中和
+      description: 造成 {damage} 点伤害。施加 {magic.weak} 层虚弱。
+    Survivor:
+      name: 幸存者
+      description: 获得 {block} 点格挡。弃 1 张牌。
+    Shiv:
+      name: 小刀
+      description: 造成 {damage} 点伤害。消耗。
+    Accuracy:
+      name: 精准
+      description: 小刀额外造成 {magic.damage} 点伤害。
+    Adrenaline:
+      name: 肾上腺素
+      description: 抽 {draw} 张牌。获得 {energy_gain} 点能量。消耗。
+    AllOutAttack:
+      name: 全力攻击
+      description: 对所有敌人造成 {damage} 点伤害。随机弃 1 张牌。
+    BladeDance:
+      name: 刀刃之舞
+      description: 将 {magic.shivs} 张小刀加入手牌。
+    CloakAndDagger:
+      name: 披风与匕首
+      description: 获得 {block} 点格挡。将 {magic.shivs} 张小刀加入手牌。
+    Backflip:
+      name: 后空翻
+      description: 获得 {block} 点格挡。抽 {draw} 张牌。
+    Backstab:
+      name: 背刺
+      description: 固有。造成 {damage} 点伤害。
+    Caltrops:
+      name: 蒺棘
+      description: 每当被攻击时，反弹 {magic.thorns} 点伤害。
+    Choke:
+      name: 锁喉
+      description: 造成 {damage} 点伤害。本回合你每打出一张牌，该敌人失去 {magic.followup} 点 HP。
+    CripplingCloud:
+      name: 致残毒雾
+      description: 对所有敌人施加 {magic.weak} 层虚弱和 {magic.poison} 层中毒。消耗。
+    DaggerThrow:
+      name: 匕首投掷
+      description: 造成 {damage} 点伤害。抽 {draw} 张牌。弃 1 张牌。
+    Deflect:
+      name: 偏斜
+      description: 获得 {block} 点格挡。
+    DodgeAndRoll:
+      name: 闪转腾挪
+      description: 获得 {block} 点格挡。下回合，再获得 {block} 点格挡。
+    FlyingKnee:
+      name: 飞膝击
+      description: 造成 {damage} 点伤害。下回合获得 1 点能量。
+    HeelHook:
+      name: 勾脚
+      description: 造成 {damage} 点伤害。若目标处于虚弱，获得 1 点能量并抽 1 张牌。
+    Outmaneuver:
+      name: 迂步后撤
+      description: 下回合获得 {magic.energy} 点能量。
+    Prepared:
+      name: 有备而来
+      description: 抽 {draw} 张牌。弃 {magic.discard} 张牌。
+    Predator:
+      name: 捕食者
+      description: 造成 {damage} 点伤害。下回合抽 {magic.draw_next_turn} 张牌。
+    QuickSlash:
+      name: 迅捷斩击
+      description: 造成 {damage} 点伤害。抽 {draw} 张牌。
+    Slice:
+      name: 切割
+      description: 造成 {damage} 点伤害。
+    SuckerPunch:
+      name: 暗棍
+      description: 造成 {damage} 点伤害。施加 {magic.weak} 层虚弱。
+    Acrobatics:
+      name: 杂技
+      description: 抽 {draw} 张牌。弃 1 张牌。
+    DeadlyPoison:
+      name: 致命毒药
+      description: 施加 {magic.poison} 层中毒。
+    PoisonedStab:
+      name: 淀毒刺击
+      description: 造成 {damage} 点伤害。施加 {magic.poison} 层中毒。
+    Bane:
+      name: 灾祸
+      description: 造成 {damage} 点伤害。若目标有中毒，再造成 {damage} 点伤害。
+    BouncingFlask:
+      name: 反复摇晃的瓶子
+      description: 将 {magic.poison} 层中毒随机施加给敌人 {magic.hits} 次。
+    Catalyst:
+      name: 催化剂
+      description: 将一名敌人的中毒翻倍。
+      upgrade_description: 将一名敌人的中毒变为三倍。
+    DaggerSpray:
+      name: 飞刀风暴
+      description: 对所有敌人造成 {damage} 点伤害两次。
+    Dash:
+      name: 冲刺
+      description: 获得 {block} 点格挡。造成 {damage} 点伤害。
+    DieDieDie:
+      name: 死吧死吧死吧
+      description: 对所有敌人造成 {damage} 点伤害。消耗。
+    InfiniteBlades:
+      name: 无尽刀锋
+      description: 在你的回合开始时，将 1 张小刀加入手牌。
+    Footwork:
+      name: 脚步
+      description: 获得 {magic.dexterity} 点敏捷。
+    LegSweep:
+      name: 绊腿
+      description: 获得 {block} 点格挡。施加 {magic.weak} 层虚弱。
+    NoxiousFumes:
+      name: 毒雾
+      description: 在你的回合开始时，对所有敌人施加 {magic.poison} 层中毒。
+    PiercingWail:
+      name: 穿心尖啸
+      description: 所有敌人本回合失去 {magic.strength_loss} 点力量。消耗。
+    RiddleWithHoles:
+      name: 乱刃穿心
+      description: 造成 {damage} 点伤害 {attack_times} 次。
+    AfterImage:
+      name: 余像
+      description: 每当你打出一张牌，获得 {magic.block} 点格挡。
+    Alchemize:
+      name: 炼金术
+      description: 获得一瓶随机药水。消耗。
+    Distraction:
+      name: 声东击西
+      description: 从 3 张随机技能牌中选 1 张加入手牌。本回合消耗为 0。消耗。
+    Envenom:
+      name: 涼毒
+      description: 每当攻击造成未被格挡的伤害，施加 {magic.poison} 层中毒。
+    Expertise:
+      name: 老练
+      description: 抽牌，直到手牌为 6 张。
+    GlassKnife:
+      name: 玻璃小刀
+      description: 造成 {damage} 点伤害 {attack_times} 次。本场战斗中，本牌的伤害降低 {magic.decay}。
+    Terror:
+      name: 恐惧
+      description: 施加 {magic.vulnerable} 层易伤。
+    ThousandCuts:
+      name: 千刀万剐
+      description: 每当你打出一张牌，对所有敌人造成 {magic.damage} 点伤害。
+    Blur:
+      name: 模糊
+      description: 获得 {block} 点格挡。下回合不移除格挡。
+    Concentrate:
+      name: 专注
+      description: 弃 {magic.discard} 张牌。获得 {magic.energy} 点能量。
+    Eviscerate:
+      name: 开膛破肚
+      description: 本回合每弃一张牌，消耗减 1。造成 {damage} 点伤害 {attack_times} 次。
+    Finisher:
+      name: 终结技
+      description: 本回合每打出一张攻击牌，造成 {damage} 点伤害。
+    Flechettes:
+      name: 飞镖
+      description: 手牌中每有一张技能牌，造成 {damage} 点伤害。
+    Skewer:
+      name: 串刺
+      description: 造成 {damage} 点伤害 X 次。
+    SneakyStrike:
+      name: 卑鄙打击
+      description: 造成 {damage} 点伤害。如果本回合弃过牌，获得 2 点能量。
+    EndlessAgony:
+      name: 无尽痛苦
+      description: 当你抽到这张牌时，将一张复制加入手牌。造成 {damage} 点伤害。消耗。
+    EscapePlan:
+      name: 逃脱计划
+      description: 抽 1 张牌。如果它是技能牌，获得 {magic.block} 点格挡。
+    PhantasmalKiller:
+      name: 幻影杀手
+      description: 下回合，你的攻击造成双倍伤害。
+    Reflex:
+      name: 反射
+      description: 无法打出。如果这张牌从手牌被弃掉，抽 {magic.draw} 张牌。
+    Tactician:
+      name: 战术家
+      description: 无法打出。如果这张牌从手牌被弃掉，获得 {magic.energy} 点能量。
+    WraithForm:
+      name: 幽魂形态
+      description: 获得 {magic.intangible} 层虚无。在你的回合结束时，失去 {magic.dex_down} 点敏捷。消耗。
+    BulletTime:
+      name: 子弹时间
+      description: 你手中的牌本回合费用变为 0。本回合你不能再抽牌。
+    Burst:
+      name: 爆发
+      description: 本回合，你接下来打出的 {magic.copies} 张技能牌会额外触发一次。
+      upgrade_description: 本回合，你接下来打出的 {magic.copies} 张技能牌会额外触发一次。
+    CalculatedGamble:
+      name: 精心谋划
+      description: 弃掉你的手牌，然后抽等量的牌。消耗。
+    CorpseExplosion:
+      name: 尸爆术
+      description: 施加 {magic.poison} 层中毒。当该敌人死亡时，对所有敌人造成等同其最大生命值的伤害。
+    Doppelganger:
+      name: 分身
+      description: 下回合，抽 X 张牌并获得 X 点能量。
+    GrandFinale:
+      name: 盛大终幕
+      description: 只有在你的抽牌堆为空时才能打出。对所有敌人造成 {damage} 点伤害。
+    Malaise:
+      name: 萎靡
+      description: 目标失去 X 点力量，并施加 X 层虚弱。消耗。
+    MasterfulStab:
+      name: 娴熟刺击
+      description: 本场战斗中每当你失去生命，此牌费用增加 1。造成 {damage} 点伤害。
+    Nightmare:
+      name: 梦魇
+      description: 选择一张牌。下回合，将它的 3 张复制加入你的手牌。
+    Setup:
+      name: 布局
+      description: 将一张手牌放到抽牌堆顶。它在被打出前费用变为 0。
+    StormOfSteel:
+      name: 钢铁风暴
+      description: 弃掉你的手牌。每弃 1 张牌，向手牌加入 1 张小刀。
+    ToolsOfTheTrade:
+      name: 交易工具
+      description: 在你的回合开始时，抽 1 张牌，然后弃 1 张牌。
+    Unload:
+      name: 卸载
+      description: 造成 {damage} 点伤害。弃掉你手中所有非攻击牌。
+    WellLaidPlans:
+      name: 周密计划
+      description: 在你的回合结束时，保留至多 {magic.retain} 张牌。
+      upgrade_description: 在你的回合结束时，保留至多 {magic.retain} 张牌。
   colorless:
     Slimed:
       name: 黏液

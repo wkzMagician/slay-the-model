@@ -44,6 +44,7 @@ class TestBattleTrance(unittest.TestCase):
         # Card should draw 3 cards
         new_hand_size = len(self.helper.game_state.player.card_manager.piles["hand"])
         self.assertGreaterEqual(new_hand_size, initial_hand_size + 2)  # At least 2 more (draw 3, -1 for playing)
+        self.assertIsNotNone(self.helper.game_state.player.get_power("No Draw"))
 
     def test_upgraded(self):
         """Test upgraded BattleTrance draws more cards."""

@@ -4,7 +4,7 @@ seed: 1
 character: Ironclad
 ascension: 0  # 0-20, 0 = no ascension
 select_overflow: truncate # truncate | reselect
-auto_select: True  # Auto select for all modes (human, ai, debug)
+auto_select: False  # Auto select for all modes (human, ai, debug)
 
 human:
   show_menu_option: False

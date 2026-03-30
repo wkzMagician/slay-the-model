@@ -322,7 +322,7 @@ class _PlayAttackPower(Power):
         self.card_play_triggered = False
         self.attack_triggered = False
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         self.card_play_triggered = True
         return [GainBlockAction(block=9, target=player)]
 
@@ -336,7 +336,7 @@ class _PlayAttackRelic(Relic):
         super().__init__()
         self.card_play_triggered = False
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         self.card_play_triggered = True
         return [GainBlockAction(block=11, target=player)]
 
@@ -346,7 +346,7 @@ class _PlayReactiveCard(Card):
         super().__init__()
         self.card_play_triggered = False
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         self.card_play_triggered = True
         return [GainBlockAction(block=12, target=player)]
 
@@ -590,7 +590,7 @@ def test_play_and_attack_messages_use_class_level_subscription_metadata():
 
     bus = MessageBus()
     play_actions = bus.publish(
-        CardPlayedMessage(card=hand_card, owner=player, targets=[enemy], enemies=[enemy]),
+        CardPlayedMessage(card=hand_card, owner=player, targets=[enemy]),
         participants=[play_power, relic, hand_card],
     )
     attack_actions = bus.publish(

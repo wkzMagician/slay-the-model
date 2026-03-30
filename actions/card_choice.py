@@ -269,19 +269,19 @@ class ChooseAddRandomCardAction(Action):
         namespace (str): Card namespace
         rarity (str): Card rarity
         card_type (CardType): Card type (Attack, Skill, Power)
-        temp_cost (int): Temporary cost for the added card (only for current turn)
+        cost_until_end_of_turn (int): Cost override for the added card until end of turn
         
     Optional:
         None
     """
     def __init__(self, pile: str = 'hand', total: int = 3, namespace: Optional[str] = None, rarity: Optional[RarityType] = None,
-                 card_type: Optional[CardType] = None, temp_cost: Optional[int] = None):
+                 card_type: Optional[CardType] = None, cost_until_end_of_turn: Optional[int] = None):
         self.pile = pile
         self.total = total
         self.namespace = namespace
         self.rarity = rarity
         self.card_type = card_type
-        self.temp_cost = temp_cost
+        self.cost_until_end_of_turn = cost_until_end_of_turn
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -304,8 +304,8 @@ class ChooseAddRandomCardAction(Action):
                 continue
             selected_card_ids.append(random_card.idstr)  # Track this card
             # Apply a temporary cost override to the generated card.
-            if self.temp_cost is not None:
-                random_card.temp_cost = self.temp_cost
+            if self.cost_until_end_of_turn is not None:
+                random_card.cost_until_end_of_turn = self.cost_until_end_of_turn
             option = random_card.info() # random_card.display_name
             options.append(
                 Option(
@@ -434,6 +434,48 @@ class ChooseMoveCardAction(Action):
         )
         add_action(select_action, to_front=True)
 
+
+@register("action")
+class ChooseDiscardCardAction(Action):
+    """Choose cards from hand to discard using DiscardCardAction semantics."""
+
+    def __init__(self, pile: str = 'hand', amount: int = 1, must_select: bool = True):
+        self.pile = pile
+        self.amount = amount
+        self.must_select = must_select
+
+    def execute(self) -> None:
+        from engine.game_state import game_state
+        if not game_state.player:
+            return
+
+        from actions.card_lifecycle import DiscardCardAction
+        from actions.display import InputRequestAction
+
+        options = []
+        for card in game_state.player.card_manager.get_pile(self.pile):
+            options.append(
+                Option(
+                    name=card.info(),
+                    actions=[DiscardCardAction(card=card, source_pile=self.pile)],
+                )
+            )
+
+        if not options:
+            return
+        if len(options) == 1 and self.amount == 1:
+            add_actions(options[0].actions, to_front=True)
+            return
+        add_action(
+            InputRequestAction(
+                title=LocalStr("ui.choose_cards_to_move"),
+                options=options,
+                max_select=self.amount,
+                must_select=self.must_select,
+            ),
+            to_front=True,
+        )
+
 @register("action")
 class ChooseCopyCardAction(Action):
     """Choose a card to copy and add to hand
@@ -537,27 +579,40 @@ class CopyCardAction(Action):
                 game_state.player.card_manager.add_to_pile(self.card, "hand", pos=PilePosType.TOP)
 
 @register("action")
-class SetTempCostAction(Action):
-    """Set temporary cost for a card (resets at end of turn)
+class SetCostUntilEndOfTurnAction(Action):
+    """Set cost override for this turn only.
 
     Required:
         card (Card): Card to modify
-        temp_cost (int): Temporary cost value (None to reset)
+        cost_until_end_of_turn (int): Temporary cost value (None to reset)
 
     Optional:
         None
     """
-    def __init__(self, card: "Card", temp_cost: Optional[int]):
+    def __init__(self, card: "Card", cost_until_end_of_turn: Optional[int]):
         self.card = card
-        self.temp_cost = temp_cost
+        self.cost_until_end_of_turn = cost_until_end_of_turn
 
     def execute(self) -> None:
         if self.card:
-            self.card.temp_cost = self.temp_cost
+            self.card.cost_until_end_of_turn = self.cost_until_end_of_turn
+
+
+@register("action")
+class SetCostUntilPlayedAction(Action):
+    """Set a persistent cost override that lasts until the card is played."""
+
+    def __init__(self, card: "Card", cost: Optional[int]):
+        self.card = card
+        self.cost = cost
+
+    def execute(self) -> None:
+        if self.card:
+            self.card.cost_until_played = self.cost
 
 @register("action")
 class MoveAndSetCostAction(Action):
-    """Move a card and set its temporary cost to 0.
+    """Move a card and set its cost until played.
     
     Used by Forethought card: move card to bottom of draw pile, 
     and set its cost to 0 until played.
@@ -566,17 +621,17 @@ class MoveAndSetCostAction(Action):
         card (Card): Card to move
         src_pile (str): Source pile name
         dst_pile (str): Destination pile name
-        temp_cost (int): Temporary cost to set (default 0)
+        cost_until_played (int): Cost override to keep until the card is played
 
     Optional:
         position (PilePosType): Position in destination pile (default BOTTOM)
     """
     def __init__(self, card: "Card", src_pile: str, dst_pile: str, 
-                 temp_cost: int = 0, position: PilePosType = PilePosType.BOTTOM):
+                 cost_until_played: int = 0, position: PilePosType = PilePosType.BOTTOM):
         self.card = card
         self.src_pile = src_pile
         self.dst_pile = dst_pile
-        self.temp_cost = temp_cost
+        self.cost_until_played = cost_until_played
         self.position = position
 
     def execute(self) -> None:
@@ -586,8 +641,7 @@ class MoveAndSetCostAction(Action):
                 # Move the card
                 game_state.player.card_manager.remove_from_pile(self.card, self.src_pile)
                 game_state.player.card_manager.add_to_pile(self.card, self.dst_pile, pos=self.position)
-                # Set temporary cost
-                self.card.temp_cost = self.temp_cost
+                self.card.cost_until_played = self.cost_until_played
 
 @register("action")
 class ChooseMoveAndSetCostAction(Action):
@@ -600,19 +654,19 @@ class ChooseMoveAndSetCostAction(Action):
         src_pile (str): Source pile name
         dst_pile (str): Destination pile name
         amount (int): Number of cards to choose (-1 for any number)
-        temp_cost (int): Temporary cost to set (default 0)
+        cost_until_played (int): Cost override to set until played (default 0)
 
     Optional:
         position (PilePosType): Position in destination pile (default BOTTOM)
         must_select (bool): Whether selection is required (default True)
     """
     def __init__(self, src_pile: str, dst_pile: str, amount: int = 1, 
-                 temp_cost: int = 0, position: PilePosType = PilePosType.BOTTOM,
+                 cost_until_played: int = 0, position: PilePosType = PilePosType.BOTTOM,
                  must_select: bool = True):
         self.src_pile = src_pile
         self.dst_pile = dst_pile
         self.amount = amount
-        self.temp_cost = temp_cost
+        self.cost_until_played = cost_until_played
         self.position = position
         self.must_select = must_select
 
@@ -637,7 +691,7 @@ class ChooseMoveAndSetCostAction(Action):
                             card=card, 
                             src_pile=self.src_pile, 
                             dst_pile=self.dst_pile,
-                            temp_cost=self.temp_cost,
+                            cost_until_played=self.cost_until_played,
                             position=self.position
                         ),
                     ]
@@ -801,3 +855,124 @@ class ChooseObtainCardAction(Action):
             must_select = False,  # Allow skipping if none of the options are desirable.
         )
         add_action(select_action, to_front=True)
+
+
+@register("action")
+class MarkRetainCardAction(Action):
+    def __init__(self, card):
+        self.card = card
+
+    def execute(self) -> None:
+        if self.card is not None:
+            setattr(self.card, 'retain_this_turn', True)
+
+
+@register("action")
+class ChooseRetainCardAction(Action):
+    def __init__(self, pile: str = 'hand', amount: int = 1):
+        self.pile = pile
+        self.amount = amount
+
+    def execute(self) -> None:
+        from engine.game_state import game_state
+        if not game_state.player:
+            return
+        from actions.display import InputRequestAction
+
+        options = []
+        for card in game_state.player.card_manager.get_pile(self.pile):
+            options.append(Option(name=card.info(), actions=[MarkRetainCardAction(card=card)]))
+        if not options:
+            return
+        if len(options) <= self.amount:
+            add_actions([action for option in options for action in option.actions], to_front=True)
+            return
+        add_action(InputRequestAction(title=LocalStr("ui.choose_cards_to_move"), options=options, max_select=self.amount, must_select=False), to_front=True)
+
+
+@register("action")
+class SetNightmarePowerAction(Action):
+    def __init__(self, card):
+        self.card = card
+
+    def execute(self) -> None:
+        from engine.game_state import game_state
+        from powers.definitions.nightmare import NightmarePower
+        if game_state.player is not None and self.card is not None:
+            game_state.player.add_power(NightmarePower(owner=game_state.player, stored_card=self.card.copy()))
+
+
+@register("action")
+class ChooseNightmareCardAction(Action):
+    def __init__(self, pile: str = 'hand'):
+        self.pile = pile
+
+    def execute(self) -> None:
+        from engine.game_state import game_state
+        if not game_state.player:
+            return
+        from actions.display import InputRequestAction
+
+        options = []
+        for card in game_state.player.card_manager.get_pile(self.pile):
+            options.append(Option(name=card.info(), actions=[SetNightmarePowerAction(card=card)]))
+        if not options:
+            return
+        if len(options) == 1:
+            add_actions(options[0].actions, to_front=True)
+            return
+        add_action(InputRequestAction(title=LocalStr("ui.choose_cards_to_copy"), options=options, max_select=1, must_select=True), to_front=True)
+
+
+@register("action")
+class ChooseCardLambdaAction(Action):
+    """Choose card(s) from a pile and build follow-up actions from the selection."""
+
+    def __init__(
+        self,
+        pile: str = "hand",
+        amount: int = 1,
+        title: Optional[LocalStr] = None,
+        must_select: bool = True,
+        action_builder=None,
+        filter_fn=None,
+    ):
+        self.pile = pile
+        self.amount = amount
+        self.title = title or LocalStr("ui.choose_cards_to_move")
+        self.must_select = must_select
+        self.action_builder = action_builder
+        self.filter_fn = filter_fn
+
+    def execute(self) -> None:
+        from engine.game_state import game_state
+        from actions.display import InputRequestAction
+
+        if not game_state.player or self.action_builder is None:
+            return
+
+        options = []
+        for card in game_state.player.card_manager.get_pile(self.pile):
+            if self.filter_fn is not None and not self.filter_fn(card):
+                continue
+            built_actions = self.action_builder(card)
+            if built_actions is None:
+                continue
+            if not isinstance(built_actions, list):
+                built_actions = [built_actions]
+            options.append(Option(name=card.info(), actions=built_actions))
+
+        if not options:
+            return
+        if len(options) == 1 and self.amount == 1:
+            add_actions(options[0].actions, to_front=True)
+            return
+        add_action(
+            InputRequestAction(
+                title=self.title,
+                options=options,
+                max_select=self.amount,
+                must_select=self.must_select,
+            ),
+            to_front=True,
+        )

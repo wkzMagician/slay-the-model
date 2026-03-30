@@ -33,18 +33,16 @@ class StrengthDownPower(Power):
     def on_turn_end(self):
         """Lose strength and remove this power."""
         from actions.combat import ApplyPowerAction
-        from engine.game_state import game_state
         from powers.definitions.strength import StrengthPower
         
         actions = []
         
         if self.owner:
             actions.append(ApplyPowerAction(
-                StrengthPower(amount=-self.amount, owner=self.owner),
+                StrengthPower(amount=self.amount, owner=self.owner),
                 self.owner
             ))
-        
-        from engine.game_state import game_state
+            self.owner.remove_power(self.name)
         
         add_actions(actions)
         

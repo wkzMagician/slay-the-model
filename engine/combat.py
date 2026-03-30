@@ -359,10 +359,12 @@ class Combat(Localizable):
         if game_state.player.card_manager and not has_runic_pyramid:
             hand = game_state.player.card_manager.get_pile("hand").copy()
             for card in hand:
-                game_state.action_queue.add_action(DiscardCardAction(card=card, source_pile="hand"))
+                if getattr(card, "retain", False) or getattr(card, "retain_this_turn", False):
+                    setattr(card, "retain_this_turn", False)
+                    continue
+                game_state.action_queue.add_action(DiscardCardAction(card=card, source_pile="hand", trigger_effects=False))
 
-        # Reset player block
-        game_state.player.block = 0
+        # ! 原实现有误，人物格挡清零是在回合开始
 
         result = game_state.drive_actions()
         if result is not None:
@@ -578,14 +580,22 @@ class Combat(Localizable):
         
         # Clear block at start of turn (unless Barricade/Calipers)
         has_barricade = any(p.name == "Barricade" for p in game_state.player.powers)
+        has_blur = any(p.name == "Blur" for p in game_state.player.powers)
         has_calipers = any(getattr(r, "idstr", None) == "Calipers" for r in game_state.player.relics)
         
-        if has_barricade:
+        if has_barricade or has_blur:
             pass  # Block is not removed
         elif has_calipers:
             game_state.player.block = max(0, game_state.player.block - 15)
         else:
             game_state.player.block = 0
+
+        for pile_name in ("hand", "draw_pile", "discard_pile", "exhaust_pile"):
+            for card in list(game_state.player.card_manager.get_pile(pile_name)):
+                if hasattr(card, "retain_this_turn"):
+                    setattr(card, "retain_this_turn", False)
+                if hasattr(card, "cost_until_end_of_turn"):
+                    setattr(card, "cost_until_end_of_turn", None)
 
         # Draw cards
         draw_count = game_state.player.draw_count  # modified by relics/powers

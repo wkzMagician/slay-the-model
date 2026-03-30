@@ -26,7 +26,7 @@ class EnragePower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Trigger when player plays a card."""
         from utils.types import CardType
         from powers.definitions.strength import StrengthPower

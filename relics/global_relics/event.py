@@ -130,7 +130,7 @@ class Necronomicon(Relic):
         from engine.game_state import game_state
         add_actions([LambdaAction(func=lambda: setattr(self, 'double_attack_played', False))])
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track high-cost attacks and play twice"""
         if card.cost >= 2 and card.card_type == CardType.ATTACK and not self.double_attack_played:
             self.double_attack_played = True

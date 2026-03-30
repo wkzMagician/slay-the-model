@@ -9,8 +9,8 @@ class CardManager:
 
     This class is intentionally generic; higher-level logic should live in actions.
     """
-    
-    # todo: hand capacity is 10; if add card to hand when hand has 10 cards, move this card to discard_pile
+
+    HAND_LIMIT = 10
 
     def __init__(self, deck: Optional[List[Card]] = None) -> None:
         # Store all piles in a single dictionary for unified management
@@ -50,7 +50,7 @@ class CardManager:
         if not self.piles['draw_pile']:
             return None
         card = self.piles['draw_pile'].pop()
-        self.piles['hand'].append(card)
+        self.add_to_pile(card, 'hand', PilePosType.TOP)
         return card
 
     def draw_many(self, amount: int) -> List[Card]:
@@ -73,6 +73,11 @@ class CardManager:
         """Add a card to a specified pile."""
         if pile not in self.piles:
             return False
+
+        if pile == 'hand' and len(self.piles['hand']) >= self.HAND_LIMIT:
+            pile = 'discard_pile'
+            pos = PilePosType.TOP
+
         if pos == PilePosType.TOP:
             self.piles[pile].append(card)
         elif pos == PilePosType.BOTTOM:

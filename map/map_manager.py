@@ -214,20 +214,67 @@ class MapManager:
             for dest_pos in range(len(next_floor_nodes)):
                 has_incoming = any(dest_pos in node.connections_up for node in current_floor_nodes)
                 if not has_incoming:
-                    src_pos = min(dest_pos * len(current_floor_nodes) // len(next_floor_nodes),
-                                 len(current_floor_nodes) - 1)
-                    current_floor_nodes[src_pos].add_connection_up(dest_pos)
+                    src_pos = self._find_non_crossing_source_for_destination(
+                        current_floor_nodes=current_floor_nodes,
+                        dest_pos=dest_pos,
+                        next_floor_size=len(next_floor_nodes),
+                    )
+                    if src_pos is not None:
+                        current_floor_nodes[src_pos].add_connection_up(dest_pos)
             
             # Step 3: Add additional connections for variety (30% chance per node)
             if len(current_floor_nodes) > 1:
-                for src_node in current_floor_nodes:
+                for src_pos, src_node in enumerate(current_floor_nodes):
                     if self.rng.random() < 0.3:
                         available = [p for p in range(len(next_floor_nodes)) 
-                                    if p not in src_node.connections_up]
+                                    if p not in src_node.connections_up
+                                    and not self._would_connection_cross(
+                                        current_floor_nodes=current_floor_nodes,
+                                        src_pos=src_pos,
+                                        dest_pos=p,
+                                    )]
                         if available:
                             src_node.add_connection_up(self.rng.choice(available))
         
         return nodes
+
+    def _would_connection_cross(
+        self,
+        current_floor_nodes: List[MapNode],
+        src_pos: int,
+        dest_pos: int,
+    ) -> bool:
+        """Return True when adding this edge would reverse left-to-right order."""
+        for other_src_pos, other_node in enumerate(current_floor_nodes):
+            if other_src_pos == src_pos:
+                continue
+            for other_dest_pos in other_node.connections_up:
+                if other_src_pos < src_pos and other_dest_pos > dest_pos:
+                    return True
+                if other_src_pos > src_pos and other_dest_pos < dest_pos:
+                    return True
+        return False
+
+    def _find_non_crossing_source_for_destination(
+        self,
+        current_floor_nodes: List[MapNode],
+        dest_pos: int,
+        next_floor_size: int,
+    ) -> Optional[int]:
+        """Pick the closest source that can connect to dest_pos without crossing."""
+        current_floor_size = len(current_floor_nodes)
+        ideal_src_pos = min(
+            dest_pos * current_floor_size // next_floor_size,
+            current_floor_size - 1,
+        )
+        candidate_positions = sorted(
+            range(current_floor_size),
+            key=lambda pos: (abs(pos - ideal_src_pos), pos),
+        )
+        for src_pos in candidate_positions:
+            if not self._would_connection_cross(current_floor_nodes, src_pos, dest_pos):
+                return src_pos
+        return None
     
     def _assign_room_types(self, nodes: List[List[MapNode]]):
         """

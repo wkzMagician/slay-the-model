@@ -38,6 +38,7 @@ from .ritual_dagger import RitualDagger
 from .bite import Bite
 from .jax import JAX
 from .slimed import Slimed
+from .shiv import Shiv
 from .dazed import Dazed
 from .void import Void
 from .burn import Burn
@@ -101,6 +102,7 @@ __all__ = [
     "JAX",
     # Status cards
     "Slimed",
+    "Shiv",
     "Dazed",
     "Void",
     "Burn",

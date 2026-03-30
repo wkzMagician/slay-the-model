@@ -8,7 +8,7 @@ from cards.ironclad.strike import Strike
 from enemies.act1.cultist import Cultist
 from powers.definitions.rage import RagePower
 from relics.global_relics.common import CeramicFish
-from relics.global_relics.rare import ToughBandages
+from relics.character.silent import ToughBandages
 from relics.global_relics.uncommon import DarkstonePeriapt, Sundial
 from tests.test_combat_utils import create_test_helper
 
@@ -131,3 +131,23 @@ def test_add_card_action_publishes_card_added_message(monkeypatch):
     assert curse_card in player.card_manager.get_pile("deck")
     assert player.gold == initial_gold + 9
     assert player.max_hp == initial_max_hp + 6
+
+
+def test_end_turn_discard_does_not_publish_message_or_trigger_discard_effects(monkeypatch):
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    combat = helper.start_combat([enemy])
+
+    discard_target = Strike()
+    helper.add_card_to_hand(discard_target)
+    player.relics.append(ToughBandages())
+
+    published = _capture_published_message_types(helper.game_state, monkeypatch)
+
+    combat._end_player_phase()
+    helper.game_state.drive_actions()
+
+    assert "CardDiscardedMessage" not in published
+    assert discard_target in player.card_manager.get_pile("discard_pile")
+    assert player.block == 0

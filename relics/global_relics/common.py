@@ -36,7 +36,7 @@ class Akabeko(Relic):
         """Reset first attack tracker at start of combat"""
         self.first_attack_played = False
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track when first attack is played"""
         if not self.first_attack_played and card.card_type == CardType.ATTACK:
             self.first_attack_played = True
@@ -128,7 +128,7 @@ class ArtOfWar(Relic):
         from engine.game_state import game_state
         add_actions(actions)
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track if an attack was played"""
         from utils.types import CardType
         if card.card_type == CardType.ATTACK:
@@ -325,7 +325,7 @@ class Nunchaku(Relic):
         self.rarity = RarityType.COMMON
         self.attacks_played = 0
     
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track attacks played"""
         from utils.types import CardType
         if card.card_type == CardType.ATTACK:
@@ -395,7 +395,7 @@ class PenNib(Relic):
         """Reset tracker at start of combat"""
         self.attacks_played = 0
         return
-    def on_card_play(self, card, player, entities):
+    def on_card_play(self, card, player, targets):
         """Track attacks and apply double damage on 10th"""
         from utils.types import CardType
         if card.card_type == CardType.ATTACK:

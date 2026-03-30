@@ -33,7 +33,7 @@ class AttackPotion(Potion):
                 pile='hand',
                 total=1,
                 card_type=CardType.ATTACK,
-                temp_cost=0  # Set temporary cost to 0 for this turn
+                cost_until_end_of_turn=0  # Set temporary cost to 0 for this turn
             ))
         return actions
 
@@ -71,7 +71,7 @@ class ColorlessPotion(Potion):
                 pile='hand',
                 total=1,
                 namespace="colorless",
-                temp_cost=0  # Set temporary cost to 0 for this turn
+                cost_until_end_of_turn=0  # Set temporary cost to 0 for this turn
             ))
         return actions
 
@@ -190,7 +190,7 @@ class PowerPotion(Potion):
                 pile='hand',
                 total=1,
                 card_type=CardType.POWER,
-                temp_cost=0  # Set temporary cost to 0 for this turn
+                cost_until_end_of_turn=0  # Set temporary cost to 0 for this turn
             ))
         return actions
 
@@ -213,7 +213,7 @@ class SkillPotion(Potion):
                 pile='hand',
                 total=1,
                 card_type=CardType.SKILL,
-                temp_cost=0  # Set temporary cost to 0 for this turn
+                cost_until_end_of_turn=0  # Set temporary cost to 0 for this turn
             ))
         return actions
 
@@ -336,7 +336,7 @@ class DistilledChaos(Potion):
         from engine.game_state import game_state
         
         actions = []
-        draw_pile = game_state.player.card_manager.get_pile("draw")
+        draw_pile = game_state.player.card_manager.get_pile("draw_pile")
         
         # Play top cards from draw pile
         for _ in range(min(self.amount, len(draw_pile))):

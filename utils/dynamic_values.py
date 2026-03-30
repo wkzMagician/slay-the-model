@@ -139,7 +139,10 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
         for power in attacker.powers:
             if getattr(power, 'modify_phase', DamagePhase.ADDITIVE) == DamagePhase.ADDITIVE:
                 if hasattr(power, 'modify_damage_dealt'):
-                    damage = power.modify_damage_dealt(damage)
+                    try:
+                        damage = power.modify_damage_dealt(damage, card=card, target=target)
+                    except TypeError:
+                        damage = power.modify_damage_dealt(damage)
     
     # 2b. Attacker's relics (ADDITIVE phase, Player only)
     if isinstance(attacker, Player) and hasattr(attacker, 'relics'):
@@ -158,7 +161,10 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
         for power in attacker.powers:
             if getattr(power, 'modify_phase', DamagePhase.ADDITIVE) == DamagePhase.MULTIPLICATIVE:
                 if hasattr(power, 'modify_damage_dealt'):
-                    damage = power.modify_damage_dealt(damage)
+                    try:
+                        damage = power.modify_damage_dealt(damage, card=card, target=target)
+                    except TypeError:
+                        damage = power.modify_damage_dealt(damage)
     
     # 3b. Attacker's relics (MULTIPLICATIVE phase, Player only)
     if isinstance(attacker, Player) and hasattr(attacker, 'relics'):

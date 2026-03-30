@@ -234,22 +234,6 @@ class TheAbacus(Relic):
         add_actions([GainBlockAction(block=6, target=game_state.player)])
         return
 @register("relic")
-class TwistedFunnel(Relic):
-    """At the start of each combat, apply 4 Poison to ALL enemies."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.SHOP
-    
-    def on_combat_start(self, player, entities):
-        """Apply 4 Poison to all enemies at start of combat"""
-        actions = []
-        for enemy in entities:
-            actions.append(ApplyPowerAction(power="Poison", target=enemy, amount=4, duration=3))
-        from engine.game_state import game_state
-        add_actions(actions)
-        return
-@register("relic")
 class Toolbox(Relic):
     """At the start of each combat, choose 1 of 3 random Colorless Cards and add the chosen Card into your hand."""
     

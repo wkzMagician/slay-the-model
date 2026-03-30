@@ -1,3 +1,5 @@
+import importlib
+
 # Import all character packages to ensure they are registered at module load time
 import player.characters  # noqa: F401
 
@@ -11,11 +13,7 @@ def _import_character_cards(character: str):
     Args:
         character: Character name (e.g., "ironclad", "silent")
     """
-    character = character.lower()
-    if character == "ironclad":
-        import cards.ironclad  # noqa: F401
-        return
-    # Add other characters here as they are implemented
+    importlib.import_module(f"cards.{character.lower()}")
 
 
 def create_player(character=None):
@@ -55,10 +53,8 @@ def create_player(character=None):
         )
 
     # Import cards for this character BEFORE creating player
-    # This ensures cards are registered in the registry
     _import_character_cards(character)
 
-    # Create player with character stats
     player = Player(
         max_hp=char_config.max_hp,
         max_energy=char_config.energy
@@ -68,7 +64,6 @@ def create_player(character=None):
     player._gold = char_config.gold
     player.base_draw_count = char_config.draw_count
 
-    # Create starting deck from card IDs
     starting_deck = []
     for card_id in char_config.deck:
         if "." in card_id:
@@ -81,10 +76,8 @@ def create_player(character=None):
             raise ValueError(f"Card not found in registry: {card_id} (tried {class_name})")
         starting_deck.append(card)
 
-    # Initialize card manager with starting deck
     player.card_manager = CardManager(starting_deck)
 
-    # Add starting relics
     from relics.relics import create_relic_instance
     from utils.registry import get_registered
     for relic_id in char_config.starting_relics:

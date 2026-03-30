@@ -22,8 +22,12 @@ class BloodForBlood(Card):
 
     upgrade_damage = 22
 
-    def on_damage_taken(self, damage: int, source: Creature, card: Card, damage_type: str):
+    def on_damage_taken(self, damage: int, source: Creature = None, player: Creature = None, entities=None):
         """Track HP taken to reduce card cost"""
+        from engine.game_state import game_state
+
+        if player is not game_state.player:
+            return
         # Reduce cost by 1 each time damage is taken (minimum 0)
         self._cost = max(0, self._cost - 1)
         return

@@ -158,21 +158,21 @@ class AddRandomCardAction(Action):
         card_type (CardType): Card type
         rarity (str): Card rarity
         permanent_cost (int)
-        temp_cost (int)
+        cost_until_end_of_turn (int)
 
     Optional:
         None
     """
     def __init__(self, pile: str = 'hand', upgrade: bool = False,
                  card_type: Optional[CardType] = None, rarity: Optional[RarityType] = None, namespace: Optional[str] = None,
-                 permanent_cost: Optional[int] = None, temp_cost: Optional[int] = None):
+                 permanent_cost: Optional[int] = None, cost_until_end_of_turn: Optional[int] = None):
         self.pile = pile
         self.upgrade = upgrade
         self.card_type = card_type
         self.rarity = rarity
         self.namespace = namespace
         self.permanent_cost = permanent_cost
-        self.temp_cost = temp_cost
+        self.cost_until_end_of_turn = cost_until_end_of_turn
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -192,8 +192,8 @@ class AddRandomCardAction(Action):
             random_card.upgrade()
         if self.permanent_cost:
             random_card.cost = self.permanent_cost
-        if self.temp_cost:
-            random_card.temp_cost = self.temp_cost
+        if self.cost_until_end_of_turn is not None:
+            random_card.cost_until_end_of_turn = self.cost_until_end_of_turn
 
         add_action(AddCardAction(card=random_card, dest_pile=self.pile), to_front=True)
 
