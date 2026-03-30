@@ -420,19 +420,21 @@ class LiquidMemories(Potion):
         self._amount = 1  # Sacred Bark doubles to 2
 
     def on_use(self, targets) -> List[Action]:
-        from actions.card import AddCardAction
-        from actions.card import RemoveCardAction
+        from actions.card import MoveCardAction, SetCostUntilEndOfTurnAction
         from actions.display import InputRequestAction
         from engine.game_state import game_state
         from localization import LocalStr
         
         # Build options for each card in discard pile
-        discard_pile = game_state.player.card_manager.get_pile("discard")
+        discard_pile = game_state.player.card_manager.get_pile("discard_pile")
         options = []
         for card in discard_pile:
             options.append(Option(
                 name=card.display_name,
-                actions=[AddCardAction(card=card, dest_pile='hand')]
+                actions=[
+                    MoveCardAction(card=card, src_pile="discard_pile", dst_pile="hand"),
+                    SetCostUntilEndOfTurnAction(card=card, cost_until_end_of_turn=0),
+                ]
             ))
         
         # Add a "Done" option
@@ -534,7 +536,7 @@ class SneckoOil(Potion):
         # Randomize costs of cards in hand (including newly drawn cards)
         for card in game_state.player.card_manager.get_pile("hand"):
             # random: [0, 3]
-            card.cost = rd.randint(0, 3)
+            card.cost_until_end_of_turn = rd.randint(0, 3)
 
 @register("potion")
 class CultistPotion(Potion):
