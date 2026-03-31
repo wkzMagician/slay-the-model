@@ -334,7 +334,7 @@ class AddPotionAction(Action):
 
         added = player.potions.append(self.potion)
         if added:
-            tui_print(t("ui.received_potion", default=f"Received potion: {self.potion.idstr}!", name=self.potion.idstr))
+            tui_print(t("ui.received_potion", default=f"Received potion: {self.potion.idstr}!", name=self.potion.local("name")))
 
 @register("action")
 class ReplacePotionAction(Action):
@@ -360,7 +360,7 @@ class ReplacePotionAction(Action):
         potions = game_state.player.potions
         if 0 <= self.index < len(potions):
             potions[self.index] = self.new_potion
-            tui_print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.idstr))
+            tui_print(t("ui.received_potion", default=f"Received potion: {self.new_potion.idstr}!", name=self.new_potion.local("name")))
             return
 
 
