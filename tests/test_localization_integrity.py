@@ -108,6 +108,14 @@ def test_mind_bloom_description_exists_in_both_languages():
     assert translations["zh"]["events.mind_bloom.description"] != "events.mind_bloom.description"
 
 
+def test_shiv_localization_lives_under_colorless_namespace():
+    for language in ("en", "zh"):
+        assert f"cards.colorless.Shiv.name" in translations[language]
+        assert f"cards.colorless.Shiv.description" in translations[language]
+        assert f"cards.silent.Shiv.name" not in translations[language]
+        assert f"cards.silent.Shiv.description" not in translations[language]
+
+
 def test_en_localization_contains_no_chinese_characters():
     offenders = []
     for key, value in sorted(translations["en"].items()):

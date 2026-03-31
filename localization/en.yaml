@@ -993,9 +993,6 @@ cards:
     Survivor:
       name: Survivor
       description: Gain {block} Block. Discard 1 card.
-    Shiv:
-      name: Shiv
-      description: Deal {damage} damage. Exhaust.
     Accuracy:
       name: Accuracy
       description: Shivs deal {magic.damage} additional damage.
@@ -1439,6 +1436,9 @@ cards:
       name: Zap
       description: Channel 1 Lightning.
   colorless:
+    Shiv:
+      name: Shiv
+      description: Deal {damage} damage. Exhaust.
     Slimed:
       name: Slimed
       description: Exhaust.

@@ -958,9 +958,6 @@ cards:
     Survivor:
       name: 幸存者
       description: 获得 {block} 点格挡。弃 1 张牌。
-    Shiv:
-      name: 小刀
-      description: 造成 {damage} 点伤害。消耗。
     Accuracy:
       name: 精准
       description: 小刀额外造成 {magic.damage} 点伤害。
@@ -1404,6 +1401,9 @@ cards:
       name: 电击
       description: 生成 1 个闪电球。
   colorless:
+    Shiv:
+      name: 小刀
+      description: 造成 {damage} 点伤害。消耗。
     Slimed:
       name: 黏液
       description: 消耗
