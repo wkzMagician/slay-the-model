@@ -1215,85 +1215,85 @@ cards:
   defect:
     Aggregate:
       name: Aggregate
-      description: Gain Energy for each card in your draw pile.
+      description: Gain 1 Energy for every {magic.per} cards in your draw pile.
     AllForOne:
       name: All for One
-      description: Deal damage. Return all 0-cost cards from your discard pile to your hand.
+      description: Deal {damage} damage. Return all 0-cost cards from your discard pile to your hand.
     Amplify:
       name: Amplify
-      description: This turn, your next Power is played twice.
+      description: This turn, your next {magic.copies} Power card is played an additional time.
     AutoShields:
       name: Auto-Shields
-      description: If you have no Block, gain Block.
+      description: If you have no Block, gain {block} Block.
     BallLightning:
       name: Ball Lightning
-      description: Deal damage. Channel 1 Lightning.
+      description: Deal {damage} damage. Channel 1 Lightning.
     Barrage:
       name: Barrage
-      description: Deal damage once for each channeled orb.
+      description: Deal {damage} damage once for each channeled orb.
     BeamCell:
       name: Beam Cell
-      description: Deal damage. Apply Lock-On.
+      description: Deal {damage} damage. Apply {magic.vulnerable} Lock-On.
     BiasedCognition:
       name: Biased Cognition
-      description: Gain Focus. Lose Focus at the start of each turn.
+      description: Gain {magic.focus} Focus. At the start of each turn, lose 1 Focus.
     Blizzard:
       name: Blizzard
-      description: Deal damage to all enemies. This card grows stronger with Frost channeled this combat.
+      description: Deal damage to ALL enemies equal to {magic.per_frost} for each Frost channeled this combat.
     BootSequence:
       name: Boot Sequence
-      description: Innate. Gain Block. Exhaust.
+      description: Innate. Gain {block} Block. Exhaust.
     Buffer:
       name: Buffer
-      description: Prevent the next time you would lose HP.
+      description: Prevent the next {magic.stacks} time(s) you would lose HP.
     Bullseye:
       name: Bullseye
-      description: Deal damage. Apply Lock-On.
+      description: Deal {damage} damage. Apply {magic.lock_on} Lock-On.
     Capacitor:
       name: Capacitor
-      description: Gain additional orb slots.
+      description: Gain {magic.slots} orb slots.
     Chaos:
       name: Chaos
-      description: Channel random orbs.
+      description: Channel {magic.orbs} random orb(s).
     ChargeBattery:
       name: Charge Battery
-      description: Gain Block. Next turn, gain Energy.
+      description: Gain {block} Block. Next turn, gain 1 Energy.
     Chill:
       name: Chill
       description: Channel 1 Frost for each enemy. Exhaust.
     Claw:
       name: Claw
-      description: Deal damage. Increase the damage of all Claws for this combat.
+      description: Deal {damage} damage. Increase the damage of all Claws by {magic.bonus} this combat.
     ColdSnap:
       name: Cold Snap
-      description: Deal damage. Channel 1 Frost.
+      description: Deal {damage} damage. Channel 1 Frost.
     CompileDriver:
       name: Compile Driver
-      description: Deal damage. Draw cards if this attack deals unblocked damage.
+      description: Deal {damage} damage. If this attack deals unblocked damage, draw {draw} card(s).
     Consume:
       name: Consume
-      description: Gain Focus. Lose an orb slot.
+      description: Gain {magic.focus} Focus. Lose an orb slot.
     Coolheaded:
       name: Coolheaded
-      description: Channel 1 Frost. Draw cards.
+      description: Channel 1 Frost. Draw {draw} card(s).
     CoreSurge:
       name: Core Surge
-      description: Deal damage. Gain Artifact.
+      description: Deal {damage} damage. Gain 1 Artifact.
     CreativeAI:
       name: Creative AI
-      description: At the start of your turn, add a random Power to your hand.
+      description: At the start of your turn, add 1 random Power card to your hand.
     Darkness:
       name: Darkness
       description: Channel 1 Dark. Upgraded version triggers each Dark orb's passive once.
     Defend:
       name: Defend
-      description: Gain Block.
+      description: Gain {block} Block.
     Defragment:
       name: Defragment
-      description: Gain Focus.
+      description: Gain {magic.focus} Focus.
     DoomAndGloom:
       name: Doom and Gloom
-      description: Deal damage to all enemies. Channel 1 Dark.
+      description: Deal {damage} damage to ALL enemies. Channel 1 Dark.
     DoubleEnergy:
       name: Double Energy
       description: Double your Energy.
@@ -1305,64 +1305,64 @@ cards:
       description: The first card you play each turn is played twice.
     Electrodynamics:
       name: Electrodynamics
-      description: Lightning now hits all enemies. Channel Lightning.
+      description: Your Lightning orbs hit ALL enemies. Channel {magic.lightning} Lightning.
     Equilibrium:
       name: Equilibrium
-      description: Gain Block. Retain your hand this turn.
+      description: Gain {block} Block. Retain your hand this turn.
     Fission:
       name: Fission
       description: Evoke all your orbs. Gain benefits for each orb evoked. Exhaust.
     ForceField:
       name: Force Field
-      description: Gain Block. Costs less for each Power played this combat.
+      description: Gain {block} Block. Costs 1 less for each Power played this combat.
     FTL:
       name: FTL
-      description: Deal damage. If this is one of the first cards you played this turn, draw a card.
+      description: Deal {damage} damage. If this is one of the first {magic.limit} cards you played this turn, draw 1 card.
     Fusion:
       name: Fusion
       description: Channel 1 Plasma.
     GeneticAlgorithm:
       name: Genetic Algorithm
-      description: Gain Block. Permanently gains more Block when played.
+      description: Gain {block} Block. Permanently gains {magic.growth} Block when played.
     Glacier:
       name: Glacier
-      description: Gain Block. Channel 2 Frost.
+      description: Gain {block} Block. Channel 2 Frost.
     GoForTheEyes:
       name: Go for the Eyes
-      description: Deal damage. If the enemy intends to attack, apply Weak.
+      description: Deal {damage} damage. If the enemy intends to attack, apply {magic.weak} Weak.
     Heatsinks:
       name: Heatsinks
-      description: Whenever you play a Power, draw cards.
+      description: Whenever you play a Power, draw {magic.draw} card(s).
     HelloWorld:
       name: Hello World
-      description: At the start of your turn, add a random common card to your hand.
+      description: At the start of your turn, add 1 random common card to your hand.
     Hologram:
       name: Hologram
-      description: Gain Block. Return a card from your discard pile to your hand. Exhaust.
+      description: Gain {block} Block. Return 1 card from your discard pile to your hand. Exhaust.
     Hyperbeam:
       name: Hyperbeam
-      description: Deal heavy damage to all enemies. Lose Focus.
+      description: Deal {damage} damage to ALL enemies. Lose 3 Focus.
     Leap:
       name: Leap
-      description: Gain Block.
+      description: Gain {block} Block.
     Loop:
       name: Loop
-      description: At the start of your turn, trigger the passive ability of your first orb again.
+      description: At the start of your turn, your first orb triggers its passive ability {magic.loops} additional time(s).
     MachineLearning:
       name: Machine Learning
-      description: At the start of your turn, draw a card.
+      description: At the start of your turn, draw {magic.draw} card.
     Melter:
       name: Melter
-      description: Remove all Block from an enemy. Deal damage.
+      description: Remove all Block from an enemy. Deal {damage} damage.
     MeteorStrike:
       name: Meteor Strike
-      description: Deal heavy damage. Channel 3 Plasma.
+      description: Deal {damage} damage. Channel 3 Plasma.
     MultiCast:
       name: Multicast
       description: Evoke your next orb X times. Exhaust.
     Overclock:
       name: Overclock
-      description: Draw cards. Shuffle a Burn into your draw pile.
+      description: Draw {draw} card(s). Shuffle 1 Burn into your draw pile.
     Rainbow:
       name: Rainbow
       description: Channel 1 Lightning, 1 Frost, and 1 Dark. Exhaust.
@@ -1371,7 +1371,7 @@ cards:
       description: Shuffle your hand into your draw pile, then draw a new hand. Exhaust.
     Rebound:
       name: Rebound
-      description: Deal damage. The next card you play from your draw pile is returned to the top of your draw pile.
+      description: Deal {damage} damage. The next card you play from your draw pile is returned to the top of your draw pile.
     Recursion:
       name: Recursion
       description: Evoke your next orb. Then channel the same orb.
@@ -1380,61 +1380,61 @@ cards:
       description: Exhaust a card. Gain Energy equal to its cost. Exhaust.
     ReinforcedBody:
       name: Reinforced Body
-      description: Gain Block X times.
+      description: Gain {magic.block} Block X times.
     Reprogram:
       name: Reprogram
-      description: Lose Focus. Gain Strength and Dexterity.
+      description: Lose {magic.focus_loss} Focus. Gain {magic.gain} Strength and {magic.gain} Dexterity.
     RipAndTear:
       name: Rip and Tear
-      description: Deal damage to a random enemy twice.
+      description: Deal {damage} damage to a random enemy twice.
     Scrape:
       name: Scrape
-      description: Deal damage. Draw cards. Discard any drawn cards that cost more than 0.
+      description: Deal {damage} damage. Draw {magic.draw} cards. Discard any drawn cards that cost more than 0.
     Seek:
       name: Seek
       description: Put cards from your draw pile into your hand. Exhaust.
     SelfRepair:
       name: Self Repair
-      description: At the end of combat, heal HP.
+      description: At the end of combat, heal {magic.heal} HP.
     Skim:
       name: Skim
-      description: Draw cards.
+      description: Draw {draw} cards.
     Stack:
       name: Stack
       description: Gain Block based on the size of your discard pile.
     StaticDischarge:
       name: Static Discharge
-      description: Whenever you take attack damage, channel Lightning.
+      description: Whenever you take attack damage, channel {magic.lightning} Lightning.
     SteamBarrier:
       name: Steam Barrier
-      description: Gain Block. This card gives less Block each time you play it this combat.
+      description: Gain {block} Block. This card gives 1 less Block each time you play it this combat.
     Storm:
       name: Storm
-      description: Whenever you play a Power, channel Lightning.
+      description: Whenever you play a Power, channel {magic.lightning} Lightning.
     Streamline:
       name: Streamline
-      description: Deal damage. Costs 1 less this combat.
+      description: Deal {damage} damage. Costs 1 less this combat.
     Strike:
       name: Strike
-      description: Deal damage.
+      description: Deal {damage} damage.
     Sunder:
       name: Sunder
-      description: Deal damage. If Fatal, gain Energy.
+      description: Deal {damage} damage. If Fatal, gain 3 Energy.
     SweepingBeam:
       name: Sweeping Beam
-      description: Deal damage to all enemies. Draw a card.
+      description: Deal {damage} damage to ALL enemies. Draw {draw} card.
     Tempest:
       name: Tempest
       description: Channel Lightning X times. Exhaust.
     ThunderStrike:
       name: Thunder Strike
-      description: Deal damage to a random enemy once for each Lightning channeled this combat.
+      description: Deal {damage} damage to a random enemy once for each Lightning channeled this combat.
     TURBO:
       name: TURBO
-      description: Gain Energy. Add a Void into your discard pile.
+      description: Gain {magic.energy} Energy. Add 1 Void into your discard pile.
     WhiteNoise:
       name: White Noise
-      description: Add a random Power into your hand. It costs 0 this turn. Exhaust.
+      description: Add 1 random Power into your hand. It costs 0 this turn. Exhaust.
     Zap:
       name: Zap
       description: Channel 1 Lightning.
@@ -1702,10 +1702,10 @@ powers:
     description: The next Power you play this turn is played an additional time.
   BiasedCognitionPower:
     name: Biased Cognition
-    description: At the start of your turn, lose Focus.
+    description: At the start of your turn, lose 1 Focus.
   CreativeAIPower:
     name: Creative AI
-    description: At the start of your turn, add a random Power to your hand.
+    description: At the start of your turn, add 1 random Power to your hand.
   EchoFormPower:
     name: Echo Form
     description: The first card you play each turn is played an additional time.
@@ -1714,31 +1714,31 @@ powers:
     description: Your Lightning orbs hit all enemies.
   FocusPower:
     name: Focus
-    description: Your Lightning, Frost, and Dark orbs become stronger.
+    description: Your Lightning, Frost, and Dark orbs gain {amount} strength.
   HeatsinksPower:
     name: Heatsinks
-    description: Whenever you play a Power, draw cards.
+    description: Whenever you play a Power, draw {amount} card(s).
   HelloWorldPower:
     name: Hello World
-    description: At the start of your turn, add a random common card to your hand.
+    description: At the start of your turn, add 1 random common card to your hand.
   LockOnPower:
     name: Lock-On
-    description: Lightning and Dark effects deal more damage to this creature.
+    description: Orb effects on this target are increased by 50%.
   LoopPower:
     name: Loop
-    description: At the start of your turn, your first orb triggers its passive ability an additional time.
+    description: At the start of your turn, your first orb triggers its passive ability {amount} additional time(s).
   MachineLearningPower:
     name: Machine Learning
-    description: At the start of your turn, draw a card.
+    description: At the start of your turn, draw {amount} additional card(s).
   SelfRepairPower:
     name: Self Repair
-    description: At the end of combat, heal HP.
+    description: At the end of combat, heal {amount} HP.
   StaticDischargePower:
     name: Static Discharge
-    description: Whenever you take attack damage, channel Lightning.
+    description: Whenever you take attack damage, channel {amount} Lightning.
   StormPower:
     name: Storm
-    description: Whenever you play a Power, channel Lightning.
+    description: Whenever you play a Power, channel {amount} Lightning.
 potions:
   BloodPotion:
     name: Blood Potion

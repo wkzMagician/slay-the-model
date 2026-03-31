@@ -1180,70 +1180,70 @@ cards:
   defect:
     Aggregate:
       name: 聚合
-      description: 根据你的抽牌堆中牌的数量获得能量。
+      description: 你的抽牌堆中每有 {magic.per} 张牌，获得 1 点能量。
     AllForOne:
       name: 万物归一
-      description: 造成伤害。将弃牌堆中所有 0 费牌加入手牌。
+      description: 造成 {damage} 点伤害。将弃牌堆中所有 0 费牌加入手牌。
     Amplify:
       name: 增幅
-      description: 本回合你打出的下一张能力牌额外触发一次。
+      description: 本回合你打出的下 {magic.copies} 张能力牌会额外触发一次。
     AutoShields:
       name: 自动护盾
-      description: 如果你没有格挡，获得格挡。
+      description: 如果你没有格挡，获得 {block} 点格挡。
     BallLightning:
       name: 球状闪电
-      description: 造成伤害。生成 1 个闪电球。
+      description: 造成 {damage} 点伤害。生成 1 个闪电球。
     Barrage:
       name: 弹幕齐射
-      description: 每有一个充能球，造成一次伤害。
+      description: 每有一个充能球，造成 {damage} 点伤害。
     BeamCell:
       name: 光束电池
-      description: 造成伤害。施加锁定。
+      description: 造成 {damage} 点伤害。施加 {magic.vulnerable} 层锁定。
     BiasedCognition:
       name: 偏差认知
-      description: 获得集中。每回合开始时失去集中。
+      description: 获得 {magic.focus} 点集中。每回合开始时失去 1 点集中。
     Blizzard:
       name: 暴风雪
-      description: 对所有敌人造成伤害。本场战斗中生成的冰霜球越多，伤害越高。
+      description: 对所有敌人造成伤害。本场战斗中每生成过 1 个冰霜球，伤害增加 {magic.per_frost}。
     BootSequence:
       name: 启动序列
-      description: 固有。获得格挡。消耗。
+      description: 固有。获得 {block} 点格挡。消耗。
     Buffer:
       name: 缓冲
-      description: 防止你下一次失去生命。
+      description: 防止你接下来 {magic.stacks} 次失去生命值。
     Bullseye:
       name: 靶眼
-      description: 造成伤害。施加锁定。
+      description: 造成 {damage} 点伤害。施加 {magic.lock_on} 层锁定。
     Capacitor:
       name: 电容器
-      description: 获得额外的充能球栏位。
+      description: 获得 {magic.slots} 个充能球栏位。
     Chaos:
       name: 混沌
-      description: 生成随机充能球。
+      description: 生成 {magic.orbs} 个随机充能球。
     ChargeBattery:
       name: 充能电池
-      description: 获得格挡。下回合获得能量。
+      description: 获得 {block} 点格挡。下回合获得 1 点能量。
     Chill:
       name: 寒意
       description: 每有一个敌人，生成 1 个冰霜球。消耗。
     Claw:
       name: 利爪
-      description: 造成伤害。本场战斗中所有利爪的伤害提高。
+      description: 造成 {damage} 点伤害。本场战斗中所有利爪的伤害提高 {magic.bonus} 点。
     ColdSnap:
       name: 冷速瞬击
-      description: 造成伤害。生成 1 个冰霜球。
+      description: 造成 {damage} 点伤害。生成 1 个冰霜球。
     CompileDriver:
       name: 编译驱动
-      description: 造成伤害。若造成未被格挡的伤害，则抽牌。
+      description: 造成 {damage} 点伤害。若造成未被格挡的伤害，则抽 {draw} 张牌。
     Consume:
       name: 消耗
-      description: 获得集中。失去一个充能球栏位。
+      description: 获得 {magic.focus} 点集中。失去一个充能球栏位。
     Coolheaded:
       name: 冷静头脑
-      description: 生成 1 个冰霜球。抽牌。
+      description: 生成 1 个冰霜球。抽 {draw} 张牌。
     CoreSurge:
       name: 核心涌动
-      description: 造成伤害。获得神器。
+      description: 造成 {damage} 点伤害。获得 1 层神器。
     CreativeAI:
       name: 创造性 AI
       description: 在你的回合开始时，将一张随机能力牌加入手牌。
@@ -1252,13 +1252,13 @@ cards:
       description: 生成 1 个黑暗球。升级后会让所有黑暗球额外触发一次被动。
     Defend:
       name: 防御
-      description: 获得格挡。
+      description: 获得 {block} 点格挡。
     Defragment:
       name: 碎片整理
-      description: 获得集中。
+      description: 获得 {magic.focus} 点集中。
     DoomAndGloom:
       name: 厄运阴霾
-      description: 对所有敌人造成伤害。生成 1 个黑暗球。
+      description: 对所有敌人造成 {damage} 点伤害。生成 1 个黑暗球。
     DoubleEnergy:
       name: 双倍能量
       description: 将你的能量翻倍。
@@ -1270,64 +1270,64 @@ cards:
       description: 每回合你打出的第一张牌会额外触发一次。
     Electrodynamics:
       name: 电动力学
-      description: 你的闪电球会命中所有敌人。生成闪电球。
+      description: 你的闪电球会命中所有敌人。生成 {magic.lightning} 个闪电球。
     Equilibrium:
       name: 平衡
-      description: 获得格挡。本回合保留你的手牌。
+      description: 获得 {block} 点格挡。本回合保留你的手牌。
     Fission:
       name: 裂变
       description: 激发你的所有充能球。每激发一个球都会获得对应收益。消耗。
     ForceField:
       name: 力场
-      description: 获得格挡。本场战斗中每打出一张能力牌，此牌消耗降低。
+      description: 获得 {block} 点格挡。本场战斗中每打出一张能力牌，此牌消耗降低 1。
     FTL:
       name: 超光速
-      description: 造成伤害。若这是你本回合较早打出的牌之一，则抽 1 张牌。
+      description: 造成 {damage} 点伤害。若这是你本回合打出的前 {magic.limit} 张牌之一，则抽 1 张牌。
     Fusion:
       name: 聚变
       description: 生成 1 个等离子球。
     GeneticAlgorithm:
       name: 遗传算法
-      description: 获得格挡。每次打出后会永久变强。
+      description: 获得 {block} 点格挡。每次打出后永久增加 {magic.growth} 点格挡。
     Glacier:
       name: 冰川
-      description: 获得格挡。生成 2 个冰霜球。
+      description: 获得 {block} 点格挡。生成 2 个冰霜球。
     GoForTheEyes:
       name: 直击要害
-      description: 造成伤害。若敌人打算攻击，则施加虚弱。
+      description: 造成 {damage} 点伤害。若敌人打算攻击，则施加 {magic.weak} 层虚弱。
     Heatsinks:
       name: 散热片
-      description: 每当你打出一张能力牌，抽牌。
+      description: 每当你打出一张能力牌，抽 {magic.draw} 张牌。
     HelloWorld:
       name: 你好世界
       description: 在你的回合开始时，将一张随机普通牌加入手牌。
     Hologram:
       name: 全息影像
-      description: 获得格挡。从弃牌堆将一张牌加入手牌。消耗。
+      description: 获得 {block} 点格挡。从弃牌堆将 1 张牌加入手牌。消耗。
     Hyperbeam:
       name: 超光束
-      description: 对所有敌人造成大量伤害。失去集中。
+      description: 对所有敌人造成 {damage} 点伤害。失去 3 点集中。
     Leap:
       name: 跃迁
-      description: 获得格挡。
+      description: 获得 {block} 点格挡。
     Loop:
       name: 回路
-      description: 在你的回合开始时，让最前面的充能球额外触发一次被动。
+      description: 在你的回合开始时，让最前面的充能球额外触发 {magic.loops} 次被动。
     MachineLearning:
       name: 机器学习
-      description: 在你的回合开始时，抽 1 张牌。
+      description: 在你的回合开始时，抽 {magic.draw} 张牌。
     Melter:
       name: 熔化
-      description: 移除一名敌人的所有格挡。造成伤害。
+      description: 移除一名敌人的所有格挡。造成 {damage} 点伤害。
     MeteorStrike:
       name: 陨石打击
-      description: 造成大量伤害。生成 3 个等离子球。
+      description: 造成 {damage} 点伤害。生成 3 个等离子球。
     MultiCast:
       name: 多重施放
       description: 将你最前面的充能球激发 X 次。消耗。
     Overclock:
       name: 超频
-      description: 抽牌。将一张灼伤洗入你的抽牌堆。
+      description: 抽 {draw} 张牌。将 1 张灼伤洗入你的抽牌堆。
     Rainbow:
       name: 彩虹
       description: 生成 1 个闪电球、1 个冰霜球和 1 个黑暗球。消耗。
@@ -1336,7 +1336,7 @@ cards:
       description: 将你的手牌洗回抽牌堆，然后重新抽一手牌。消耗。
     Rebound:
       name: 反弹
-      description: 造成伤害。你下一次从抽牌堆打出的牌会回到抽牌堆顶。
+      description: 造成 {damage} 点伤害。你下一次从抽牌堆打出的牌会回到抽牌堆顶。
     Recursion:
       name: 递归
       description: 激发你最前面的充能球，然后再次生成同类型的球。
@@ -1345,61 +1345,61 @@ cards:
       description: 消耗一张牌。获得等同于其消耗的能量。消耗。
     ReinforcedBody:
       name: 强化躯体
-      description: 获得格挡 X 次。
+      description: 获得 {magic.block} 点格挡 X 次。
     Reprogram:
       name: 重编程
-      description: 失去集中。获得力量和敏捷。
+      description: 失去 {magic.focus_loss} 点集中。获得 {magic.gain} 点力量和 {magic.gain} 点敏捷。
     RipAndTear:
       name: 撕裂
-      description: 对随机敌人造成两次伤害。
+      description: 对随机敌人造成两次 {damage} 点伤害。
     Scrape:
       name: 刮削
-      description: 造成伤害。抽牌，并弃掉其中所有消耗大于 0 的牌。
+      description: 造成 {damage} 点伤害。抽 {magic.draw} 张牌，并弃掉其中所有消耗大于 0 的牌。
     Seek:
       name: 检索
       description: 从抽牌堆将牌加入手牌。消耗。
     SelfRepair:
       name: 自我修复
-      description: 战斗结束时，回复生命值。
+      description: 战斗结束时，回复 {magic.heal} 点生命值。
     Skim:
       name: 略读
-      description: 抽牌。
+      description: 抽 {draw} 张牌。
     Stack:
       name: 堆叠
       description: 根据你的弃牌堆数量获得格挡。
     StaticDischarge:
       name: 静电释放
-      description: 每当你受到攻击伤害时，生成闪电球。
+      description: 每当你受到攻击伤害时，生成 {magic.lightning} 个闪电球。
     SteamBarrier:
       name: 蒸汽壁垒
-      description: 获得格挡。本场战斗中每次打出后提供的格挡会减少。
+      description: 获得 {block} 点格挡。本场战斗中每次打出后提供的格挡会减少 1 点。
     Storm:
       name: 风暴
-      description: 每当你打出一张能力牌，生成闪电球。
+      description: 每当你打出一张能力牌，生成 {magic.lightning} 个闪电球。
     Streamline:
       name: 流线型
-      description: 造成伤害。本场战斗中消耗减少。
+      description: 造成 {damage} 点伤害。本场战斗中消耗减少 1。
     Strike:
       name: 打击
-      description: 造成伤害。
+      description: 造成 {damage} 点伤害。
     Sunder:
       name: 劈裂
-      description: 造成伤害。若斩杀，则获得能量。
+      description: 造成 {damage} 点伤害。若斩杀，则获得 3 点能量。
     SweepingBeam:
       name: 扫荡光束
-      description: 对所有敌人造成伤害。抽 1 张牌。
+      description: 对所有敌人造成 {damage} 点伤害。抽 {draw} 张牌。
     Tempest:
       name: 暴风雨
       description: 生成闪电球 X 次。消耗。
     ThunderStrike:
       name: 雷霆一击
-      description: 按本场战斗生成过的闪电球次数，对随机敌人重复造成伤害。
+      description: 按本场战斗生成过的闪电球次数，对随机敌人重复造成 {damage} 点伤害。
     TURBO:
       name: TURBO
-      description: 获得能量。向弃牌堆加入一张虚无。
+      description: 获得 {magic.energy} 点能量。向弃牌堆加入 1 张虚无。
     WhiteNoise:
       name: 白噪声
-      description: 将一张随机能力牌加入手牌。本回合其消耗为 0。消耗。
+      description: 将 1 张随机能力牌加入手牌。本回合其消耗为 0。消耗。
     Zap:
       name: 电击
       description: 生成 1 个闪电球。
@@ -1664,10 +1664,10 @@ powers:
     description: 本回合你打出的下一张能力牌会额外触发一次。
   BiasedCognitionPower:
     name: 偏差认知
-    description: 在你的回合开始时失去集中。
+    description: 在你的回合开始时失去 1 点集中。
   CreativeAIPower:
     name: 创造性 AI
-    description: 在你的回合开始时，将一张随机能力牌加入手牌。
+    description: 在你的回合开始时，将 1 张随机能力牌加入手牌。
   EchoFormPower:
     name: 回响形态
     description: 每回合你打出的第一张牌会额外触发一次。
@@ -1676,31 +1676,31 @@ powers:
     description: 你的闪电球会命中所有敌人。
   FocusPower:
     name: 集中
-    description: 强化你的闪电球、冰霜球和黑暗球。
+    description: 你的闪电球、冰霜球和黑暗球获得 {amount} 点强化。
   HeatsinksPower:
     name: 散热片
-    description: 每当你打出一张能力牌，抽牌。
+    description: 每当你打出一张能力牌，抽 {amount} 张牌。
   HelloWorldPower:
     name: 你好世界
-    description: 在你的回合开始时，将一张随机普通牌加入手牌。
+    description: 在你的回合开始时，将 1 张随机普通牌加入手牌。
   LockOnPower:
     name: 锁定
-    description: 闪电和黑暗效果对该目标造成更多伤害。
+    description: 该目标受到的充能球效果提高 50%。
   LoopPower:
     name: 回路
-    description: 在你的回合开始时，最前面的充能球额外触发一次被动。
+    description: 在你的回合开始时，最前面的充能球额外触发 {amount} 次被动。
   MachineLearningPower:
     name: 机器学习
-    description: 在你的回合开始时，抽 1 张牌。
+    description: 在你的回合开始时，额外抽 {amount} 张牌。
   SelfRepairPower:
     name: 自我修复
-    description: 战斗结束时，回复生命值。
+    description: 战斗结束时，回复 {amount} 点生命值。
   StaticDischargePower:
     name: 静电释放
-    description: 每当你受到攻击伤害时，生成闪电球。
+    description: 每当你受到攻击伤害时，生成 {amount} 个闪电球。
   StormPower:
     name: 风暴
-    description: 每当你打出一张能力牌，生成闪电球。
+    description: 每当你打出一张能力牌，生成 {amount} 个闪电球。
 potions:
   HeartOfIron:
     name: 铁之心

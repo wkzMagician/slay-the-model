@@ -82,3 +82,37 @@ def test_defect_localization_has_real_text_for_en_and_zh():
         set_language(original_language)
 
     assert not missing, "Missing Defect localization entries:\n" + "\n".join(missing)
+
+
+def test_defect_localization_uses_explicit_numeric_placeholders():
+    importlib.import_module("cards.defect")
+
+    expectations = {
+        "cards.defect.Consume.description": "{magic.focus}",
+        "cards.defect.Defend.description": "{block}",
+        "cards.defect.BallLightning.description": "{damage}",
+        "cards.defect.Capacitor.description": "{magic.slots}",
+        "cards.defect.Coolheaded.description": "{draw}",
+        "cards.defect.ReinforcedBody.description": "{magic.block}",
+        "cards.defect.Skim.description": "{draw}",
+        "cards.defect.TURBO.description": "{magic.energy}",
+        "powers.FocusPower.description": "{amount}",
+        "powers.HeatsinksPower.description": "{amount}",
+        "powers.SelfRepairPower.description": "{amount}",
+        "powers.StaticDischargePower.description": "{amount}",
+        "powers.StormPower.description": "{amount}",
+    }
+
+    original_language = "en"
+    missing: list[str] = []
+    try:
+        for language in ("en", "zh"):
+            set_language(language)
+            for key, token in expectations.items():
+                value = t(key)
+                if token not in value:
+                    missing.append(f"{language}:{key} missing {token!r} in {value!r}")
+    finally:
+        set_language(original_language)
+
+    assert not missing, "Defect localization should expose numeric placeholders:\n" + "\n".join(missing)
