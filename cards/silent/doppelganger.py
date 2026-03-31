@@ -23,7 +23,7 @@ class Doppelganger(Card):
         from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
-        x_value = getattr(self, '_x_cost_energy', 0)
+        x_value = self.get_effective_x()
         add_actions([
             ApplyPowerAction(EnergizedPower(amount=x_value, owner=game_state.player), game_state.player),
             ApplyPowerAction(DrawCardNextTurnPower(amount=x_value, owner=game_state.player), game_state.player),

@@ -22,6 +22,15 @@ class Finisher(Card):
 
     upgrade_damage = 8
 
+    @property
+    def attack_times(self) -> int:
+        from engine.game_state import game_state
+
+        combat = getattr(game_state, "current_combat", None)
+        if combat is None:
+            return 0
+        return combat.combat_state.turn_attack_cards_played
+
     def on_play(self, targets: List[Creature] = []):
         target = targets[0] if targets else None
         if target is None:
@@ -29,9 +38,5 @@ class Finisher(Card):
         from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
-        combat = game_state.current_combat
-        if combat is None:
-            return
-        times = combat.combat_state.turn_attack_cards_played
-        actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(times)]
+        actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(self.attack_times)]
         add_actions(actions)

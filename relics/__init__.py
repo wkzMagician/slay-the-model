@@ -169,5 +169,16 @@ from .character.silent import (
     TwistedFunnel,
     WristBlade,
 )
+from .character.defect import (
+    CrackedCore,
+    DataDisk,
+    EmotionChip,
+    FrozenCore,
+    GoldPlatedCables,
+    Inserter,
+    NuclearBattery,
+    RunicCapacitor,
+    SymbioticVirus,
+)
 
 __all__ = [name for name in globals() if not name.startswith('_')]

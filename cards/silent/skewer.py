@@ -29,6 +29,6 @@ class Skewer(Card):
         from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
-        times = getattr(self, "_x_cost_energy", 0)
+        times = self.get_effective_x()
         actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(times)]
         add_actions(actions)

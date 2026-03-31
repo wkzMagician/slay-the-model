@@ -18,8 +18,9 @@ class MasterfulStab(Card):
     def on_damage_taken(self, damage: int, source=None, player=None, entities=None):
         from engine.game_state import game_state
 
-        if player is game_state.player:
+        if player is game_state.player and damage > 0:
             self._cost += 1
 
     def on_lose_hp(self, amount: int, source=None, card=None):
-        self._cost += 1
+        if amount > 0:
+            self._cost += 1

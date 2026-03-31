@@ -200,6 +200,21 @@ class Card(Localizable):
     def attack_times(self) -> int:
         """获取攻击次数"""
         return self._attack_times
+
+    def get_effective_x(self) -> int:
+        """Get the resolved X value for this play, including Chemical X."""
+        from engine.game_state import game_state
+
+        x_value = int(getattr(self, "_x_cost_energy", 0) or 0)
+        player = getattr(game_state, "player", None)
+        if player is None:
+            return x_value
+
+        has_chemical_x = any(
+            getattr(relic, "idstr", None) == "ChemicalX"
+            for relic in getattr(player, "relics", [])
+        )
+        return x_value + 2 if has_chemical_x else x_value
     
     @property
     def exhaust(self) -> bool:

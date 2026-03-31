@@ -19,9 +19,8 @@ class Envenom(Card):
 
     base_cost = 2
     base_magic = {"poison": 1}
-
-    upgrade_magic = {"poison": 2}
-
+    upgrade_cost = 1
+    
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)
         from engine.game_state import game_state

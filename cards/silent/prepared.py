@@ -17,9 +17,10 @@ class Prepared(Card):
 
     base_cost = 0
     base_draw = 1
-    base_magic = {"discard": 2}
+    base_magic = {"discard": 1}
 
     upgrade_draw = 2
+    upgrade_magic = {"discard": 2}
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)

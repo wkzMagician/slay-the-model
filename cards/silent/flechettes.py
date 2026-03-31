@@ -22,6 +22,19 @@ class Flechettes(Card):
 
     upgrade_damage = 6
 
+    @property
+    def attack_times(self) -> int:
+        from engine.game_state import game_state
+
+        player = getattr(game_state, "player", None)
+        if player is None:
+            return 0
+        return sum(
+            1
+            for card in player.card_manager.get_pile("hand")
+            if getattr(card, "card_type", None) == CardType.SKILL
+        )
+
     def on_play(self, targets: List[Creature] = []):
         target = targets[0] if targets else None
         if target is None:
@@ -30,6 +43,5 @@ class Flechettes(Card):
 
         from engine.game_state import game_state
 
-        skill_count = sum(1 for card in game_state.player.card_manager.get_pile("hand") if getattr(card, "card_type", None) == CardType.SKILL)
-        actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(skill_count)]
+        actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(self.attack_times)]
         add_actions(actions)

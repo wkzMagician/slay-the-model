@@ -35,5 +35,6 @@ class PlatedArmorPower(Power):
     def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type: str = "direct"):
         if damage_type == "attack":
             self.amount -= 1
-        # todo: amount = 0 时 remove
+            if self.amount <= 0 and self.owner is not None:
+                self.owner.remove_power(self.name)
         return

@@ -16,6 +16,7 @@ from cards.silent.blur import Blur
 from actions.card import ChooseCardLambdaAction
 from cards.ironclad.strike import Strike
 from enemies.act1.cultist import Cultist
+from relics.global_relics.shop import ChemicalX
 from tests.test_combat_utils import create_test_helper
 from utils.types import PilePosType
 
@@ -111,6 +112,22 @@ class TestSilentFinalBatch:
         assert self.player.energy == 10
         assert len(self.player.card_manager.get_pile('hand')) >= 3
 
+    def test_doppelganger_counts_chemical_x_bonus(self):
+        self.player.energy = 2
+        combat = self.helper.start_combat([])
+        self.player.relics.append(ChemicalX())
+        self.player.card_manager.get_pile('draw_pile').clear()
+        for _ in range(4):
+            self.player.card_manager.add_to_pile(Strike(), 'draw_pile', PilePosType.TOP)
+        card = Doppelganger()
+        self.helper.add_card_to_hand(card)
+
+        assert self.helper.play_card(card)
+        combat._end_player_phase()
+        combat._start_player_turn()
+        self.helper.game_state.drive_actions()
+        assert len(self.player.card_manager.get_pile('hand')) >= 4
+
     def test_grand_finale_requires_empty_draw_pile(self):
         enemy = self.helper.create_enemy(Cultist, hp=50)
         self.helper.start_combat([enemy])
@@ -135,6 +152,21 @@ class TestSilentFinalBatch:
         strength = enemy.get_power('Strength')
         assert weak is not None and weak.amount == 3
         assert strength is not None and strength.amount == -3
+
+    def test_malaise_counts_chemical_x_bonus(self):
+        enemy = self.helper.create_enemy(Cultist, hp=40)
+        self.player.energy = 2
+        self.helper.start_combat([enemy])
+        self.player.energy = 2
+        self.player.relics.append(ChemicalX())
+        card = Malaise()
+        self.helper.add_card_to_hand(card)
+
+        assert self.helper.play_card(card, target=enemy)
+        weak = enemy.get_power('Weak')
+        strength = enemy.get_power('Strength')
+        assert weak is not None and weak.amount == 4
+        assert strength is not None and strength.amount == -4
 
     def test_masterful_stab_cost_increases_when_hp_lost(self):
         self.helper.start_combat([])
@@ -225,7 +257,9 @@ class TestSilentFinalBatch:
         self.helper.add_card_to_hand(card)
         assert self.helper.play_card(card, target=enemy)
         assert enemy.hp == 26
-        assert len(self.player.card_manager.get_pile('hand')) == 0
+        hand = self.player.card_manager.get_pile('hand')
+        assert len(hand) == 1
+        assert isinstance(hand[0], Strike)
 
     def test_well_laid_plans_retains_selected_cards(self):
         combat = self.helper.start_combat([])

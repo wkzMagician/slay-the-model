@@ -18,3 +18,11 @@ def test_create_player_builds_silent_successfully():
     assert player.character == "Silent"
     assert player.namespace == "silent"
     assert len(player.card_manager.get_pile("deck")) == 12
+
+
+def test_create_player_builds_defect_with_starting_relic_successfully():
+    player = create_player("Defect")
+
+    assert player.character == "Defect"
+    assert player.namespace == "defect"
+    assert any(relic.__class__.__name__ == "CrackedCore" for relic in player.relics)

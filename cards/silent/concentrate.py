@@ -18,9 +18,9 @@ class Concentrate(Card):
     rarity = RarityType.UNCOMMON
 
     base_cost = 0
-    base_magic = {"discard": 2, "energy": 2}
+    base_magic = {"discard": 3, "energy": 2}
 
-    upgrade_magic = {"discard": 1, "energy": 2}
+    upgrade_magic = {"discard": 2, "energy": 2}
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)

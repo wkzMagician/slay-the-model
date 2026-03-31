@@ -16,17 +16,9 @@ class BurstPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
     def on_card_play(self, card, player, targets):
-        from engine.game_state import game_state
-
         if getattr(card, "card_type", None) != CardType.SKILL:
             return
-
-        resolved_targets = (
-            getattr(game_state.current_combat.combat_state, "last_card_targets", [])
-            if game_state.current_combat
-            else []
-        )
-        card.on_play(targets=resolved_targets)
+        card.on_play(targets=targets or [])
         self.amount -= 1
         if self.owner is not None and self.amount <= 0:
             self.owner.remove_power(self.name)

@@ -1,6 +1,7 @@
 from cards.silent.blur import Blur
 from cards.silent.concentrate import Concentrate
 from cards.silent.eviscerate import Eviscerate
+from cards.silent.expertise import Expertise
 from cards.silent.finisher import Finisher
 from cards.silent.flechettes import Flechettes
 from cards.silent.skewer import Skewer
@@ -8,6 +9,7 @@ from cards.silent.sneaky_strike import SneakyStrike
 from cards.silent.survivor import Survivor
 from cards.ironclad.strike import Strike
 from enemies.act1.cultist import Cultist
+from relics.global_relics.shop import ChemicalX
 from tests.test_combat_utils import create_test_helper
 
 
@@ -50,6 +52,7 @@ class TestSilentCounterExpansion:
         self.helper.add_card_to_hand(Concentrate())
         card = Flechettes()
         self.helper.add_card_to_hand(card)
+        assert card.attack_times == 2
         assert self.helper.play_card(card, target=enemy)
         assert enemy.hp == 32
 
@@ -64,6 +67,7 @@ class TestSilentCounterExpansion:
         self.helper.add_card_to_hand(finisher)
         assert self.helper.play_card(first, target=enemy)
         assert self.helper.play_card(second, target=enemy)
+        assert finisher.attack_times == 2
         assert self.helper.play_card(finisher, target=enemy)
         assert enemy.hp == 26
 
@@ -104,3 +108,24 @@ class TestSilentCounterExpansion:
         assert self.helper.play_card(card, target=enemy)
         assert self.player.energy == 0
         assert enemy.hp == 31
+
+    def test_skewer_counts_chemical_x_bonus(self):
+        enemy = self.helper.create_enemy(Cultist, hp=50)
+        self.player.energy = 2
+        self.helper.start_combat([enemy])
+        self.player.energy = 2
+        self.player.relics.append(ChemicalX())
+        card = Skewer()
+        self.helper.add_card_to_hand(card)
+
+        assert self.helper.play_card(card, target=enemy)
+        assert enemy.hp == 38
+
+    def test_expertise_draw_property_tracks_missing_cards(self):
+        self.helper.start_combat([])
+        self.helper.add_card_to_hand(Strike())
+        self.helper.add_card_to_hand(Strike())
+        card = Expertise()
+        self.helper.add_card_to_hand(card)
+
+        assert card.draw == 3

@@ -22,7 +22,6 @@ class Predator(Card):
     base_magic = {"draw_next_turn": 2}
 
     upgrade_damage = 20
-    upgrade_magic = {"draw_next_turn": 3}
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)

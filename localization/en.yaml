@@ -1212,6 +1212,232 @@ cards:
       name: Well-Laid Plans
       description: At the end of your turn, retain up to {magic.retain} card.
       upgrade_description: At the end of your turn, retain up to {magic.retain} cards.
+  defect:
+    Aggregate:
+      name: Aggregate
+      description: Gain Energy for each card in your draw pile.
+    AllForOne:
+      name: All for One
+      description: Deal damage. Return all 0-cost cards from your discard pile to your hand.
+    Amplify:
+      name: Amplify
+      description: This turn, your next Power is played twice.
+    AutoShields:
+      name: Auto-Shields
+      description: If you have no Block, gain Block.
+    BallLightning:
+      name: Ball Lightning
+      description: Deal damage. Channel 1 Lightning.
+    Barrage:
+      name: Barrage
+      description: Deal damage once for each channeled orb.
+    BeamCell:
+      name: Beam Cell
+      description: Deal damage. Apply Lock-On.
+    BiasedCognition:
+      name: Biased Cognition
+      description: Gain Focus. Lose Focus at the start of each turn.
+    Blizzard:
+      name: Blizzard
+      description: Deal damage to all enemies. This card grows stronger with Frost channeled this combat.
+    BootSequence:
+      name: Boot Sequence
+      description: Innate. Gain Block. Exhaust.
+    Buffer:
+      name: Buffer
+      description: Prevent the next time you would lose HP.
+    Bullseye:
+      name: Bullseye
+      description: Deal damage. Apply Lock-On.
+    Capacitor:
+      name: Capacitor
+      description: Gain additional orb slots.
+    Chaos:
+      name: Chaos
+      description: Channel random orbs.
+    ChargeBattery:
+      name: Charge Battery
+      description: Gain Block. Next turn, gain Energy.
+    Chill:
+      name: Chill
+      description: Channel 1 Frost for each enemy. Exhaust.
+    Claw:
+      name: Claw
+      description: Deal damage. Increase the damage of all Claws for this combat.
+    ColdSnap:
+      name: Cold Snap
+      description: Deal damage. Channel 1 Frost.
+    CompileDriver:
+      name: Compile Driver
+      description: Deal damage. Draw cards if this attack deals unblocked damage.
+    Consume:
+      name: Consume
+      description: Gain Focus. Lose an orb slot.
+    Coolheaded:
+      name: Coolheaded
+      description: Channel 1 Frost. Draw cards.
+    CoreSurge:
+      name: Core Surge
+      description: Deal damage. Gain Artifact.
+    CreativeAI:
+      name: Creative AI
+      description: At the start of your turn, add a random Power to your hand.
+    Darkness:
+      name: Darkness
+      description: Channel 1 Dark. Upgraded version triggers each Dark orb's passive once.
+    Defend:
+      name: Defend
+      description: Gain Block.
+    Defragment:
+      name: Defragment
+      description: Gain Focus.
+    DoomAndGloom:
+      name: Doom and Gloom
+      description: Deal damage to all enemies. Channel 1 Dark.
+    DoubleEnergy:
+      name: Double Energy
+      description: Double your Energy.
+    Dualcast:
+      name: Dualcast
+      description: Evoke your next orb twice.
+    EchoForm:
+      name: Echo Form
+      description: The first card you play each turn is played twice.
+    Electrodynamics:
+      name: Electrodynamics
+      description: Lightning now hits all enemies. Channel Lightning.
+    Equilibrium:
+      name: Equilibrium
+      description: Gain Block. Retain your hand this turn.
+    Fission:
+      name: Fission
+      description: Evoke all your orbs. Gain benefits for each orb evoked. Exhaust.
+    ForceField:
+      name: Force Field
+      description: Gain Block. Costs less for each Power played this combat.
+    FTL:
+      name: FTL
+      description: Deal damage. If this is one of the first cards you played this turn, draw a card.
+    Fusion:
+      name: Fusion
+      description: Channel 1 Plasma.
+    GeneticAlgorithm:
+      name: Genetic Algorithm
+      description: Gain Block. Permanently gains more Block when played.
+    Glacier:
+      name: Glacier
+      description: Gain Block. Channel 2 Frost.
+    GoForTheEyes:
+      name: Go for the Eyes
+      description: Deal damage. If the enemy intends to attack, apply Weak.
+    Heatsinks:
+      name: Heatsinks
+      description: Whenever you play a Power, draw cards.
+    HelloWorld:
+      name: Hello World
+      description: At the start of your turn, add a random common card to your hand.
+    Hologram:
+      name: Hologram
+      description: Gain Block. Return a card from your discard pile to your hand. Exhaust.
+    Hyperbeam:
+      name: Hyperbeam
+      description: Deal heavy damage to all enemies. Lose Focus.
+    Leap:
+      name: Leap
+      description: Gain Block.
+    Loop:
+      name: Loop
+      description: At the start of your turn, trigger the passive ability of your first orb again.
+    MachineLearning:
+      name: Machine Learning
+      description: At the start of your turn, draw a card.
+    Melter:
+      name: Melter
+      description: Remove all Block from an enemy. Deal damage.
+    MeteorStrike:
+      name: Meteor Strike
+      description: Deal heavy damage. Channel 3 Plasma.
+    MultiCast:
+      name: Multicast
+      description: Evoke your next orb X times. Exhaust.
+    Overclock:
+      name: Overclock
+      description: Draw cards. Shuffle a Burn into your draw pile.
+    Rainbow:
+      name: Rainbow
+      description: Channel 1 Lightning, 1 Frost, and 1 Dark. Exhaust.
+    Reboot:
+      name: Reboot
+      description: Shuffle your hand into your draw pile, then draw a new hand. Exhaust.
+    Rebound:
+      name: Rebound
+      description: Deal damage. The next card you play from your draw pile is returned to the top of your draw pile.
+    Recursion:
+      name: Recursion
+      description: Evoke your next orb. Then channel the same orb.
+    Recycle:
+      name: Recycle
+      description: Exhaust a card. Gain Energy equal to its cost. Exhaust.
+    ReinforcedBody:
+      name: Reinforced Body
+      description: Gain Block X times.
+    Reprogram:
+      name: Reprogram
+      description: Lose Focus. Gain Strength and Dexterity.
+    RipAndTear:
+      name: Rip and Tear
+      description: Deal damage to a random enemy twice.
+    Scrape:
+      name: Scrape
+      description: Deal damage. Draw cards. Discard any drawn cards that cost more than 0.
+    Seek:
+      name: Seek
+      description: Put cards from your draw pile into your hand. Exhaust.
+    SelfRepair:
+      name: Self Repair
+      description: At the end of combat, heal HP.
+    Skim:
+      name: Skim
+      description: Draw cards.
+    Stack:
+      name: Stack
+      description: Gain Block based on the size of your discard pile.
+    StaticDischarge:
+      name: Static Discharge
+      description: Whenever you take attack damage, channel Lightning.
+    SteamBarrier:
+      name: Steam Barrier
+      description: Gain Block. This card gives less Block each time you play it this combat.
+    Storm:
+      name: Storm
+      description: Whenever you play a Power, channel Lightning.
+    Streamline:
+      name: Streamline
+      description: Deal damage. Costs 1 less this combat.
+    Strike:
+      name: Strike
+      description: Deal damage.
+    Sunder:
+      name: Sunder
+      description: Deal damage. If Fatal, gain Energy.
+    SweepingBeam:
+      name: Sweeping Beam
+      description: Deal damage to all enemies. Draw a card.
+    Tempest:
+      name: Tempest
+      description: Channel Lightning X times. Exhaust.
+    ThunderStrike:
+      name: Thunder Strike
+      description: Deal damage to a random enemy once for each Lightning channeled this combat.
+    TURBO:
+      name: TURBO
+      description: Gain Energy. Add a Void into your discard pile.
+    WhiteNoise:
+      name: White Noise
+      description: Add a random Power into your hand. It costs 0 this turn. Exhaust.
+    Zap:
+      name: Zap
+      description: Channel 1 Lightning.
   colorless:
     Slimed:
       name: Slimed
@@ -1471,6 +1697,48 @@ powers:
   curl_up:
     name: Curl Up
     description: On receiving attack damage, gain {amount} Block. Once per combat.
+  AmplifyPower:
+    name: Amplify
+    description: The next Power you play this turn is played an additional time.
+  BiasedCognitionPower:
+    name: Biased Cognition
+    description: At the start of your turn, lose Focus.
+  CreativeAIPower:
+    name: Creative AI
+    description: At the start of your turn, add a random Power to your hand.
+  EchoFormPower:
+    name: Echo Form
+    description: The first card you play each turn is played an additional time.
+  ElectroPower:
+    name: Electrodynamics
+    description: Your Lightning orbs hit all enemies.
+  FocusPower:
+    name: Focus
+    description: Your Lightning, Frost, and Dark orbs become stronger.
+  HeatsinksPower:
+    name: Heatsinks
+    description: Whenever you play a Power, draw cards.
+  HelloWorldPower:
+    name: Hello World
+    description: At the start of your turn, add a random common card to your hand.
+  LockOnPower:
+    name: Lock-On
+    description: Lightning and Dark effects deal more damage to this creature.
+  LoopPower:
+    name: Loop
+    description: At the start of your turn, your first orb triggers its passive ability an additional time.
+  MachineLearningPower:
+    name: Machine Learning
+    description: At the start of your turn, draw a card.
+  SelfRepairPower:
+    name: Self Repair
+    description: At the end of combat, heal HP.
+  StaticDischargePower:
+    name: Static Discharge
+    description: Whenever you take attack damage, channel Lightning.
+  StormPower:
+    name: Storm
+    description: Whenever you play a Power, channel Lightning.
 potions:
   BloodPotion:
     name: Blood Potion
@@ -2073,6 +2341,33 @@ relics:
   OrangePellets:
     name: Orange Pellets
     description: Whenever you play a Power, Attack, and Skill in same turn, remove all of your Debuffs.
+  CrackedCore:
+    name: Cracked Core
+    description: At the start of each combat, channel 1 Lightning.
+  DataDisk:
+    name: Data Disk
+    description: At the start of each combat, gain 1 Focus.
+  EmotionChip:
+    name: Emotion Chip
+    description: The first time you lose HP each combat, channel 1 random orb for each empty orb slot.
+  FrozenCore:
+    name: Frozen Core
+    description: If you end your turn with any empty orb slots, channel 1 Frost.
+  GoldPlatedCables:
+    name: Gold-Plated Cables
+    description: Your first orb triggers its passive ability an additional time each turn.
+  Inserter:
+    name: Inserter
+    description: Every 2 turns, gain 1 orb slot.
+  NuclearBattery:
+    name: Nuclear Battery
+    description: At the start of each combat, channel 1 Plasma.
+  RunicCapacitor:
+    name: Runic Capacitor
+    description: Start each combat with 3 additional orb slots.
+  SymbioticVirus:
+    name: Symbiotic Virus
+    description: At the start of each combat, channel 1 Dark.
 enemies:
   Cultist:
     name: Cultist

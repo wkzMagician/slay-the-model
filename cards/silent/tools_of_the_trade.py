@@ -16,7 +16,6 @@ class ToolsOfTheTrade(Card):
     rarity = RarityType.UNCOMMON
 
     base_cost = 1
-    base_magic = {'draw': 1, 'discard': 1}
     upgrade_cost = 0
 
     def on_play(self, targets: List[Creature] = []):

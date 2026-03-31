@@ -16,6 +16,11 @@ def _import_character_cards(character: str):
     importlib.import_module(f"cards.{character.lower()}")
 
 
+def _import_character_relics(character: str):
+    """Import character-specific relics for the selected character."""
+    importlib.import_module(f"relics.character.{character.lower()}")
+
+
 def create_player(character=None):
     """Create a player with character-specific starting deck and stats.
 
@@ -54,6 +59,7 @@ def create_player(character=None):
 
     # Import cards for this character BEFORE creating player
     _import_character_cards(character)
+    _import_character_relics(character)
 
     player = Player(
         max_hp=char_config.max_hp,

@@ -22,7 +22,6 @@ class Choke(Card):
     base_damage = 12
     base_magic = {"followup": 3}
 
-    upgrade_damage = 16
     upgrade_magic = {"followup": 5}
 
     def on_play(self, targets: List[Creature] = []):

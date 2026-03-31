@@ -103,8 +103,8 @@ class TestSilentCommonExpansion:
         self.helper.add_card_to_hand(filler_b)
         self.helper.add_card_to_hand(card)
         assert self.helper.play_card(card)
-        assert len(self.player.card_manager.get_pile('hand')) == 1
-        assert len(self.player.card_manager.get_pile('discard_pile')) == 3
+        assert len(self.player.card_manager.get_pile('hand')) == 2
+        assert len(self.player.card_manager.get_pile('discard_pile')) == 2
 
     def test_quick_slash_deals_damage_and_draws(self):
         enemy = self.helper.create_enemy(Cultist, hp=40)

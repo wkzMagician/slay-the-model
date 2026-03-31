@@ -20,11 +20,18 @@ class Expertise(Card):
 
     upgrade_cost = 0
 
+    @property
+    def draw(self) -> int:
+        from engine.game_state import game_state
+
+        player = getattr(game_state, "player", None)
+        if player is None:
+            return 0
+        return max(0, 6 - len(player.card_manager.get_pile("hand")))
+
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)
-        from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
-        draw_count = max(0, 6 - len(game_state.player.card_manager.get_pile("hand")))
-        if draw_count > 0:
-            add_actions([DrawCardsAction(count=draw_count)])
+        if self.draw > 0:
+            add_actions([DrawCardsAction(count=self.draw)])

@@ -154,3 +154,16 @@ from powers.definitions.corpse_explosion import CorpseExplosionPower
 from powers.definitions.nightmare import NightmarePower
 from powers.definitions.tools_of_the_trade import ToolsOfTheTradePower
 from powers.definitions.well_laid_plans import WellLaidPlansPower
+from powers.definitions.lock_on import LockOnPower
+from powers.definitions.electro import ElectroPower
+from powers.definitions.loop import LoopPower
+from powers.definitions.storm import StormPower
+from powers.definitions.static_discharge import StaticDischargePower
+from powers.definitions.heatsinks import HeatsinksPower
+from powers.definitions.machine_learning import MachineLearningPower
+from powers.definitions.hello_world import HelloWorldPower
+from powers.definitions.creative_ai import CreativeAIPower
+from powers.definitions.self_repair import SelfRepairPower
+from powers.definitions.biased_cognition import BiasedCognitionPower
+from powers.definitions.amplify import AmplifyPower
+from powers.definitions.echo_form import EchoFormPower

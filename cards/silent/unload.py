@@ -26,4 +26,9 @@ class Unload(Card):
         from engine.runtime_api import add_actions
 
         hand = list(game_state.player.card_manager.get_pile('hand'))
-        add_actions([DiscardCardAction(card=card, source_pile='hand') for card in hand])
+        discard_cards = [
+            card
+            for card in hand
+            if getattr(card, "card_type", None) != CardType.ATTACK
+        ]
+        add_actions([DiscardCardAction(card=card, source_pile='hand') for card in discard_cards])

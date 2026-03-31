@@ -209,6 +209,8 @@ class CombatTestHelper:
         combat.combat_state.turn_cards_played += 1
         if getattr(card, 'card_type', None) == CardType.ATTACK:
             combat.combat_state.turn_attack_cards_played += 1
+        if getattr(card, 'card_type', None) == CardType.POWER:
+            combat.combat_state.power_cards_played += 1
         self.game_state.publish_message(
             CardPlayedMessage(
                 card=card,
@@ -331,3 +333,5 @@ class CombatTestHelper:
 def create_test_helper() -> CombatTestHelper:
     """Create a new combat test helper."""
     return CombatTestHelper()
+
+

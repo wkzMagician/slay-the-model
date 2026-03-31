@@ -1177,6 +1177,232 @@ cards:
       name: 周密计划
       description: 在你的回合结束时，保留至多 {magic.retain} 张牌。
       upgrade_description: 在你的回合结束时，保留至多 {magic.retain} 张牌。
+  defect:
+    Aggregate:
+      name: 聚合
+      description: 根据你的抽牌堆中牌的数量获得能量。
+    AllForOne:
+      name: 万物归一
+      description: 造成伤害。将弃牌堆中所有 0 费牌加入手牌。
+    Amplify:
+      name: 增幅
+      description: 本回合你打出的下一张能力牌额外触发一次。
+    AutoShields:
+      name: 自动护盾
+      description: 如果你没有格挡，获得格挡。
+    BallLightning:
+      name: 球状闪电
+      description: 造成伤害。生成 1 个闪电球。
+    Barrage:
+      name: 弹幕齐射
+      description: 每有一个充能球，造成一次伤害。
+    BeamCell:
+      name: 光束电池
+      description: 造成伤害。施加锁定。
+    BiasedCognition:
+      name: 偏差认知
+      description: 获得集中。每回合开始时失去集中。
+    Blizzard:
+      name: 暴风雪
+      description: 对所有敌人造成伤害。本场战斗中生成的冰霜球越多，伤害越高。
+    BootSequence:
+      name: 启动序列
+      description: 固有。获得格挡。消耗。
+    Buffer:
+      name: 缓冲
+      description: 防止你下一次失去生命。
+    Bullseye:
+      name: 靶眼
+      description: 造成伤害。施加锁定。
+    Capacitor:
+      name: 电容器
+      description: 获得额外的充能球栏位。
+    Chaos:
+      name: 混沌
+      description: 生成随机充能球。
+    ChargeBattery:
+      name: 充能电池
+      description: 获得格挡。下回合获得能量。
+    Chill:
+      name: 寒意
+      description: 每有一个敌人，生成 1 个冰霜球。消耗。
+    Claw:
+      name: 利爪
+      description: 造成伤害。本场战斗中所有利爪的伤害提高。
+    ColdSnap:
+      name: 冷速瞬击
+      description: 造成伤害。生成 1 个冰霜球。
+    CompileDriver:
+      name: 编译驱动
+      description: 造成伤害。若造成未被格挡的伤害，则抽牌。
+    Consume:
+      name: 消耗
+      description: 获得集中。失去一个充能球栏位。
+    Coolheaded:
+      name: 冷静头脑
+      description: 生成 1 个冰霜球。抽牌。
+    CoreSurge:
+      name: 核心涌动
+      description: 造成伤害。获得神器。
+    CreativeAI:
+      name: 创造性 AI
+      description: 在你的回合开始时，将一张随机能力牌加入手牌。
+    Darkness:
+      name: 黑暗
+      description: 生成 1 个黑暗球。升级后会让所有黑暗球额外触发一次被动。
+    Defend:
+      name: 防御
+      description: 获得格挡。
+    Defragment:
+      name: 碎片整理
+      description: 获得集中。
+    DoomAndGloom:
+      name: 厄运阴霾
+      description: 对所有敌人造成伤害。生成 1 个黑暗球。
+    DoubleEnergy:
+      name: 双倍能量
+      description: 将你的能量翻倍。
+    Dualcast:
+      name: 双重施放
+      description: 激发你最前面的充能球两次。
+    EchoForm:
+      name: 回响形态
+      description: 每回合你打出的第一张牌会额外触发一次。
+    Electrodynamics:
+      name: 电动力学
+      description: 你的闪电球会命中所有敌人。生成闪电球。
+    Equilibrium:
+      name: 平衡
+      description: 获得格挡。本回合保留你的手牌。
+    Fission:
+      name: 裂变
+      description: 激发你的所有充能球。每激发一个球都会获得对应收益。消耗。
+    ForceField:
+      name: 力场
+      description: 获得格挡。本场战斗中每打出一张能力牌，此牌消耗降低。
+    FTL:
+      name: 超光速
+      description: 造成伤害。若这是你本回合较早打出的牌之一，则抽 1 张牌。
+    Fusion:
+      name: 聚变
+      description: 生成 1 个等离子球。
+    GeneticAlgorithm:
+      name: 遗传算法
+      description: 获得格挡。每次打出后会永久变强。
+    Glacier:
+      name: 冰川
+      description: 获得格挡。生成 2 个冰霜球。
+    GoForTheEyes:
+      name: 直击要害
+      description: 造成伤害。若敌人打算攻击，则施加虚弱。
+    Heatsinks:
+      name: 散热片
+      description: 每当你打出一张能力牌，抽牌。
+    HelloWorld:
+      name: 你好世界
+      description: 在你的回合开始时，将一张随机普通牌加入手牌。
+    Hologram:
+      name: 全息影像
+      description: 获得格挡。从弃牌堆将一张牌加入手牌。消耗。
+    Hyperbeam:
+      name: 超光束
+      description: 对所有敌人造成大量伤害。失去集中。
+    Leap:
+      name: 跃迁
+      description: 获得格挡。
+    Loop:
+      name: 回路
+      description: 在你的回合开始时，让最前面的充能球额外触发一次被动。
+    MachineLearning:
+      name: 机器学习
+      description: 在你的回合开始时，抽 1 张牌。
+    Melter:
+      name: 熔化
+      description: 移除一名敌人的所有格挡。造成伤害。
+    MeteorStrike:
+      name: 陨石打击
+      description: 造成大量伤害。生成 3 个等离子球。
+    MultiCast:
+      name: 多重施放
+      description: 将你最前面的充能球激发 X 次。消耗。
+    Overclock:
+      name: 超频
+      description: 抽牌。将一张灼伤洗入你的抽牌堆。
+    Rainbow:
+      name: 彩虹
+      description: 生成 1 个闪电球、1 个冰霜球和 1 个黑暗球。消耗。
+    Reboot:
+      name: 重启
+      description: 将你的手牌洗回抽牌堆，然后重新抽一手牌。消耗。
+    Rebound:
+      name: 反弹
+      description: 造成伤害。你下一次从抽牌堆打出的牌会回到抽牌堆顶。
+    Recursion:
+      name: 递归
+      description: 激发你最前面的充能球，然后再次生成同类型的球。
+    Recycle:
+      name: 回收
+      description: 消耗一张牌。获得等同于其消耗的能量。消耗。
+    ReinforcedBody:
+      name: 强化躯体
+      description: 获得格挡 X 次。
+    Reprogram:
+      name: 重编程
+      description: 失去集中。获得力量和敏捷。
+    RipAndTear:
+      name: 撕裂
+      description: 对随机敌人造成两次伤害。
+    Scrape:
+      name: 刮削
+      description: 造成伤害。抽牌，并弃掉其中所有消耗大于 0 的牌。
+    Seek:
+      name: 检索
+      description: 从抽牌堆将牌加入手牌。消耗。
+    SelfRepair:
+      name: 自我修复
+      description: 战斗结束时，回复生命值。
+    Skim:
+      name: 略读
+      description: 抽牌。
+    Stack:
+      name: 堆叠
+      description: 根据你的弃牌堆数量获得格挡。
+    StaticDischarge:
+      name: 静电释放
+      description: 每当你受到攻击伤害时，生成闪电球。
+    SteamBarrier:
+      name: 蒸汽壁垒
+      description: 获得格挡。本场战斗中每次打出后提供的格挡会减少。
+    Storm:
+      name: 风暴
+      description: 每当你打出一张能力牌，生成闪电球。
+    Streamline:
+      name: 流线型
+      description: 造成伤害。本场战斗中消耗减少。
+    Strike:
+      name: 打击
+      description: 造成伤害。
+    Sunder:
+      name: 劈裂
+      description: 造成伤害。若斩杀，则获得能量。
+    SweepingBeam:
+      name: 扫荡光束
+      description: 对所有敌人造成伤害。抽 1 张牌。
+    Tempest:
+      name: 暴风雨
+      description: 生成闪电球 X 次。消耗。
+    ThunderStrike:
+      name: 雷霆一击
+      description: 按本场战斗生成过的闪电球次数，对随机敌人重复造成伤害。
+    TURBO:
+      name: TURBO
+      description: 获得能量。向弃牌堆加入一张虚无。
+    WhiteNoise:
+      name: 白噪声
+      description: 将一张随机能力牌加入手牌。本回合其消耗为 0。消耗。
+    Zap:
+      name: 电击
+      description: 生成 1 个闪电球。
   colorless:
     Slimed:
       name: 黏液
@@ -1433,6 +1659,48 @@ powers:
   PlatedArmorPower:
     name: 多层护甲
     description: At the end of your turn, gain {amount} Block.
+  AmplifyPower:
+    name: 增幅
+    description: 本回合你打出的下一张能力牌会额外触发一次。
+  BiasedCognitionPower:
+    name: 偏差认知
+    description: 在你的回合开始时失去集中。
+  CreativeAIPower:
+    name: 创造性 AI
+    description: 在你的回合开始时，将一张随机能力牌加入手牌。
+  EchoFormPower:
+    name: 回响形态
+    description: 每回合你打出的第一张牌会额外触发一次。
+  ElectroPower:
+    name: 电动力学
+    description: 你的闪电球会命中所有敌人。
+  FocusPower:
+    name: 集中
+    description: 强化你的闪电球、冰霜球和黑暗球。
+  HeatsinksPower:
+    name: 散热片
+    description: 每当你打出一张能力牌，抽牌。
+  HelloWorldPower:
+    name: 你好世界
+    description: 在你的回合开始时，将一张随机普通牌加入手牌。
+  LockOnPower:
+    name: 锁定
+    description: 闪电和黑暗效果对该目标造成更多伤害。
+  LoopPower:
+    name: 回路
+    description: 在你的回合开始时，最前面的充能球额外触发一次被动。
+  MachineLearningPower:
+    name: 机器学习
+    description: 在你的回合开始时，抽 1 张牌。
+  SelfRepairPower:
+    name: 自我修复
+    description: 战斗结束时，回复生命值。
+  StaticDischargePower:
+    name: 静电释放
+    description: 每当你受到攻击伤害时，生成闪电球。
+  StormPower:
+    name: 风暴
+    description: 每当你打出一张能力牌，生成闪电球。
 potions:
   HeartOfIron:
     name: 铁之心
@@ -2034,6 +2302,33 @@ relics:
   PaperPhrogIronclad:
     name: 纸蛙
     description: Enemies with Vulnerable take 75% more damage rather than 50%.
+  CrackedCore:
+    name: 破裂核心
+    description: 每场战斗开始时，生成 1 个闪电球。
+  DataDisk:
+    name: 数据磁盘
+    description: 每场战斗开始时，获得 1 点集中。
+  EmotionChip:
+    name: 情绪芯片
+    description: 每场战斗中首次失去生命时，每有一个空球槽就生成 1 个随机充能球。
+  FrozenCore:
+    name: 冰冻核心
+    description: 如果你在回合结束时有空球槽，生成 1 个冰霜球。
+  GoldPlatedCables:
+    name: 镀金线缆
+    description: 你最前面的充能球每回合会额外触发一次被动。
+  Inserter:
+    name: 插入器
+    description: 每 2 回合获得 1 个充能球栏位。
+  NuclearBattery:
+    name: 核电池
+    description: 每场战斗开始时，生成 1 个等离子球。
+  RunicCapacitor:
+    name: 符文电容器
+    description: 每场战斗开始时，额外获得 3 个充能球栏位。
+  SymbioticVirus:
+    name: 共生病毒
+    description: 每场战斗开始时，生成 1 个黑暗球。
 enemies:
   Cultist:
     name: 邪教徒

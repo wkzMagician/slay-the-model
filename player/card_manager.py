@@ -33,7 +33,9 @@ class CardManager:
         # Move all cards to draw_pile, clear other piles
         self.piles['draw_pile'] = []
         for card in self.piles['deck']:
-            self.piles['draw_pile'].append(card.copy())
+            combat_copy = card.copy()
+            setattr(combat_copy, "origin_card", getattr(card, "origin_card", card))
+            self.piles['draw_pile'].append(combat_copy)
         self.piles['discard_pile'] = []
         self.piles['hand'] = []
         self.piles['exhaust_pile'] = []

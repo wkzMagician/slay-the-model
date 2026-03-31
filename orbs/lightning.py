@@ -1,5 +1,6 @@
 from engine.runtime_api import add_action
 from actions.combat import DealDamageAction
+from entities.creature import Creature
 from orbs.base import Orb
 from utils.combat import resolve_target
 from utils.dynamic_values import resolve_orb_damage
@@ -14,30 +15,23 @@ class LightningOrb(Orb):
         self.passive_damage = 3
         self.evoke_damage = 8
 
-    def _resolve_enemy(self):
+    def _resolve_enemies(self) -> list[Creature]:
+        from engine.game_state import game_state
+
+        if game_state.player is not None and game_state.player.get_power("Electro") is not None:
+            if game_state.current_combat is None:
+                return []
+            return [enemy for enemy in game_state.current_combat.enemies if enemy.is_alive]
         targets = resolve_target(self.target_type)
-        return targets[0] if targets else None
+        if not targets:
+            return []
+        target = targets[0]
+        return [target] if target is not None else []
 
     def on_passive(self) -> None:
-        target = self._resolve_enemy()
-        if target is None:
-            return
-        add_action(
-            DealDamageAction(
-                damage=resolve_orb_damage(self.passive_damage, target),
-                target=target,
-                damage_type="magic",
-            )
-        )
+        for target in self._resolve_enemies():
+            add_action(DealDamageAction(damage=resolve_orb_damage(self.passive_damage, target), target=target, damage_type="magic"))
 
     def on_evoke(self) -> None:
-        target = self._resolve_enemy()
-        if target is None:
-            return
-        add_action(
-            DealDamageAction(
-                damage=resolve_orb_damage(self.evoke_damage, target),
-                target=target,
-                damage_type="magic",
-            )
-        )
+        for target in self._resolve_enemies():
+            add_action(DealDamageAction(damage=resolve_orb_damage(self.evoke_damage, target), target=target, damage_type="magic"))

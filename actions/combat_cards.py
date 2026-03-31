@@ -173,6 +173,8 @@ class PlayCardBHAction(Action):
         current_combat.combat_state.turn_cards_played += 1
         if self.card.card_type == CardType.ATTACK:
             current_combat.combat_state.turn_attack_cards_played += 1
+        if self.card.card_type == CardType.POWER:
+            current_combat.combat_state.power_cards_played += 1
         current_combat.combat_state.player_actions_this_turn += 1
 
         card_name = self.card.display_name.resolve() if hasattr(self.card, "display_name") else str(self.card)
@@ -215,3 +217,5 @@ class PlayCardBHAction(Action):
                         hp_loss = hook()
                     break
             add_action(LoseHPAction(amount=hp_loss, target=player, source=self.card))
+
+

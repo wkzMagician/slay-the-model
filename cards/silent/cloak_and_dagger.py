@@ -21,7 +21,6 @@ class CloakAndDagger(Card):
     base_block = 6
     base_magic = {"shivs": 1}
 
-    upgrade_block = 8
     upgrade_magic = {"shivs": 2}
 
     def on_play(self, targets: List[Creature] = []):

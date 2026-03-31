@@ -26,7 +26,7 @@ class Malaise(Card):
             return
         from engine.runtime_api import add_actions
 
-        x_value = getattr(self, '_x_cost_energy', 0)
+        x_value = self.get_effective_x()
         add_actions([
             ApplyPowerAction(WeakPower(amount=x_value, duration=x_value, owner=target), target),
             ApplyPowerAction(StrengthPower(amount=-x_value, owner=target), target),
