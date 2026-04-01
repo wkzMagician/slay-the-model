@@ -1,4 +1,4 @@
-﻿"""
+"""
 Combat logic class - independent from rooms.
 Can be triggered by CombatRoom or Events.
 Uses global action queue for action management.
@@ -8,7 +8,7 @@ from collections import Counter
 from typing import List
 from engine.runtime_events import emit_text as tui_print
 from actions.base import Action
-from actions.card import DiscardCardAction
+from actions.card import DiscardCardAction, ExhaustCardAction
 from actions.combat import EndTurnAction
 from actions.display import DisplayTextAction, InputRequestAction
 from enemies.base import Enemy
@@ -352,17 +352,25 @@ class Combat(Localizable):
         for power_name in powers_to_remove:
             game_state.player.remove_power(power_name)
 
-        # Discard hand (cards in hand are shuffled into discard pile)
-        # RunicPyramid: At the end of your turn, you no longer discard your hand.
-        from actions.card import ExhaustCardAction
+        # End-of-turn hand resolution: Ethereal cards exhaust; then discard non-retained
+        # (Runic Pyramid only prevents discarding non-Ethereal cards, not Ethereal exhaust).
         has_runic_pyramid = any(r.__class__.__name__ == "RunicPyramid" for r in game_state.player.relics)
-        if game_state.player.card_manager and not has_runic_pyramid:
+        if game_state.player.card_manager:
             hand = game_state.player.card_manager.get_pile("hand").copy()
             for card in hand:
+                if getattr(card, "ethereal", False):
+                    game_state.action_queue.add_action(
+                        ExhaustCardAction(card=card, source_pile="hand")
+                    )
+                    continue
                 if getattr(card, "retain", False) or getattr(card, "retain_this_turn", False):
                     setattr(card, "retain_this_turn", False)
                     continue
-                game_state.action_queue.add_action(DiscardCardAction(card=card, source_pile="hand", trigger_effects=False))
+                if has_runic_pyramid:
+                    continue
+                game_state.action_queue.add_action(
+                    DiscardCardAction(card=card, source_pile="hand", trigger_effects=False)
+                )
 
 
         result = game_state.drive_actions()

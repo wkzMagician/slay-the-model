@@ -110,6 +110,9 @@ class TestMoreColorless(unittest.TestCase):
     def test_sadistic_nature(self):
         card = SadisticNature()
         self.assertEqual(card.cost, 0)
+        self.assertIn("5", str(card.info()))
+        card.upgrade()
+        self.assertIn("7", str(card.info()))
 
     def test_secret_technique(self):
         card = SecretTechnique()

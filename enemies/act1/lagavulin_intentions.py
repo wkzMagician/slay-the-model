@@ -1,34 +1,33 @@
 """Lagavulin elite enemy intentions."""
-from engine.runtime_api import add_action, add_actions
+from engine.runtime_api import add_actions
 
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from enemies.intention import Intention
 
 if TYPE_CHECKING:
     from enemies.base import Enemy
-    from actions.base import Action
 
 
 class SleepIntention(Intention):
-    """Sleep - Does nothing while regenerating."""
-    
+    """Sleep — enemy does not act this turn."""
+
     def __init__(self, enemy: 'Enemy'):
         super().__init__("sleep", enemy)
     
     def execute(self) -> None:
         """Sleep: do nothing."""
 class StunnedIntention(Intention):
-    """Stunned - Does nothing for one turn."""
-    
+    """Stunned — does nothing for one turn."""
+
     def __init__(self, enemy: 'Enemy'):
         super().__init__("stunned", enemy)
     
     def execute(self) -> None:
         """Stunned: do nothing."""
 class AttackIntention(Intention):
-    """Attack - Deals 18 damage (10 on A9+)."""
-    
+    """Attack — deals damage (18 base, 20 on A18+)."""
+
     def __init__(self, enemy: 'Enemy', damage: int = 18):
         super().__init__("attack", enemy)
         self.base_damage = damage
@@ -40,54 +39,45 @@ class AttackIntention(Intention):
         
         if not game_state or not game_state.player:
             return
-        from engine.game_state import game_state
         add_actions(
-        [
-            AttackAction(
-                damage=self.base_damage,
-                target=game_state.player,
-                source=self.enemy,
-                damage_type="attack",
-            )
-        ]
+            [
+                AttackAction(
+                    damage=self.base_damage,
+                    target=game_state.player,
+                    source=self.enemy,
+                    damage_type="attack",
+                )
+            ]
         )
 
 
 class SiphonSoulIntention(Intention):
-    """Siphon Soul - Player loses 1 Dexterity (2 on A18+), Lagavulin gains 1 Strength (2 on A18+)."""
-    
-    def __init__(self, enemy: 'Enemy', dex_loss: int = 1, str_gain: int = 1):
+    """Siphon Soul — player loses Strength and Dexterity (amount each, 2 each on A18+)."""
+
+    def __init__(self, enemy: 'Enemy', amount: int = 1):
         super().__init__("siphon_soul", enemy)
-        self.dex_loss = dex_loss
-        self.str_gain = str_gain
-    
+        self.base_amount = amount
+
     def execute(self) -> None:
-        """Execute Siphon Soul: player loses Dexterity, Lagavulin gains Strength."""
+        """Apply -amount Strength and -amount Dexterity to the player."""
         from actions.combat import ApplyPowerAction
         from powers.definitions.dexterity import DexterityPower
         from powers.definitions.strength import StrengthPower
         from engine.game_state import game_state
-        
-        actions = []
-        
-        if game_state and game_state.player:
-            # Player loses Dexterity
-            actions.append(
+
+        if not game_state or not game_state.player:
+            return
+
+        amt = self.base_amount
+        add_actions(
+            [
                 ApplyPowerAction(
-                    DexterityPower(amount=-self.dex_loss, duration=-1, owner=game_state.player),
-                    game_state.player
-                )
-            )
-        
-        # Lagavulin gains Strength
-        actions.append(
-            ApplyPowerAction(
-                StrengthPower(amount=self.str_gain, duration=-1, owner=self.enemy),
-                self.enemy
-            )
+                    DexterityPower(amount=-amt, duration=-1, owner=game_state.player),
+                    game_state.player,
+                ),
+                ApplyPowerAction(
+                    StrengthPower(amount=-amt, duration=-1, owner=game_state.player),
+                    game_state.player,
+                ),
+            ]
         )
-        
-        from engine.game_state import game_state
-        
-        add_actions(actions)
-        

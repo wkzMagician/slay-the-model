@@ -335,7 +335,7 @@ class Power(Localizable):
         """
         power_type = t('ui.buff', 'Buff') if self.is_buff else t('ui.debuff', 'Debuff')
         name = self.local("name")
-        description = self.local("description")
+        description = self.local("description", amount=self.amount, duration=self.duration)
         
         # 根据 StackType 决定显示内容
         if self.stack_type == StackType.INTENSITY:

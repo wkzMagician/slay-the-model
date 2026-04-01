@@ -16,6 +16,18 @@ class DisplayHandler:
     
     def __init__(self, app):
         self._app = app
+
+    @staticmethod
+    def _power_description_kwargs(power):
+        """Build common localization kwargs for power descriptions."""
+        kwargs = {}
+        amount = getattr(power, "amount", None)
+        duration = getattr(power, "duration", None)
+        if amount is not None:
+            kwargs["amount"] = amount
+        if duration is not None:
+            kwargs["duration"] = duration
+        return kwargs
     
     def update_player_info(self, gs: 'GameState'):
         """Update player info section."""
@@ -200,7 +212,10 @@ class DisplayHandler:
                 if power_id not in shown_powers:
                     shown_powers.add(power_id)
                     power_name = power.local("name").resolve() if hasattr(power, 'local') else power.name
-                    power_desc = power.local("description").resolve() if hasattr(power, 'local') else ""
+                    power_desc = (
+                        power.local("description", **self._power_description_kwargs(power)).resolve()
+                        if hasattr(power, 'local') else ""
+                    )
                     # Only add if description exists and is not the raw key
                     if power_desc and not power_desc.startswith("powers."):
                         power_details.append(f"  {power_name}: {power_desc}")
@@ -214,7 +229,10 @@ class DisplayHandler:
                     if power_id not in shown_powers:
                         shown_powers.add(power_id)
                         power_name = power.local("name").resolve() if hasattr(power, 'local') else power.name
-                        power_desc = power.local("description").resolve() if hasattr(power, 'local') else ""
+                        power_desc = (
+                            power.local("description", **self._power_description_kwargs(power)).resolve()
+                            if hasattr(power, 'local') else ""
+                        )
                         if power_desc and not power_desc.startswith("powers."):
                             power_details.append(f"  {power_name}: {power_desc}")
                         else:

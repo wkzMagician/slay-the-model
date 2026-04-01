@@ -79,7 +79,7 @@ class Player(Creature):
 
     @energy.setter
     def energy(self, value: int) -> None:
-        self._energy = max(0, min(int(value), self.max_energy))
+        self._energy = max(0, int(value))
 
     @property
     def potion_limit(self) -> int:

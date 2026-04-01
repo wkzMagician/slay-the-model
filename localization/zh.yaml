@@ -1551,7 +1551,7 @@ cards:
       description: 造成 {damage} 点伤害。如果斩杀，永久增加此牌 {magic.damage_increase} 点伤害。消耗。
     SadisticNature:
       name: 残虐天性
-      description: 每当对敌人施加负面效果时，造成 {damage} 点伤害。
+      description: 每当对敌人施加负面效果时，造成 {magic.damage_on_debuff} 点伤害。
     SecretTechnique:
       name: 秘密技法
       description: 从抽牌堆将一张技能牌加入手牌。消耗。
@@ -1633,6 +1633,9 @@ powers:
   ThieveryPower:
     name: 偷窃
     description: 攻击时偷取 {amount} 金币。死亡时追回。
+  ThornsPower:
+    name: 荆棘
+    description: 每受到一次 攻击 ，造成 {amount} 点反伤。
   SlowPower:
     name: 缓慢
     description: 每当你打出一张牌，本回合该敌人受到的攻击伤害增加 10%。
@@ -2481,7 +2484,7 @@ enemies:
       attack:
         description: 造成 {damage} 点伤害
       spike:
-        description: 施加 {stacks} 层尖刺
+        description: 施加 {amount} 层尖刺
   Repulsor:
     name: 反冲机
     intentions:
@@ -2492,7 +2495,7 @@ enemies:
         name: 减益
         description: 施加 1 届虚弱和 1 层脆弱。
       attack:
-        description: 造成 {damage} 点伤害并施加 {debuff} 层虚弱
+        description: 造成 {damage} 点伤害
       push:
         description: 将手牌推回抽牌堆
   Exploder:
@@ -2568,7 +2571,7 @@ enemies:
         description: 施加诅咒
       decrepify:
         name: 衰弱
-        description: 施加 {stacks} 层虚弱
+        description: 施加 {amount} 层虚弱
   Mystic:
     name: 神秘术士
     intentions:
@@ -2625,7 +2628,7 @@ enemies:
         description: 召唤火把
       debuff:
         name: 减益
-        description: 施加 {stacks} 层虚弱和易伤
+        description: 施加 {amount} 层虚弱和易伤
   TheGuardian:
     name: 守护者
     intentions:
@@ -2688,7 +2691,7 @@ enemies:
     intentions:
       sleep:
         name: 睡眠
-        description: 什么都不做，回合结束时恢复 8 点格挡。
+        description: 什么都不做。
       stunned:
         name: 昏迷
         description: 什么都不做。
@@ -2697,7 +2700,7 @@ enemies:
         description: 造成 {damage} 点伤害。
       siphon_soul:
         name: 吸取灵魂
-        description: 你失去 {amount} 点敏捷。拉加维林获得 {amount} 点力量。
+        description: 你失去 {amount} 点力量与敏捷。
   GremlinNob:
     name: 地精大块头
     intentions:
@@ -2784,13 +2787,13 @@ enemies:
         description: 获得 {block} 点格挡和 {metallicize} 金属化。
       gloat:
         name: 炫耀
-        description: 获得 {strength} 点力量。
+        description: 获得 {strength_gain} 点力量。
       taunt:
         name: 嘲弄
         description: 施加 2 层虚弱和 2 层易伤。
       anger:
         name: 激怒
-        description: 移除所有减益效果。获得 {strength} 点力量。
+        description: 移除所有减益效果。获得 {strength_gain} 点力量。
       execute:
         name: 处决
         description: 造成 {damage} 点伤害两次。
@@ -2976,7 +2979,7 @@ enemies:
     intentions:
       lick:
         name: 舔舐
-        description: 施加 {debuff} 层脆弱。
+        description: 施加 {amount} 层脆弱。
       split:
         name: 分裂
         description: 分裂成 2 个尖刺史莱姆 (中)
@@ -2994,7 +2997,7 @@ enemies:
     intentions:
       mug:
         name: 抢劫
-        description: 造成 {damage} 点伤害并偷走 {gold} 金币
+        description: 造成 {damage} 点伤害并偷走 {amount} 金币
       lunge:
         name: 猛扑
         description: 造成 {damage} 点伤害
@@ -3012,7 +3015,7 @@ enemies:
         description: 获得 {block} 点格挡
       debuff_attack:
         name: 减益
-        description: 施加 {stacks} 层脆弱
+        description: 施加 {amount} 层脆弱
       slam:
         name: 猛击
         description: 造成 {damage} 点伤害
@@ -3087,10 +3090,10 @@ enemies:
         description: 造成 {damage} 点伤害
       multi_slam:
         name: 多重猛击
-        description: 造成 {damage} 点伤害 {count} 次
+        description: 造成 {damage} 点伤害 {hits} 次
       debuff:
         name: 减益
-        description: 施加 {stacks} 层易伤和虚弱
+        description: 施加 {amount} 层易伤和虚弱
   Dagger:
     name: 匕首
     intentions:

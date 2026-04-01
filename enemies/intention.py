@@ -134,6 +134,11 @@ class Intention(ABC, Localizable):
         hits = self._get_hits()
         if hits > 1:
             variables['hits'] = hits
+
+        # Some intentions expose metallicize as a dedicated field.
+        metallicize = getattr(self, 'base_metallicize', 0)
+        if isinstance(metallicize, int) and metallicize > 0:
+            variables['metallicize'] = metallicize
         
         # Return a LocalStr carrying the computed variables.
         return self.local("description", **variables)

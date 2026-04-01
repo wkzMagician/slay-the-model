@@ -88,7 +88,7 @@ class TestDefectOrbRuntime:
         combat._start_player_turn()
         self.helper.game_state.drive_actions()
 
-        assert self.player.energy == 5
+        assert self.player.energy == 6
 
     def test_end_player_phase_triggers_end_of_turn_orb_passives(self):
         enemy = self.helper.create_enemy(Cultist, hp=40)

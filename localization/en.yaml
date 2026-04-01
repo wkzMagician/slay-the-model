@@ -1586,7 +1586,7 @@ cards:
       description: Deal {damage} damage. If Fatal, permanently increase this card's damage by {magic.damage_increase}. Exhaust.
     SadisticNature:
       name: Sadistic Nature
-      description: Whenever you apply a debuff to an enemy, deal {damage} damage.
+      description: Whenever you apply a debuff to an enemy, deal {magic.damage_on_debuff} damage.
     SecretTechnique:
       name: Secret Technique
       description: Put a Skill from your draw pile into your hand. Exhaust.
@@ -1671,6 +1671,9 @@ powers:
   ThieveryPower:
     name: Thievery
     description: Steals {amount} gold when attacking. Gold returned on death.
+  ThornsPower:
+    name: Thorns
+    description: When attacked, deals {amount} damage back.
   SlowPower:
     name: Slow
     description: Whenever you play a card, this enemy receives 10% more damage from Attacks this turn.
@@ -2570,7 +2573,7 @@ enemies:
     intentions:
       sleep:
         name: Sleep
-        description: Does nothing while regenerating 8 Block at end of turn.
+        description: Does nothing.
       stunned:
         name: Stunned
         description: Does nothing.
@@ -2579,7 +2582,7 @@ enemies:
         description: Deal {damage} damage.
       siphon_soul:
         name: Siphon Soul
-        description: You lose {amount} Dexterity. Lagavulin gains {amount} Strength.
+        description: You lose {amount} Strength and Dexterity.
   GremlinNob:
     name: Gremlin Nob
     intentions:
@@ -2664,7 +2667,7 @@ enemies:
       attack:
         description: Deal {damage} damage
       spike:
-        description: Apply {stacks} Thorns
+        description: Apply {amount} Thorns
   Repulsor:
     name: Repulsor
     intentions:
@@ -2675,7 +2678,7 @@ enemies:
         name: Debuff
         description: Apply 1 Weak and 1 Frail.
       attack:
-        description: Deal {damage} damage and apply {debuff} Weak
+        description: Deal {damage} damage
       push:
         description: Push cards in hand to draw pile
   Exploder:
@@ -2718,13 +2721,13 @@ enemies:
         description: Gain {block} Block and {metallicize} Metallicize.
       gloat:
         name: Gloat
-        description: Gain {strength} Strength.
+        description: Gain {strength_gain} Strength.
       taunt:
         name: Taunt
         description: Apply 2 Weak and 2 Vulnerable.
       anger:
         name: Anger
-        description: Remove all debuffs. Gain {strength} Strength.
+        description: Remove all debuffs. Gain {strength_gain} Strength.
       execute:
         name: Execute
         description: Deal {damage} damage twice.
@@ -2910,7 +2913,7 @@ enemies:
     intentions:
       lick:
         name: Lick
-        description: Apply {debuff} Frail
+        description: Apply {amount} Frail
       split:
         name: Split
         description: Split into 2 Spike Slime (M)
@@ -2964,7 +2967,7 @@ enemies:
         description: Apply Hex
       decrepify:
         name: Decrepify
-        description: Apply {stacks} Weak
+        description: Apply {amount} Weak
   Mystic:
     name: Mystic
     intentions:
@@ -3021,7 +3024,7 @@ enemies:
         description: Spawn Torches
       debuff:
         name: Debuff
-        description: Apply {stacks} Weak and Vulnerable
+        description: Apply {amount} Weak and Vulnerable
   TorchHead:
     name: Torch Head
     intentions:
@@ -3033,7 +3036,7 @@ enemies:
     intentions:
       mug:
         name: Mug
-        description: Deal {damage} damage and steal {gold} gold
+        description: Deal {damage} damage and steal {amount} gold
       lunge:
         name: Lunge
         description: Deal {damage} damage
@@ -3051,7 +3054,7 @@ enemies:
         description: Gain {block} Block
       debuff_attack:
         name: Debuff
-        description: Apply {stacks} Frail
+        description: Apply {amount} Frail
       slam:
         name: Slam
         description: Deal {damage} damage
@@ -3126,10 +3129,10 @@ enemies:
         description: Deal {damage} damage
       multi_slam:
         name: Multi Slam
-        description: Deal {damage} damage {count} times
+        description: Deal {damage} damage {hits} times
       debuff:
         name: Debuff
-        description: Apply {stacks} Vulnerable and Weak
+        description: Apply {amount} Vulnerable and Weak
   Dagger:
     name: Dagger
     intentions:

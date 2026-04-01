@@ -66,6 +66,9 @@ class Looter(Enemy):
         thievery_amount = 15  # todo: 20 in Ascension 7+
         thievery = ThieveryPower(amount=thievery_amount, owner=self)
         self.add_power(thievery)
+        mug_intention = self.intentions.get("mug")
+        if mug_intention is not None:
+            mug_intention.base_amount = thievery_amount
     
     def determine_next_intention(self, floor: int = 1) -> 'Intention':
         """Determine next intention based on Looter's pattern.

@@ -83,7 +83,7 @@ class TestDefectRelics:
         self.helper.game_state.drive_actions()
 
         assert self.player.block == 2
-        assert self.player.energy == self.player.max_energy
+        assert self.player.energy == self.player.max_energy + 2
 
     def test_frozen_core_channels_frost_when_turn_ends_with_empty_slot(self):
         self.player.relics = [FrozenCore()]

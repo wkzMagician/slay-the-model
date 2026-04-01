@@ -57,6 +57,18 @@ class TestOffering(unittest.TestCase):
         # Should lose 6 HP
         self.assertEqual(self.helper.game_state.player.hp, initial_hp - 6)
 
+    def test_gains_energy_when_starting_at_max(self):
+        player = self.helper.create_player(energy=3, max_energy=3)
+        enemy = self.helper.create_enemy(Cultist)
+        self.helper.start_combat([enemy])
+
+        card = Offering()
+        self.helper.add_card_to_hand(card)
+        self.helper.play_card(card, target=None)
+
+        # Offering should still grant +2 even when already at max energy.
+        self.assertEqual(self.helper.game_state.player.energy, 5)
+
 
 if __name__ == "__main__":
     unittest.main()
