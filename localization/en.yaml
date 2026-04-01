@@ -2570,7 +2570,7 @@ enemies:
     intentions:
       sleep:
         name: Sleep
-        description: Does nothing while regenerating 8 Block at end of turn.
+        description: Does nothing.
       stunned:
         name: Stunned
         description: Does nothing.
@@ -2579,7 +2579,7 @@ enemies:
         description: Deal {damage} damage.
       siphon_soul:
         name: Siphon Soul
-        description: You lose {amount} Dexterity. Lagavulin gains {amount} Strength.
+        description: You lose {amount} Strength and Dexterity.
   GremlinNob:
     name: Gremlin Nob
     intentions:

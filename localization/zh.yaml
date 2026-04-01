@@ -2688,7 +2688,7 @@ enemies:
     intentions:
       sleep:
         name: 睡眠
-        description: 什么都不做，回合结束时恢复 8 点格挡。
+        description: 什么都不做。
       stunned:
         name: 昏迷
         description: 什么都不做。
@@ -2697,7 +2697,7 @@ enemies:
         description: 造成 {damage} 点伤害。
       siphon_soul:
         name: 吸取灵魂
-        description: 你失去 {amount} 点敏捷。拉加维林获得 {amount} 点力量。
+        description: 你失去 {amount} 点力量与敏捷。
   GremlinNob:
     name: 地精大块头
     intentions:

@@ -621,7 +621,7 @@ def test_damage_resolved_dispatches_to_lagavulin_override():
     )
 
     assert lagavulin.is_sleeping is False
-    assert lagavulin.is_stunned is True
+    assert lagavulin.current_intention.name == "stunned"
     assert lagavulin.turns_without_damage == 0
 
 
