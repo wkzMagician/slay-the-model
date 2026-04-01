@@ -2,11 +2,13 @@ import pytest
 
 from actions.card import AddCardAction, DiscardCardAction, DrawCardsAction, ShuffleAction
 from actions.combat import PlayCardBHAction
+from cards.colorless.dazed import Dazed
 from cards.colorless.doubt import Doubt
 from cards.colorless.void import Void
 from cards.ironclad.strike import Strike
 from enemies.act1.cultist import Cultist
 from powers.definitions.rage import RagePower
+from relics.global_relics.boss import RunicPyramid
 from relics.global_relics.common import CeramicFish
 from relics.character.silent import ToughBandages
 from relics.global_relics.uncommon import DarkstonePeriapt, Sundial
@@ -151,3 +153,41 @@ def test_end_turn_discard_does_not_publish_message_or_trigger_discard_effects(mo
     assert "CardDiscardedMessage" not in published
     assert discard_target in player.card_manager.get_pile("discard_pile")
     assert player.block == 0
+
+
+def test_end_turn_ethereal_dazed_goes_to_exhaust_pile():
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    combat = helper.start_combat([enemy])
+
+    dazed = Dazed()
+    helper.add_card_to_hand(dazed)
+
+    combat._end_player_phase()
+    helper.game_state.drive_actions()
+
+    assert dazed not in player.card_manager.get_pile("hand")
+    assert dazed in player.card_manager.get_pile("exhaust_pile")
+    assert dazed not in player.card_manager.get_pile("discard_pile")
+
+
+def test_end_turn_ethereal_dazed_exhausts_with_runic_pyramid_non_ethereal_stays_in_hand():
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    combat = helper.start_combat([enemy])
+
+    player.relics.append(RunicPyramid())
+    dazed = Dazed()
+    strike = Strike()
+    helper.add_card_to_hand(dazed)
+    helper.add_card_to_hand(strike)
+
+    combat._end_player_phase()
+    helper.game_state.drive_actions()
+
+    assert dazed not in player.card_manager.get_pile("hand")
+    assert dazed in player.card_manager.get_pile("exhaust_pile")
+    assert strike in player.card_manager.get_pile("hand")
+    assert strike not in player.card_manager.get_pile("discard_pile")
