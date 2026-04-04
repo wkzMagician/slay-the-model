@@ -712,6 +712,8 @@ combat:
   thievery_return: Recovered {amount} stolen gold!
   looter_escape: '{enemy} escapes with your gold!'
   hand: Hand
+  hand_full: is full
+  hand_full_no_draw: Hand is full. Cannot draw cards.
   powers: Powers
   relics: Relics
   potions: Potions
@@ -1715,6 +1717,9 @@ powers:
   ElectroPower:
     name: Electrodynamics
     description: Your Lightning orbs hit all enemies.
+  EquilibriumPower:
+    name: Equilibrium
+    description: At the end of your turn, retain your hand.
   FocusPower:
     name: Focus
     description: Your Lightning, Frost, and Dark orbs gain {amount} strength.

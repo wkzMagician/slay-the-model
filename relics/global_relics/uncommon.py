@@ -553,7 +553,8 @@ class Sundial(Relic):
     def on_shuffle(self):
         """Gain 2 energy every 3 shuffles"""
         self.shuffle_count += 1
-        if self.shuffle_count % 3 == 0:
+        if self.shuffle_count == 3:
+            self.shuffle_count = 0
             from actions.combat import GainEnergyAction
             from engine.game_state import game_state
             add_actions([GainEnergyAction(energy=2)])

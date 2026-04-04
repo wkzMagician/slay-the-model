@@ -14,6 +14,10 @@ def _print_hand_full_redirect(card) -> None:
     print(f"[{t('ui.hand', default='Hand')}] {t('combat.hand_full', default='is full')}. {card.display_name.resolve()} {t('combat.to_pile', default='to')} {discard_name}")
 
 
+def _print_hand_full_cannot_draw() -> None:
+    print(t("combat.hand_full_no_draw", default="Hand is full. Cannot draw cards."))
+
+
 @register("action")
 class RemoveCardAction(Action):
     """Choose a card to remove from src pile
@@ -247,8 +251,14 @@ class DrawCardsAction(Action):
                 return
             # Handle callable count (dynamic card draw amounts)
             count = self.count() if callable(self.count) else self.count
-            # Draw cards from draw pile to hand
-            cards: List[Card] = game_state.player.card_manager.draw_many(count)
+            cm = game_state.player.card_manager
+            limit = cm.HAND_LIMIT
+            if count > 0 and len(cm.piles["hand"]) >= limit:
+                _print_hand_full_cannot_draw()
+                return
+            cards: List[Card] = cm.draw_many(count)
+            if count > 0 and len(cards) < count and len(cm.piles["hand"]) >= limit:
+                _print_hand_full_cannot_draw()
             
             # Note: Draw message is now printed in CombatState._print_combat_state()
             # after "Player Turn" header for better display order
@@ -263,8 +273,6 @@ class DrawCardsAction(Action):
                         owner=game_state.player,
                     )
                 )
-                if game_state.player.card_manager.get_card_location(card) == "discard_pile":
-                    _print_hand_full_redirect(card)
 
 @register("action")
 class ReplaceCardAction(Action):

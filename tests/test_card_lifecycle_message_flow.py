@@ -5,6 +5,8 @@ from actions.combat import PlayCardBHAction
 from cards.colorless.dazed import Dazed
 from cards.colorless.doubt import Doubt
 from cards.colorless.void import Void
+from cards.ironclad.pommel_strike import PommelStrike
+from cards.ironclad.shrug_it_off import ShrugItOff
 from cards.ironclad.strike import Strike
 from enemies.act1.cultist import Cultist
 from powers.definitions.rage import RagePower
@@ -93,6 +95,120 @@ def test_draw_cards_action_publishes_card_drawn_message(monkeypatch):
     assert "CardDrawnMessage" in published
     assert status_card in player.card_manager.get_pile("hand")
     assert player.energy == 2
+
+
+def test_auto_shuffle_from_empty_draw_publishes_shuffle_message(monkeypatch):
+    """Empty-deck reshuffle (discard → draw) must emit ShuffleMessage like ShuffleAction."""
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    helper.start_combat([enemy])
+
+    player.card_manager.piles["draw_pile"].clear()
+    helper.add_card_to_discard_pile(Void())
+
+    published = _capture_published_message_types(helper.game_state, monkeypatch)
+
+    DrawCardsAction(count=1).execute()
+    helper.game_state.drive_actions()
+
+    assert published.count("ShuffleMessage") == 1
+    assert "CardDrawnMessage" in published
+
+
+def test_draw_many_stops_after_one_shuffle_when_not_enough_cards(monkeypatch):
+    """抽牌数大于抽牌堆+弃牌堆可提供的张数时：洗入弃牌只触发一次计数，之后弃牌空则不再抽。"""
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    helper.start_combat([enemy])
+
+    player.card_manager.piles["draw_pile"].clear()
+    for _ in range(3):
+        helper.add_card_to_discard_pile(Void())
+
+    published = _capture_published_message_types(helper.game_state, monkeypatch)
+
+    DrawCardsAction(count=5).execute()
+    helper.game_state.drive_actions()
+
+    assert published.count("ShuffleMessage") == 2
+    assert published.count("CardDrawnMessage") == 3
+
+
+def test_auto_shuffle_skips_message_when_discard_empty(monkeypatch):
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    helper.start_combat([enemy])
+
+    player.card_manager.piles["draw_pile"].clear()
+    player.card_manager.piles["discard_pile"].clear()
+
+    published = _capture_published_message_types(helper.game_state, monkeypatch)
+
+    DrawCardsAction(count=1).execute()
+    helper.game_state.drive_actions()
+
+    assert published.count("ShuffleMessage") == 1
+
+
+def test_sundial_with_pommel_plus_and_shrug_it_off_shuffle_count_and_energy(monkeypatch):
+    """抽/弃皆空、手牌剑柄+与耸肩：先剑柄再耸肩洗牌计数 2 不回能；重置后先耸肩再剑柄计数 3 并回 2 能。
+
+    依赖当前 shuffle_discard_to_draw 在弃牌为空时仍会发布 ShuffleMessage 的行为。
+    """
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=50)
+    helper.start_combat([enemy])
+
+    sundial = Sundial()
+    player.relics.append(sundial)
+    assert sundial.shuffle_count == 0
+
+    player.card_manager.piles["draw_pile"].clear()
+    player.card_manager.piles["discard_pile"].clear()
+
+    pommel = PommelStrike()
+    pommel.upgrade()
+    shrug = ShrugItOff()
+    helper.add_card_to_hand(pommel)
+    helper.add_card_to_hand(shrug)
+
+    published = _capture_published_message_types(helper.game_state, monkeypatch)
+
+    helper.play_card(pommel, target=enemy)
+    helper.game_state.drive_actions()
+    helper.play_card(shrug, target=player)
+    helper.game_state.drive_actions()
+
+    assert published.count("ShuffleMessage") == 2
+    assert sundial.shuffle_count == 2
+    assert player.energy == 1
+
+    published.clear()
+
+    sundial.shuffle_count = 0
+    player.card_manager.piles["hand"].clear()
+    player.card_manager.piles["draw_pile"].clear()
+    player.card_manager.piles["discard_pile"].clear()
+    player.energy = 3
+
+    pommel2 = PommelStrike()
+    pommel2.upgrade()
+    shrug2 = ShrugItOff()
+    helper.add_card_to_hand(shrug2)
+    helper.add_card_to_hand(pommel2)
+
+    helper.play_card(shrug2, target=player)
+    helper.game_state.drive_actions()
+    helper.play_card(pommel2, target=enemy)
+    helper.game_state.drive_actions()
+
+    assert published.count("ShuffleMessage") == 3
+    assert sundial.shuffle_count == 0
+    assert player.energy == 3
 
 
 def test_shuffle_action_publishes_shuffle_message(monkeypatch):

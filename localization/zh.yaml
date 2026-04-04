@@ -628,6 +628,8 @@ combat:
   enemy_killed: '{target_name} 已被击败！'
   deck: 牌组
   hand: 手牌
+  hand_full: 已满
+  hand_full_no_draw: 手牌已满，无法继续抽牌。
   discard_non_zero_cost_drawn: 弃掉 {count} 张抽出的卡牌（消耗为 0）。
   gain_energy: 获得 {amount} 点能量
   double_energy: 双倍能量增加 {amount} 点能量（共 {total} 点）。
@@ -1269,7 +1271,7 @@ cards:
       name: 电动力学
       description: 你的闪电球会命中所有敌人。生成 {magic.lightning} 个闪电球。
     Equilibrium:
-      name: 平衡
+      name: 均衡
       description: 获得 {block} 点格挡。本回合保留你的手牌。
     Fission:
       name: 裂变
@@ -1677,6 +1679,9 @@ powers:
   ElectroPower:
     name: 电动力学
     description: 你的闪电球会命中所有敌人。
+  EquilibriumPower:
+    name: 均衡
+    description: 在你的回合结束时，保留你的手牌。
   FocusPower:
     name: 集中
     description: 你的闪电球、冰霜球和黑暗球获得 {amount} 点强化。
