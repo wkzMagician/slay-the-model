@@ -8,7 +8,7 @@ from actions.combat_status import ApplyPowerAction
 from actions.watcher import ChangeStanceAction, GainMantraAction, ScryAction
 from engine.runtime_api import add_action
 from powers.definitions.dexterity import DexterityPower
-from powers.definitions.watcher import TemporaryDexterityPower
+from powers.definitions.temporary_dexterity import TemporaryDexterityPower
 from cards.base import RawLocalStr
 from relics.base import Relic
 from utils.registry import register

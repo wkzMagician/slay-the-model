@@ -58,7 +58,7 @@ class GainMantraAction(Action):
 
     def execute(self) -> None:
         from engine.game_state import game_state
-        from powers.definitions.watcher import MantraPower
+        from powers.definitions.mantra import MantraPower
 
         player = game_state.player
         if player is None or self.amount <= 0:

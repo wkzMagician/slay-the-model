@@ -8,6 +8,6 @@ class DevaForm(WatcherPowerCard):
     text_description = "At the start of your turn, gain Energy and increase this effect."
 
     def on_play(self, targets: List = []):
-        from powers.definitions.watcher import DevaPower
+        from powers.definitions.deva import DevaPower
 
         add_action(ApplyPowerAction(DevaPower(duration=1, owner=_player()), _player()))

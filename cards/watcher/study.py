@@ -10,6 +10,6 @@ class Study(WatcherPowerCard):
     text_description = "At the end of your turn, shuffle {magic.amount} Insight into your draw pile."
 
     def on_play(self, targets: List = []):
-        from powers.definitions.watcher import StudyPower
+        from powers.definitions.study import StudyPower
 
         add_action(ApplyPowerAction(StudyPower(amount=self.get_magic_value("amount"), owner=_player()), _player()))

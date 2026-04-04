@@ -167,26 +167,24 @@ from powers.definitions.self_repair import SelfRepairPower
 from powers.definitions.biased_cognition import BiasedCognitionPower
 from powers.definitions.amplify import AmplifyPower
 from powers.definitions.echo_form import EchoFormPower
-from powers.definitions.watcher import (
-    BattleHymnPower,
-    BlasphemerPower,
-    CollectPower,
-    DevaPower,
-    DevotionPower,
-    EstablishmentPower,
-    FastingPower,
-    ForesightPower,
-    LikeWaterPower,
-    MantraPower,
-    MarkPower,
-    MasterRealityPower,
-    MentalFortressPower,
-    NirvanaPower,
-    OmegaPower,
-    RushdownPower,
-    StudyPower,
-    TalkToTheHandPower,
-    TemporaryDexterityPower,
-    WaveOfTheHandPower,
-    WreathOfFlamePower,
-)
+from powers.definitions.battle_hymn import BattleHymnPower
+from powers.definitions.blasphemer import BlasphemerPower
+from powers.definitions.collect import CollectPower
+from powers.definitions.deva import DevaPower
+from powers.definitions.devotion import DevotionPower
+from powers.definitions.establishment import EstablishmentPower
+from powers.definitions.fasting import FastingPower
+from powers.definitions.foresight import ForesightPower
+from powers.definitions.like_water import LikeWaterPower
+from powers.definitions.mantra import MantraPower
+from powers.definitions.mark import MarkPower
+from powers.definitions.master_reality import MasterRealityPower
+from powers.definitions.mental_fortress import MentalFortressPower
+from powers.definitions.nirvana import NirvanaPower
+from powers.definitions.omega import OmegaPower
+from powers.definitions.rushdown import RushdownPower
+from powers.definitions.study import StudyPower
+from powers.definitions.talk_to_the_hand import TalkToTheHandPower
+from powers.definitions.temporary_dexterity import TemporaryDexterityPower
+from powers.definitions.wave_of_the_hand import WaveOfTheHandPower
+from powers.definitions.wreath_of_flame import WreathOfFlamePower

@@ -24,25 +24,23 @@ from powers.definitions.plated_armor import PlatedArmorPower
 from powers.definitions.strength import StrengthPower
 from powers.definitions.vulnerable import VulnerablePower
 from powers.definitions.weak import WeakPower
-from powers.definitions.watcher import (
-    BattleHymnPower,
-    BlasphemerPower,
-    CollectPower,
-    DevotionPower,
-    EstablishmentPower,
-    FastingPower,
-    ForesightPower,
-    LikeWaterPower,
-    MarkPower,
-    MasterRealityPower,
-    MentalFortressPower,
-    NirvanaPower,
-    OmegaPower,
-    RushdownPower,
-    TalkToTheHandPower,
-    WaveOfTheHandPower,
-    WreathOfFlamePower,
-)
+from powers.definitions.battle_hymn import BattleHymnPower
+from powers.definitions.blasphemer import BlasphemerPower
+from powers.definitions.collect import CollectPower
+from powers.definitions.devotion import DevotionPower
+from powers.definitions.establishment import EstablishmentPower
+from powers.definitions.fasting import FastingPower
+from powers.definitions.foresight import ForesightPower
+from powers.definitions.like_water import LikeWaterPower
+from powers.definitions.mark import MarkPower
+from powers.definitions.master_reality import MasterRealityPower
+from powers.definitions.mental_fortress import MentalFortressPower
+from powers.definitions.nirvana import NirvanaPower
+from powers.definitions.omega import OmegaPower
+from powers.definitions.rushdown import RushdownPower
+from powers.definitions.talk_to_the_hand import TalkToTheHandPower
+from powers.definitions.wave_of_the_hand import WaveOfTheHandPower
+from powers.definitions.wreath_of_flame import WreathOfFlamePower
 from utils.dynamic_values import resolve_potential_damage
 from utils.option import Option
 from utils.registry import register
