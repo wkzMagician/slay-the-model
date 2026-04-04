@@ -1271,7 +1271,7 @@ cards:
       name: 电动力学
       description: 你的闪电球会命中所有敌人。生成 {magic.lightning} 个闪电球。
     Equilibrium:
-      name: 平衡
+      name: 均衡
       description: 获得 {block} 点格挡。本回合保留你的手牌。
     Fission:
       name: 裂变
@@ -1680,7 +1680,7 @@ powers:
     name: 电动力学
     description: 你的闪电球会命中所有敌人。
   EquilibriumPower:
-    name: 平衡
+    name: 均衡
     description: 在你的回合结束时，保留你的手牌。
   FocusPower:
     name: 集中
