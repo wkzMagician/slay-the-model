@@ -1717,6 +1717,9 @@ powers:
   ElectroPower:
     name: Electrodynamics
     description: Your Lightning orbs hit all enemies.
+  EquilibriumPower:
+    name: Equilibrium
+    description: At the end of your turn, retain your hand.
   FocusPower:
     name: Focus
     description: Your Lightning, Frost, and Dark orbs gain {amount} strength.
