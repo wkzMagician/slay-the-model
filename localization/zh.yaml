@@ -1592,254 +1592,254 @@ cards:
       description: 无法打出。固有。
   watcher:
     Alpha:
-      name: 'Alpha'
-      description: 'Shuffle a Beta into your draw pile. Exhaust.'
+      name: '阿尔法'
+      description: '将一张贝塔放入你的抽牌堆中。消耗。'
     BattleHymn:
-      name: 'Battle Hymn'
-      description: 'At the start of your turn, add a Smite into your hand.'
+      name: '战歌'
+      description: '在每回合开始时，将一张惩恶加入你的手牌。'
     Beta:
-      name: 'Beta'
-      description: 'Shuffle an Omega into your draw pile. Exhaust.'
+      name: '贝塔'
+      description: '将一张欧米伽放入你的抽牌堆中。消耗。'
     Blasphemy:
-      name: 'Blasphemy'
-      description: 'Enter Divinity. Die next turn. Exhaust.'
+      name: '渎神'
+      description: '进入神格。在下回合死亡。消耗。'
     BowlingBash:
-      name: 'Bowling Bash'
-      description: 'Deal {damage} damage for each enemy in combat.'
+      name: '碰撞连击'
+      description: '当前每有一名敌人，便造成{damage}点伤害。'
     Brilliance:
-      name: 'Brilliance'
-      description: 'Deal {damage} damage. Deals more damage for your Mantra.'
+      name: '光辉'
+      description: '造成{damage}点伤害。额外造成本场战斗中获得的真言总层数的伤害。'
     CarveReality:
-      name: 'Carve Reality'
-      description: 'Deal {damage} damage. Add a Smite into your hand.'
+      name: '改造现实'
+      description: '造成{damage}点伤害。将一张惩恶加入你的手牌。'
     Collect:
-      name: 'Collect'
-      description: 'Put Miracle+ into your hand at the start of your next X turns. Exhaust.'
+      name: '收集'
+      description: '在你的下X个回合开始时，将一张奇迹+加入你的手牌。消耗。'
     Conclude:
-      name: 'Conclude'
-      description: 'Deal {damage} damage to ALL enemies. End your turn.'
+      name: '结末'
+      description: '对所有敌人造成{damage}点伤害。结束你的回合。'
     ConjureBlade:
-      name: 'Conjure Blade'
-      description: 'Shuffle an Expunger into your draw pile. Exhaust.'
+      name: '聚能成刃'
+      description: '将一张灭除之刃放入你的抽牌堆中。消耗。'
     Consecrate:
-      name: 'Consecrate'
-      description: 'Deal {damage} damage to ALL enemies.'
+      name: '供奉'
+      description: '对所有敌人造成{damage}点伤害。'
     Crescendo:
-      name: 'Crescendo'
-      description: 'Retain. Enter Wrath. Exhaust.'
+      name: '渐强'
+      description: '保留。进入愤怒。消耗。'
     CrushJoints:
-      name: 'Crush Joints'
-      description: 'Deal {damage} damage. If the previous card played this turn was a Skill, apply {magic.vuln} Vulnerable.'
+      name: '粉碎关节'
+      description: '造成{damage}点伤害。如果本回合打出的上一张牌是技能牌，给予{magic.vuln}层易伤。'
     CutThroughFate:
-      name: 'Cut Through Fate'
-      description: 'Deal {damage} damage. Scry {magic.scry}. Draw {draw} card.'
+      name: '斩破命运'
+      description: '造成{damage}点伤害。预见{magic.scry}。抽{draw}张牌。'
     DeceiveReality:
-      name: 'Deceive Reality'
-      description: 'Gain {block} Block. Add a Safety into your hand.'
+      name: '欺瞒现实'
+      description: '获得{block}点格挡。将一张平安加入你的手牌。'
     Defend:
-      name: 'Defend'
-      description: 'Gain {block} Block.'
+      name: '防御（紫）'
+      description: '获得{block}点格挡。'
     DeusExMachina:
-      name: 'Deus Ex Machina'
-      description: 'Unplayable. When drawn, add {magic.count} Miracles to your hand. Exhaust.'
+      name: '机械降神'
+      description: '不能被打出。当你抽到这张牌时，将{magic.count}张奇迹加入你的手牌。消耗。'
     DevaForm:
-      name: 'Deva Form'
-      description: 'At the start of your turn, gain Energy and increase this effect.'
+      name: '天人形态'
+      description: '虚无。在你的回合开始时获得能量，并使此效果增强。'
     Devotion:
-      name: 'Devotion'
-      description: 'At the start of your turn, gain {magic.mantra} Mantra.'
+      name: '虔信'
+      description: '在你的回合开始时，获得{magic.mantra}层真言。'
     EmptyBody:
-      name: 'Empty Body'
-      description: 'Gain {block} Block. Exit your stance.'
+      name: '化体为空'
+      description: '获得{block}点格挡。退出当前姿态。'
     EmptyFist:
-      name: 'Empty Fist'
-      description: 'Deal {damage} damage. Exit your stance.'
+      name: '化拳为空'
+      description: '造成{damage}点伤害。退出当前姿态。'
     EmptyMind:
-      name: 'Empty Mind'
-      description: 'Exit your stance. Draw {draw} cards.'
+      name: '化智为空'
+      description: '退出当前姿态。抽{draw}张牌。'
     Eruption:
-      name: 'Eruption'
-      description: 'Deal {damage} damage. Enter Wrath.'
+      name: '暴怒'
+      description: '造成{damage}点伤害。进入愤怒。'
     Establishment:
-      name: 'Establishment'
-      description: 'At the end of your turn, reduce the cost of retained cards by 1.'
+      name: '确立基础'
+      description: '在你的回合结束时，每有一张被保留的牌，便将其本场战斗中的耗能减少1。'
     Evaluate:
-      name: 'Evaluate'
-      description: 'Gain {block} Block. Shuffle an Insight into your draw pile.'
+      name: '评估'
+      description: '获得{block}点格挡。在你的抽牌堆中加入一张洞见。'
     Expunger:
-      name: 'Expunger'
-      description: 'Deal {damage} damage X times. Exhaust.'
+      name: '灭除之刃'
+      description: '造成{damage}点伤害X次。消耗。'
     Fasting:
-      name: 'Fasting'
-      description: 'Gain {magic.stat} Strength and Dexterity. Gain 1 less Energy at the start of each turn.'
+      name: '斋戒'
+      description: '获得{magic.stat}点力量和敏捷。每回合开始时少获得1点能量。'
     FearNoEvil:
-      name: 'Fear No Evil'
-      description: 'Deal {damage} damage. If the enemy intends to attack, gain 2 Energy.'
+      name: '不惧妖邪'
+      description: '造成{damage}点伤害。如果敌人的意图是攻击，则获得2点能量。'
     FlurryOfBlows:
-      name: 'Flurry of Blows'
-      description: 'Deal {damage} damage. Whenever you change stances, return this from your discard pile to your hand.'
+      name: '疾风连击'
+      description: '造成{damage}点伤害。每当你转换姿态时，将这张牌从弃牌堆放回你的手牌。'
     FlyingSleeves:
-      name: 'Flying Sleeves'
-      description: 'Retain. Deal {damage} damage {attack_times} times.'
+      name: '流云飞袖'
+      description: '保留。造成{damage}点伤害{attack_times}次。'
     FollowUp:
-      name: 'Follow-Up'
-      description: 'Deal {damage} damage. If the previous card played this turn was an Attack, gain 1 Energy.'
+      name: '追击'
+      description: '造成{damage}点伤害。如果本回合打出的上一张牌是攻击牌，获得1点能量。'
     ForeignInfluence:
-      name: 'Foreign Influence'
-      description: 'Choose 1 of 3 attacks from any color to add to your hand. It costs 0 this turn. Exhaust.'
+      name: '他山之石'
+      description: '从3张任意颜色的攻击牌中选择1张加入你的手牌。本回合其耗能变为0。消耗。'
     Foresight:
-      name: 'Foresight'
-      description: 'At the start of your turn, Scry {magic.scry}.'
+      name: '先见之明'
+      description: '在你的回合开始时，预见{magic.scry}。'
     Halt:
-      name: 'Halt'
-      description: 'Gain {block} Block. If you are in Wrath, gain {magic.wrath_block} more.'
+      name: '停顿'
+      description: '获得{block}点格挡。如果你处于愤怒，则额外获得{magic.wrath_block}点格挡。'
     Indignation:
-      name: 'Indignation'
-      description: 'Apply {magic.vuln} Vulnerable.'
+      name: '义愤填膺'
+      description: '给予{magic.vuln}层易伤。'
     InnerPeace:
-      name: 'Inner Peace'
-      description: 'Enter Calm. If you are already in Calm, draw {draw} cards.'
+      name: '内心宁静'
+      description: '进入平静。如果你已经处于平静，则抽{draw}张牌。'
     Insight:
-      name: 'Insight'
-      description: 'Retain. Draw {draw} cards. Exhaust.'
+      name: '洞见'
+      description: '保留。抽{draw}张牌。消耗。'
     Judgment:
-      name: 'Judgment'
-      description: 'If the enemy has {magic.threshold} HP or less, it dies.'
+      name: '审判'
+      description: '如果敌人的生命值小于等于{magic.threshold}点，则将其消灭。'
     JustLucky:
-      name: 'Just Lucky'
-      description: 'Deal {damage} damage. Scry 1. Gain {block} Block.'
+      name: '幸运一击'
+      description: '造成{damage}点伤害。预见1。获得{block}点格挡。'
     LessonLearned:
-      name: 'Lesson Learned'
-      description: 'Deal {damage} damage. If Fatal, upgrade a card in your deck.'
+      name: '勤学精进'
+      description: '造成{damage}点伤害。若造成斩杀，则升级你牌组中的一张牌。'
     LikeWater:
-      name: 'Like Water'
-      description: 'At the end of your turn, if you are in Calm, gain {magic.block} Block.'
+      name: '如水'
+      description: '在你的回合结束时，如果你处于平静，则获得{magic.block}点格挡。'
     MasterReality:
-      name: 'Master Reality'
-      description: 'Whenever a card is created during combat, upgrade it.'
+      name: '操控现实'
+      description: '每当有牌在战斗中被创造时，将其升级。'
     Meditate:
-      name: 'Meditate'
-      description: 'Put up to {magic.pick} cards from your discard pile into your hand. Enter Calm. Exhaust.'
+      name: '冥想'
+      description: '将至多{magic.pick}张弃牌堆中的牌放入你的手牌。进入平静。消耗。'
     MentalFortress:
-      name: 'Mental Fortress'
-      description: 'Whenever you change stances, gain {magic.block} Block.'
+      name: '心灵堡垒'
+      description: '每当你转换姿态时，获得{magic.block}点格挡。'
     Miracle:
-      name: 'Miracle'
-      description: 'Gain {energy_gain} Energy. Exhaust.'
+      name: '奇迹'
+      description: '获得{energy_gain}点能量。消耗。'
     Nirvana:
-      name: 'Nirvana'
-      description: 'Whenever you Scry, gain {magic.block} Block.'
+      name: '涅槃'
+      description: '每当你预见时，获得{magic.block}点格挡。'
     Omega:
-      name: 'Omega'
-      description: 'At the end of your turn, deal 50 damage to ALL enemies.'
+      name: '欧米伽'
+      description: '在你的回合结束时，对所有敌人造成50点伤害。'
     Omniscience:
-      name: 'Omniscience'
-      description: 'Choose a card in your hand. Play it twice. Exhaust.'
+      name: '通晓万物'
+      description: '选择你手牌中的一张牌。将其打出两次。消耗。'
     Perseverance:
-      name: 'Perseverance'
-      description: 'Retain. Gain {block} Block. When retained, this gains {magic.retain_gain} Block.'
+      name: '坚韧'
+      description: '保留。获得{block}点格挡。每当这张牌被保留时，其格挡增加{magic.retain_gain}点。'
     Pray:
-      name: 'Pray'
-      description: 'Gain {block} Block. Gain 3 Mantra.'
+      name: '祈祷'
+      description: '获得{block}点格挡。获得3层真言。'
     PressurePoints:
-      name: 'Pressure Points'
-      description: 'Apply {magic.mark} Mark. ALL enemies lose HP equal to their Mark.'
+      name: '点穴'
+      description: '给予{magic.mark}层印记。所有敌人失去等同于其印记层数的生命。'
     Prostrate:
-      name: 'Prostrate'
-      description: 'Gain {block} Block. Gain 2 Mantra. Exhaust.'
+      name: '五体投地'
+      description: '获得{block}点格挡。获得2层真言。消耗。'
     Protect:
-      name: 'Protect'
-      description: 'Retain. Gain {block} Block.'
+      name: '护身'
+      description: '保留。获得{block}点格挡。'
     Ragnarok:
-      name: 'Ragnarok'
-      description: 'Deal {damage} damage to a random enemy {attack_times} times.'
+      name: '诸神之黄昏'
+      description: '随机对一名敌人造成{damage}点伤害{attack_times}次。'
     ReachHeaven:
-      name: 'Reach Heaven'
-      description: 'Deal {damage} damage. Shuffle a Through Violence into your draw pile.'
+      name: '立地升天'
+      description: '造成{damage}点伤害。在你的抽牌堆中加入一张以暴易暴。'
     Rushdown:
-      name: 'Rushdown'
-      description: 'Whenever you enter Wrath, draw {magic.draw} cards.'
+      name: '猛虎下山'
+      description: '每当你进入愤怒时，抽{magic.draw}张牌。'
     Safety:
-      name: 'Safety'
-      description: 'Retain. Gain {block} Block. Exhaust.'
+      name: '平安'
+      description: '保留。获得{block}点格挡。消耗。'
     Sanctity:
-      name: 'Sanctity'
-      description: 'Gain {block} Block. If you are in Calm, draw 2 cards.'
+      name: '圣洁'
+      description: '获得{block}点格挡。如果你处于平静，则抽2张牌。'
     SandsOfTime:
-      name: 'Sands of Time'
-      description: 'Retain. Deal {damage} damage. Retaining this card reduces its cost by 1.'
+      name: '时之沙'
+      description: '保留。造成{damage}点伤害。每当这张牌被保留时，其耗能减少1。'
     SashWhip:
-      name: 'Sash Whip'
-      description: 'Deal {damage} damage. If the previous card played this turn was an Attack, apply {magic.weak} Weak.'
+      name: '腰带抽打'
+      description: '造成{damage}点伤害。如果本回合打出的上一张牌是攻击牌，给予{magic.weak}层虚弱。'
     Scrawl:
-      name: 'Scrawl'
-      description: 'Draw cards until your hand is full. Exhaust.'
+      name: '潦草急就'
+      description: '抽牌直到你的手牌已满。消耗。'
     SignatureMove:
-      name: 'Signature Move'
-      description: 'Can only be played if this is the only Attack in your hand. Deal {damage} damage.'
+      name: '招牌技'
+      description: '只有当这张牌是你手中唯一的攻击牌时才能打出。造成{damage}点伤害。'
     SimmeringFury:
-      name: 'Simmering Fury'
-      description: 'Enter Wrath. Next turn, draw {magic.next_draw} cards.'
+      name: '怒火中烧'
+      description: '进入愤怒。下回合抽{magic.next_draw}张牌。'
     Smite:
-      name: 'Smite'
-      description: 'Retain. Deal {damage} damage. Exhaust.'
+      name: '惩恶'
+      description: '保留。造成{damage}点伤害。消耗。'
     SpiritShield:
-      name: 'Spirit Shield'
-      description: 'Gain Block equal to {magic.per_card} for each card in your hand.'
+      name: '精神护盾'
+      description: '你每有一张手牌，便获得{magic.per_card}点格挡。'
     Strike:
-      name: 'Strike'
-      description: 'Deal {damage} damage.'
+      name: '打击（紫）'
+      description: '造成{damage}点伤害。'
     Study:
-      name: 'Study'
-      description: 'At the end of your turn, shuffle {magic.amount} Insight into your draw pile.'
+      name: '研习'
+      description: '在你的回合结束时，在你的抽牌堆中加入{magic.amount}张洞见。'
     Swivel:
-      name: 'Swivel'
-      description: 'Gain {block} Block. Your next Attack this turn costs 0.'
+      name: '旋身'
+      description: '获得{block}点格挡。你本回合打出的下一张攻击牌耗能变为0。'
     TalkToTheHand:
-      name: 'Talk to the Hand'
-      description: 'Deal {damage} damage. Apply a debuff that gives you {magic.block} Block whenever you attack that enemy.'
+      name: '以手拒之'
+      description: '造成{damage}点伤害。施加一个减益，使你每次攻击该敌人时获得{magic.block}点格挡。'
     Tantrum:
-      name: 'Tantrum'
-      description: 'Deal {damage} damage {attack_times} times. Enter Wrath.'
+      name: '发泄'
+      description: '造成{damage}点伤害{attack_times}次。进入愤怒。'
     ThirdEye:
-      name: 'Third Eye'
-      description: 'Gain {block} Block. Scry {magic.scry}.'
+      name: '天眼'
+      description: '获得{block}点格挡。预见{magic.scry}。'
     ThroughViolence:
-      name: 'Through Violence'
-      description: 'Retain. Deal {damage} damage. Exhaust.'
+      name: '以暴易暴'
+      description: '保留。造成{damage}点伤害。消耗。'
     Tranquility:
-      name: 'Tranquility'
-      description: 'Retain. Enter Calm. Exhaust.'
+      name: '安宁'
+      description: '保留。进入平静。消耗。'
     Vault:
-      name: 'Vault'
-      description: 'End your turn. Take another turn after this one.'
+      name: '腾跃'
+      description: '结束你的回合。在这之后再进行一个回合。'
     Vigilance:
-      name: 'Vigilance'
-      description: 'Gain {block} Block. Enter Calm.'
+      name: '警惕'
+      description: '获得{block}点格挡。进入平静。'
     Wallop:
-      name: 'Wallop'
-      description: 'Deal {damage} damage. Gain Block equal to damage dealt.'
+      name: '当头棒喝'
+      description: '造成{damage}点伤害。获得等同于造成伤害的格挡。'
     WaveOfTheHand:
-      name: 'Wave of the Hand'
-      description: 'Whenever you gain Block this turn, apply {magic.weak} Weak to ALL enemies.'
+      name: '摆手'
+      description: '每当你在本回合获得格挡时，给予所有敌人{magic.weak}层虚弱。'
     Weave:
-      name: 'Weave'
-      description: 'Deal {damage} damage. Whenever you Scry, return this from your discard pile to your hand.'
+      name: '迂回'
+      description: '造成{damage}点伤害。每当你预见时，将这张牌从弃牌堆放回你的手牌。'
     WheelKick:
-      name: 'Wheel Kick'
-      description: 'Deal {damage} damage. Draw {draw} cards.'
+      name: '回环踢'
+      description: '造成{damage}点伤害。抽{draw}张牌。'
     WindmillStrike:
-      name: 'Windmill Strike'
-      description: 'Retain. Deal {damage} damage. Retaining this card increases its damage by {magic.gain}.'
+      name: '旋转打击'
+      description: '保留。造成{damage}点伤害。每当这张牌被保留时，其伤害增加{magic.gain}点。'
     Wish:
-      name: 'Wish'
-      description: 'Choose one: Gain Gold, Strength, or Plated Armor. Exhaust.'
+      name: '许愿'
+      description: '选择一项：获得金币、力量或多层护甲。消耗。'
     Worship:
-      name: 'Worship'
-      description: 'Gain 5 Mantra.'
+      name: '敬拜'
+      description: '获得5层真言。'
     WreathOfFlame:
-      name: 'Wreath of Flame'
-      description: 'Your next Attack deals {magic.bonus} additional damage.'
+      name: '火焰纹'
+      description: '你的下一张攻击牌额外造成{magic.bonus}点伤害。'
 powers:
   EnragePower:
     name: 激怒
@@ -2082,96 +2082,96 @@ potions:
     name: 混沌药水
     description: 向你的空物品栏添加随机药水。
   BattleHymnPower:
-    name: 'Battle Hymn'
-    description: 'At the start of your turn, add a Smite into your hand.'
+    name: '战歌'
+    description: '在每回合开始时，将一张惩恶加入你的手牌。'
   BlasphemerPower:
-    name: 'Blasphemer'
-    description: 'At the start of your next turn, die.'
+    name: '渎神'
+    description: '在你的下一回合开始时，死亡。'
   CollectPower:
-    name: 'Collect'
-    description: 'At the start of your turn, add Miracle+ to your hand.'
+    name: '收集'
+    description: '在你的回合开始时，将一张奇迹+加入你的手牌。'
   DevaPower:
-    name: 'Deva'
-    description: 'At the start of your turn, gain Energy, then increase this by 1.'
+    name: '天人'
+    description: '在你的回合开始时，获得能量，然后使该效果增加1。'
   DevotionPower:
-    name: 'Devotion'
-    description: 'At the start of your turn, gain {amount} Mantra.'
+    name: '虔信'
+    description: '在你的回合开始时，获得{amount}层真言。'
   EstablishmentPower:
-    name: 'Establishment'
-    description: 'At the end of your turn, reduce the cost of retained cards by 1.'
+    name: '确立基础'
+    description: '在你的回合结束时，将被保留牌的耗能减少1。'
   FastingPower:
-    name: 'Fasting'
-    description: 'Gain 1 less Energy at the start of each turn.'
+    name: '斋戒'
+    description: '每回合开始时少获得1点能量。'
   ForesightPower:
-    name: 'Foresight'
-    description: 'At the start of your turn, Scry {amount}.'
+    name: '先见之明'
+    description: '在你的回合开始时，预见{amount}。'
   LikeWaterPower:
-    name: 'Like Water'
-    description: 'At the end of your turn, if you are in Calm, gain {amount} Block.'
+    name: '如水'
+    description: '在你的回合结束时，如果你处于平静，则获得{amount}点格挡。'
   MantraPower:
-    name: 'Mantra'
-    description: 'When this reaches 10, enter Divinity.'
+    name: '真言'
+    description: '当达到10层时，进入神格。'
   MarkPower:
-    name: 'Mark'
-    description: 'When triggered, lose HP equal to Mark.'
+    name: '印记'
+    description: '触发时，失去等同于印记层数的生命。'
   MasterRealityPower:
-    name: 'Master Reality'
-    description: 'Whenever a card is created during combat, upgrade it.'
+    name: '操控现实'
+    description: '每当有牌在战斗中被创造时，将其升级。'
   MentalFortressPower:
-    name: 'Mental Fortress'
-    description: 'Whenever you change stances, gain {amount} Block.'
+    name: '心灵堡垒'
+    description: '每当你转换姿态时，获得{amount}点格挡。'
   NirvanaPower:
-    name: 'Nirvana'
-    description: 'Whenever you Scry, gain {amount} Block.'
+    name: '涅槃'
+    description: '每当你预见时，获得{amount}点格挡。'
   OmegaPower:
-    name: 'Omega'
-    description: 'At the end of your turn, deal {amount} damage to ALL enemies.'
+    name: '欧米伽'
+    description: '在你的回合结束时，对所有敌人造成{amount}点伤害。'
   RushdownPower:
-    name: 'Rushdown'
-    description: 'Whenever you enter Wrath, draw {amount} card(s).'
+    name: '猛虎下山'
+    description: '每当你进入愤怒时，抽{amount}张牌。'
   StudyPower:
-    name: 'Study'
-    description: 'At the end of your turn, shuffle {amount} Insight into your draw pile.'
+    name: '研习'
+    description: '在你的回合结束时，在你的抽牌堆中加入{amount}张洞见。'
   TalkToTheHandPower:
-    name: 'Talk to the Hand'
-    description: 'Whenever you attack this enemy, gain {amount} Block.'
+    name: '以手拒之'
+    description: '每当你攻击该敌人时，获得{amount}点格挡。'
   TemporaryDexterityPower:
-    name: 'Temporary Dexterity'
-    description: 'Dexterity this turn.'
+    name: '临时敏捷'
+    description: '本回合的敏捷。'
   WaveOfTheHandPower:
-    name: 'Wave of the Hand'
-    description: 'Whenever you gain Block this turn, apply {amount} Weak to all enemies.'
+    name: '摆手'
+    description: '每当你在本回合获得格挡时，给予所有敌人{amount}层虚弱。'
   WreathOfFlamePower:
-    name: 'Wreath of Flame'
-    description: 'Your next Attack deals {amount} additional damage.'
+    name: '火焰纹'
+    description: '你的下一张攻击牌额外造成{amount}点伤害。'
 relics:
   PureWater:
-    name: 'Pure Water'
-    description: 'At the start of each combat, add 1 Miracle to your hand.'
+    name: '至纯之水'
+    description: '在每场战斗开始时，将一张奇迹放入你的手牌。'
   Damaru:
-    name: 'Damaru'
-    description: 'At the start of your turn, gain 1 Mantra.'
+    name: '手摇鼓'
+    description: '在你的回合开始时，获得1层真言。'
   Duality:
-    name: 'Duality'
-    description: 'Whenever you play an Attack, gain 1 temporary Dexterity.'
+    name: '两仪'
+    description: '每当你打出一张攻击牌时，获得1点临时敏捷。'
   TeardropLocket:
-    name: 'Teardrop Locket'
-    description: 'Start each combat in Calm.'
+    name: '泪滴吊坠盒'
+    description: '每场战斗开始时进入平静。'
   CloakClasp:
-    name: 'Cloak Clasp'
-    description: 'At the end of your turn, gain 1 Block for each card in your hand.'
+    name: '斗篷扣'
+    description: '在你的回合结束时，你每有一张手牌便获得1点格挡。'
   GoldenEye:
-    name: 'Golden Eye'
-    description: 'Whenever you Scry, Scry 2 additional cards.'
+    name: '黄金眼'
+    description: '每当你预见时，额外预见2。'
   HolyWater:
-    name: 'Holy Water'
-    description: 'At the start of each combat, add 3 Miracles to your hand.'
+    name: '圣水'
+    description: '在每场战斗开始时，将3张奇迹放入你的手牌。'
   VioletLotus:
-    name: 'Violet Lotus'
-    description: 'Whenever you exit Calm, gain an additional Energy.'
+    name: '紫色莲花'
+    description: '每次你离开平静时，获得1点额外能量。'
   Melange:
-    name: 'Melange'
-    description: 'On use, Scry 3.'
+    name: '美琅脂'
+    description: '使用时，预见3。'
   AncientTeaSet:
     name: 古茶具套装
     description: 每当你进入休息点时，下场战斗的第一个回合获得 2 点额外能量。
