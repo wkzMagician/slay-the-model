@@ -26,3 +26,11 @@ def test_create_player_builds_defect_with_starting_relic_successfully():
     assert player.character == "Defect"
     assert player.namespace == "defect"
     assert any(relic.__class__.__name__ == "CrackedCore" for relic in player.relics)
+
+
+def test_create_player_builds_watcher_with_starting_relic_successfully():
+    player = create_player("Watcher")
+
+    assert player.character == "Watcher"
+    assert player.namespace == "watcher"
+    assert any(relic.__class__.__name__ == "PureWater" for relic in player.relics)

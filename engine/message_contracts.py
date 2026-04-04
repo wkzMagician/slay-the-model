@@ -29,8 +29,10 @@ from engine.messages import (
     PotionUsedMessage,
     PowerAppliedMessage,
     RelicObtainedMessage,
+    ScryMessage,
     ShuffleMessage,
     ShopEnteredMessage,
+    StanceChangedMessage,
 )
 
 ParameterNames = Tuple[str, ...]
@@ -127,6 +129,7 @@ _TARGETS = lambda _bound_method, message: message.targets
 _FLOOR = lambda _bound_method, message: message.floor
 _MESSAGE = lambda _bound_method, message: message
 _AMOUNT = lambda _bound_method, message: message.amount
+_COUNT = lambda _bound_method, message: message.count
 _CARD = lambda _bound_method, message: message.card
 _DEST_PILE = lambda _bound_method, message: message.dest_pile
 _SOURCE_PILE = lambda _bound_method, message: message.source_pile
@@ -135,6 +138,8 @@ _TARGET = lambda _bound_method, message: message.target
 _SOURCE = lambda _bound_method, message: message.source
 _POWER = lambda _bound_method, message: message.power
 _DAMAGE_TYPE = lambda _bound_method, message: message.damage_type
+_PREVIOUS_STATUS = lambda _bound_method, message: message.previous_status
+_NEW_STATUS = lambda _bound_method, message: message.new_status
 _ENTITIES_FROM_STATE = lambda _bound_method, _message: alive_entities_from_game_state()
 _ENTITIES_FROM_MESSAGE = lambda _bound_method, message: message.entities
 
@@ -213,6 +218,23 @@ def _build_contracts() -> dict[type[GameMessage], MessageContract]:
             message_type=PlayerTurnEndedMessage,
             default_variants=(
                 _VARIANT(("player", "entities"), _bind(_OWNER, _ENEMIES)),
+                _VARIANT(("message",), _bind(_MESSAGE)),
+                _VARIANT((), _bind()),
+            ),
+        ),
+        StanceChangedMessage: MessageContract(
+            message_type=StanceChangedMessage,
+            default_variants=(
+                _VARIANT(("player", "previous_status", "new_status"), _bind(_OWNER, _PREVIOUS_STATUS, _NEW_STATUS)),
+                _VARIANT(("previous_status", "new_status"), _bind(_PREVIOUS_STATUS, _NEW_STATUS)),
+                _VARIANT(("message",), _bind(_MESSAGE)),
+                _VARIANT((), _bind()),
+            ),
+        ),
+        ScryMessage: MessageContract(
+            message_type=ScryMessage,
+            default_variants=(
+                _VARIANT(("count",), _bind(_COUNT)),
                 _VARIANT(("message",), _bind(_MESSAGE)),
                 _VARIANT((), _bind()),
             ),

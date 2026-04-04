@@ -167,3 +167,26 @@ from powers.definitions.self_repair import SelfRepairPower
 from powers.definitions.biased_cognition import BiasedCognitionPower
 from powers.definitions.amplify import AmplifyPower
 from powers.definitions.echo_form import EchoFormPower
+from powers.definitions.watcher import (
+    BattleHymnPower,
+    BlasphemerPower,
+    CollectPower,
+    DevaPower,
+    DevotionPower,
+    EstablishmentPower,
+    FastingPower,
+    ForesightPower,
+    LikeWaterPower,
+    MantraPower,
+    MarkPower,
+    MasterRealityPower,
+    MentalFortressPower,
+    NirvanaPower,
+    OmegaPower,
+    RushdownPower,
+    StudyPower,
+    TalkToTheHandPower,
+    TemporaryDexterityPower,
+    WaveOfTheHandPower,
+    WreathOfFlamePower,
+)

@@ -185,7 +185,7 @@ class RuntimeContext:
         add_participant(getattr(message, "potion", None))
         add_participant(getattr(message, "relic", None))
 
-        if type(message).__name__ in {"DamageResolvedMessage", "HpLostMessage"}:
+        if type(message).__name__ in {"DamageResolvedMessage", "HpLostMessage", "ScryMessage", "StanceChangedMessage"}:
             add_player_cards()
 
         return participants

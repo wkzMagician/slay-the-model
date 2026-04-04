@@ -10,7 +10,7 @@ from player.player_factory import create_player, list_characters
 def test_list_characters_returns_only_playable_characters():
     """Public character list should expose playable characters."""
     characters = list_characters()
-    assert characters == ["Ironclad", "Silent", "Defect"]
+    assert characters == ["Ironclad", "Silent", "Defect", "Watcher"]
 
 
 def test_create_defect_character_config():
@@ -115,18 +115,46 @@ def test_create_silent():
     assert not failed, "; ".join(failed)
 
 
+def test_create_watcher():
+    """Watcher should be a playable character with the expected starter kit."""
+    player = create_player("Watcher")
+    deck_names = [card.__class__.__name__ for card in player.card_manager.deck]
+    relic_names = [r.__class__.__name__ for r in player.relics]
+
+    checks = [
+        (player.character == "Watcher", f"Character name: {player.character} != Watcher"),
+        (player.max_hp == 72, f"Max HP: {player.max_hp} != 72"),
+        (player.energy == 3, f"Energy: {player.energy} != 3"),
+        (player.gold == 99, f"Gold: {player.gold} != 99"),
+        (player.namespace == "watcher", f"Namespace: {player.namespace} != watcher"),
+        (player.base_draw_count == 5, f"Draw count: {player.base_draw_count} != 5"),
+        (len(player.card_manager.deck) == 10, f"Deck size: {len(player.card_manager.deck)} != 10"),
+        (deck_names.count("Strike") == 4, f"Watcher should start with 4 Strikes, got {deck_names}"),
+        (deck_names.count("Defend") == 4, f"Watcher should start with 4 Defends, got {deck_names}"),
+        ("Eruption" in deck_names, f"Eruption missing from deck: {deck_names}"),
+        ("Vigilance" in deck_names, f"Vigilance missing from deck: {deck_names}"),
+        (len(player.relics) == 1, f"Relics count: {len(player.relics)} != 1"),
+        ("PureWater" in relic_names, f"PureWater not in relics: {relic_names}"),
+    ]
+
+    failed = [msg for passed, msg in checks if not passed]
+    assert not failed, "; ".join(failed)
+
+
 def test_case_insensitive():
     """Test case-insensitive character name handling."""
     variations = [
         "Ironclad", "ironclad", "IRONCLAD",
         "Silent", "silent", "SILENT",
         "Defect", "defect", "DEFECT",
+        "Watcher", "watcher", "WATCHER",
     ]
 
     expected = {
         "ironclad": "Ironclad",
         "silent": "Silent",
         "defect": "Defect",
+        "watcher": "Watcher",
     }
 
     for name in variations:

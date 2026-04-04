@@ -180,5 +180,16 @@ from .character.defect import (
     RunicCapacitor,
     SymbioticVirus,
 )
+from .character.watcher import (
+    CloakClasp,
+    Damaru,
+    Duality,
+    GoldenEye,
+    HolyWater,
+    Melange,
+    PureWater,
+    TeardropLocket,
+    VioletLotus,
+)
 
 __all__ = [name for name in globals() if not name.startswith('_')]

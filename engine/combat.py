@@ -389,6 +389,11 @@ class Combat(Localizable):
         from engine.game_state import game_state
         from localization import t
 
+        if getattr(self.combat_state, "skip_enemy_turn_once", False):
+            self.combat_state.skip_enemy_turn_once = False
+            self.combat_state.current_phase = "enemy_end"
+            return None
+
         # Print enemy turn header
         tui_print(f"\n{t('ui.enemy_turn', default='=== Enemy Turn ===')}")
 
@@ -589,6 +594,8 @@ class Combat(Localizable):
         """Start player turn - draw cards, reset energy, trigger start-of-turn effects"""
         from engine.game_state import game_state
         from localization import t
+        from actions.watcher import ChangeStanceAction
+        from utils.types import StatusType
         
         # Print player turn header
         tui_print(f"\n{t('ui.player_turn', default='=== Player Turn ===')}")
@@ -636,6 +643,9 @@ class Combat(Localizable):
 
         # Reset energy
         game_state.player.energy = game_state.player.max_energy
+
+        if game_state.player.status_manager.status == StatusType.DIVINITY:
+            game_state.action_queue.add_action(ChangeStanceAction(StatusType.NEUTRAL), to_front=True)
 
         # Increment turn counter
         self.combat_state.combat_turn += 1

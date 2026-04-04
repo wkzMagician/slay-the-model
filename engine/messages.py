@@ -211,6 +211,23 @@ class DamageResolvedMessage(GameMessage):
 
 
 @dataclass(frozen=True)
+class StanceChangedMessage(GameMessage):
+    """The player's stance has changed."""
+
+    owner: "Creature"
+    previous_status: Any
+    new_status: Any
+
+
+@dataclass(frozen=True)
+class ScryMessage(GameMessage):
+    """The player is resolving a scry effect."""
+
+    owner: "Creature"
+    count: int
+
+
+@dataclass(frozen=True)
 class CreatureDiedMessage(GameMessage):
     """A creature has already died."""
 
@@ -241,6 +258,8 @@ EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES = (
     PotionUsedMessage,
     PowerAppliedMessage,
     RelicObtainedMessage,
+    ScryMessage,
     ShuffleMessage,
     ShopEnteredMessage,
+    StanceChangedMessage,
 )
