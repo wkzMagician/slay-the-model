@@ -1,4 +1,10 @@
-from cards.watcher._base import *
+from actions.combat import EndTurnAction
+from actions.watcher import SkipEnemyTurnAction
+from cards.base import Card
+from engine.runtime_api import add_actions
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Vault(Card):

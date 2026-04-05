@@ -1,4 +1,8 @@
-from powers.definitions._watcher_common import *
+from actions.card import AddCardAction
+from actions.combat_status import RemovePowerAction
+from engine.runtime_api import add_action
+from powers.base import Power, StackType
+from utils.registry import register
 
 @register("power")
 class CollectPower(Power):

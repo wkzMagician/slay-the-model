@@ -1,4 +1,7 @@
-from cards.watcher._base import *
+from cards.base import Card
+import engine.game_state as game_state_module
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class SignatureMove(Card):
@@ -15,7 +18,7 @@ class SignatureMove(Card):
         can_play, reason = super().can_play(ignore_energy)
         if not can_play:
             return can_play, reason
-        hand = _player().card_manager.get_pile("hand")
+        hand = game_state_module.game_state.player.card_manager.get_pile("hand")
         if any(card is not self and getattr(card, "card_type", None) == CardType.ATTACK for card in hand):
             return False, "Signature Move requires no other attacks in hand."
         return True, None

@@ -1,4 +1,12 @@
-from cards.watcher._base import *
+from actions.combat_cards import PlayCardAction
+from actions.display import InputRequestAction
+from cards.base import Card, RawLocalStr
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.option import Option
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Omniscience(Card):
@@ -14,7 +22,7 @@ class Omniscience(Card):
     # todo: 效果不完善。两次打出的这张牌，会被消耗
     def on_play(self, targets: List = []):
         options = []
-        for card in list(_player().card_manager.get_pile("hand")):
+        for card in list(game_state_module.game_state.player.card_manager.get_pile("hand")):
             if card is self:
                 continue
             options.append(

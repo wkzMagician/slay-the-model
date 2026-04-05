@@ -1,4 +1,8 @@
-from powers.definitions._watcher_common import *
+from actions.combat import GainBlockAction
+from engine.runtime_api import add_action
+from powers.base import Power
+from utils.registry import register
+from utils.types import CardType
 
 @register("power")
 class TalkToTheHandPower(Power):

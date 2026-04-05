@@ -1,4 +1,11 @@
-from cards.watcher._base import *
+from actions.combat_cards import AttackAction
+from cards.base import Card, RawLocalStr
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.dynamic_values import resolve_potential_damage
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Expunger(Card):
@@ -17,7 +24,7 @@ class Expunger(Card):
         super().__init__(**kwargs)
 
     def get_combat_description(self, target=None):
-        player = _player()
+        player = game_state_module.game_state.player
         damage = self.damage
         if player is not None and target is not None:
             damage = resolve_potential_damage(self.damage, player, target, card=self)
@@ -28,4 +35,4 @@ class Expunger(Card):
         if target is None:
             return
         for _ in range(self.hits):
-            add_action(AttackAction(self.damage, target=target, source=_player(), damage_type="attack", card=self))
+            add_action(AttackAction(self.damage, target=target, source=game_state_module.game_state.player, damage_type="attack", card=self))

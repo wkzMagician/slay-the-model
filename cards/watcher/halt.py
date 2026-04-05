@@ -1,4 +1,10 @@
-from cards.watcher._base import *
+from actions.combat import GainBlockAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, StatusType, TargetType
 
 @register("card")
 class Halt(Card):
@@ -15,5 +21,5 @@ class Halt(Card):
 
     def on_play(self, targets: List = []):
         super().on_play(targets)
-        if _player().status_manager.status == StatusType.WRATH:
-            add_action(GainBlockAction(self.get_magic_value("wrath_block"), target=_player()))
+        if game_state_module.game_state.player.status_manager.status == StatusType.WRATH:
+            add_action(GainBlockAction(self.get_magic_value("wrath_block"), target=game_state_module.game_state.player))

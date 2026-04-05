@@ -1,4 +1,14 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from actions.display import InputRequestAction
+from cards.base import Card, RawLocalStr
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from powers.definitions.plated_armor import PlatedArmorPower
+from powers.definitions.strength import StrengthPower
+from typing import List
+from utils.option import Option
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Wish(Card):
@@ -13,7 +23,7 @@ class Wish(Card):
     def on_play(self, targets: List = []):
         from actions.base import LambdaAction
 
-        player = _player()
+        player = game_state_module.game_state.player
         options = [
             Option(name=RawLocalStr("Gain Gold"), actions=[LambdaAction(lambda: setattr(player, "gold", player.gold + (30 if self.upgrade_level > 0 else 25)))]),
             Option(name=RawLocalStr("Gain Strength"), actions=[ApplyPowerAction(StrengthPower(amount=4 if self.upgrade_level > 0 else 3, owner=player), player)]),

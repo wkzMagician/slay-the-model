@@ -1,4 +1,11 @@
-from cards.watcher._base import *
+from actions.combat import GainEnergyAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
+
 
 @register("card")
 class FollowUp(Card):
@@ -12,7 +19,9 @@ class FollowUp(Card):
     text_description = "Deal {damage} damage. If the previous card played this turn was an Attack, gain 1 Energy."
 
     def on_play(self, targets: List = []):
-        previous = _last_played_card() # todo: 同理。应当从combat_state里面看
+        player = game_state_module.game_state.player
+        discard = [] if player is None else player.card_manager.get_pile("discard_pile")
+        previous = discard[-1] if discard else None
         super().on_play(targets)
         if previous is not None and getattr(previous, "card_type", None) == CardType.ATTACK:
             add_action(GainEnergyAction(1))

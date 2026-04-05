@@ -1,4 +1,5 @@
-from powers.definitions._watcher_common import *
+from powers.base import Power
+from utils.registry import register
 
 @register("power")
 class TemporaryDexterityPower(Power):

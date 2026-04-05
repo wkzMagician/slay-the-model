@@ -1,4 +1,7 @@
-from powers.definitions._watcher_common import *
+from engine.messages import CardAddedToPileMessage
+from engine.subscriptions import MessagePriority, subscribe
+from powers.base import Power, StackType
+from utils.registry import register
 
 @register("power")
 class MasterRealityPower(Power):

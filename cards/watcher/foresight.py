@@ -1,4 +1,11 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from powers.definitions.foresight import ForesightPower
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Foresight(Card):
@@ -12,4 +19,4 @@ class Foresight(Card):
     text_description = "At the start of your turn, Scry {magic.scry}."
 
     def on_play(self, targets: List = []):
-        add_action(ApplyPowerAction(ForesightPower(amount=self.get_magic_value("scry"), owner=_player()), _player()))
+        add_action(ApplyPowerAction(ForesightPower(amount=self.get_magic_value("scry"), owner=game_state_module.game_state.player), game_state_module.game_state.player))

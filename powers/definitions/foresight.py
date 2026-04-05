@@ -1,4 +1,6 @@
-from powers.definitions._watcher_common import *
+from engine.runtime_api import add_action
+from powers.base import Power
+from utils.registry import register
 
 @register("power")
 class ForesightPower(Power):

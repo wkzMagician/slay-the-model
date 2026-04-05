@@ -1,4 +1,9 @@
-from cards.watcher._base import *
+from actions.watcher import ChangeStanceAction
+from cards.base import Card
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, StatusType, TargetType
 
 @register("card")
 class EmptyBody(Card):

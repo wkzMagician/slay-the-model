@@ -1,4 +1,11 @@
-from cards.watcher._base import *
+from actions.combat_cards import AttackAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
+
 
 @register("card")
 class BowlingBash(Card):
@@ -15,5 +22,9 @@ class BowlingBash(Card):
         target = targets[0] if targets else None
         if target is None:
             return
-        for _ in range(max(1, len(_alive_enemies()))):
-            add_action(AttackAction(self.damage, target=target, source=_player(), damage_type="attack", card=self))
+        alive_enemies = [
+            enemy for enemy in (game_state_module.game_state.current_combat.enemies if game_state_module.game_state.current_combat else [])
+            if not enemy.is_dead()
+        ]
+        for _ in range(max(1, len(alive_enemies))):
+            add_action(AttackAction(self.damage, target=target, source=game_state_module.game_state.player, damage_type="attack", card=self))

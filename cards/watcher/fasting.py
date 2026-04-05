@@ -1,4 +1,13 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_actions
+from powers.definitions.dexterity import DexterityPower
+from powers.definitions.fasting import FastingPower
+from powers.definitions.strength import StrengthPower
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Fasting(Card):
@@ -13,7 +22,7 @@ class Fasting(Card):
 
     def on_play(self, targets: List = []):
         amount = self.get_magic_value("stat")
-        player = _player()
+        player = game_state_module.game_state.player
         add_actions(
             [
                 ApplyPowerAction(StrengthPower(amount=amount, owner=player), player),

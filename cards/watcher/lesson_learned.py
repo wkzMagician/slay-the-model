@@ -1,4 +1,7 @@
-from cards.watcher._base import *
+from cards.base import Card
+import engine.game_state as game_state_module
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class LessonLearned(Card):
@@ -14,7 +17,7 @@ class LessonLearned(Card):
     def on_fatal(self, damage, target=None, card=None, damage_type: str = "direct"):
         if card is not self:
             return
-        for candidate in _player().card_manager.get_pile("deck"):
+        for candidate in game_state_module.game_state.player.card_manager.get_pile("deck"):
             if candidate.can_upgrade():
                 candidate.upgrade()
                 break

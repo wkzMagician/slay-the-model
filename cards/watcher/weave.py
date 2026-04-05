@@ -1,4 +1,10 @@
-from cards.watcher._base import *
+from actions.watcher import ReturnCardToHandAction
+from cards.base import Card
+from engine.messages import ScryMessage
+from engine.runtime_api import add_action
+from engine.subscriptions import MessagePriority, subscribe
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Weave(Card):

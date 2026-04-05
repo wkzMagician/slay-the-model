@@ -1,4 +1,8 @@
-from powers.definitions._watcher_common import *
+from actions.combat_damage import LoseHPAction
+from actions.combat_status import RemovePowerAction
+from engine.runtime_api import add_actions
+from powers.base import Power, StackType
+from utils.registry import register
 
 @register("power")
 class BlasphemerPower(Power):

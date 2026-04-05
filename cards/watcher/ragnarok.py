@@ -1,4 +1,7 @@
-from cards.watcher._base import *
+from cards.base import Card
+import random
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Ragnarok(Card):

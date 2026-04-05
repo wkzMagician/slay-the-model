@@ -1,4 +1,12 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from powers.definitions.vulnerable import VulnerablePower
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
+
 
 @register("card")
 class CrushJoints(Card):
@@ -16,8 +24,9 @@ class CrushJoints(Card):
     def on_play(self, targets: List = []):
         target = targets[0] if targets else None
         super().on_play(targets)
-        # todo: 上一张打出的牌，应当从combat_state的历史记录里找，而不是弃牌堆
-        previous = _last_played_card()
+        player = game_state_module.game_state.player
+        discard = [] if player is None else player.card_manager.get_pile("discard_pile")
+        previous = discard[-1] if discard else None
         if target is None or previous is None or getattr(previous, "card_type", None) != CardType.SKILL:
             return
         amount = self.get_magic_value("vuln")

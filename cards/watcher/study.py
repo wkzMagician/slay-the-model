@@ -1,4 +1,10 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Study(Card):
@@ -14,4 +20,4 @@ class Study(Card):
     def on_play(self, targets: List = []):
         from powers.definitions.study import StudyPower
 
-        add_action(ApplyPowerAction(StudyPower(amount=self.get_magic_value("amount"), owner=_player()), _player()))
+        add_action(ApplyPowerAction(StudyPower(amount=self.get_magic_value("amount"), owner=game_state_module.game_state.player), game_state_module.game_state.player))

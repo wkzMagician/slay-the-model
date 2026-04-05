@@ -1,4 +1,9 @@
-from cards.watcher._base import *
+from actions.card import AddCardAction
+from actions.card_lifecycle import ExhaustCardAction
+from cards.base import COST_UNPLAYABLE, Card
+from engine.runtime_api import add_action
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class DeusExMachina(Card):

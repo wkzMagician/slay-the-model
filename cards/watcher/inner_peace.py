@@ -1,4 +1,11 @@
-from cards.watcher._base import *
+from actions.card import DrawCardsAction
+from actions.watcher import ChangeStanceAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, StatusType, TargetType
 
 @register("card")
 class InnerPeace(Card):
@@ -12,7 +19,7 @@ class InnerPeace(Card):
     text_description = "Enter Calm. If you are already in Calm, draw {draw} cards."
 
     def on_play(self, targets: List = []):
-        was_calm = _player().status_manager.status == StatusType.CALM
+        was_calm = game_state_module.game_state.player.status_manager.status == StatusType.CALM
         add_action(ChangeStanceAction(StatusType.CALM))
         if was_calm:
             add_action(DrawCardsAction(self.draw))

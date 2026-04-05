@@ -1,4 +1,10 @@
-from cards.watcher._base import *
+from actions.card_choice import SetCostUntilEndOfTurnAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Swivel(Card):
@@ -15,6 +21,6 @@ class Swivel(Card):
     # 在打出牌之后，power把其它的攻击牌的cost_for_this_turn恢复为原值
     def on_play(self, targets: List = []):
         super().on_play(targets)
-        for card in list(_player().card_manager.get_pile("hand")):
+        for card in list(game_state_module.game_state.player.card_manager.get_pile("hand")):
             if getattr(card, "card_type", None) == CardType.ATTACK:
                 add_action(SetCostUntilEndOfTurnAction(card, 0))

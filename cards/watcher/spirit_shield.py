@@ -1,4 +1,10 @@
-from cards.watcher._base import *
+from actions.combat import GainBlockAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class SpiritShield(Card):
@@ -13,5 +19,5 @@ class SpiritShield(Card):
 
     # todo: 重载 block property
     def on_play(self, targets: List = []):
-        amount = len(_player().card_manager.get_pile("hand")) * self.get_magic_value("per_card")
-        add_action(GainBlockAction(amount, target=_player()))
+        amount = len(game_state_module.game_state.player.card_manager.get_pile("hand")) * self.get_magic_value("per_card")
+        add_action(GainBlockAction(amount, target=game_state_module.game_state.player))

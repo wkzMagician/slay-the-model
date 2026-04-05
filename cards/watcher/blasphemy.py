@@ -1,4 +1,12 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from actions.watcher import ChangeStanceAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_actions
+from powers.definitions.blasphemer import BlasphemerPower
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, StatusType, TargetType
 
 @register("card")
 class Blasphemy(Card):
@@ -11,5 +19,5 @@ class Blasphemy(Card):
     text_description = "Enter Divinity. Die next turn. Exhaust."
 
     def on_play(self, targets: List = []):
-        player = _player()
+        player = game_state_module.game_state.player
         add_actions([ChangeStanceAction(StatusType.DIVINITY), ApplyPowerAction(BlasphemerPower(owner=player), player)])

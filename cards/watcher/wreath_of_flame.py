@@ -1,4 +1,11 @@
-from cards.watcher._base import *
+from actions.combat_status import ApplyPowerAction
+from cards.base import Card
+import engine.game_state as game_state_module
+from engine.runtime_api import add_action
+from powers.definitions.wreath_of_flame import WreathOfFlamePower
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class WreathOfFlame(Card):
@@ -12,4 +19,4 @@ class WreathOfFlame(Card):
     text_description = "Your next Attack deals {magic.bonus} additional damage."
 
     def on_play(self, targets: List = []):
-        add_action(ApplyPowerAction(WreathOfFlamePower(amount=self.get_magic_value("bonus"), owner=_player()), _player()))
+        add_action(ApplyPowerAction(WreathOfFlamePower(amount=self.get_magic_value("bonus"), owner=game_state_module.game_state.player), game_state_module.game_state.player))

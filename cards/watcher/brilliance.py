@@ -1,4 +1,8 @@
-from cards.watcher._base import *
+from cards.base import Card
+import engine.game_state as game_state_module
+from typing import List
+from utils.registry import register
+from utils.types import CardType, RarityType, TargetType
 
 @register("card")
 class Brilliance(Card):
@@ -13,7 +17,7 @@ class Brilliance(Card):
 
     # todo: 重载 damage property
     def on_play(self, targets: List = []):
-        mantra = _player().get_power("Mantra")
+        mantra = game_state_module.game_state.player.get_power("Mantra")
         if mantra is not None:
             self._damage += mantra.amount
         super().on_play(targets)
