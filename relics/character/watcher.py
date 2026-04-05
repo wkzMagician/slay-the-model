@@ -19,7 +19,7 @@ class PureWater(Relic):
     text_description = "At the start of each combat, add 1 Miracle to your hand."
 
     def on_combat_start(self, player, entities):
-        from cards.watcher import Miracle
+        from cards.colorless.miracle import Miracle
 
         add_action(AddCardAction(Miracle(), dest_pile="hand"))
 
@@ -81,7 +81,7 @@ class HolyWater(Relic):
     text_description = "At the start of each combat, add 3 Miracles to your hand."
 
     def on_combat_start(self, player, entities):
-        from cards.watcher import Miracle
+        from cards.colorless.miracle import Miracle
 
         for _ in range(3):
             add_action(AddCardAction(Miracle(), dest_pile="hand"))

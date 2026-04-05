@@ -17,7 +17,7 @@ class DeceiveReality(Card):
     text_description = "Gain {block} Block. Add a Safety into your hand."
 
     def on_play(self, targets: List = []):
-        from cards.watcher.safety import Safety
+        from cards.colorless.safety import Safety
 
         super().on_play(targets)
         add_action(AddCardAction(Safety(), dest_pile="hand"))

@@ -10,7 +10,7 @@ class StudyPower(Power):
 
     def on_turn_end(self):
         super().on_turn_end()
-        from cards.watcher import Insight
+        from cards.colorless.insight import Insight
 
         for _ in range(max(0, self.amount)):
             add_action(AddCardAction(Insight(), dest_pile="draw_pile"))

@@ -1,11 +1,11 @@
 from actions.combat_status import ApplyPowerAction
 from cards.base import Card
-import engine.game_state as game_state_module
 from engine.runtime_api import add_action
 from powers.definitions.omega import OmegaPower
 from typing import List
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
+
 
 @register("card")
 class Omega(Card):
@@ -18,4 +18,7 @@ class Omega(Card):
     text_description = "At the end of your turn, deal 50 damage to ALL enemies."
 
     def on_play(self, targets: List = []):
-        add_action(ApplyPowerAction(OmegaPower(amount=50, owner=game_state_module.game_state.player), game_state_module.game_state.player))
+        from engine.game_state import game_state
+
+        player = game_state.player
+        add_action(ApplyPowerAction(OmegaPower(amount=50, owner=player), player))

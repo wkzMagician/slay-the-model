@@ -18,7 +18,7 @@ class DeusExMachina(Card):
     text_description = "Unplayable. When drawn, add {magic.count} Miracles to your hand. Exhaust."
 
     def on_draw(self):
-        from cards.watcher.miracle import Miracle
+        from cards.colorless.miracle import Miracle
 
         for _ in range(self.get_magic_value("count")):
             add_action(AddCardAction(Miracle(), dest_pile="hand"))

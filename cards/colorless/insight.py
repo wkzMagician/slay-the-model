@@ -2,15 +2,16 @@ from cards.base import Card
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
 
+
 @register("card")
-class Safety(Card):
+class Insight(Card):
     card_type = CardType.SKILL
     target_type = TargetType.SELF
     rarity = RarityType.SPECIAL
-    base_cost = 1
-    base_block = 12
-    upgrade_block = 16
+    base_cost = 0
+    base_draw = 2
+    upgrade_draw = 3
     base_retain = True
     base_exhaust = True
-    text_name = "Safety"
-    text_description = "Retain. Gain {block} Block. Exhaust."
+    text_name = "Insight"
+    text_description = "Retain. Draw {draw} cards. Exhaust."

@@ -1493,6 +1493,30 @@ cards:
     Burn:
       name: Burn
       description: Unplayable. At the end of your turn, take {damage} damage.
+    Miracle:
+      name: Miracle
+      description: Gain {energy_gain} Energy. Exhaust.
+    Smite:
+      name: Smite
+      description: Retain. Deal {damage} damage. Exhaust.
+    Safety:
+      name: Safety
+      description: Retain. Gain {block} Block. Exhaust.
+    Insight:
+      name: Insight
+      description: Retain. Draw {draw} cards. Exhaust.
+    ThroughViolence:
+      name: Through Violence
+      description: Retain. Deal {damage} damage. Exhaust.
+    Expunger:
+      name: Expunger
+      description: Deal {damage} damage X times. Exhaust.
+    Beta:
+      name: Beta
+      description: Shuffle an Omega into your draw pile. Exhaust.
+    Omega:
+      name: Omega
+      description: At the end of your turn, deal 50 damage to ALL enemies.
     Chrysalis:
       name: Chrysalis
       description: Shuffle {magic.cards} random Skills into your draw pile. They cost 0 this combat. Exhaust.

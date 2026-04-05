@@ -17,7 +17,7 @@ class CarveReality(Card):
     text_description = "Deal {damage} damage. Add a Smite into your hand."
 
     def on_play(self, targets: List = []):
-        from cards.watcher.smite import Smite
+        from cards.colorless.smite import Smite
 
         super().on_play(targets)
         add_action(AddCardAction(Smite(), dest_pile="hand"))

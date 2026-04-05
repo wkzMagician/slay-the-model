@@ -16,6 +16,6 @@ class Alpha(Card):
     text_description = "Shuffle a Beta into your draw pile. Exhaust."
 
     def on_play(self, targets: List = []):
-        from cards.watcher.beta import Beta
+        from cards.colorless.beta import Beta
 
         add_action(AddCardAction(Beta(), dest_pile="draw_pile"))

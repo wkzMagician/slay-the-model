@@ -17,7 +17,7 @@ class Evaluate(Card):
     text_description = "Gain {block} Block. Shuffle an Insight into your draw pile."
 
     def on_play(self, targets: List = []):
-        from cards.watcher.insight import Insight
+        from cards.colorless.insight import Insight
 
         super().on_play(targets)
         add_action(AddCardAction(Insight(), dest_pile="draw_pile"))

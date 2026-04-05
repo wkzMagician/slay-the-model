@@ -2,6 +2,7 @@ from cards.base import Card
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
 
+
 @register("card")
 class Miracle(Card):
     card_type = CardType.SKILL

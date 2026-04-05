@@ -1458,6 +1458,30 @@ cards:
     Burn:
       name: 灼伤
       description: 无法使用。回合结束时受到 {damage} 点伤害。
+    Miracle:
+      name: 奇迹
+      description: 获得 {energy_gain} 点能量。消耗。
+    Smite:
+      name: 惩恶
+      description: 保留。造成 {damage} 点伤害。消耗。
+    Safety:
+      name: 平安
+      description: 保留。获得 {block} 点格挡。消耗。
+    Insight:
+      name: 洞见
+      description: 保留。抽 {draw} 张牌。消耗。
+    ThroughViolence:
+      name: 以暴易暴
+      description: 保留。造成 {damage} 点伤害。消耗。
+    Expunger:
+      name: 灭除之刃
+      description: 造成 {damage} 点伤害 X 次。消耗。
+    Beta:
+      name: 贝塔
+      description: 将一张欧米伽洗入你的抽牌堆。消耗。
+    Omega:
+      name: 欧米伽
+      description: 在你的回合结束时，对所有敌人造成 50 点伤害。
     Chrysalis:
       name: 结茧
       description: 向抽牌堆洗入 {magic.cards} 张随机技能牌。本场战斗中消耗为 0。消耗。

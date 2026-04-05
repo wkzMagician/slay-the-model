@@ -16,7 +16,7 @@ class ConjureBlade(Card):
     text_description = "Shuffle an Expunger into your draw pile. Exhaust."
 
     def on_play(self, targets: List = []):
-        from cards.watcher.expunger import Expunger
+        from cards.colorless.expunger import Expunger
 
         hits = self.get_effective_x() + (1 if self.upgrade_level > 0 else 0)
         add_action(AddCardAction(Expunger(hits=max(1, hits)), dest_pile="draw_pile"))

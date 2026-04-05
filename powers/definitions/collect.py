@@ -12,7 +12,7 @@ class CollectPower(Power):
 
     # todo: 效果错误：加的是Miracle+
     def on_turn_start(self):
-        from cards.watcher import Miracle
+        from cards.colorless.miracle import Miracle
 
         if self.duration == 0:
             return

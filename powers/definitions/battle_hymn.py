@@ -10,6 +10,6 @@ class BattleHymnPower(Power):
     stack_type = StackType.PRESENCE
 
     def on_turn_start(self):
-        from cards.watcher import Smite
+        from cards.colorless.smite import Smite
 
         add_action(AddCardAction(Smite(), dest_pile="hand"))

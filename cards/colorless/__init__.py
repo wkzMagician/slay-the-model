@@ -56,6 +56,14 @@ from .normality import Normality
 from .curse_of_the_bell import CurseOfTheBell
 from .necronomicurse import Necronomicurse
 from .ascenders_bane import AscendersBane
+from .miracle import Miracle
+from .smite import Smite
+from .safety import Safety
+from .insight import Insight
+from .through_violence import ThroughViolence
+from .expunger import Expunger
+from .beta import Beta
+from .omega import Omega
 
 __all__ = [
     # Uncommon cards
@@ -121,4 +129,12 @@ __all__ = [
     "CurseOfTheBell",
     "Necronomicurse",
     "AscendersBane",
+    "Miracle",
+    "Smite",
+    "Safety",
+    "Insight",
+    "ThroughViolence",
+    "Expunger",
+    "Beta",
+    "Omega",
 ]

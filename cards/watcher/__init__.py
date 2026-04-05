@@ -1,13 +1,13 @@
 """Watcher card package."""
 
-from cards.watcher.miracle import Miracle
-from cards.watcher.smite import Smite
-from cards.watcher.safety import Safety
-from cards.watcher.insight import Insight
-from cards.watcher.through_violence import ThroughViolence
-from cards.watcher.expunger import Expunger
-from cards.watcher.beta import Beta
-from cards.watcher.omega import Omega
+from cards.colorless.miracle import Miracle
+from cards.colorless.smite import Smite
+from cards.colorless.safety import Safety
+from cards.colorless.insight import Insight
+from cards.colorless.through_violence import ThroughViolence
+from cards.colorless.expunger import Expunger
+from cards.colorless.beta import Beta
+from cards.colorless.omega import Omega
 from cards.watcher.strike import Strike
 from cards.watcher.defend import Defend
 from cards.watcher.eruption import Eruption

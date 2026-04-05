@@ -26,6 +26,15 @@ def test_pure_water_adds_miracle_on_combat_start():
     assert "Miracle" in names
 
 
+def test_watcher_generated_cards_use_colorless_namespace():
+    from cards.watcher import Beta, Expunger, Insight, Miracle, Omega, Safety, Smite, ThroughViolence
+
+    for card_cls in (Beta, Expunger, Insight, Miracle, Omega, Safety, Smite, ThroughViolence):
+        card = card_cls()
+        assert card.namespace == "colorless"
+        assert card.color == "Colorless"
+
+
 def test_watcher_stance_actions_and_violet_lotus_grant_energy():
     helper = create_test_helper()
     player = helper.create_player(energy=1, max_energy=3)
