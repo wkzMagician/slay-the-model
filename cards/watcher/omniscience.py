@@ -1,3 +1,4 @@
+from actions.card_lifecycle import ExhaustCardAction
 from actions.combat_cards import PlayCardAction
 from actions.display import InputRequestAction
 from cards.base import Card, RawLocalStr
@@ -7,6 +8,7 @@ from typing import List
 from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
+
 
 @register("card")
 class Omniscience(Card):
@@ -19,7 +21,6 @@ class Omniscience(Card):
     text_name = "Omniscience"
     text_description = "Choose a card in your hand. Play it twice. Exhaust."
 
-    # todo: 效果不完善。两次打出的这张牌，会被消耗
     def on_play(self, targets: List = []):
         options = []
         for card in list(game_state_module.game_state.player.card_manager.get_pile("hand")):
@@ -28,7 +29,11 @@ class Omniscience(Card):
             options.append(
                 Option(
                     name=card.info(),
-                    actions=[PlayCardAction(card, ignore_energy=True), PlayCardAction(card, ignore_energy=True)],
+                    actions=[
+                        PlayCardAction(card, ignore_energy=True),
+                        PlayCardAction(card, ignore_energy=True),
+                        ExhaustCardAction(card, source_pile="discard_pile"),
+                    ],
                 )
             )
         if options:

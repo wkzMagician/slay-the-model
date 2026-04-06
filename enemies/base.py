@@ -166,6 +166,9 @@ class Enemy(Creature):
         Determines the next intention to use.
         """
         from engine.game_state import game_state
+        combat_state = getattr(getattr(game_state, "current_combat", None), "combat_state", None)
+        if getattr(combat_state, "preserve_enemy_intent_once", False):
+            return
         current_floor = game_state.current_floor if game_state else 1
         selection = self.determine_next_intention(current_floor)
         self.current_intention = self._resolve_next_intention(selection)

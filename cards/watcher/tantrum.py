@@ -1,9 +1,11 @@
+from actions.card_choice import MoveCardAction
 from actions.watcher import ChangeStanceAction
 from cards.base import Card
-from engine.runtime_api import add_action
+from engine.runtime_api import add_actions
 from typing import List
 from utils.registry import register
-from utils.types import CardType, RarityType, StatusType, TargetType
+from utils.types import CardType, PilePosType, RarityType, StatusType, TargetType
+
 
 @register("card")
 class Tantrum(Card):
@@ -17,7 +19,11 @@ class Tantrum(Card):
     text_name = "Tantrum"
     text_description = "Deal {damage} damage {attack_times} times. Enter Wrath."
 
-    # todo: 效果补全。还会将这张牌洗入抽牌堆
     def on_play(self, targets: List = []):
         super().on_play(targets)
-        add_action(ChangeStanceAction(StatusType.WRATH))
+        add_actions(
+            [
+                ChangeStanceAction(StatusType.WRATH),
+                MoveCardAction(self, "discard_pile", "draw_pile", position=PilePosType.RANDOM),
+            ]
+        )

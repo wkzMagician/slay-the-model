@@ -658,4 +658,6 @@ class Combat(Localizable):
                 enemies=alive_enemies,
             )
         )
+        if getattr(self.combat_state, "preserve_enemy_intent_once", False):
+            self.combat_state.preserve_enemy_intent_once = False
 

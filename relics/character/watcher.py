@@ -94,12 +94,11 @@ class VioletLotus(Relic):
     text_description = "Whenever you exit Calm, gain an additional Energy."
 
 
-# todo: 效果错误。Whenever you shuffle your draw pile, Scry 3.
 @register("relic")
 class Melange(Relic):
     rarity = RarityType.SHOP
     text_name = "Melange"
-    text_description = "On use, Scry 3."
+    text_description = "Whenever you shuffle your draw pile, Scry 3."
 
-    def on_trigger(self, **kwargs):
+    def on_shuffle(self):
         add_action(ScryAction(3))

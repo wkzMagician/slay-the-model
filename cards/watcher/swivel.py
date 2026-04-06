@@ -1,10 +1,12 @@
-from actions.card_choice import SetCostUntilEndOfTurnAction
+from actions.combat_status import ApplyPowerAction
 from cards.base import Card
 import engine.game_state as game_state_module
 from engine.runtime_api import add_action
+from powers.definitions.swivel import SwivelPower
 from typing import List
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
+
 
 @register("card")
 class Swivel(Card):
@@ -17,10 +19,13 @@ class Swivel(Card):
     text_name = "Swivel"
     text_description = "Gain {block} Block. Your next Attack this turn costs 0."
 
-    # todo: 效果错误。现在的实现会导致，手牌中所有手牌在当前回合都可以免费打出。应当更改为：获得一个能力，这个能力会记录手牌中所有的攻击牌，以及它们原来的cost_for_this_turn。
-    # 在打出牌之后，power把其它的攻击牌的cost_for_this_turn恢复为原值
     def on_play(self, targets: List = []):
         super().on_play(targets)
-        for card in list(game_state_module.game_state.player.card_manager.get_pile("hand")):
-            if getattr(card, "card_type", None) == CardType.ATTACK:
-                add_action(SetCostUntilEndOfTurnAction(card, 0))
+        player = game_state_module.game_state.player
+        tracked_costs = {}
+        for card in list(player.card_manager.get_pile("hand")):
+            if getattr(card, "card_type", None) != CardType.ATTACK:
+                continue
+            tracked_costs[card] = card.cost_until_end_of_turn
+            card.cost_until_end_of_turn = 0
+        add_action(ApplyPowerAction(SwivelPower(tracked_costs=tracked_costs, owner=player), player))

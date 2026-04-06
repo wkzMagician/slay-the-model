@@ -163,6 +163,7 @@ class SkipEnemyTurnAction(Action):
         combat = game_state.current_combat
         if combat is not None:
             setattr(combat.combat_state, "skip_enemy_turn_once", True)
+            setattr(combat.combat_state, "preserve_enemy_intent_once", True)
 
 
 @register("action")

@@ -6,6 +6,7 @@ from typing import List
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
 
+
 @register("card")
 class SpiritShield(Card):
     card_type = CardType.SKILL
@@ -17,7 +18,7 @@ class SpiritShield(Card):
     text_name = "Spirit Shield"
     text_description = "Gain Block equal to {magic.per_card} for each card in your hand."
 
-    # todo: 重载 block property
-    def on_play(self, targets: List = []):
-        amount = len(game_state_module.game_state.player.card_manager.get_pile("hand")) * self.get_magic_value("per_card")
-        add_action(GainBlockAction(amount, target=game_state_module.game_state.player))
+    @property
+    def block(self) -> int:
+        hand = game_state_module.game_state.player.card_manager.get_pile("hand")
+        return len(hand) * self.get_magic_value("per_card")

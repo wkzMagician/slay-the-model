@@ -31,6 +31,7 @@ class CombatState:
         # Phase tracking
         self.current_phase: str = "player_action"  # player_action, enemy_action, player_end
         self.skip_enemy_turn_once: bool = False
+        self.preserve_enemy_intent_once: bool = False
 
         # Blood for Blood tracking
         self.blood_for_blood_hits: int = 0
@@ -54,6 +55,7 @@ class CombatState:
         # Reset phase
         self.current_phase = "player_action"
         self.skip_enemy_turn_once = False
+        self.preserve_enemy_intent_once = False
 
     def reset_turn_info(self):
         """Reset per-turn counters"""
