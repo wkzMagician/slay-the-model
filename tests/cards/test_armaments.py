@@ -4,6 +4,8 @@ Test for Armaments card - Ironclad Skill card
 Tests block gain and card upgrade mechanics
 """
 import unittest
+from typing import Any, cast
+
 from tests.test_combat_utils import CombatTestHelper
 from cards.ironclad.armaments import Armaments
 from cards.ironclad.bash import Bash
@@ -157,7 +159,7 @@ class TestArmaments(unittest.TestCase):
                 resolve_calls.append(request)
                 raise AssertionError("Armaments+ should not create an upgrade selection request")
 
-        self.helper.game_state.runtime_context = StubRuntimeContext()
+        cast(Any, self.helper.game_state).runtime_context = StubRuntimeContext()
 
         armaments_in_hand = self.helper.game_state.player.card_manager.piles["hand"][0]
         self.helper.play_card(armaments_in_hand)
