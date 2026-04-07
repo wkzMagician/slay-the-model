@@ -14,6 +14,8 @@ from cards.defect.darkness import Darkness
 from cards.defect.defragment import Defragment
 from cards.defect.doom_and_gloom import DoomAndGloom
 from cards.defect.equilibrium import Equilibrium
+from engine.messages import PlayerTurnEndedMessage
+from engine.runtime_api import publish_message
 from cards.defect.force_field import ForceField
 from cards.defect.genetic_algorithm import GeneticAlgorithm
 from cards.defect.glacier import Glacier
@@ -108,18 +110,54 @@ class TestDefectCommonCluster:
 
         assert self.player.energy >= 1
 
-    def test_equilibrium_retains_other_hand_cards_but_not_itself(self):
-        self.helper.start_combat([_NoOpEnemy()])
+    def test_equilibrium_retains_hand_at_turn_end_including_cards_drawn_after_play(self):
+        enemy = _NoOpEnemy()
+        self.helper.start_combat([enemy])
         equilibrium = Equilibrium()
         strike = Strike()
+        drawn_later = Strike()
         self.helper.add_card_to_hand(equilibrium)
         self.helper.add_card_to_hand(strike)
 
-        equilibrium.on_play([self.player])
+        assert self.helper.play_card(equilibrium) is True
         self.helper.game_state.drive_actions()
 
-        assert equilibrium.retain_this_turn is False
+        assert strike.retain_this_turn is False
+        self.helper.add_card_to_hand(drawn_later)
+
+        publish_message(
+            PlayerTurnEndedMessage(
+                owner=self.player,
+                enemies=[enemy],
+                hand_cards=list(self.player.card_manager.get_pile("hand")),
+            )
+        )
+        self.helper.game_state.drive_actions()
+
         assert strike.retain_this_turn is True
+        assert drawn_later.retain_this_turn is True
+        assert equilibrium.retain_this_turn is False
+        assert not any(p.name == "Equilibrium" for p in self.player.powers)
+
+    def test_equilibrium_does_not_mark_ethereal_for_retain_at_turn_end(self):
+        enemy = _NoOpEnemy()
+        self.helper.start_combat([enemy])
+        eq = Equilibrium()
+        ghost = Strike()
+        ghost._ethereal = True
+        self.helper.add_card_to_hand(eq)
+        self.helper.add_card_to_hand(ghost)
+        assert self.helper.play_card(eq) is True
+        self.helper.game_state.drive_actions()
+        publish_message(
+            PlayerTurnEndedMessage(
+                owner=self.player,
+                enemies=[enemy],
+                hand_cards=list(self.player.card_manager.get_pile("hand")),
+            )
+        )
+        self.helper.game_state.drive_actions()
+        assert ghost.retain_this_turn is False
 
     def test_claw_scales_other_claws(self):
         enemy = _NoOpEnemy(hp=30)

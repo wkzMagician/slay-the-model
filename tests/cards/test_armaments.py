@@ -4,8 +4,13 @@ Test for Armaments card - Ironclad Skill card
 Tests block gain and card upgrade mechanics
 """
 import unittest
+from typing import Any, cast
+
 from tests.test_combat_utils import CombatTestHelper
 from cards.ironclad.armaments import Armaments
+from cards.ironclad.bash import Bash
+from cards.ironclad.strike import Strike
+from cards.colorless.wound import Wound
 
 
 class TestArmaments(unittest.TestCase):
@@ -133,6 +138,42 @@ class TestArmaments(unittest.TestCase):
         # ChooseUpgradeCardAction implementation details, so we verify
         # action was created by checking card counts
         print(f"✓ Armaments upgrade action created for card in hand")
+
+    def test_armaments_plus_upgrades_all_cards_without_selection_prompt(self):
+        """Armaments+ should auto-upgrade all upgradable hand cards without input request."""
+        upgraded_armaments = Armaments()
+        upgraded_armaments.upgrade()
+        self.helper.add_card_to_hand(upgraded_armaments)
+
+        bash = Bash()
+        strike = Strike()
+        wound = Wound()
+        self.helper.add_card_to_hand(bash)
+        self.helper.add_card_to_hand(strike)
+        self.helper.add_card_to_hand(wound)
+
+        resolve_calls = []
+
+        class StubRuntimeContext:
+            def resolve_input_request(self, request):
+                resolve_calls.append(request)
+                raise AssertionError("Armaments+ should not create an upgrade selection request")
+
+        cast(Any, self.helper.game_state).runtime_context = StubRuntimeContext()
+
+        armaments_in_hand = self.helper.game_state.player.card_manager.piles["hand"][0]
+        self.helper.play_card(armaments_in_hand)
+
+        hand = self.helper.game_state.player.card_manager.piles["hand"]
+        upgraded_bash = next(card for card in hand if isinstance(card, Bash))
+        upgraded_strike = next(card for card in hand if isinstance(card, Strike))
+        unupgraded_wound = next(card for card in hand if isinstance(card, Wound))
+
+        self.assertEqual(upgraded_bash.upgrade_level, 1)
+        self.assertEqual(upgraded_strike.upgrade_level, 1)
+        self.assertEqual(unupgraded_wound.upgrade_level, 0)
+        self.assertEqual(resolve_calls, [])
+        self.assertIsNone(self.helper.game_state.pending_input_request)
 
 
 if __name__ == '__main__':

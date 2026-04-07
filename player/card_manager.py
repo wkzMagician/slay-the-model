@@ -40,17 +40,34 @@ class CardManager:
         self.piles['hand'] = []
         self.piles['exhaust_pile'] = []
 
-    def shuffle_discard_to_draw(self) -> None:
+    def shuffle_discard_to_draw(self) -> bool:
+        """Move discard into draw pile and shuffle.
+
+        Returns:
+            True if the discard pile had at least one card (refill from discard).
+            False if discard was empty — caller should stop trying to draw.
+        """
+        had_discard = bool(self.piles['discard_pile'])
         self.piles['draw_pile'].extend(self.piles['discard_pile'])
         self.piles['discard_pile'] = []
         import random
         random.shuffle(self.piles['draw_pile'])
+        from engine.game_state import game_state
+
+        player = game_state.player
+        if player and getattr(player, "card_manager", None) is self:
+            from engine.messages import ShuffleMessage
+            from engine.runtime_api import publish_message
+
+            publish_message(ShuffleMessage(owner=player))
+        return had_discard
 
     def draw_one(self) -> Optional[Card]:
-        if not self.piles['draw_pile']:
-            self.shuffle_discard_to_draw()
-        if not self.piles['draw_pile']:
+        if len(self.piles['hand']) >= self.HAND_LIMIT:
             return None
+        if not self.piles['draw_pile']:
+            if not self.shuffle_discard_to_draw():
+                return None
         card = self.piles['draw_pile'].pop()
         self.add_to_pile(card, 'hand', PilePosType.TOP)
         return card

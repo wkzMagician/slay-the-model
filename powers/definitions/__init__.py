@@ -1,4 +1,4 @@
-﻿"""
+"""
 All game power definitions.
 Powers are temporary or permanent combat effects.
 """
@@ -139,6 +139,7 @@ __all__ = [
     "NightmarePower",
     "ToolsOfTheTradePower",
     "WellLaidPlansPower",
+    "EquilibriumPower",
 ]
 from powers.definitions.after_image import AfterImagePower
 from powers.definitions.envenom import EnvenomPower
@@ -167,6 +168,7 @@ from powers.definitions.self_repair import SelfRepairPower
 from powers.definitions.biased_cognition import BiasedCognitionPower
 from powers.definitions.amplify import AmplifyPower
 from powers.definitions.echo_form import EchoFormPower
+from powers.definitions.equilibrium import EquilibriumPower
 from powers.definitions.battle_hymn import BattleHymnPower
 from powers.definitions.blasphemer import BlasphemerPower
 from powers.definitions.collect import CollectPower

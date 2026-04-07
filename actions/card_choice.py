@@ -134,10 +134,10 @@ class ChooseUpgradeCardAction(Action):
     Optional:
         None
     """
-    def __init__(self, pile: str = 'hand', amount: int = 1, exclude_cards: List['Card'] = []):
+    def __init__(self, pile: str = 'hand', amount: int = 1, exclude_cards: Optional[List['Card']] = None):
         self.pile = pile
         self.amount = amount
-        self.exclude_cards = exclude_cards
+        self.exclude_cards = exclude_cards or []
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -200,6 +200,12 @@ class ChooseUpgradeCardAction(Action):
                 )
             )
         if not options:
+            return
+        if amount == -1:
+            add_actions(
+                [action for option in options for action in option.actions],
+                to_front=True
+            )
             return
         select_action = InputRequestAction(
             title = LocalStr("ui.choose_cards_to_upgrade"),
