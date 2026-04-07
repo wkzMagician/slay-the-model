@@ -2,9 +2,12 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 from actions.base import LambdaAction
+from actions.card_choice import ChooseUpgradeCardAction
 from actions.display import InputRequestAction, MenuAction
+from cards.ironclad.strike import Strike
 from engine.game_state import GameState, game_state
 from engine.input_protocol import InputRequest, InputSubmission
+from player.player import Player
 from engine.runtime_context import RuntimeContext
 from localization import LocalStr
 from utils.option import Option
@@ -218,3 +221,28 @@ def test_human_selection_open_menu_returns_menu_action(monkeypatch):
 
     assert len(submission.actions) == 1
     assert isinstance(submission.actions[0], MenuAction)
+
+
+def test_choose_upgrade_all_does_not_create_input_request():
+    game_state.__init__()
+    gs = game_state
+    gs.player = Player()
+    strike = Strike()
+    gs.player.card_manager.piles["hand"].append(strike)
+
+    resolve_calls = []
+
+    class StubRuntimeContext:
+        def resolve_input_request(self, request):
+            resolve_calls.append(request)
+            raise AssertionError("amount=-1 should not create selection requests")
+
+    cast(Any, gs).runtime_context = StubRuntimeContext()
+    gs.action_queue.add_action(ChooseUpgradeCardAction(pile="hand", amount=-1))
+
+    result = gs.drive_actions()
+
+    assert result is None
+    assert strike.upgrade_level == 1
+    assert gs.pending_input_request is None
+    assert resolve_calls == []
