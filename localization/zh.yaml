@@ -3601,3 +3601,12 @@ ai_context:
   total: 共
   select_one: 选择一个选项（只输出数字，如'2'）
   card_stats_note: 注：手牌中的攻击和格挡值已计算玩家和敌人的能力/遗物效果，但尚未应用其它能力（如虚弱、易伤、脆弱等）的影响。
+orbs:
+  LightningOrb:
+    name: 闪电充能球
+  FrostOrb:
+    name: 冰霜充能球
+  DarkOrb:
+    name: 黑暗充能球
+  PlasmaOrb:
+    name: 等离子充能球
