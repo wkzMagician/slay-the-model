@@ -24,6 +24,9 @@ class BulletTime(Card):
         from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
-        actions = [SetCostUntilEndOfTurnAction(card=card, cost_until_end_of_turn=0) for card in list(game_state.player.card_manager.get_pile("hand"))]
-        actions.append(ApplyPowerAction(NoDrawPower(duration=1, owner=game_state.player), game_state.player))
+        actions = [ApplyPowerAction(NoDrawPower(duration=1, owner=game_state.player), game_state.player)]
+        actions.extend(
+            SetCostUntilEndOfTurnAction(card=card, cost_until_end_of_turn=0)
+            for card in list(game_state.player.card_manager.get_pile("hand"))
+        )
         add_actions(actions)

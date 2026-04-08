@@ -15,6 +15,8 @@ class Nightmare(Card):
     rarity = RarityType.RARE
 
     base_cost = 3
+    base_exhaust = True
+    upgrade_cost = 2
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)

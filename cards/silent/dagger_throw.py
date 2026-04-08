@@ -16,10 +16,10 @@ class DaggerThrow(Card):
     rarity = RarityType.COMMON
 
     base_cost = 1
-    base_damage = 6
+    base_damage = 9
     base_draw = 1
 
-    upgrade_damage = 9
+    upgrade_damage = 12
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)

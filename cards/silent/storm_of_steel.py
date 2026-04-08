@@ -16,8 +16,6 @@ class StormOfSteel(Card):
     rarity = RarityType.RARE
 
     base_cost = 1
-    base_exhaust = True
-    upgrade_cost = 0
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)
@@ -27,5 +25,9 @@ class StormOfSteel(Card):
         hand = list(game_state.player.card_manager.get_pile('hand'))
         count = len(hand)
         actions = [DiscardCardAction(card=card, source_pile='hand') for card in hand]
-        actions.extend(AddCardAction(card=Shiv(), dest_pile='hand') for _ in range(count))
+        for _ in range(count):
+            shiv = Shiv()
+            if self.upgrade_level > 0:
+                shiv.upgrade()
+            actions.append(AddCardAction(card=shiv, dest_pile='hand'))
         add_actions(actions)

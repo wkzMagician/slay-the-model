@@ -15,6 +15,7 @@ class Shiv(Card):
     base_cost = 0
     base_damage = 4
     base_exhaust = True
+    upgrade_damage = 6
 
     @property
     def damage(self):

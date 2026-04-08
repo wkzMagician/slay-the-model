@@ -16,7 +16,7 @@ class PiercingWail(Card):
     """All enemies lose Strength this turn. Exhaust."""
 
     card_type = CardType.SKILL
-    rarity = RarityType.UNCOMMON
+    rarity = RarityType.COMMON
     target_type = TargetType.ENEMY_ALL
 
     base_cost = 1

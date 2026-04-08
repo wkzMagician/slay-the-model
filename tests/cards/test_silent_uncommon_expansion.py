@@ -64,7 +64,7 @@ class TestSilentUncommonExpansion:
         assert self.helper.play_card(card, target=enemy)
         poison = enemy.get_power('Poison')
         assert poison is not None
-        assert poison.amount == 3
+        assert poison.amount == 9
 
     def test_catalyst_doubles_poison(self):
         enemy = self.helper.create_enemy(Cultist, hp=40)

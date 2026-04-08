@@ -32,7 +32,7 @@ class TestSilentCommonExpansion:
 
         assert self.helper.play_card(card, target=enemy)
 
-        assert enemy.hp == 34
+        assert enemy.hp == 31
         assert len(self.player.card_manager.get_pile('hand')) == 1
         assert len(self.player.card_manager.get_pile('discard_pile')) == 2
 

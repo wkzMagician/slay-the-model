@@ -9,7 +9,7 @@ from utils.registry import register
 class WellLaidPlansPower(Power):
     name = 'Well-Laid Plans'
     description = 'At the end of your turn, retain cards.'
-    stack_type = StackType.PRESENCE
+    stack_type = StackType.INTENSITY
     is_buff = True
 
     def __init__(self, amount: int = 1, duration: int = -1, owner=None):

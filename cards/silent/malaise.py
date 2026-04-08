@@ -14,11 +14,11 @@ from utils.types import CardType, RarityType, TargetType
 @register("card")
 class Malaise(Card):
     card_type = CardType.SKILL
-    rarity = RarityType.UNCOMMON
+    rarity = RarityType.RARE
     target_type = TargetType.ENEMY_SELECT
 
     base_cost = COST_X
-    upgrade_cost = 0
+    base_exhaust = True
 
     def on_play(self, targets: List[Creature] = []):
         target = targets[0] if targets else None
@@ -26,7 +26,7 @@ class Malaise(Card):
             return
         from engine.runtime_api import add_actions
 
-        x_value = self.get_effective_x()
+        x_value = self.get_effective_x() + self.upgrade_level
         add_actions([
             ApplyPowerAction(WeakPower(amount=x_value, duration=x_value, owner=target), target),
             ApplyPowerAction(StrengthPower(amount=-x_value, owner=target), target),

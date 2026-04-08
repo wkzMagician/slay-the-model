@@ -8,8 +8,8 @@ from utils.registry import register
 @register("power")
 class ToolsOfTheTradePower(Power):
     name = 'Tools of the Trade'
-    description = 'At the start of your turn, draw 1 card and discard 1 card.'
-    stack_type = StackType.PRESENCE
+    description = 'At the start of your turn, draw cards and discard cards.'
+    stack_type = StackType.INTENSITY
     is_buff = True
 
     def __init__(self, amount: int = 1, duration: int = -1, owner=None):
@@ -18,4 +18,7 @@ class ToolsOfTheTradePower(Power):
     def on_turn_start_post_draw(self):
         from engine.runtime_api import add_actions
 
-        add_actions([DrawCardsAction(count=1), ChooseDiscardCardAction(pile='hand', amount=1)])
+        add_actions([
+            DrawCardsAction(count=self.amount),
+            ChooseDiscardCardAction(pile='hand', amount=self.amount),
+        ])

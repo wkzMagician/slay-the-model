@@ -18,8 +18,6 @@ class PhantasmalKiller(Card):
     rarity = RarityType.RARE
 
     base_cost = 1
-    base_magic = {"multiplier": 2}
-
     upgrade_cost = 0
 
     def on_play(self, targets: List[Creature] = []):
@@ -28,5 +26,5 @@ class PhantasmalKiller(Card):
         from engine.runtime_api import add_actions
 
         add_actions([
-            ApplyPowerAction(PhantasmalNextTurnPower(amount=self.get_magic_value("multiplier"), duration=2, owner=game_state.player), game_state.player)
+            ApplyPowerAction(PhantasmalNextTurnPower(amount=1, duration=1, owner=game_state.player), game_state.player)
         ])

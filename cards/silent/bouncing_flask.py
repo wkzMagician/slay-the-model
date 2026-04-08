@@ -20,9 +20,9 @@ class BouncingFlask(Card):
     target_type = TargetType.ENEMY_ALL
 
     base_cost = 2
-    base_magic = {"hits": 3, "poison": 1}
+    base_magic = {"hits": 3, "poison": 3}
 
-    upgrade_magic = {"hits": 4, "poison": 1}
+    upgrade_magic = {"hits": 4, "poison": 3}
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)

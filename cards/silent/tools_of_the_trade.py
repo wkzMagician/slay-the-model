@@ -13,7 +13,7 @@ from utils.types import CardType, RarityType
 @register("card")
 class ToolsOfTheTrade(Card):
     card_type = CardType.POWER
-    rarity = RarityType.UNCOMMON
+    rarity = RarityType.RARE
 
     base_cost = 1
     upgrade_cost = 0

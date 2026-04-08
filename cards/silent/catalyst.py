@@ -17,6 +17,7 @@ class Catalyst(Card):
     target_type = TargetType.ENEMY_SELECT
 
     base_cost = 1
+    base_exhaust = True
     base_magic = {"multiplier": 2}
 
     upgrade_magic = {"multiplier": 3}

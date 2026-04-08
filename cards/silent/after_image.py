@@ -19,8 +19,7 @@ class AfterImage(Card):
 
     base_cost = 1
     base_magic = {"block": 1}
-
-    upgrade_cost = 0
+    upgrade_innate = True
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)
