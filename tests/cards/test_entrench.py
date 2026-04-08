@@ -14,14 +14,14 @@ class TestEntrench(unittest.TestCase):
 
     def test_basic_properties(self):
         card = Entrench()
-        self.assertEqual(card.cost, 1)
+        self.assertEqual(card.cost, 2)
         self.assertEqual(card.card_type, CardType.SKILL)
         self.assertEqual(card.rarity, RarityType.UNCOMMON)
 
     def test_upgraded_cost(self):
         card = Entrench()
         card.upgrade()
-        self.assertEqual(card.cost, 0)
+        self.assertEqual(card.cost, 1)
 
     def test_doubles_block(self):
         self.helper.create_player(max_hp=50)
@@ -46,7 +46,7 @@ class TestEntrench(unittest.TestCase):
         self.helper.add_card_to_hand(card)
         self.helper.play_card(card, None)
         from engine.game_state import game_state
-        self.assertEqual(game_state.player.energy, 3)
+        self.assertEqual(game_state.player.energy, 2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -21,6 +21,7 @@ class FiendFire(Card):
     rarity = RarityType.RARE
 
     base_cost = 2
+    base_exhaust = True
     
     base_magic = {"exhaust_damage": 7}
     upgrade_magic = {"exhaust_damage": 10}
@@ -35,17 +36,13 @@ class FiendFire(Card):
         player = game_state.player
         hand = player.card_manager.get_pile('hand')
         assert hand is not None
+        cards_in_hand = [card for card in list(hand) if card is not self]
 
-        # Count cards in hand before exhausting
-        cards_to_exhaust = len(hand)
+        for card in cards_in_hand:
+            actions.append(ExhaustCardAction(card=card, source_pile="hand"))
 
-        # Exhaust all cards
-        for i in range(cards_to_exhaust):
-            actions.append(ExhaustCardAction(card=hand[i], source_pile="hand"))
-
-        # Deal damage for each card exhausted
         damage = self._magic.get("exhaust_damage", 7)
-        for _ in range(cards_to_exhaust):
+        for _ in cards_in_hand:
             if target and target.hp > 0:
                 actions.append(AttackAction(damage=damage, target=target, source=player))
 

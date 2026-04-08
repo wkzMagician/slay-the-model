@@ -19,9 +19,9 @@ class Entrench(Card):
     card_type = CardType.SKILL
     rarity = RarityType.UNCOMMON
 
-    base_cost = 1
+    base_cost = 2
 
-    upgrade_cost = 0
+    upgrade_cost = 1
 
     def on_play(self, targets: List[Creature] = []):
         target = targets[0] if targets else None

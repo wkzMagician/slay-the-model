@@ -20,6 +20,7 @@ class BloodForBlood(Card):
     base_cost = 4
     base_damage = 18
 
+    upgrade_cost = 3
     upgrade_damage = 22
 
     def on_damage_taken(
@@ -36,3 +37,15 @@ class BloodForBlood(Card):
         # Reduce cost by 1 each time damage is taken (minimum 0)
         self._cost = max(0, self._cost - 1)
         return
+
+    def on_lose_hp(self, amount: int, source=None, card=None):
+        """HP loss also reduces the card's cost this combat."""
+        if amount > 0:
+            self._cost = max(0, self._cost - 1)
+        return
+
+    def apply_upgrade(self):
+        current_cost = self._cost
+        super().apply_upgrade()
+        if current_cost < self.base_cost:
+            self._cost = max(0, current_cost - 1)

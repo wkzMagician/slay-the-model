@@ -168,7 +168,7 @@ class Card(Localizable):
     @cost.setter
     def cost(self, value: int):
         """设置消耗能量"""
-        if self._cost != COST_UNPLAYABLE or self._cost != COST_X:
+        if self._cost not in (COST_UNPLAYABLE, COST_X):
             self._cost = value
     
     @property
@@ -300,9 +300,14 @@ class Card(Localizable):
         """
         # 特殊处理：如果是战斗描述且已升级，检查是否有升级后的战斗描述
         original_desc_key = desc_key
-        if desc_key == "combat_description" and self.upgrade_level > 0:
-            if self.has_local("upgrade_combat_description"):
-                desc_key = "upgrade_combat_description"
+        if self.upgrade_level > 0:
+            if desc_key == "combat_description":
+                if self.has_local("upgrade_combat_description"):
+                    desc_key = "upgrade_combat_description"
+                elif self.has_local("upgrade_description"):
+                    desc_key = "upgrade_description"
+            elif desc_key == "description" and self.has_local("upgrade_description"):
+                desc_key = "upgrade_description"
         
         # 检查是否有该描述
         if not self.has_local(desc_key):

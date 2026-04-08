@@ -201,7 +201,16 @@ class PlayCardBHAction(Action):
         should_exhaust_status = has_medical_kit and self.card.card_type == CardType.STATUS
         has_blue_candle = any(getattr(relic, "idstr", None) == "BlueCandle" for relic in player.relics)
         should_exhaust_curse = has_blue_candle and self.card.card_type == CardType.CURSE
-        will_exhaust = self.card.get_value("exhaust") is True or should_exhaust_status or should_exhaust_curse
+        has_corruption = (
+            self.card.card_type == CardType.SKILL
+            and player.get_power("Corruption") is not None
+        )
+        will_exhaust = (
+            self.card.get_value("exhaust") is True
+            or should_exhaust_status
+            or should_exhaust_curse
+            or has_corruption
+        )
 
         prevent_exhaust = False
         if will_exhaust:

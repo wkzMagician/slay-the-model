@@ -5,7 +5,7 @@ from engine.runtime_api import add_action, add_actions
 
 from typing import List
 from actions.base import Action
-from actions.card import ChooseMoveCardAction
+from actions.card import ChooseCardLambdaAction, MoveCardAction
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
@@ -25,9 +25,16 @@ class Exhume(Card):
 
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)
-        from engine.game_state import game_state
-
         add_action(
-            ChooseMoveCardAction(src="exhaust_pile", dst="hand", amount=1)
+            ChooseCardLambdaAction(
+                pile="exhaust_pile",
+                amount=1,
+                action_builder=lambda card: MoveCardAction(
+                    card=card,
+                    src_pile="exhaust_pile",
+                    dst_pile="hand",
+                ),
+                filter_fn=lambda card: card.__class__.__name__ != "Exhume",
+            )
         )
         return

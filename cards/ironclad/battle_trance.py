@@ -20,7 +20,7 @@ class BattleTrance(Card):
     card_type = CardType.SKILL
     rarity = RarityType.UNCOMMON
 
-    base_cost = 1
+    base_cost = 0
     base_draw = 3
 
     upgrade_draw = 4

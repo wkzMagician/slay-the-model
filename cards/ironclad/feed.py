@@ -21,6 +21,7 @@ class Feed(Card):
 
     base_cost = 1
     base_damage = 10
+    base_exhaust = True
 
     upgrade_damage = 12
     

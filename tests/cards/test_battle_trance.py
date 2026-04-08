@@ -17,7 +17,7 @@ class TestBattleTrance(unittest.TestCase):
     def test_basic_properties(self):
         """Test BattleTrance basic properties."""
         card = BattleTrance()
-        self.assertEqual(card.cost, 1)
+        self.assertEqual(card.cost, 0)
         self.assertEqual(card.card_type, CardType.SKILL)
         self.assertEqual(card.rarity, RarityType.UNCOMMON)
         self.assertEqual(card.damage, 0)
@@ -50,11 +50,11 @@ class TestBattleTrance(unittest.TestCase):
         """Test upgraded BattleTrance draws more cards."""
         card = BattleTrance()
         card.upgrade()
-        self.assertEqual(card.cost, 1)
+        self.assertEqual(card.cost, 0)
         self.assertEqual(card.draw, 4)
 
     def test_energy_cost(self):
-        """Test BattleTrance costs 1 energy."""
+        """Test BattleTrance costs 0 energy."""
         player = self.helper.create_player(energy=3)
         enemy = self.helper.create_enemy(Cultist, hp=50)
         combat = self.helper.start_combat([enemy])
@@ -64,7 +64,7 @@ class TestBattleTrance(unittest.TestCase):
         initial_energy = self.helper.game_state.player.energy
         self.helper.play_card(card, target=None)
         
-        self.assertEqual(self.helper.game_state.player.energy, initial_energy - 1)
+        self.assertEqual(self.helper.game_state.player.energy, initial_energy)
 
 
 if __name__ == "__main__":

@@ -1,19 +1,17 @@
 """
 Corruption power for Ironclad.
-Skills cost 0 energy.
+Skills cost 0 energy and exhaust on play.
 """
-from typing import List, TYPE_CHECKING
-from actions.base import Action
 from powers.base import Power, StackType
 from utils.registry import register
 
 
 @register("power")
 class CorruptionPower(Power):
-    """Skills cost 0 energy."""
+    """Skills cost 0 energy and exhaust when played."""
 
     name = "Corruption"
-    description = "Skills cost 0 energy."
+    description = "Skills cost 0 energy and exhaust."
     stack_type = StackType.PRESENCE
     is_buff = True
 
@@ -26,15 +24,10 @@ class CorruptionPower(Power):
         super().__init__(amount=0, duration=-1, owner=owner)
 
     def on_draw_card(self, card, player):
-        """Modify skill costs to 0."""
-        from cards.base import Card
-        if TYPE_CHECKING:
-            from utils.types import CardType
+        """Set drawn skills to 0 cost for the current turn."""
+        from utils.types import CardType
 
-        from engine.game_state import game_state
-
-        # Only affects skills
         if hasattr(card, 'card_type') and card.card_type == CardType.SKILL:
-            card.cost = 0
+            card.cost_until_end_of_turn = 0
 
         return

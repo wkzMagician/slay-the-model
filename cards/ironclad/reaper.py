@@ -22,6 +22,7 @@ class Reaper(Card):
 
     base_cost = 2
     base_damage = 4
+    base_exhaust = True
 
     upgrade_damage = 5
 
