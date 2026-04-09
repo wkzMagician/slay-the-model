@@ -13,8 +13,11 @@ class _ShopEnterRelic(Relic):
         self.triggered = False
 
     @subscribe(ShopEnteredMessage, priority=MessagePriority.PLAYER_RELIC)
-    def on_shop_enter(self, player):
+    def on_shop_enter(self):
+        from engine.game_state import game_state
         self.triggered = True
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=6, target=player)]
 
 

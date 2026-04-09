@@ -182,9 +182,9 @@ class TestSilentFinalBatch:
 
     def test_masterful_stab_cost_increases_when_damage_taken_hook_runs(self):
         card = MasterfulStab()
-        assert "entities" not in inspect.signature(card.on_damage_taken).parameters
+        assert "entities" not in inspect.signature(card.on_any_hp_lost).parameters
         assert card.cost == 0
-        card.on_damage_taken(3, source=None, player=self.player)
+        card.on_any_hp_lost(3, source=None, card=None)
         assert card.cost == 1
 
     def test_nightmare_adds_three_copies_next_turn(self):

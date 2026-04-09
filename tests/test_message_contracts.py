@@ -5,10 +5,10 @@ from engine.message_bus import MessageBus
 from engine.message_contracts import get_message_contract, validate_subscription
 from engine.messages import (
     EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES,
+    PhysicalAttackTakenMessage,
     CardPlayedMessage,
     CardDrawnMessage,
     CombatStartedMessage,
-    DamageResolvedMessage,
 )
 from engine.subscriptions import subscribe
 
@@ -17,7 +17,7 @@ class _BrokenDamageEnemy(Enemy):
     def __init__(self):
         super().__init__(hp_range=(10, 10))
 
-    def on_damage_taken(self, damage, unexpected, extra):
+    def on_physical_attack_taken(self, damage, unexpected, extra):
         return []
 
 
@@ -43,14 +43,14 @@ def test_inherited_invalid_override_signature_raises_during_dispatch():
 
     with pytest.raises(TypeError, match="Unsupported subscription signature"):
         bus.publish(
-            DamageResolvedMessage(amount=5, target=enemy, source=None, card=None, damage_type="attack"),
+            PhysicalAttackTakenMessage(amount=5, target=enemy, source=None, card=None, damage_type="physical"),
             participants=[enemy],
         )
 
 
 
-def test_card_drawn_contract_accepts_message_form():
-    assert validate_subscription(CardDrawnMessage, ["message"]) is True
+def test_card_drawn_contract_accepts_card_form():
+    assert validate_subscription(CardDrawnMessage, ["card"]) is True
 
 
 
@@ -63,14 +63,14 @@ def test_contract_registry_exposes_declared_variants():
     contract = get_message_contract(CardDrawnMessage)
 
     assert contract.message_type is CardDrawnMessage
-    assert ("message",) in {variant.param_names for variant in contract.default_variants}
-    assert ("card", "player") in {variant.param_names for variant in contract.default_variants}
-    assert ("card", "player", "entities") not in {variant.param_names for variant in contract.default_variants}
+    assert contract.param_names == ("card",)
+    assert contract.param_names != ("message",)
+    assert contract.param_names != ("card", "player")
 
 
 def test_card_played_contract_uses_targets_form():
     card_play_contract = get_message_contract(CardPlayedMessage)
-    assert ("card", "player", "targets") in {variant.param_names for variant in card_play_contract.default_variants}
+    assert card_play_contract.param_names == ("card", "targets")
 
 
 

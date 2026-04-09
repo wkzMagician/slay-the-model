@@ -5,7 +5,7 @@ import unittest
 
 from tests.test_combat_utils import CombatTestHelper
 from enemies.act1.lagavulin import Lagavulin
-from engine.messages import DamageResolvedMessage
+from engine.messages import AnyHpLostMessage, PhysicalAttackTakenMessage
 from engine.message_bus import MessageBus
 
 
@@ -74,18 +74,17 @@ class TestLagavulin(unittest.TestCase):
         enemy.on_combat_start(floor=1)
         self.assertEqual(enemy.block, 8)
 
-    def test_direct_damage_wakes_immediately(self):
-        """Any damage_type with HP loss wakes sleeping Lagavulin (e.g. direct)."""
+    def test_any_hp_loss_wakes_immediately(self):
+        """Any actual HP loss wakes sleeping Lagavulin immediately."""
         lagavulin = Lagavulin(start_awake=False)
         lagavulin.on_combat_start(floor=1)
         bus = MessageBus()
         bus.publish(
-            DamageResolvedMessage(
+            AnyHpLostMessage(
                 amount=5,
                 target=lagavulin,
                 source=None,
                 card=None,
-                damage_type="direct",
             ),
             participants=[lagavulin],
         )
@@ -99,12 +98,21 @@ class TestLagavulin(unittest.TestCase):
         lagavulin.on_combat_start(floor=1)
         bus = MessageBus()
         bus.publish(
-            DamageResolvedMessage(
+            PhysicalAttackTakenMessage(
                 amount=7,
                 target=lagavulin,
                 source=None,
                 card=None,
-                damage_type="attack",
+                damage_type="physical",
+            ),
+            participants=[lagavulin],
+        )
+        bus.publish(
+            AnyHpLostMessage(
+                amount=7,
+                target=lagavulin,
+                source=None,
+                card=None,
             ),
             participants=[lagavulin],
         )

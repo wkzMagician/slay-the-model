@@ -6,11 +6,29 @@ from actions.base import Action
 from entities.creature import Creature
 from localization import LocalStr, t
 from utils.registry import register
+from utils.types import DamageType
 if TYPE_CHECKING:
     from enemies.base import Enemy
 
 
-def _apply_capping_damage_taken_modifiers(target: Creature | None, amount: int, source=None) -> int:
+def _normalize_damage_type(damage_type: str | DamageType | None, *, direct: bool = False) -> DamageType:
+    if direct:
+        return DamageType.MAGICAL
+    if isinstance(damage_type, DamageType):
+        return damage_type
+    if damage_type == "attack":
+        return DamageType.PHYSICAL
+    if damage_type == "hp_loss":
+        return DamageType.HP_LOSS
+    return DamageType.MAGICAL
+
+
+def _apply_capping_damage_taken_modifiers(
+    target: Creature | None,
+    amount: int,
+    source=None,
+    damage_type: str | DamageType = DamageType.MAGICAL,
+) -> int:
     """Apply only final capping hooks such as Intangible to HP loss."""
     from player.player import Player
     from utils.damage_phase import DamagePhase
@@ -31,7 +49,11 @@ def _apply_capping_damage_taken_modifiers(target: Creature | None, amount: int, 
             if getattr(relic, "modify_phase", DamagePhase.ADDITIVE) == DamagePhase.CAPPING:
                 modify_damage_taken = getattr(relic, "modify_damage_taken", None)
                 if callable(modify_damage_taken):
-                    damage = cast(Any, modify_damage_taken)(damage, source=source)
+                    damage = cast(Any, modify_damage_taken)(
+                        damage,
+                        source=source,
+                        damage_type=damage_type,
+                    )
 
     return max(0, int(damage))
 
@@ -103,7 +125,7 @@ class LoseHPAction(Action):
 
     def execute(self) -> None:
         from engine.game_state import game_state
-        from engine.messages import HpLostMessage
+        from engine.messages import AnyHpLostMessage, DirectHpLossMessage, HpLostMessage
 
         lose_target = self.target if self.target else game_state.player
 
@@ -117,6 +139,7 @@ class LoseHPAction(Action):
                 lose_target,
                 hp_loss,
                 source=self.source,
+                damage_type=DamageType.HP_LOSS,
             )
 
             if lose_target.try_prevent_damage(hp_loss):
@@ -135,23 +158,46 @@ class LoseHPAction(Action):
                     card=self.card,
                 )
             )
+            publish_message(
+                DirectHpLossMessage(
+                    target=lose_target,
+                    amount=lost,
+                    source=self.source,
+                    card=self.card,
+                )
+            )
+            publish_message(
+                AnyHpLostMessage(
+                    target=lose_target,
+                    amount=lost,
+                    source=self.source,
+                    card=self.card,
+                )
+            )
 
 
 @register("action")
 class DealDamageAction(Action):
     """Deal damage to a target creature."""
 
-    def __init__(self, damage: int, target: Creature, damage_type: str = "direct", card=None, source=None, direct: bool | None = None):
+    def __init__(self, damage: int, target: Creature, damage_type: str | DamageType = DamageType.MAGICAL, card=None, source=None, direct: bool | None = None):
         self.damage = damage
         self.target = target
-        self.damage_type = "direct" if direct else damage_type
+        self.damage_type = _normalize_damage_type(damage_type, direct=bool(direct))
         self.card = card
         self.source = source
 
     def execute(self) -> None:
         from enemies.base import Enemy
         from engine.game_state import game_state
-        from engine.messages import CreatureDiedMessage, DamageResolvedMessage
+        from engine.messages import (
+            AnyHpLostMessage,
+            CreatureDiedMessage,
+            DamageDealtMessage,
+            FatalDamageMessage,
+            PhysicalAttackDealtMessage,
+            PhysicalAttackTakenMessage,
+        )
         from utils.dynamic_values import resolve_potential_damage
 
         if not self.target or self.target.is_dead():
@@ -198,7 +244,7 @@ class DealDamageAction(Action):
         print(t("combat.deal_damage_enemy", default="Deal {amount} damage to {target_name}!", amount=damage_dealt, target_name=target_name))
 
         publish_message(
-            DamageResolvedMessage(
+            DamageDealtMessage(
                 amount=damage_dealt,
                 target=self.target,
                 source=self.source,
@@ -206,10 +252,47 @@ class DealDamageAction(Action):
                 damage_type=self.damage_type,
             )
         )
+        if damage_dealt > 0:
+            publish_message(
+                AnyHpLostMessage(
+                    target=self.target,
+                    amount=damage_dealt,
+                    source=self.source,
+                    card=self.card,
+                )
+            )
+            if self.damage_type == DamageType.PHYSICAL:
+                publish_message(
+                    PhysicalAttackTakenMessage(
+                        amount=damage_dealt,
+                        target=self.target,
+                        source=self.source,
+                        card=self.card,
+                        damage_type=self.damage_type,
+                    )
+                )
+                publish_message(
+                    PhysicalAttackDealtMessage(
+                        amount=damage_dealt,
+                        target=self.target,
+                        source=self.source,
+                        card=self.card,
+                        damage_type=self.damage_type,
+                    )
+                )
 
         if isinstance(self.target, Enemy) and self.target.is_dead():
             print(t("combat.enemy_killed", default="Enemy {target_name} has been defeated!", target_name=target_name))
         if self.target.is_dead():
+            publish_message(
+                FatalDamageMessage(
+                    amount=damage_dealt,
+                    target=self.target,
+                    source=self.source,
+                    card=self.card,
+                    damage_type=self.damage_type,
+                )
+            )
             publish_message(
                 CreatureDiedMessage(
                     creature=self.target,

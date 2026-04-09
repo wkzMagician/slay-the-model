@@ -8,6 +8,7 @@ from actions.base import Action
 from actions.combat import DealDamageAction
 from powers.base import Power, StackType
 from utils.registry import register
+from utils.types import DamageType
 
 
 @register("power")
@@ -27,7 +28,7 @@ class SadisticNaturePower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_power_added(self, power, source=None):
+    def on_power_added(self, power, target=None):
         """Deal damage when a debuff is applied to an enemy by the player."""
         from engine.game_state import game_state
         
@@ -63,7 +64,7 @@ class SadisticNaturePower(Power):
             damage=self.amount,
             target=target,
             source=self.owner,
-            damage_type="hp_loss"
+            damage_type=DamageType.MAGICAL
         ))
         
         from engine.game_state import game_state

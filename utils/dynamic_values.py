@@ -5,7 +5,7 @@ Handles combat value calculations with powers, stances, and other modifiers.
 
 from typing import Optional, Any, TYPE_CHECKING, cast
 from entities.creature import Creature
-from utils.types import CardType, StatusType
+from utils.types import CardType, DamageType, StatusType
 from utils.damage_phase import DamagePhase
 
 # Type hints only (avoid circular imports)
@@ -87,7 +87,8 @@ def resolve_card_damage(card: 'Card', target: Optional[Creature] = None) -> int:
             # Heavy Blade: extra strength bonus added to base
             base_damage += (strength_mult - 1) * strength_power.amount
     
-    return resolve_potential_damage(base_damage, player, target=target, card=card)
+    damage_type = DamageType.PHYSICAL if getattr(card, "card_type", None) == CardType.ATTACK else DamageType.MAGICAL
+    return resolve_potential_damage(base_damage, player, target=target, card=card, damage_type=damage_type)
 
 
 def resolve_potential_damage(base_damage: int, attacker: Creature, 
@@ -118,10 +119,7 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
     """
     from player.player import Player
     
-    is_attack_damage = (
-        damage_type == "attack"
-        or getattr(card, "card_type", None) == CardType.ATTACK
-    )
+    is_attack_damage = damage_type in {"attack", DamageType.PHYSICAL}
 
     # ====================
     # Phase 1: Normalize
@@ -210,7 +208,11 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
             for relic in target.relics:
                 if getattr(relic, 'modify_phase', DamagePhase.ADDITIVE) == DamagePhase.MULTIPLICATIVE:
                     if hasattr(relic, 'modify_damage_taken'):
-                        damage = cast(Any, relic).modify_damage_taken(damage, source=attacker)
+                        damage = cast(Any, relic).modify_damage_taken(
+                            damage,
+                            source=attacker,
+                            damage_type=damage_type,
+                        )
     
     # ====================
     # Phase 4: CAPPING (限定)
@@ -229,7 +231,11 @@ def resolve_potential_damage(base_damage: int, attacker: Creature,
         for relic in target.relics:
             if getattr(relic, 'modify_phase', DamagePhase.ADDITIVE) == DamagePhase.CAPPING:
                 if hasattr(relic, 'modify_damage_taken'):
-                    damage = cast(Any, relic).modify_damage_taken(damage, source=attacker)
+                    damage = cast(Any, relic).modify_damage_taken(
+                        damage,
+                        source=attacker,
+                        damage_type=damage_type,
+                    )
     
     # ====================
     # Phase 5: Clamp

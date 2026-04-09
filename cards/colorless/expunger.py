@@ -4,7 +4,7 @@ from engine.runtime_api import add_action
 from typing import List
 from utils.dynamic_values import resolve_potential_damage
 from utils.registry import register
-from utils.types import CardType, RarityType, TargetType
+from utils.types import CardType, DamageType, RarityType, TargetType
 
 
 @register("card")
@@ -38,4 +38,4 @@ class Expunger(Card):
         if target is None:
             return
         for _ in range(self.hits):
-            add_action(AttackAction(self.damage, target=target, source=game_state.player, damage_type="attack", card=self))
+            add_action(AttackAction(self.damage, target=target, source=game_state.player, damage_type=DamageType.PHYSICAL, card=self))

@@ -16,6 +16,6 @@ class WreathOfFlamePower(Power):
             return base_damage + self.amount
         return base_damage
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if getattr(card, "card_type", None) == CardType.ATTACK and self.owner is not None:
             add_action(RemovePowerAction("Wreath of Flame", self.owner))

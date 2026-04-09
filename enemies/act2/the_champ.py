@@ -94,7 +94,7 @@ class TheChamp(Enemy):
         self._anger_used = False
         self._execute_after_anger = False
     
-    def on_damage_taken(self, damage: int) -> None:
+    def on_any_hp_lost(self, amount: int, source=None, card=None) -> None:
         """Check for phase transition."""
         if self.hp <= self.max_hp // 2 and self._phase == 1:
             # Will trigger phase 2 on next intention determination

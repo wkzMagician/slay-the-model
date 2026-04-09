@@ -61,6 +61,12 @@ class AddEnemyAction(Action):
             enemy = self.enemy() if isinstance(self.enemy, type) else self.enemy
             if isinstance(enemy, Enemy):
                 game_state.current_combat.add_enemy(enemy)
+                player = getattr(game_state, "player", None)
+                if player is not None:
+                    for relic in list(getattr(player, "relics", [])):
+                        hook = getattr(relic, "on_spawn_monster", None)
+                        if callable(hook):
+                            hook(enemy, player)
 
 
 @register("action")
@@ -168,5 +174,4 @@ class LoseMaxHPAction(Action):
         player.hp = min(player.hp, player.max_hp)
 
         print(f"Lost {self.amount} max HP. New max HP: {player.max_hp}")
-
 

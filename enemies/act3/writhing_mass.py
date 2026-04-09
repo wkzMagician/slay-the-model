@@ -93,8 +93,14 @@ class WrithingMass(Enemy):
         from powers.definitions.reactive import ReactivePower
         self.add_power(ReactivePower(owner=self))
     
-    def on_damage_taken(self, damage: int, source=None, card=None, 
-                        damage_type=None) -> None:
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source=None,
+        card=None,
+        player=None,
+        damage_type: str = "physical",
+    ) -> None:
         """Called when enemy takes damage.
         
         Due to Reactive power, changes its intention when hit by attack damage.
@@ -109,7 +115,7 @@ class WrithingMass(Enemy):
             List of actions to queue after taking damage
         """
         # Check for Reactive power - if hit by attack, change intention
-        if damage > 0 and damage_type == "attack":
+        if damage > 0:
             # Check if we have Reactive power
             if self.get_power("Reactive"):
                 # Change to a random different intention

@@ -14,8 +14,11 @@ class _EliteVictoryRelic(Relic):
         self.triggered = False
 
     @subscribe(EliteVictoryMessage, priority=MessagePriority.PLAYER_RELIC)
-    def on_elite_victory(self, player):
+    def on_elite_victory(self):
+        from engine.game_state import game_state
         self.triggered = True
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=8, target=player)]
 
 

@@ -22,12 +22,10 @@ class Void(Card):
     base_ethereal = True
     upgradeable = False
 
-    def on_draw(self):
+    def on_draw(self, card):
         """Lose 1 energy when drawn"""
         from actions.combat import GainEnergyAction
 
         from engine.game_state import game_state
 
         add_actions([GainEnergyAction(energy=-1)])
-
-        return

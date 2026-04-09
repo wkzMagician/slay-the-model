@@ -16,7 +16,7 @@ class SwivelPower(Power):
         self.tracked_costs = dict(tracked_costs or {})
 
     @subscribe(CardPlayedMessage, priority=MessagePriority.PLAYER_POWER)
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if getattr(card, "card_type", None) != CardType.ATTACK:
             return
 

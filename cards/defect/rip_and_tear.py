@@ -6,7 +6,7 @@ from actions.combat import AttackAction
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
-from utils.types import CardType, RarityType, TargetType
+from utils.types import CardType, DamageType, RarityType, TargetType
 
 
 @register("card")
@@ -32,4 +32,4 @@ class RipAndTear(Card):
         for _ in range(self.attack_times):
             if not enemies:
                 break
-            add_action(AttackAction(damage=self.damage, target=random.choice(enemies), source=game_state.player, damage_type="attack", card=self))
+            add_action(AttackAction(damage=self.damage, target=random.choice(enemies), source=game_state.player, damage_type=DamageType.PHYSICAL, card=self))

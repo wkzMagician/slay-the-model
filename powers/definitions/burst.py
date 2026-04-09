@@ -15,7 +15,7 @@ class BurstPower(Power):
     def __init__(self, amount: int = 1, duration: int = 1, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if getattr(card, "card_type", None) != CardType.SKILL:
             return
         card.on_play(targets=targets or [])

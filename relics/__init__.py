@@ -105,7 +105,6 @@ from .global_relics import (
     RedKey,
     RedMask,
     RegalPillow,
-    RunicCube,
     RunicDome,
     RunicPyramid,
     SacredBark,
@@ -154,6 +153,7 @@ from .character.ironclad import (
     MagicFlower,
     OrangePellets,
     RedSkull,
+    RunicCube,
     Runicube,
 )
 from .character.silent import (

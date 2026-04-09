@@ -32,9 +32,15 @@ class PlatedArmorPower(Power):
         from engine.game_state import game_state
         add_actions([GainBlockAction(block=self.amount, target=self.owner)])
         return
-    def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type: str = "direct"):
-        if damage_type == "attack":
-            self.amount -= 1
-            if self.amount <= 0 and self.owner is not None:
-                self.owner.remove_power(self.name)
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source=None,
+        card=None,
+        player=None,
+        damage_type: str = "physical",
+    ):
+        self.amount -= 1
+        if self.amount <= 0 and self.owner is not None:
+            self.owner.remove_power(self.name)
         return

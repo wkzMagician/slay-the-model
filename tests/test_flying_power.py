@@ -16,10 +16,9 @@ def test_flying_halves_incoming_damage():
 def test_flying_loses_stack_only_on_attack_damage():
     power = FlyingPower(amount=2)
 
-    power.on_damage_taken(5, damage_type="direct")
     assert power.amount == 2
 
-    power.on_damage_taken(5, damage_type="attack")
+    power.on_physical_attack_taken(5)
     assert power.amount == 1
 
 
@@ -30,7 +29,7 @@ def test_flying_zero_stacks_grounds_and_forces_stunned():
     byrd.current_intention = byrd.intentions["peck"]
 
     power = FlyingPower(amount=1, owner=byrd)
-    power.on_damage_taken(4, damage_type="attack")
+    power.on_physical_attack_taken(4)
 
     assert power.amount == 0
     assert byrd._is_flying is False

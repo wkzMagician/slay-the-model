@@ -15,12 +15,6 @@ class MasterfulStab(Card):
 
     upgrade_damage = 16
 
-    def on_damage_taken(self, damage: int, source=None, player=None):
-        from engine.game_state import game_state
-
-        if player is game_state.player and damage > 0:
-            self._cost += 1
-
-    def on_lose_hp(self, amount: int, source=None, card=None):
+    def on_any_hp_lost(self, amount: int, source=None, card=None):
         if amount > 0:
             self._cost += 1

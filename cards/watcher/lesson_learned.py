@@ -16,7 +16,7 @@ class LessonLearned(Card):
     text_name = "Lesson Learned"
     text_description = "Deal {damage} damage. If Fatal, upgrade a card in your deck."
 
-    def on_fatal(self, damage, target=None, card=None, damage_type: str = "direct"):
+    def on_fatal(self, damage, target=None, source=None, card=None, damage_type: str = "direct"):
         if card is not self:
             return
         candidates = [

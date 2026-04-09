@@ -3,6 +3,8 @@ import unittest
 from unittest.mock import Mock
 
 from enemies.act2.shelled_parasite import ShelledParasite
+from engine.message_bus import MessageBus
+from engine.messages import AnyHpLostMessage
 
 
 class TestShelledParasitePlatedArmor(unittest.TestCase):
@@ -39,7 +41,7 @@ class TestShelledParasitePlatedArmor(unittest.TestCase):
         initial_amount = plated_armor.amount
         
         # Simulate attack damage on power
-        plated_armor.on_damage_taken(5, damage_type="attack")
+        plated_armor.on_physical_attack_taken(5)
         
         self.assertEqual(plated_armor.amount, initial_amount - 1)
     
@@ -59,7 +61,11 @@ class TestShelledParasitePlatedArmor(unittest.TestCase):
         initial_amount = plated_armor.amount
         
         # Simulate non-attack damage (e.g., poison, card effect)
-        plated_armor.on_damage_taken(5, damage_type="direct")
+        # Non-physical damage should not consume plated armor stacks.
+        MessageBus().publish(
+            AnyHpLostMessage(target=enemy, amount=5, source=Mock(), card=None),
+            participants=[enemy],
+        )
         
         self.assertEqual(plated_armor.amount, initial_amount)
     
@@ -80,7 +86,7 @@ class TestShelledParasitePlatedArmor(unittest.TestCase):
         plated_armor.amount = 1
         
         # Simulate damage that triggers the reduction to 0 (must be attack type)
-        enemy.on_damage_taken(5, source=Mock(), damage_type="attack")
+        enemy.on_physical_attack_taken(5, source=Mock())
         
         # Find power again (may have been updated)
         plated_armor = None
@@ -113,14 +119,14 @@ class TestShelledParasitePlatedArmor(unittest.TestCase):
             plated_armor.amount = 0
         
         # Trigger first stun
-        enemy.on_damage_taken(5)
+        enemy.on_physical_attack_taken(5)
         self.assertTrue(enemy._has_been_stunned)
         
         # Reset intention manually
         enemy.current_intention = enemy.intentions["double_strike"]
         
         # Try to trigger again - should not change
-        enemy.on_damage_taken(5)
+        enemy.on_physical_attack_taken(5)
         # Should still be double_strike (not forced back to stunned)
         self.assertEqual(enemy.current_intention.name, "double_strike")
     
@@ -130,7 +136,7 @@ class TestShelledParasitePlatedArmor(unittest.TestCase):
         enemy.on_combat_start()
         
         # Take damage while Plated Armor is still high
-        enemy.on_damage_taken(5)
+        enemy.on_physical_attack_taken(5)
         
         # Should NOT be stunned
         self.assertFalse(enemy._has_been_stunned)

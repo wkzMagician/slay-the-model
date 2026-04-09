@@ -18,7 +18,7 @@ class PureWater(Relic):
     text_name = "Pure Water"
     text_description = "At the start of each combat, add 1 Miracle to your hand."
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         from cards.colorless.miracle import Miracle
 
         add_action(AddCardAction(Miracle(), dest_pile="hand"))
@@ -30,7 +30,7 @@ class Damaru(Relic):
     text_name = "Damaru"
     text_description = "At the start of your turn, gain 1 Mantra."
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         add_action(GainMantraAction(1))
 
 
@@ -40,8 +40,12 @@ class Duality(Relic):
     text_name = "Duality"
     text_description = "Whenever you play an Attack, gain 1 temporary Dexterity."
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if getattr(card, "card_type", None) != CardType.ATTACK:
+            return
+        from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
             return
         add_action(ApplyPowerAction(DexterityPower(amount=1, owner=player), player))
         add_action(ApplyPowerAction(TemporaryDexterityPower(amount=1, duration=1, owner=player), player))
@@ -53,7 +57,7 @@ class TeardropLocket(Relic):
     text_name = "Teardrop Locket"
     text_description = "Start each combat in Calm."
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         add_action(ChangeStanceAction(StatusType.CALM))
 
 
@@ -63,7 +67,11 @@ class CloakClasp(Relic):
     text_name = "Cloak Clasp"
     text_description = "At the end of your turn, gain 1 Block for each card in your hand."
 
-    def on_player_turn_end(self, player):
+    def on_player_turn_end(self):
+        from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
+            return
         add_action(GainBlockAction(len(player.card_manager.get_pile("hand")), target=player))
 
 
@@ -80,7 +88,7 @@ class HolyWater(Relic):
     text_name = "Holy Water"
     text_description = "At the start of each combat, add 3 Miracles to your hand."
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         from cards.colorless.miracle import Miracle
 
         for _ in range(3):

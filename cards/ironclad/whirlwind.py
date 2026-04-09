@@ -9,7 +9,7 @@ from actions.base import Action
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
-from utils.types import CardType, RarityType, TargetType
+from utils.types import CardType, DamageType, RarityType, TargetType
 
 
 @register("card")
@@ -61,7 +61,7 @@ class Whirlwind(Card):
                     DealDamageAction(
                         target=enemy,
                         damage=self.damage,
-                        damage_type="attack",
+                        damage_type=DamageType.PHYSICAL,
                         card=self,
                     )
                 )

@@ -25,31 +25,31 @@ class ShiftingPower(Power):
     def __init__(self, owner=None):
         super().__init__(amount=0, duration=-1, owner=owner)
 
-    def on_damage_taken(
+    def on_any_hp_lost(
         self,
-        damage: int,
+        amount: int,
         source: Any = None,
         card: Any = None,
         player: Any = None,
-        damage_type: str = "direct",
+        damage_type: str = "physical",
     ):
-        if not self.owner or damage <= 0:
+        if not self.owner or amount <= 0:
             return
         actions: List[Action] = [
             ApplyPowerAction(
-                StrengthPower(amount=-damage, owner=self.owner),
+                StrengthPower(amount=-amount, owner=self.owner),
                 self.owner
             )
         ]
 
         strength_up = self.owner.get_power("strength up")
         if strength_up:
-            strength_up.amount += damage
+            strength_up.amount += amount
             strength_up.duration = 1
         else:
             actions.append(
                 ApplyPowerAction(
-                    StrengthUpPower(amount=damage, duration=1, owner=self.owner),
+                    StrengthUpPower(amount=amount, duration=1, owner=self.owner),
                     self.owner
                 )
             )

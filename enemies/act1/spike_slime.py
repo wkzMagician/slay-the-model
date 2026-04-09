@@ -91,9 +91,8 @@ class SpikeSlimeL(Enemy):
         else:
             return self.intentions["lick"]
     
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> None:
+    def on_any_hp_lost(self, amount: int, source=None, card=None) -> None:
         """Check for split condition when taking damage."""
-        super().on_damage_taken(damage, source, card, damage_type)
         actions = []
         # Check if HP threshold reached and not already triggered
         if self.hp <= self.max_hp / 2 and not self._split_triggered:

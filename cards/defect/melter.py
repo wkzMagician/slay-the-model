@@ -7,7 +7,7 @@ from actions.combat import AttackAction
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
-from utils.types import CardType, RarityType
+from utils.types import CardType, DamageType, RarityType
 
 
 @register("card")
@@ -31,7 +31,7 @@ class Melter(Card):
                     damage=self.damage,
                     target=target,
                     source=game_state.player,
-                    damage_type="attack",
+                    damage_type=DamageType.PHYSICAL,
                     card=self,
                 )
             )

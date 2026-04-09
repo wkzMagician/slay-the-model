@@ -2,12 +2,12 @@
 Flame Barrier power for Ironclad.
 Gain block, deal damage to enemies that attack.
 """
-from engine.runtime_api import add_action, add_actions
-from typing import List, Any
-from actions.base import Action
+from engine.runtime_api import add_action
+from typing import Any
 from powers.base import Power, StackType
 from actions.combat import DealDamageAction
 from utils.registry import register
+from utils.types import DamageType
 
 
 @register("power")
@@ -27,20 +27,20 @@ class FlameBarrierPower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_damage_taken(self, damage: int, source: Any = None, card: Any = None,
-                       player: Any = None, damage_type: str = "direct"):
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source: Any = None,
+        card: Any = None,
+        player: Any = None,
+        damage_type: str = "physical",
+    ):
         """Deal damage to attacker when this creature is attacked."""
-
-        if damage_type == "attack":
-            # Deal damage back to attacker
-            from engine.game_state import game_state
-            add_action(DealDamageAction(
-                damage=self.amount,
-                target=source,
-                damage_type="power",
-                source=self.owner if self.owner else None,
-                card=None
-            ))
-            return
-
+        add_action(DealDamageAction(
+            damage=self.amount,
+            target=source,
+            damage_type=DamageType.MAGICAL,
+            source=self.owner if self.owner else None,
+            card=None
+        ))
         return

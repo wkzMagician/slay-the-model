@@ -28,9 +28,6 @@ class FeelNoPainPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
     @subscribe(CardExhaustedMessage, priority=MessagePriority.REACTION)
-    def on_card_exhausted(self, card, owner, source_pile=None):
-        if owner is not self.owner:
-            return
-        from engine.game_state import game_state
-        add_actions([GainBlockAction(block=self.amount, target=owner)])
+    def on_card_exhausted(self, card, source_pile=None):
+        add_actions([GainBlockAction(block=self.amount, target=self.owner)])
         return

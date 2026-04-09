@@ -22,7 +22,7 @@ class HexPower(Power):
     def get_description(self) -> str:
         return f"Whenever you play a Skill, add {self.amount} Dazed card(s) to your discard pile."
     
-    def on_card_play(self, card, player, targets) -> None:
+    def on_card_play(self, card, targets) -> None:
         """Trigger when a card is played - add Dazed if it's a Skill."""
         from utils.types import CardType
         from engine.game_state import game_state

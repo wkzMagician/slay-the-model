@@ -41,7 +41,7 @@ class TimeWarpPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
         self.card_counter = amount  # Cards played since last trigger
     
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Called when a card is played.
         
         Increments counter and triggers effect when threshold is reached.

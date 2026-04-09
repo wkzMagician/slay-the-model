@@ -21,7 +21,7 @@ class Sunder(Card):
     def on_play(self, targets: List[Creature] = []):
         super().on_play(targets)
 
-    def on_fatal(self, damage: int, target=None, card=None, damage_type: str = "direct"):
+    def on_fatal(self, damage: int, target=None, source=None, card=None, damage_type: str = "direct"):
         from engine.runtime_api import add_action
 
         if card is self and target is not None:

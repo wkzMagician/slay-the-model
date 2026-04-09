@@ -6,7 +6,7 @@ from actions.combat import AttackAction
 from cards.base import COST_X, Card
 from entities.creature import Creature
 from utils.registry import register
-from utils.types import CardType, RarityType, TargetType
+from utils.types import CardType, DamageType, RarityType, TargetType
 
 
 @register("card")
@@ -30,5 +30,5 @@ class Skewer(Card):
         from engine.runtime_api import add_actions
 
         times = self.get_effective_x()
-        actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type="attack", card=self) for _ in range(times)]
+        actions = [AttackAction(damage=self.damage, target=target, source=game_state.player, damage_type=DamageType.PHYSICAL, card=self) for _ in range(times)]
         add_actions(actions)

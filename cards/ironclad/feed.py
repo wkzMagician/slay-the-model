@@ -28,7 +28,7 @@ class Feed(Card):
     base_magic = {"max_health_gain": 3, "max_hp": 3}
     upgrade_magic = {"max_health_gain": 4, "max_hp": 4}
 
-    def on_fatal(self, damage: int, target: Creature, card: Card, damage_type: str):
+    def on_fatal(self, damage: int, target: Creature, source=None, card: Card | None = None, damage_type: str = "direct"):
         """When this card kills an enemy, gain max HP"""
         from engine.game_state import game_state
         from actions.combat import ModifyMaxHpAction

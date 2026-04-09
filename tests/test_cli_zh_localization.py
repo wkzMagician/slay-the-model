@@ -80,7 +80,7 @@ def test_secret_portal_and_victory_text_have_zh_translations():
 def test_time_warp_prints_localized_counter(capsys):
     power = TimeWarpPower(amount=0)
 
-    power.on_card_play(card=None, player=None, targets=[])
+    power.on_card_play(card=None, targets=[])
     output = capsys.readouterr().out
 
     assert "Time Warp:" not in output

@@ -61,3 +61,9 @@ class EnemyType(str, Enum):
     ELITE = "Elite"
     BOSS = "Boss"
     MINION = "Minion"
+
+
+class DamageType(str, Enum):
+    PHYSICAL = "physical"
+    MAGICAL = "magical"
+    HP_LOSS = "hp_loss"

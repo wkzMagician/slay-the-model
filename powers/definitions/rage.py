@@ -27,7 +27,7 @@ class RagePower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_play_card(self, card, player, targets):
+    def on_play_card(self, card, targets):
         """Gain block when an Attack card is played."""
         from engine.game_state import game_state
         from utils.types import CardType
@@ -37,8 +37,6 @@ class RagePower(Power):
         if game_state.player and hasattr(card, 'card_type'):
             if card.card_type == CardType.ATTACK:
                 actions.append(GainBlockAction(block=self.amount, target=game_state.player))
-
-        from engine.game_state import game_state
 
         add_actions(actions)
 

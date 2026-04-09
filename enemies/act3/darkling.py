@@ -128,12 +128,8 @@ class Darkling(Enemy):
         self._consecutive_chomp = 0
         self._consecutive_harden = 0
 
-    def on_damage_taken(self, damage: int, source=None, card=None,
-                        damage_type: str = "direct"):
+    def on_any_hp_lost(self, amount: int, source=None, card=None):
         """Check if HP reaches 0 to start regrowing."""
-        super().on_damage_taken(
-            damage, source=source, card=card, damage_type=damage_type
-        )
         if self.hp <= 0:
             self.hp = 0
             self._is_regrowing = True

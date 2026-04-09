@@ -26,59 +26,53 @@ class TestPenNib(unittest.TestCase):
     def test_pen_nib_resets_on_combat_start(self):
         """Test attack counter resets on combat start."""
         self.pen_nib.attacks_played = 15
-        self.pen_nib.on_combat_start(self.player)
-        
+        self.pen_nib.on_combat_start(1)
+
         self.assertEqual(self.pen_nib.attacks_played, 0)
         self.assertTrue(game_state.action_queue.is_empty())
 
     def test_pen_nib_tracks_attacks(self):
         """Test PenNib tracks attacks played."""
-        # Create mock attack card
         attack_card = MagicMock()
         attack_card.card_type = CardType.ATTACK
-        
-        # Play 5 attacks
+
         for _ in range(5):
-            self.pen_nib.on_card_play(attack_card, self.player, self.entities)
-        
+            self.pen_nib.on_card_play(attack_card, self.entities)
+
         self.assertEqual(self.pen_nib.attacks_played, 5)
 
     def test_pen_nib_ignores_non_attacks(self):
         """Test PenNib ignores non-attack cards."""
         skill_card = MagicMock()
         skill_card.card_type = CardType.SKILL
-        
-        self.pen_nib.on_card_play(skill_card, self.player, self.entities)
-        
+
+        self.pen_nib.on_card_play(skill_card, self.entities)
+
         self.assertEqual(self.pen_nib.attacks_played, 0)
 
-    def test_pen_nib_applies_power_on_10th_attack(self):
-        """Test PenNib applies PenNibPower on 10th attack."""
+    def test_pen_nib_applies_power_after_9th_attack(self):
+        """Test PenNib primes the next attack after the 9th attack."""
         attack_card = MagicMock()
         attack_card.card_type = CardType.ATTACK
-        
-        # Play 9 attacks - should not trigger
-        for _ in range(9):
-            self.pen_nib.on_card_play(attack_card, self.player, self.entities)
+
+        for _ in range(8):
+            self.pen_nib.on_card_play(attack_card, self.entities)
             self.assertTrue(game_state.action_queue.is_empty())
-        
-        # 10th attack should trigger PenNibPower
-        self.pen_nib.on_card_play(attack_card, self.player, self.entities)
+
+        self.pen_nib.on_card_play(attack_card, self.entities)
         self.assertEqual(len(game_state.action_queue.queue), 1)
         self.assertIsInstance(game_state.action_queue.queue[0], ApplyPowerAction)
         from powers.definitions.pen_nib import PenNibPower
         self.assertIsInstance(getattr(game_state.action_queue.queue[0], "power", None), PenNibPower)
 
-    def test_pen_nib_applies_power_on_20th_attack(self):
-        """Test PenNib applies PenNibPower on 20th attack."""
+    def test_pen_nib_applies_power_on_9th_and_19th_attacks(self):
+        """Test PenNib primes on attacks 9, 19, 29..."""
         attack_card = MagicMock()
         attack_card.card_type = CardType.ATTACK
-        
-        # Play 20 attacks
+
         for i in range(20):
-            self.pen_nib.on_card_play(attack_card, self.player, self.entities)
-            if (i + 1) % 10 == 0:
-                # 10th and 20th should trigger
+            self.pen_nib.on_card_play(attack_card, self.entities)
+            if (i + 1) % 10 == 9:
                 self.assertEqual(len(game_state.action_queue.queue), 1)
                 self.assertIsInstance(game_state.action_queue.queue[0], ApplyPowerAction)
                 game_state.action_queue.clear()

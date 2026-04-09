@@ -19,7 +19,7 @@ class Wallop(Card):
     text_description = "Deal {damage} damage. Gain Block equal to damage dealt."
 
 
-    def on_damage_dealt(self, damage: int, target=None, card=None, damage_type: str = "direct"):
+    def on_damage_dealt(self, damage: int, target=None, source=None, card=None, damage_type: str = "direct"):
         if card is not self or damage <= 0:
             return
         add_action(GainBlockAction(damage, target=game_state_module.game_state.player))

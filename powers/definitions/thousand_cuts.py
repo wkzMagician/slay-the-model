@@ -15,12 +15,13 @@ class ThousandCutsPower(Power):
     def __init__(self, amount: int = 1, duration: int = -1, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         from engine.game_state import game_state
         from engine.runtime_api import add_actions
 
         current_combat = getattr(game_state, "current_combat", None)
         enemies = getattr(current_combat, "enemies", []) if current_combat is not None else []
+        player = game_state.player
         actions = [
             DealDamageAction(damage=self.amount, target=enemy, source=player, card=card)
             for enemy in enemies

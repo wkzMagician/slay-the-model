@@ -42,20 +42,31 @@ class ShelledParasite(Enemy):
         from powers.definitions.plated_armor import PlatedArmorPower
         self.powers.append(PlatedArmorPower(amount=14, owner=self))
     
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct"):
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source=None,
+        card=None,
+        player=None,
+        damage_type: str = "physical",
+    ):
         """Check if Plated Armor is broken."""
         result = []
         for power in self.powers[:]:
-            if power.name == "Plated Armor" and hasattr(power, "on_damage_taken"):
-                power_actions = power.on_damage_taken(
+            if power.name != "Plated Armor":
+                continue
+            if hasattr(power, "on_physical_attack_taken"):
+                power_actions = power.on_physical_attack_taken(
                     damage,
                     source=source,
                     card=card,
                     damage_type=damage_type,
                 )
-                if power_actions:
-                    result.extend(power_actions)
-                break
+            else:
+                power_actions = None
+            if power_actions:
+                result.extend(power_actions)
+            break
         
         # Check if Plated Armor is broken (amount == 0 or power removed)
         if not self._has_been_stunned:
@@ -72,7 +83,7 @@ class ShelledParasite(Enemy):
         
         return result
     
-    def on_damage_dealt(self, damage: int, target=None, card=None, damage_type: str = "direct"):
+    def on_damage_dealt(self, damage: int, target=None, source=None, card=None, damage_type: str = "direct"):
         """Handle Life Suck healing when damage is dealt."""
         from typing import List
         from actions.base import Action

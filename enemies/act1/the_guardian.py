@@ -79,12 +79,11 @@ class TheGuardian(Enemy):
         
         return self.intentions[intention_name]
     
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type: str = "direct") -> None:
+    def on_any_hp_lost(self, amount: int, source=None, card=None) -> None:
         """Check for Mode Shift trigger."""
-        super().on_damage_taken(damage, source, card, damage_type)
         actions = []
         if not self._in_defensive_mode:
-            self._damage_taken_since_last_shift += damage
+            self._damage_taken_since_last_shift += amount
             
             # Check if Mode Shift threshold reached
             if self._damage_taken_since_last_shift >= self._mode_shift_threshold:

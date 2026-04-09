@@ -9,7 +9,7 @@ from powers.base import Power, StackType
 from actions.combat import DealDamageAction
 from utils.combat import resolve_target
 from utils.registry import register
-from utils.types import TargetType
+from utils.types import DamageType, TargetType
 
 
 @register("power")
@@ -29,7 +29,7 @@ class JuggernautPower(Power):
         """
         super().__init__(amount=amount, duration=-1, owner=owner)
 
-    def on_gain_block(self, amount: int, player: Any = None, source: Any = None, card: Any = None):
+    def on_gain_block(self, amount: int, source: Any = None, card: Any = None):
         """Deal damage to all enemies when block is gained."""
         from engine.game_state import game_state
         actions = []
@@ -45,7 +45,7 @@ class JuggernautPower(Power):
             actions.append(DealDamageAction(
                 damage=self.amount,
                 target=enemy,
-                damage_type="power",
+                damage_type=DamageType.MAGICAL,
                 source=self.owner if self.owner else None,
                 card=None
             ))

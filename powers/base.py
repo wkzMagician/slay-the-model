@@ -6,6 +6,7 @@ from enum import Enum, auto
 from typing import List, Optional, Any
 from actions.base import Action
 from engine.messages import (
+    AnyHpLostMessage,
     AttackPerformedMessage,
     BlockGainedMessage,
     CardExhaustedMessage,
@@ -13,9 +14,12 @@ from engine.messages import (
     CardDiscardedMessage,
     CardDrawnMessage,
     CombatEndedMessage,
-    DamageResolvedMessage,
+    DamageDealtMessage,
+    DirectHpLossMessage,
     HealedMessage,
     HpLostMessage,
+    PhysicalAttackDealtMessage,
+    PhysicalAttackTakenMessage,
     PlayerTurnPostDrawMessage,
     PlayerTurnEndedMessage,
     PlayerTurnStartedMessage,
@@ -194,7 +198,7 @@ class Power(Localizable):
         return
     
     @subscribe(CardPlayedMessage, priority=MessagePriority.REACTION)
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Called when a card is played.
         
         Returns:
@@ -203,12 +207,12 @@ class Power(Localizable):
         return
 
     @subscribe(CardPlayedMessage, priority=MessagePriority.REACTION)
-    def on_play_card(self, card, player, targets):
+    def on_play_card(self, card, targets):
         """Compatibility alias for card-play triggers."""
         return
     
-    @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)
-    def on_damage_dealt(self, damage: int, target: Any, source: Any = None, card: Any = None):
+    @subscribe(DamageDealtMessage, priority=MessagePriority.REACTION)
+    def on_damage_dealt(self, damage: int, target: Any, source: Any = None, card: Any = None, damage_type: str = "direct"):
         """Called when damage is dealt.
         
         Args:
@@ -240,25 +244,31 @@ class Power(Localizable):
         """
         return
     
-    @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)
-    def on_damage_taken(self, damage: int, source: Any = None, card: Any = None, 
-                       player: Any = None, damage_type: str = "direct"):
-        """Called when damage is taken.
-        
-        Args:
-            damage: Original damage amount
-            source: Source of the damage
-            card: Card being played (if applicable)
-            player: Player taking damage
-            damage_type: Type of damage
-            
-        Returns:
-            List of actions to execute when damage is taken
-        """
+    @subscribe(PhysicalAttackTakenMessage, priority=MessagePriority.REACTION)
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source: Any = None,
+        card: Any = None,
+        damage_type: str = "physical",
+    ):
+        """Called when physical attack damage is taken."""
+        return
+
+    @subscribe(PhysicalAttackDealtMessage, priority=MessagePriority.REACTION)
+    def on_physical_attack_dealt(
+        self,
+        damage: int,
+        target: Any = None,
+        source: Any = None,
+        card: Any = None,
+        damage_type: str = "physical",
+    ):
+        """Called when physical attack damage is dealt."""
         return
     
     @subscribe(BlockGainedMessage, priority=MessagePriority.REACTION)
-    def on_gain_block(self, amount: int, player: Any = None, source: Any = None, card: Any = None):
+    def on_gain_block(self, amount: int, source: Any = None, card: Any = None):
         """Called when block is gained.
         
         Returns:
@@ -266,21 +276,14 @@ class Power(Localizable):
         """
         return
     
-    @subscribe(HpLostMessage, priority=MessagePriority.REACTION)
-    def on_lose_hp(self, amount: int, source: Any = None, card: Any = None):
-        """Called when HP is lost (not from damage).
-        
-        This is triggered by HP loss effects like Biased Cognition,
-        offering, or self-damage cards, NOT from regular damage.
-        
-        Args:
-            amount: Amount of HP lost
-            source: Source of the HP loss
-            card: Card that caused HP loss (if applicable)
-            
-        Returns:
-            List of actions to execute when HP is lost
-        """
+    @subscribe(DirectHpLossMessage, priority=MessagePriority.REACTION)
+    def on_direct_hp_loss(self, amount: int, source: Any = None, card: Any = None):
+        """Called when direct HP loss resolves."""
+        return
+
+    @subscribe(AnyHpLostMessage, priority=MessagePriority.REACTION)
+    def on_any_hp_lost(self, amount: int, source: Any = None, card: Any = None):
+        """Called whenever actual HP is lost."""
         return
     
     @subscribe(CardDrawnMessage, priority=MessagePriority.PLAYER_POWER)
@@ -296,22 +299,22 @@ class Power(Localizable):
         return
 
     @subscribe(CardDrawnMessage, priority=MessagePriority.PLAYER_POWER)
-    def on_draw_card(self, card: Any, player: Any):
+    def on_draw_card(self, card: Any):
         """Called when a card is drawn, with owner context."""
         return
 
     @subscribe(CardExhaustedMessage, priority=MessagePriority.REACTION)
-    def on_card_exhausted(self, card: Any, owner: Any, source_pile: str | None = None):
+    def on_card_exhausted(self, card: Any, source_pile: str | None = None):
         """Called when a card is exhausted."""
         return
 
     @subscribe(PowerAppliedMessage, priority=MessagePriority.REACTION)
-    def on_power_added(self, power, source=None):
+    def on_power_added(self, power, target=None):
         """Called when a power is applied."""
         return
 
     @subscribe(HealedMessage, priority=MessagePriority.REACTION)
-    def on_heal(self, amount: int, player: Any = None):
+    def on_heal(self, amount: int, source: Any = None):
         """Called when healing occurs."""
         return
 
@@ -321,7 +324,7 @@ class Power(Localizable):
         return
     
     @subscribe(CombatEndedMessage, priority=MessagePriority.PLAYER_POWER)
-    def on_combat_end(self, owner):
+    def on_combat_end(self):
         """Called at end of combat.
         
         Returns:

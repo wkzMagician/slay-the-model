@@ -10,7 +10,7 @@ class TalkToTheHandPower(Power):
     description = "Whenever you attack this enemy, gain {amount} Block."
     is_buff = False
 
-    def on_damage_taken(self, damage, source=None, card=None, player=None, damage_type="direct"):
+    def on_physical_attack_taken(self, damage, source=None, card=None, damage_type="physical"):
         from engine.game_state import game_state
 
         if damage <= 0 or getattr(card, "card_type", None) != CardType.ATTACK:

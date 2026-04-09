@@ -23,7 +23,7 @@ class CorruptionPower(Power):
         """
         super().__init__(amount=0, duration=-1, owner=owner)
 
-    def on_draw_card(self, card, player):
+    def on_draw_card(self, card):
         """Set drawn skills to 0 cost for the current turn."""
         from utils.types import CardType
 

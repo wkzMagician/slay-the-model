@@ -50,22 +50,29 @@ class TestDefectRelics:
 
     def test_runic_capacitor_grants_three_combat_orb_slots(self):
         self.player.relics = [RunicCapacitor()]
-        self.helper.start_combat([])
+        combat = self.helper.start_combat([])
         self.helper.game_state.drive_actions()
 
         assert self.player.base_orb_slots == 1
+        assert self.player.orb_manager.max_orb_slots == 1
+
+        combat._start_player_turn()
+        self.helper.game_state.drive_actions()
+
         assert self.player.orb_manager.max_orb_slots == 4
 
-    def test_gold_plated_cables_triggers_rightmost_orb_additional_time(self):
+    def test_gold_plated_cables_triggers_leftmost_orb_additional_time(self):
         self.player.relics = [GoldPlatedCables()]
         combat = self.helper.start_combat([])
+        self.player.orb_manager.max_orb_slots = 2
+        self.player.orb_manager.add_orb(FrostOrb())
         self.player.orb_manager.add_orb(FrostOrb())
         self.player.block = 0
 
         combat._end_player_phase()
         self.helper.game_state.drive_actions()
 
-        assert self.player.block == 4
+        assert self.player.block == 6
 
     def test_emotion_chip_triggers_all_orb_passives_after_losing_hp(self):
         enemy = self.helper.create_enemy(Cultist, hp=40)

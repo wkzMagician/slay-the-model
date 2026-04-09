@@ -20,7 +20,7 @@ class RingOfTheSnake(Relic):
         super().__init__()
         self.rarity = RarityType.COMMON
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         add_actions([DrawCardsAction(count=2)])
         return
 
@@ -33,7 +33,7 @@ class SneckoSkull(Relic):
         super().__init__()
         self.rarity = RarityType.COMMON
 
-    def on_apply_power(self, power, target, player):
+    def on_apply_power(self, power, target):
         if isinstance(power, PoisonPower):
             applied_poison = target.get_power("Poison")
             if applied_poison is not None:
@@ -49,7 +49,7 @@ class NinjaScroll(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         add_actions([
             AddCardAction(card=Shiv(), dest_pile="hand")
             for _ in range(3)
@@ -64,9 +64,9 @@ class PaperKrane(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
-        self.damage_phase = DamagePhase.MULTIPLICATIVE
+        self.modify_phase = DamagePhase.MULTIPLICATIVE
 
-    def modify_damage_taken(self, base_damage: int, source=None) -> int:
+    def modify_damage_taken(self, base_damage: int, source=None, damage_type: str = "direct") -> int:
         if source and hasattr(source, "powers"):
             for power in source.powers:
                 if getattr(power, "name", "") == "Weak":
@@ -82,7 +82,7 @@ class TheSpecimen(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    def on_damage_dealt(self, damage, target, player):
+    def on_damage_dealt(self, damage, target, source=None, card=None, damage_type="direct"):
         if target.is_dead():
             poison_amount = 0
             for power in target.powers:
@@ -109,7 +109,7 @@ class Tingsha(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    def on_card_discard(self, card, player):
+    def on_card_discard(self, card):
         from engine.game_state import game_state
 
         assert game_state.current_combat is not None
@@ -130,7 +130,11 @@ class ToughBandages(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    def on_card_discard(self, card, player):
+    def on_card_discard(self, card):
+        from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
+            return
         add_actions([GainBlockAction(block=3, target=player)])
         return
 
@@ -144,11 +148,11 @@ class HoveringKite(Relic):
         self.rarity = RarityType.BOSS
         self.discarded_this_turn = False
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         add_actions([LambdaAction(func=lambda: setattr(self, "discarded_this_turn", False))])
         return
 
-    def on_card_discard(self, card, player):
+    def on_card_discard(self, card):
         if not self.discarded_this_turn:
             self.discarded_this_turn = True
             add_actions([GainEnergyAction(energy=1)])
@@ -157,15 +161,32 @@ class HoveringKite(Relic):
 
 @register("relic")
 class RingOfTheSerpent(Relic):
-    """Replaces Ring of the Snake. At the start of your turn, draw 1 additional card."""
+    """Replaces Ring of the Snake. Draw 1 additional card each turn."""
 
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.BOSS
+        self._draw_bonus_applied = False
 
-    def on_player_turn_start(self, player):
-        add_actions([DrawCardsAction(count=1)])
-        return
+    def on_obtain(self):
+        from engine.game_state import game_state
+
+        player = getattr(game_state, "player", None)
+        if player is None or self._draw_bonus_applied:
+            return
+        player.base_draw_count += 1
+        self._draw_bonus_applied = True
+
+    def on_combat_start(self, floor: int):
+        from engine.game_state import game_state
+
+        if self._draw_bonus_applied:
+            return
+        player = getattr(game_state, "player", None)
+        if player is None:
+            return
+        player.base_draw_count += 1
+        self._draw_bonus_applied = True
 
 
 @register("relic")
@@ -190,9 +211,9 @@ class TwistedFunnel(Relic):
         super().__init__()
         self.rarity = RarityType.SHOP
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         add_actions([
-            ApplyPowerAction(power="Poison", target=enemy, amount=4, duration=3)
+            ApplyPowerAction(PoisonPower(amount=4, duration=4, owner=enemy), enemy)
             for enemy in self.combat_enemies()
         ])
         return

@@ -27,7 +27,7 @@ class PanachePower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Deal damage to all enemies when playing 5 cards."""
         from engine.game_state import game_state
 

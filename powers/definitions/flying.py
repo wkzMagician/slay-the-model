@@ -27,10 +27,16 @@ class FlyingPower(Power):
             return base_damage
         return max(0, int(base_damage * 0.5))
 
-    def on_damage_taken(self, damage: int, source=None, card=None, player=None,
-                        damage_type: str = "direct"):
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source=None,
+        card=None,
+        player=None,
+        damage_type: str = "physical",
+    ):
         """Lose Flying on attack hit; ground and stun owner at 0 stacks."""
-        if damage <= 0 or damage_type != "attack":
+        if damage <= 0:
             return
         self.amount -= 1
         if self.amount > 0:

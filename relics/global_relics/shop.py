@@ -53,9 +53,12 @@ class ClockworkSouvenir(Relic):
         super().__init__()
         self.rarity = RarityType.SHOP
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Gain 1 Artifact at start of combat"""
         from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
+            return
         add_actions([ApplyPowerAction(power="Artifact", target=player, amount=1)])
         return
 @register("relic")
@@ -92,7 +95,7 @@ class HandDrill(Relic):
         super().__init__()
         self.rarity = RarityType.SHOP
 
-    def on_damage_dealt(self, damage, target, player):
+    def on_damage_dealt(self, damage, target, source=None, card=None, damage_type="direct"):
         from engine.game_state import game_state
         add_actions(
         [ApplyPowerAction(power="Vulnerable", target=target,
@@ -193,14 +196,16 @@ class SlingOfCourage(Relic):
         super().__init__()
         self.rarity = RarityType.SHOP
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Start Elite combats with 2 Strength"""
         from engine.game_state import game_state
         from utils.types import CombatType
         
         combat = game_state.current_combat
         if combat is not None and combat.combat_type == CombatType.ELITE:
-            from engine.game_state import game_state
+            player = game_state.player
+            if player is None:
+                return
             add_actions([ApplyPowerAction(power="Strength", target=player, amount=2)])
             return
         return
@@ -241,7 +246,7 @@ class Toolbox(Relic):
         super().__init__()
         self.rarity = RarityType.SHOP
     
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Add 1 random Colorless card to hand at start of combat"""
         from actions.card import AddRandomCardAction
         from engine.game_state import game_state

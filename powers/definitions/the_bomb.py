@@ -8,6 +8,7 @@ from actions.base import Action
 from actions.combat import DealDamageAction
 from powers.base import Power, StackType
 from utils.registry import register
+from utils.types import DamageType
 
 
 @register("power")
@@ -41,7 +42,7 @@ class TheBombPower(Power):
                     explosion_actions.append(DealDamageAction(
                         damage=self.amount,
                         target=enemy,
-                        damage_type="direct"
+                        damage_type=DamageType.MAGICAL
                     ))
                 return explosion_actions
 

@@ -14,5 +14,5 @@ class LockOnPower(Power):
     def __init__(self, amount: int = 0, duration: int = 2, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type: str = "direct"):
+    def on_physical_attack_taken(self, damage: int, source=None, card=None, damage_type: str = "physical"):
         return

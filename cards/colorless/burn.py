@@ -2,7 +2,7 @@ from engine.runtime_api import add_action
 from cards.base import COST_UNPLAYABLE, Card
 from actions.combat import DealDamageAction
 from utils.dynamic_values import get_magic_value
-from utils.types import CardType
+from utils.types import CardType, DamageType
 
 
 class Burn(Card):
@@ -20,5 +20,5 @@ class Burn(Card):
         add_action(DealDamageAction(
             damage=get_magic_value(self, "burn_damage"),
             target=game_state.player,
-            damage_type="thorns",
+            damage_type=DamageType.MAGICAL,
         ))

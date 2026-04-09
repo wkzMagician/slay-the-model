@@ -4,11 +4,15 @@ import re
 from typing import List, Optional, TYPE_CHECKING, Any
 
 from engine.messages import (
+    AnyHpLostMessage,
     BlockGainedMessage,
     CreatureDiedMessage,
-    DamageResolvedMessage,
+    DamageDealtMessage,
+    DirectHpLossMessage,
     HealedMessage,
     HpLostMessage,
+    PhysicalAttackDealtMessage,
+    PhysicalAttackTakenMessage,
     PowerAppliedMessage,
 )
 from engine.subscriptions import MessagePriority, subscribe
@@ -171,15 +175,6 @@ class Creature(Localizable):
             return None
         self.block += amount
 
-    @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type=None):
-        """Legacy compatibility hook for subclasses.
-
-        Runtime power reactions are handled by message publication in the damage
-        action path. Subclasses may still override this hook for local behavior.
-        """
-        return []
-
     def add_power(self, power) -> None:
         """Add a power to this creature with correct stacking semantics."""
         if not power:
@@ -264,7 +259,7 @@ class Creature(Localizable):
         return []
 
     @subscribe(HealedMessage, priority=MessagePriority.REACTION)
-    def on_heal(self, amount: int) -> List['Action']:
+    def on_heal(self, amount: int, source=None) -> List['Action']:
         """Called when creature heals.
         
         Args:
@@ -275,17 +270,8 @@ class Creature(Localizable):
         """
         return []
 
-    @subscribe(HpLostMessage, priority=MessagePriority.REACTION)
-    def on_lose_hp(self, amount: int, source=None, card=None) -> List['Action']:
-        """Legacy compatibility hook for subclasses.
-
-        Runtime HP-loss reactions are handled by message publication in the
-        lose-HP action path. Subclasses may still override this hook.
-        """
-        return []
-
-    @subscribe(DamageResolvedMessage, priority=MessagePriority.REACTION)
-    def on_damage_dealt(self, damage: int, target=None, card=None, damage_type: str = "direct") -> List['Action']:
+    @subscribe(DamageDealtMessage, priority=MessagePriority.REACTION)
+    def on_damage_dealt(self, damage: int, target=None, source=None, card=None, damage_type: str = "direct") -> List['Action']:
         """Called when this creature deals damage.
         
         Args:
@@ -297,6 +283,39 @@ class Creature(Localizable):
         Returns:
             List of actions to queue after dealing damage
         """
+        return []
+
+    @subscribe(PhysicalAttackTakenMessage, priority=MessagePriority.REACTION)
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source=None,
+        card=None,
+        damage_type: str = "physical",
+    ) -> List['Action']:
+        """Called when this creature loses HP to a physical attack."""
+        return []
+
+    @subscribe(PhysicalAttackDealtMessage, priority=MessagePriority.REACTION)
+    def on_physical_attack_dealt(
+        self,
+        damage: int,
+        target=None,
+        source=None,
+        card=None,
+        damage_type: str = "physical",
+    ) -> List['Action']:
+        """Called when this creature deals HP loss via a physical attack."""
+        return []
+
+    @subscribe(DirectHpLossMessage, priority=MessagePriority.REACTION)
+    def on_direct_hp_loss(self, amount: int, source=None, card=None) -> List['Action']:
+        """Called when this creature directly loses HP without damage resolution."""
+        return []
+
+    @subscribe(AnyHpLostMessage, priority=MessagePriority.REACTION)
+    def on_any_hp_lost(self, amount: int, source=None, card=None) -> List['Action']:
+        """Called when this creature loses HP for any reason."""
         return []
 
     @subscribe(BlockGainedMessage, priority=MessagePriority.REACTION)
@@ -314,7 +333,7 @@ class Creature(Localizable):
         return []
 
     @subscribe(PowerAppliedMessage, priority=MessagePriority.REACTION)
-    def on_power_added(self, power) -> List['Action']:
+    def on_power_added(self, power, target=None) -> List['Action']:
         """Legacy compatibility hook for subclasses.
 
         Runtime power-added reactions are handled by message publication in the

@@ -26,7 +26,7 @@ class TestSilentPowerAndRareExpansion:
         assert self.player.block == 0
         power = self.player.get_power('After Image')
         assert power is not None
-        power.on_card_play(Strike(), self.player, [])
+        power.on_card_play(Strike(), [])
         self.helper.game_state.drive_actions()
         assert self.player.block == 1
 
@@ -106,7 +106,7 @@ class TestSilentPowerAndRareExpansion:
         assert enemy_b.hp == 20
         power = self.player.get_power('A Thousand Cuts')
         assert power is not None
-        power.on_card_play(Strike(), self.player, [enemy_a, enemy_b])
+        power.on_card_play(Strike(), [enemy_a, enemy_b])
         self.helper.game_state.drive_actions()
         assert enemy_a.hp == 19
         assert enemy_b.hp == 19

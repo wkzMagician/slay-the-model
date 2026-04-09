@@ -17,7 +17,8 @@ class ChokePower(Power):
     def __init__(self, amount: int = 3, duration: int = 1, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         from engine.runtime_api import add_actions
+        from engine.game_state import game_state
 
-        add_actions([DealDamageAction(damage=self.amount, target=self.owner, source=player, card=card)])
+        add_actions([DealDamageAction(damage=self.amount, target=self.owner, source=game_state.player, card=card)])

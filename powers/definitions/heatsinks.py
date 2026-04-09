@@ -14,6 +14,6 @@ class HeatsinksPower(Power):
     stack_type = StackType.INTENSITY
     is_buff = True
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if getattr(card, "card_type", None) == CardType.POWER:
             add_action(DrawCardsAction(count=self.amount))

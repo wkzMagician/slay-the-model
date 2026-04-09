@@ -27,12 +27,15 @@ class SneckoEye(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Start each combat confused"""
         from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
+            return
         add_actions([ApplyPowerAction(ConfusedPower(amount=0, owner=player), player)])
         return
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Draw 2 additional cards at start of turn"""
         from engine.game_state import game_state
         add_actions([DrawCardsAction(count=2)])
@@ -57,7 +60,7 @@ class BlackStar(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_elite_victory(self, player):
+    def on_elite_victory(self):
         """Drop an additional random relic when defeating an elite."""
         from actions.reward import AddRandomRelicAction
         from engine.game_state import game_state
@@ -71,7 +74,7 @@ class BlackBlood(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_combat_end(self, player):
+    def on_combat_end(self):
         """Heal 12 HP at combat end"""
         from engine.game_state import game_state
         add_actions([HealAction(amount=12)])
@@ -84,7 +87,7 @@ class BustedCrown(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -119,7 +122,7 @@ class CoffeeDripper(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -134,7 +137,7 @@ class CursedKey(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -161,7 +164,7 @@ class Ectoplasm(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -186,7 +189,7 @@ class FusionHammer(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -202,12 +205,12 @@ class MarkOfPain(Relic):
         self.rarity = RarityType.BOSS
         self.wounds_added = False
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Add Wounds to draw pile at combat start"""
         from engine.game_state import game_state
         add_actions([AddCardAction(Wound(), "draw_pile", pos=PilePosType.RANDOM) * 2])
         return
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -238,12 +241,12 @@ class PhilosophersStone(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
         return
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         actions = []
         from engine.game_state import game_state
         assert game_state.current_combat is not None
@@ -256,21 +259,12 @@ class PhilosophersStone(Relic):
         add_actions(actions)
 
         return
-@register("relic")
-class RunicCube(Relic):
-    """Whenever you lose HP, draw 1 card."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.BOSS
-
-    def on_damage_taken(self, damage, source, player):
-        """Draw 1 card when taking damage"""
-        if damage > 0:
-            from engine.game_state import game_state
-            add_actions([DrawCardsAction(count=1)])
+    def on_spawn_monster(self, monster, player):
+        if monster is None or getattr(monster, "hp", 0) <= 0:
             return
+        add_actions([ApplyPowerAction(StrengthPower(amount=1, owner=monster), monster)])
         return
+
 @register("relic")
 class RunicDome(Relic):
     """Gain 1 Energy at start of each turn. You can no longer see enemy Intents."""
@@ -279,7 +273,7 @@ class RunicDome(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -316,7 +310,7 @@ class SlaversCollar(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         # Get current combat
         from engine.game_state import game_state
@@ -335,7 +329,7 @@ class Sozu(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain 1 Energy at start of each turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])
@@ -374,7 +368,7 @@ class VelvetChoker(Relic):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain Energy at start of turn"""
         from engine.game_state import game_state
         add_actions([GainEnergyAction(energy=1)])

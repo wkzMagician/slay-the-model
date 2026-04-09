@@ -18,7 +18,7 @@ class EchoFormPower(Power):
     def on_turn_start(self):
         self.cards_left_this_turn = self.amount
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if self.cards_left_this_turn <= 0:
             return
         card.on_play(targets=targets or [])

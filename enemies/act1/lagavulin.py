@@ -79,9 +79,9 @@ class Lagavulin(Enemy):
         
         return intention
 
-    def on_damage_taken(self, damage: int, source=None, card=None, damage_type=None):
+    def on_any_hp_lost(self, amount: int, source=None, card=None):
         """Wake from sleep when any resolved damage hits HP (amount > 0); stun intent same turn."""
-        if self.is_sleeping and damage > 0:
+        if self.is_sleeping and amount > 0:
             self.is_sleeping = False
             self.turns_without_damage = 0
             self.powers = [p for p in self.powers if p.name != "Metallicize"]

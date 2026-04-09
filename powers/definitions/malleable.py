@@ -46,8 +46,14 @@ class MalleablePower(Power):
         """Reset block bonus at start of turn."""
         self._current_block_bonus = self.amount
 
-    def on_damage_taken(self, damage: int, source: Any = None, card: Any = None, 
-                       player: Any = None, damage_type: str = "direct") -> None:
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source: Any = None,
+        card: Any = None,
+        player: Any = None,
+        damage_type: str = "physical",
+    ) -> None:
         """
         Called when owner takes damage.
         Gains block equal to current block bonus, then increases the bonus.
@@ -59,8 +65,7 @@ class MalleablePower(Power):
             player: Player (not used here)
             damage_type: Type of damage
         """
-        # Only trigger on attack damage
-        if damage > 0 and damage_type == "attack" and self.owner:
+        if damage > 0 and self.owner:
             block_to_gain = self._current_block_bonus
             # Increase bonus for next trigger
             self._current_block_bonus += 1

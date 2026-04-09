@@ -17,7 +17,7 @@ class EnvenomPower(Power):
     def __init__(self, amount: int = 1, duration: int = -1, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_damage_dealt(self, damage: int, target=None, source=None, card=None):
+    def on_damage_dealt(self, damage: int, target=None, source=None, card=None, damage_type: str = "direct"):
         if damage <= 0 or target is None or getattr(card, 'card_type', None) != CardType.ATTACK:
             return
         from engine.runtime_api import add_actions

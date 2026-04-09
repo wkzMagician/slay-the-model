@@ -31,7 +31,7 @@ class CuriosityPower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, targets) -> None:
+    def on_card_play(self, card, targets) -> None:
         """Called when a card is played.
         
         If the card is a Power type, gain Strength.

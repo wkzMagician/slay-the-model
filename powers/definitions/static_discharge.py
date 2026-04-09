@@ -14,8 +14,14 @@ class StaticDischargePower(Power):
     stack_type = StackType.INTENSITY
     is_buff = True
 
-    def on_damage_taken(self, damage: int, source=None, card=None, player=None, damage_type: str = "direct"):
-        if damage <= 0 or damage_type != "attack":
+    def on_physical_attack_taken(
+        self,
+        damage: int,
+        source=None,
+        card=None,
+        damage_type: str = "physical",
+    ):
+        if damage <= 0:
             return
         for _ in range(self.amount):
             add_action(AddOrbAction(LightningOrb()))

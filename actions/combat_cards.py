@@ -6,7 +6,7 @@ from actions.combat_damage import DealDamageAction, LoseHPAction
 from entities.creature import Creature
 from localization import LocalStr
 from utils.registry import register
-from utils.types import TargetType
+from utils.types import DamageType, TargetType
 
 if TYPE_CHECKING:
     from cards.base import Card
@@ -32,7 +32,7 @@ def _build_enemy_target_option_name(card: "Card", enemy: Creature) -> LocalStr:
 class AttackAction(Action):
     """Publish attack hooks before dealing damage."""
 
-    def __init__(self, damage: int, target: Creature, source: Creature, damage_type: str = "direct", card=None):
+    def __init__(self, damage: int, target: Creature, source: Creature, damage_type: str | DamageType = DamageType.PHYSICAL, card=None):
         self.damage = damage
         self.target = target
         self.damage_type = damage_type

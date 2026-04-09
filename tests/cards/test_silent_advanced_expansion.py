@@ -64,7 +64,7 @@ class TestSilentAdvancedExpansion:
         assert enemy.hp == 38
         choke = enemy.get_power('Choke')
         assert choke is not None
-        choke.on_card_play(Strike(), self.player, [enemy])
+        choke.on_card_play(Strike(), [enemy])
         self.helper.game_state.drive_actions()
         assert enemy.hp == 35
 

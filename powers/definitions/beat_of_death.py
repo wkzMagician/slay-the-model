@@ -9,6 +9,7 @@ from actions.base import Action
 from actions.combat import DealDamageAction
 from powers.base import Power, StackType
 from utils.registry import register
+from utils.types import DamageType
 
 
 @register("power")
@@ -28,18 +29,20 @@ class BeatOfDeathPower(Power):
         """
         super().__init__(amount=amount, duration=duration, owner=owner)
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Deal damage to player when they play a card."""
+        from engine.game_state import game_state
+
+        player = game_state.player
         if player is None or self.owner is None:
             return
-        from engine.game_state import game_state
         add_actions(
         [
             DealDamageAction(
                 damage=self.amount,
                 target=player,
                 source=self.owner,
-                damage_type="direct",
+                damage_type=DamageType.MAGICAL,
             )
         ]
         )

@@ -2,10 +2,7 @@
 Ironclad Uncommon Attack card - Blood for Blood
 """
 
-from typing import List, Optional
-from actions.base import Action
 from cards.base import Card
-from entities.creature import Creature
 from utils.registry import register
 from utils.types import CardType, RarityType
 
@@ -23,23 +20,8 @@ class BloodForBlood(Card):
     upgrade_cost = 3
     upgrade_damage = 22
 
-    def on_damage_taken(
-        self,
-        damage: int,
-        source: Optional[Creature] = None,
-        player: Optional[Creature] = None,
-    ):
-        """Track HP taken to reduce card cost"""
-        from engine.game_state import game_state
-
-        if player is not game_state.player:
-            return
-        # Reduce cost by 1 each time damage is taken (minimum 0)
-        self._cost = max(0, self._cost - 1)
-        return
-
-    def on_lose_hp(self, amount: int, source=None, card=None):
-        """HP loss also reduces the card's cost this combat."""
+    def on_any_hp_lost(self, amount: int, source=None, card=None):
+        """Any actual HP loss reduces the card's cost this combat."""
         if amount > 0:
             self._cost = max(0, self._cost - 1)
         return

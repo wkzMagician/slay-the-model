@@ -12,7 +12,7 @@ class ReboundPower(Power):
     stack_type = StackType.PRESENCE
     is_buff = True
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         if self.owner is None:
             return
         if getattr(card, "card_type", None) != CardType.POWER:

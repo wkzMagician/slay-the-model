@@ -54,8 +54,8 @@ def test_exhume_cannot_return_exhume_from_exhaust_pile():
 
 def test_blood_for_blood_upgrade_preserves_and_improves_reduced_cost():
     card = BloodForBlood()
-    card.on_lose_hp(1)
-    card.on_lose_hp(1)
+    card.on_any_hp_lost(1)
+    card.on_any_hp_lost(1)
 
     assert card.cost == 2
     card.upgrade()

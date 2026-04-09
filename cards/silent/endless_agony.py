@@ -18,7 +18,7 @@ class EndlessAgony(Card):
 
     upgrade_damage = 6
 
-    def on_draw(self):
+    def on_draw(self, card):
         from actions.card_lifecycle import AddCardAction
         from engine.runtime_api import add_actions
 

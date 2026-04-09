@@ -23,12 +23,14 @@ class HornCleat(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
 
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """At the start of your 2nd turn, gain 14 Block."""
         from engine.game_state import game_state
         if game_state.current_combat is not None:
             if game_state.current_combat.combat_state.combat_turn == 2:
-                from engine.game_state import game_state
+                player = game_state.player
+                if player is None:
+                    return
                 add_actions([GainBlockAction(block=14, target=player)])
                 return
         return
@@ -68,7 +70,7 @@ class BottledFlame(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.ATTACK)])
         return
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Add selected card to hand at start of combat."""
         if self.selected_card:
             # Add a copy of selected card to hand
@@ -91,7 +93,7 @@ class BottledLightning(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.SKILL)])
         return
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Add selected card to hand at start of combat."""
         if self.selected_card:
             # Add a copy of selected card to hand
@@ -114,7 +116,7 @@ class BottledTornado(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.POWER)])
         return
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Add selected card to hand at start of combat."""
         if self.selected_card:
             # Add a copy of selected card to hand
@@ -133,10 +135,9 @@ class DarkstonePeriapt(Relic):
 
     def on_card_added(self, card, dest_pile: str = "deck"):
         """Gain max HP when obtaining a Curse."""
-        if dest_pile not in ("deck"):
+        if dest_pile not in ("deck",):
             return
         if getattr(card, "card_type", None) == CardType.CURSE:
-            from engine.game_state import game_state
             add_actions([ModifyMaxHpAction(amount=6)])
             return
         return
@@ -174,10 +175,9 @@ class GremlinHorn(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_damage_dealt(self, damage, target, player):
+    def on_damage_dealt(self, damage, target, source=None, card=None, damage_type="direct"):
         """When an enemy dies, gain energy and draw card"""
-        if target.is_dead():
-            from engine.game_state import game_state
+        if target.is_dead() and self.alive_enemies():
             add_actions(
             [
                 GainEnergyAction(energy=1),
@@ -195,7 +195,7 @@ class InkBottle(Relic):
         self.rarity = RarityType.UNCOMMON
         self.cards_played = 0
     
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Track cards played"""
         self.cards_played += 1
         if self.cards_played >= 10:
@@ -213,16 +213,19 @@ class Kunai(Relic):
         self.rarity = RarityType.UNCOMMON
         self.attacks_played_this_turn = 0
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Reset attack counter at start of each turn"""
         self.attacks_played_this_turn = 0
         return
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Track attacks played and gain Dexterity on 3rd attack"""
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn == 3:
                 from engine.game_state import game_state
+                player = game_state.player
+                if player is None:
+                    return
                 add_actions([ApplyPowerAction(power="Dexterity", target=player, amount=1)])
                 return
         return
@@ -235,11 +238,11 @@ class LetterOpener(Relic):
         self.rarity = RarityType.UNCOMMON
         self.skills_played_this_turn = 0
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Reset skill counter at start of each turn"""
         self.skills_played_this_turn = 0
         return
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Track skills played and deal damage on 3rd skill"""
         if card.card_type == CardType.SKILL:
             self.skills_played_this_turn += 1
@@ -289,9 +292,9 @@ class Matryoshka(Relic):
                 rarity = RarityType.RARE
         elif chest_type == "large":
             rarity = (
-                RarityType.UNCOMMON
-                if random.random() < 0.75
-                else RarityType.RARE
+                RarityType.COMMON
+                if random.random() < 0.25
+                else RarityType.UNCOMMON
             )
         else:
             rarity = RarityType.UNCOMMON
@@ -321,10 +324,11 @@ class MeatOnBone(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_combat_end(self, player):
+    def on_combat_end(self):
         """Heal if HP at or below 50% at combat end"""
+        from engine.game_state import game_state
+        player = game_state.player
         if player and player.hp <= (player.max_hp / 2):
-            from engine.game_state import game_state
             add_actions([HealAction(amount=12)])
             return
         return
@@ -336,7 +340,7 @@ class MercuryHourglass(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Deal 3 damage to all enemies at turn start"""
         actions = []
         for enemy in self.combat_enemies():
@@ -368,11 +372,15 @@ class MummifiedHand(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Make random card in hand cost 0 for turn"""
         if card.card_type == CardType.POWER:
             from engine.game_state import game_state
-            hand = game_state.player.card_manager.get_pile('hand')
+            hand = [
+                hand_card
+                for hand_card in game_state.player.card_manager.get_pile('hand')
+                if getattr(hand_card, "_cost", 0) > 0 and hand_card.cost > 0
+            ]
             if hand:
                 import random
                 target_card = random.choice(hand)
@@ -387,16 +395,19 @@ class OrnamentalFan(Relic):
         self.rarity = RarityType.UNCOMMON
         self.attacks_played_this_turn = 0
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Reset attack counter at start of each turn"""
         self.attacks_played_this_turn = 0
         return
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Track attacks played and gain Block on 3rd attack"""
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn == 3:
                 from engine.game_state import game_state
+                player = game_state.player
+                if player is None:
+                    return
                 add_actions([GainBlockAction(block=4, target=player)])
                 return
         return
@@ -408,14 +419,16 @@ class Pantograph(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Heal 25 HP at start of boss combat"""
         from engine.game_state import game_state
         from utils.types import CombatType
         
         if game_state.current_combat is not None:
             if game_state.current_combat.combat_type != CombatType.NORMAL:
-                from engine.game_state import game_state
+                player = game_state.player
+                if player is None:
+                    return
                 add_actions([ApplyPowerAction(power="Regeneration", target=player, amount=25, duration=1)])
                 return
         return
@@ -473,17 +486,20 @@ class SelfFormingClay(Relic):
         self.rarity = RarityType.UNCOMMON
         self.block_gain_next_turn = 0
     
-    def on_damage_taken(self, damage, source, player):
+    def on_any_hp_lost(self, amount, source=None, card=None):
         """Track HP loss to gain Block next turn"""
-        if damage > 0:
+        if amount > 0:
             self.block_gain_next_turn = 3
         return
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Gain Block if HP was lost last turn"""
         if self.block_gain_next_turn > 0:
             block = self.block_gain_next_turn
             self.block_gain_next_turn = 0
             from engine.game_state import game_state
+            player = game_state.player
+            if player is None:
+                return
             add_actions([GainBlockAction(block=block, target=player)])
             return
         return
@@ -496,16 +512,19 @@ class Shuriken(Relic):
         self.rarity = RarityType.UNCOMMON
         self.attacks_played_this_turn = 0
     
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Reset attack counter at start of each turn"""
         self.attacks_played_this_turn = 0
         return
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Track attacks played and gain Strength on 3rd attack"""
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn == 3:
                 from engine.game_state import game_state
+                player = game_state.player
+                if player is None:
+                    return
                 add_actions([ApplyPowerAction(power="Strength", target=player, amount=1)])
                 return
         return

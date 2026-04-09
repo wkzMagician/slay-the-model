@@ -8,7 +8,7 @@ from actions.base import Action
 from powers.base import Power, StackType
 from actions.combat import DealDamageAction
 from utils.registry import register
-from utils.types import CardType
+from utils.types import CardType, DamageType
 
 
 @register("power")
@@ -42,7 +42,7 @@ class FireBreathing(Power):
                         actions.append(DealDamageAction(
                             damage=self.amount,
                             target=enemy,
-                            damage_type="power",
+                            damage_type=DamageType.MAGICAL,
                             source=self,
                             card=None
                         ))

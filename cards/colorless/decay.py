@@ -8,7 +8,7 @@ from actions.base import Action
 from actions.combat import DealDamageAction
 from cards.base import Card, COST_UNPLAYABLE
 from utils.registry import register
-from utils.types import CardType, RarityType
+from utils.types import CardType, DamageType, RarityType
 
 
 @register("card")
@@ -33,7 +33,7 @@ class Decay(Card):
         actions.append(DealDamageAction(
             damage=damage_amount,
             target=game_state.player,
-            damage_type='card'
+            damage_type=DamageType.MAGICAL
         ))
 
         from engine.game_state import game_state

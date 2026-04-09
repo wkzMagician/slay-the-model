@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Iterable, Tuple
 
-from engine.message_helpers import alive_entities_from_game_state
 from engine.messages import (
     EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES,
     AttackPerformedMessage,
@@ -18,12 +17,17 @@ from engine.messages import (
     CombatEndedMessage,
     CombatStartedMessage,
     CreatureDiedMessage,
-    DamageResolvedMessage,
+    DamageDealtMessage,
+    DirectHpLossMessage,
     EliteVictoryMessage,
+    FatalDamageMessage,
     GameMessage,
     GoldGainedMessage,
     HealedMessage,
     HpLostMessage,
+    AnyHpLostMessage,
+    PhysicalAttackDealtMessage,
+    PhysicalAttackTakenMessage,
     PlayerTurnPostDrawMessage,
     PlayerTurnEndedMessage,
     PlayerTurnStartedMessage,
@@ -57,44 +61,19 @@ def subscription_parameter_names(func: Callable, *, bound: bool) -> ParameterNam
     return tuple(names)
 
 
-@dataclass(frozen=True)
-class ContractVariant:
-    param_names: ParameterNames
-    binder: Binder
-    predicate: Predicate
-
-    def applies(self, bound_method: Callable, message: GameMessage) -> bool:
-        return self.predicate(bound_method, message)
-
-    def invoke(self, bound_method: Callable, message: GameMessage):
-        return self.binder(bound_method, message)
+_ALWAYS: Predicate = lambda _bound_method, _message: True
 
 
 @dataclass(frozen=True)
 class MessageContract:
     message_type: type[GameMessage]
-    default_variants: tuple[ContractVariant, ...] = ()
-    method_variants: dict[str, tuple[ContractVariant, ...]] = field(default_factory=dict)
-
-    def variants_for(self, method_name: str | None) -> tuple[ContractVariant, ...]:
-        if method_name and method_name in self.method_variants:
-            return self.method_variants[method_name]
-        return self.default_variants
+    param_names: ParameterNames
+    binder: Binder
+    predicate: Predicate = _ALWAYS
 
     def supports(self, param_names: Iterable[str], method_name: str | None = None) -> bool:
         names = tuple(param_names)
-        if method_name:
-            return any(variant.param_names == names for variant in self.variants_for(method_name))
-        if any(variant.param_names == names for variant in self.default_variants):
-            return True
-        return any(
-            variant.param_names == names
-            for variants in self.method_variants.values()
-            for variant in variants
-        )
-
-
-_ALWAYS: Predicate = lambda _bound_method, _message: True
+        return self.param_names == names
 
 
 def _bind(*value_getters: Callable[[Callable, GameMessage], object]) -> Binder:
@@ -124,11 +103,8 @@ def _bind_with_previous_hp(*value_getters: Callable[[Callable, GameMessage], obj
     return binder
 
 
-_OWNER = lambda _bound_method, message: message.owner
-_ENEMIES = lambda _bound_method, message: message.enemies
 _TARGETS = lambda _bound_method, message: message.targets
 _FLOOR = lambda _bound_method, message: message.floor
-_MESSAGE = lambda _bound_method, message: message
 _AMOUNT = lambda _bound_method, message: message.amount
 _COUNT = lambda _bound_method, message: message.count
 _CARD = lambda _bound_method, message: message.card
@@ -141,333 +117,159 @@ _POWER = lambda _bound_method, message: message.power
 _DAMAGE_TYPE = lambda _bound_method, message: message.damage_type
 _PREVIOUS_STATUS = lambda _bound_method, message: message.previous_status
 _NEW_STATUS = lambda _bound_method, message: message.new_status
-_ENTITIES_FROM_STATE = lambda _bound_method, _message: alive_entities_from_game_state()
-_ENTITIES_FROM_MESSAGE = lambda _bound_method, message: message.entities
-
-
-def _subscriber(bound_method: Callable):
-    return getattr(bound_method, "__self__", None)
-
-
-def _target_has_subscriber_power(bound_method: Callable, message: GameMessage) -> bool:
-    target = getattr(message, "target", None)
-    powers = getattr(target, "powers", None) or []
-    return any(power is _subscriber(bound_method) for power in powers)
-
-
-def _subscriber_is_target(bound_method: Callable, message: GameMessage) -> bool:
-    return _subscriber(bound_method) is getattr(message, "target", None)
-
-
-def _subscriber_is_source_or_card(bound_method: Callable, message: GameMessage) -> bool:
-    return _subscriber(bound_method) in {getattr(message, "source", None), getattr(message, "card", None)}
-
-
-def _player_available(_bound_method: Callable, _message: GameMessage) -> bool:
-    from engine.game_state import game_state
-
-    return game_state.player is not None
-
-
-def _player_entity(_bound_method: Callable, _message: GameMessage):
-    from engine.game_state import game_state
-
-    return game_state.player
-
-
-def _damage_took_player(_bound_method: Callable, message: GameMessage):
-    return getattr(message, "target", None)
-
-
-def _fatal_target_is_dead(_bound_method: Callable, message: GameMessage) -> bool:
-    target = getattr(message, "target", None)
-    return bool(getattr(target, "is_dead", lambda: False)())
-
-
-_VARIANT = lambda names, binder, predicate=_ALWAYS: ContractVariant(tuple(names), binder, predicate)
 
 
 def _build_contracts() -> dict[type[GameMessage], MessageContract]:
     contracts = {
         CombatStartedMessage: MessageContract(
             message_type=CombatStartedMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("floor",), _bind(_FLOOR)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("floor",),
+            binder=_bind(_FLOOR),
         ),
         CombatEndedMessage: MessageContract(
             message_type=CombatEndedMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("owner",), _bind(_OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         PlayerTurnStartedMessage: MessageContract(
             message_type=PlayerTurnStartedMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         PlayerTurnEndedMessage: MessageContract(
             message_type=PlayerTurnEndedMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         PlayerTurnPostDrawMessage: MessageContract(
             message_type=PlayerTurnPostDrawMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         StanceChangedMessage: MessageContract(
             message_type=StanceChangedMessage,
-            default_variants=(
-                _VARIANT(("player", "previous_status", "new_status"), _bind(_OWNER, _PREVIOUS_STATUS, _NEW_STATUS)),
-                _VARIANT(("previous_status", "new_status"), _bind(_PREVIOUS_STATUS, _NEW_STATUS)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("previous_status", "new_status"),
+            binder=_bind(_PREVIOUS_STATUS, _NEW_STATUS),
         ),
         ScryMessage: MessageContract(
             message_type=ScryMessage,
-            default_variants=(
-                _VARIANT(("count",), _bind(_COUNT)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("count",),
+            binder=_bind(_COUNT),
         ),
         RelicObtainedMessage: MessageContract(
             message_type=RelicObtainedMessage,
-            default_variants=(
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         GoldGainedMessage: MessageContract(
             message_type=GoldGainedMessage,
-            default_variants=(
-                _VARIANT(("gold_amount", "player"), _bind(_AMOUNT, _OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("gold_amount",),
+            binder=_bind(_AMOUNT),
         ),
         ShuffleMessage: MessageContract(
             message_type=ShuffleMessage,
-            default_variants=(
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         PotionUsedMessage: MessageContract(
             message_type=PotionUsedMessage,
-            default_variants=(
-                _VARIANT(("potion", "player"), _bind(_POTION, _OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("potion",),
+            binder=_bind(_POTION),
         ),
         CardDrawnMessage: MessageContract(
             message_type=CardDrawnMessage,
-            default_variants=(
-                _VARIANT(("card", "player"), _bind(_CARD, _OWNER)),
-                _VARIANT(("card",), _bind(_CARD)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("card",),
+            binder=_bind(_CARD),
         ),
         CardDiscardedMessage: MessageContract(
             message_type=CardDiscardedMessage,
-            default_variants=(
-                _VARIANT(("card", "player"), _bind(_CARD, _OWNER)),
-                _VARIANT(("card",), _bind(_CARD)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("card",),
+            binder=_bind(_CARD),
         ),
         CardAddedToPileMessage: MessageContract(
             message_type=CardAddedToPileMessage,
-            default_variants=(
-                _VARIANT(("card", "dest_pile"), _bind(_CARD, _DEST_PILE)),
-                _VARIANT(("card",), _bind(_CARD)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("card", "dest_pile"),
+            binder=_bind(_CARD, _DEST_PILE),
         ),
         CardExhaustedMessage: MessageContract(
             message_type=CardExhaustedMessage,
-            default_variants=(
-                _VARIANT(("card", "owner", "source_pile"), _bind(_CARD, _OWNER, _SOURCE_PILE)),
-                _VARIANT(("card", "owner"), _bind(_CARD, _OWNER)),
-                _VARIANT(("card",), _bind(_CARD)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("card", "source_pile"),
+            binder=_bind(_CARD, _SOURCE_PILE),
         ),
         CardPlayedMessage: MessageContract(
             message_type=CardPlayedMessage,
-            default_variants=(
-                _VARIANT(("card", "player", "targets"), _bind(_CARD, _OWNER, _TARGETS)),
-                _VARIANT(("card",), _bind(_CARD)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("card", "targets"),
+            binder=_bind(_CARD, _TARGETS),
         ),
         AttackPerformedMessage: MessageContract(
             message_type=AttackPerformedMessage,
-            default_variants=(
-                _VARIANT(("target", "source", "card"), _bind(_TARGET, _SOURCE, _CARD)),
-                _VARIANT(("target", "source"), _bind(_TARGET, _SOURCE)),
-                _VARIANT(("target",), _bind(_TARGET)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("target", "source", "card"),
+            binder=_bind(_TARGET, _SOURCE, _CARD),
         ),
         PowerAppliedMessage: MessageContract(
             message_type=PowerAppliedMessage,
-            default_variants=(
-                _VARIANT(("power", "target", "player"), _bind(_POWER, _TARGET, _OWNER)),
-                _VARIANT(("power", "owner"), _bind(_POWER, _OWNER)),
-                _VARIANT(("power", "source"), _bind(_POWER, _OWNER)),
-                _VARIANT(("power", "target"), _bind(_POWER, _TARGET)),
-                _VARIANT(("power",), _bind(_POWER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("power", "target"),
+            binder=_bind(_POWER, _TARGET),
         ),
         HealedMessage: MessageContract(
             message_type=HealedMessage,
-            default_variants=(
-                _VARIANT(("heal_amount", "player"), _bind_with_previous_hp(_AMOUNT, _TARGET)),
-                _VARIANT(("amount", "player"), _bind_with_previous_hp(_AMOUNT, _TARGET)),
-                _VARIANT(("amount",), _bind_with_previous_hp(_AMOUNT)),
-                _VARIANT(("message",), _bind_with_previous_hp(_MESSAGE)),
-                _VARIANT((), _bind_with_previous_hp()),
-            ),
+            param_names=("amount", "source"),
+            binder=_bind_with_previous_hp(_AMOUNT, _SOURCE),
         ),
         HpLostMessage: MessageContract(
             message_type=HpLostMessage,
-            default_variants=(
-                _VARIANT(("amount", "source", "card"), _bind(_AMOUNT, _SOURCE, _CARD)),
-                _VARIANT(("amount",), _bind(_AMOUNT)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
+        ),
+        DirectHpLossMessage: MessageContract(
+            message_type=DirectHpLossMessage,
+            param_names=("amount", "source", "card"),
+            binder=_bind(_AMOUNT, _SOURCE, _CARD),
+        ),
+        AnyHpLostMessage: MessageContract(
+            message_type=AnyHpLostMessage,
+            param_names=("amount", "source", "card"),
+            binder=_bind(_AMOUNT, _SOURCE, _CARD),
         ),
         BlockGainedMessage: MessageContract(
             message_type=BlockGainedMessage,
-            default_variants=(
-                _VARIANT(("amount", "player", "source", "card"), _bind(_AMOUNT, _TARGET, _SOURCE, _CARD)),
-                _VARIANT(("amount", "source", "card"), _bind(_AMOUNT, _SOURCE, _CARD)),
-                _VARIANT(("amount",), _bind(_AMOUNT)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=("amount", "source", "card"),
+            binder=_bind(_AMOUNT, _SOURCE, _CARD),
         ),
-        DamageResolvedMessage: MessageContract(
-            message_type=DamageResolvedMessage,
-            method_variants={
-                "on_damage_taken": (
-                    _VARIANT(
-                        ("damage", "source", "card", "player", "damage_type"),
-                        _bind(_AMOUNT, _SOURCE, _CARD, _damage_took_player, _DAMAGE_TYPE),
-                        _target_has_subscriber_power,
-                    ),
-                    _VARIANT(
-                        ("amount", "source", "card", "player", "damage_type"),
-                        _bind(_AMOUNT, _SOURCE, _CARD, _damage_took_player, _DAMAGE_TYPE),
-                        _target_has_subscriber_power,
-                    ),
-                    _VARIANT(
-                        ("damage", "source", "card", "damage_type"),
-                        _bind(_AMOUNT, _SOURCE, _CARD, _DAMAGE_TYPE),
-                        _subscriber_is_target,
-                    ),
-                    _VARIANT(
-                        ("amount", "source", "card", "damage_type"),
-                        _bind(_AMOUNT, _SOURCE, _CARD, _DAMAGE_TYPE),
-                        _subscriber_is_target,
-                    ),
-                    _VARIANT(
-                        ("damage",),
-                        _bind(_AMOUNT),
-                        _subscriber_is_target,
-                    ),
-                    _VARIANT(
-                        ("amount",),
-                        _bind(_AMOUNT),
-                        _subscriber_is_target,
-                    ),
-                    _VARIANT(
-                        ("damage", "source", "player"),
-                        _bind(_AMOUNT, _SOURCE, _player_entity),
-                        _player_available,
-                    ),
-                ),
-                "on_damage_dealt": (
-                    _VARIANT(("damage", "target", "source", "card"), _bind(_AMOUNT, _TARGET, _SOURCE, _CARD)),
-                    _VARIANT(
-                        ("damage", "target", "card", "damage_type"),
-                        _bind(_AMOUNT, _TARGET, _CARD, _DAMAGE_TYPE),
-                        _subscriber_is_source_or_card,
-                    ),
-                    _VARIANT(
-                        ("damage", "target"),
-                        _bind(_AMOUNT, _TARGET),
-                        _subscriber_is_source_or_card,
-                    ),
-                    _VARIANT(
-                        ("damage", "target", "player"),
-                        _bind(_AMOUNT, _TARGET, _player_entity),
-                        _player_available,
-                    ),
-                ),
-                "on_fatal": (
-                    _VARIANT(
-                        ("damage", "target", "card", "damage_type"),
-                        _bind(_AMOUNT, _TARGET, _CARD, _DAMAGE_TYPE),
-                        _fatal_target_is_dead,
-                    ),
-                    _VARIANT(("message",), _bind(_MESSAGE), _fatal_target_is_dead),
-                    _VARIANT((), _bind(), _fatal_target_is_dead),
-                ),
-            },
+        DamageDealtMessage: MessageContract(
+            message_type=DamageDealtMessage,
+            param_names=("damage", "target", "source", "card", "damage_type"),
+            binder=_bind(_AMOUNT, _TARGET, _SOURCE, _CARD, _DAMAGE_TYPE),
+        ),
+        FatalDamageMessage: MessageContract(
+            message_type=FatalDamageMessage,
+            param_names=("damage", "target", "source", "card", "damage_type"),
+            binder=_bind(_AMOUNT, _TARGET, _SOURCE, _CARD, _DAMAGE_TYPE),
+        ),
+        PhysicalAttackTakenMessage: MessageContract(
+            message_type=PhysicalAttackTakenMessage,
+            param_names=("damage", "source", "card", "damage_type"),
+            binder=_bind(_AMOUNT, _SOURCE, _CARD, _DAMAGE_TYPE),
+        ),
+        PhysicalAttackDealtMessage: MessageContract(
+            message_type=PhysicalAttackDealtMessage,
+            param_names=("damage", "target", "source", "card", "damage_type"),
+            binder=_bind(_AMOUNT, _TARGET, _SOURCE, _CARD, _DAMAGE_TYPE),
         ),
         CreatureDiedMessage: MessageContract(
             message_type=CreatureDiedMessage,
-            default_variants=(
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         ShopEnteredMessage: MessageContract(
             message_type=ShopEnteredMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("owner",), _bind(_OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
         EliteVictoryMessage: MessageContract(
             message_type=EliteVictoryMessage,
-            default_variants=(
-                _VARIANT(("player",), _bind(_OWNER)),
-                _VARIANT(("owner",), _bind(_OWNER)),
-                _VARIANT(("message",), _bind(_MESSAGE)),
-                _VARIANT((), _bind()),
-            ),
+            param_names=(),
+            binder=_bind(),
         ),
     }
     missing = [message_type.__name__ for message_type in EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES if message_type not in contracts]
@@ -514,11 +316,9 @@ def invoke_subscription_contract(bound_method: Callable, message: GameMessage, m
     if resolved_method_name is None:
         return None
     param_names = validate_bound_subscription(bound_method, type(message), resolved_method_name)
-    for variant in contract.variants_for(resolved_method_name):
-        if variant.param_names != param_names:
-            continue
-        if not variant.applies(bound_method, message):
-            continue
-        return variant.invoke(bound_method, message)
-    return None
+    if contract.param_names != param_names:
+        return None
+    if not contract.predicate(bound_method, message):
+        return None
+    return contract.binder(bound_method, message)
 

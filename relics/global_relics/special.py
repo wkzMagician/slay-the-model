@@ -52,7 +52,7 @@ class NeowsLament(Relic):
         self.rarity = RarityType.SPECIAL
         self.stacks = 3
         
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """在前三场战斗中设置所有敌人 HP=1"""
         from engine.game_state import game_state
         

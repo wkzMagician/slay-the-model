@@ -5,6 +5,7 @@ from enemies.act1.lagavulin import Lagavulin
 from enemies.act2.the_champ import TheChamp
 from enemies.base import Enemy
 from engine.messages import (
+    AnyHpLostMessage,
     AttackPerformedMessage,
     BlockGainedMessage,
     CardAddedToPileMessage,
@@ -14,10 +15,12 @@ from engine.messages import (
     CombatEndedMessage,
     CombatStartedMessage,
     CreatureDiedMessage,
-    DamageResolvedMessage,
+    DamageDealtMessage,
+    FatalDamageMessage,
+    PhysicalAttackTakenMessage,
     GoldGainedMessage,
     HealedMessage,
-    HpLostMessage,
+    DirectHpLossMessage,
     PlayerTurnEndedMessage,
     PlayerTurnStartedMessage,
     PotionUsedMessage,
@@ -41,8 +44,11 @@ class _CombatStartRelic(Relic):
         self.triggered = False
 
     @subscribe(CombatStartedMessage, priority=MessagePriority.PLAYER_RELIC)
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor):
         self.triggered = True
+        from engine.game_state import game_state
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=3, target=player)]
 
 
@@ -81,13 +87,19 @@ class _TurnEndRelic(Relic):
         self.combat_ended = False
 
     @subscribe(PlayerTurnEndedMessage, priority=MessagePriority.PLAYER_RELIC)
-    def on_player_turn_end(self, player):
+    def on_player_turn_end(self):
         self.turn_ended = True
+        from engine.game_state import game_state
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=4, target=player)]
 
     @subscribe(CombatEndedMessage, priority=MessagePriority.PLAYER_RELIC)
-    def on_combat_end(self, player):
+    def on_combat_end(self):
         self.combat_ended = True
+        from engine.game_state import game_state
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=1, target=player)]
 
 
@@ -105,9 +117,10 @@ class _TurnEndPower(Power):
         return [GainBlockAction(block=5, target=self.owner)]
 
     @subscribe(CombatEndedMessage, priority=MessagePriority.PLAYER_POWER)
-    def on_combat_end(self, owner):
+    def on_combat_end(self):
         self.combat_ended = True
-        return [GainBlockAction(block=2, target=owner)]
+        assert self.owner is not None
+        return [GainBlockAction(block=2, target=self.owner)]
 
 
 class _TurnEndCard(Card):
@@ -128,8 +141,11 @@ class _EconomyRelic(Relic):
         self.shuffle_triggered = False
         self.potion_triggered = False
 
-    def on_gold_gained(self, gold_amount: int, player):
+    def on_gold_gained(self, gold_amount: int):
+        from engine.game_state import game_state
         self.gold_triggered = True
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=1, target=player)]
 
     def on_shuffle(self):
@@ -138,8 +154,11 @@ class _EconomyRelic(Relic):
         self.shuffle_triggered = True
         return [GainBlockAction(block=2, target=game_state.player)]
 
-    def on_use_potion(self, potion, player):
+    def on_use_potion(self, potion):
+        from engine.game_state import game_state
         self.potion_triggered = True
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=3, target=player)]
 
 
@@ -149,11 +168,11 @@ class _LifecycleCard(Card):
         self.draw_triggered = False
         self.discard_triggered = False
 
-    def on_draw(self):
+    def on_draw(self, card):
         self.draw_triggered = True
         return []
 
-    def on_discard(self):
+    def on_discard(self, card):
         self.discard_triggered = True
         return []
 
@@ -183,12 +202,16 @@ class _LifecycleRelic(Relic):
         self.added_triggered = False
         self._target_player: Player | None = None
 
-    def on_card_draw(self, card, player):
+    def on_card_draw(self, card):
         self.draw_triggered = True
+        player = self._target_player
+        assert player is not None
         return [GainBlockAction(block=6, target=player)]
 
-    def on_card_discard(self, card, player):
+    def on_card_discard(self, card):
         self.discard_triggered = True
+        player = self._target_player
+        assert player is not None
         return [GainBlockAction(block=7, target=player)]
 
     def on_card_added(self, card, dest_pile="deck"):
@@ -199,11 +222,11 @@ class _LifecycleRelic(Relic):
 class _MessageFormRelic(Relic):
     def __init__(self):
         super().__init__()
-        self.seen_message = None
+        self.seen_card = None
 
     @subscribe(CardDrawnMessage, priority=MessagePriority.PLAYER_RELIC)
-    def on_card_draw_message(self, message):
-        self.seen_message = message
+    def on_card_draw(self, card):
+        self.seen_card = card
         return []
 
 
@@ -218,11 +241,11 @@ class _ReactionCreature(Creature):
         self.hp_lost_triggered = False
         self.death_triggered = False
 
-    def on_damage_taken(self, damage, source=None, card=None, damage_type=None):
+    def on_physical_attack_taken(self, damage, source=None, card=None, damage_type="physical"):
         self.damage_taken_triggered = True
         return []
 
-    def on_damage_dealt(self, damage, target=None, card=None, damage_type: str = "direct"):
+    def on_damage_dealt(self, damage, target=None, source=None, card=None, damage_type: str = "direct"):
         self.damage_dealt_triggered = True
         return []
 
@@ -238,7 +261,7 @@ class _ReactionCreature(Creature):
         self.power_added_triggered = True
         return []
 
-    def on_lose_hp(self, amount: int, source=None, card=None):
+    def on_any_hp_lost(self, amount: int, source=None, card=None):
         self.hp_lost_triggered = True
         return []
 
@@ -257,19 +280,19 @@ class _ReactionPower(Power):
         self.power_added_triggered = False
         self.hp_lost_triggered = False
 
-    def on_damage_taken(self, damage, source=None, card=None, player=None, damage_type="direct"):
+    def on_physical_attack_taken(self, damage, source=None, card=None, damage_type="physical"):
         self.damage_taken_triggered = True
         return []
 
-    def on_gain_block(self, amount: int, player=None, source=None, card=None):
+    def on_gain_block(self, amount: int, source=None, card=None):
         self.block_triggered = True
         return []
 
-    def on_power_added(self, power, source=None):
+    def on_power_added(self, power, target=None):
         self.power_added_triggered = True
         return []
 
-    def on_lose_hp(self, amount: int, source=None, card=None):
+    def on_direct_hp_loss(self, amount: int, source=None, card=None):
         self.hp_lost_triggered = True
         return []
 
@@ -282,19 +305,19 @@ class _ReactionRelic(Relic):
         self.heal_triggered = False
         self.power_added_triggered = False
 
-    def on_damage_dealt(self, damage, target, player):
+    def on_damage_dealt(self, damage, target, source=None, card=None, damage_type: str = "direct"):
         self.damage_dealt_triggered = True
         return []
 
-    def on_damage_taken(self, damage, source, player):
+    def on_physical_attack_taken(self, damage, source=None, card=None, damage_type="physical"):
         self.damage_taken_triggered = True
         return []
 
-    def on_heal(self, heal_amount, player):
+    def on_heal(self, amount, source=None):
         self.heal_triggered = True
         return []
 
-    def on_apply_power(self, power, target, player):
+    def on_apply_power(self, power, target):
         self.power_added_triggered = True
         return []
 
@@ -305,11 +328,11 @@ class _ReactionCard(Card):
         self.damage_dealt_triggered = False
         self.fatal_triggered = False
 
-    def on_damage_dealt(self, damage, target=None, card=None, damage_type: str = "direct"):
+    def on_damage_dealt(self, damage, target=None, source=None, card=None, damage_type: str = "direct"):
         self.damage_dealt_triggered = True
         return []
 
-    def on_fatal(self, damage, target=None, card=None, damage_type: str = "direct"):
+    def on_fatal(self, damage, target=None, source=None, card=None, damage_type: str = "direct"):
         self.fatal_triggered = True
         return []
 
@@ -322,9 +345,10 @@ class _PlayAttackPower(Power):
         self.card_play_triggered = False
         self.attack_triggered = False
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         self.card_play_triggered = True
-        return [GainBlockAction(block=9, target=player)]
+        assert self.owner is not None
+        return [GainBlockAction(block=9, target=self.owner)]
 
     def on_attack(self, target=None, source=None, card=None):
         self.attack_triggered = True
@@ -336,8 +360,11 @@ class _PlayAttackRelic(Relic):
         super().__init__()
         self.card_play_triggered = False
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         self.card_play_triggered = True
+        from engine.game_state import game_state
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=11, target=player)]
 
 
@@ -346,8 +373,11 @@ class _PlayReactiveCard(Card):
         super().__init__()
         self.card_play_triggered = False
 
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         self.card_play_triggered = True
+        from engine.game_state import game_state
+        player = game_state.player
+        assert player is not None
         return [GainBlockAction(block=12, target=player)]
 
 
@@ -502,7 +532,7 @@ def test_medium_risk_messages_use_class_level_subscription_metadata():
     assert [type(action).__name__ for action in added_actions] == ["GainBlockAction"]
 
 
-def test_card_drawn_message_contract_supports_message_form_dispatch():
+def test_card_drawn_message_contract_dispatches_fixed_card_form():
     helper = create_test_helper()
     player = helper.create_player(hp=80, max_hp=80, energy=3)
     card = _LifecycleCard()
@@ -512,7 +542,7 @@ def test_card_drawn_message_contract_supports_message_form_dispatch():
     bus = MessageBus()
     actions = bus.publish(message, participants=[relic])
 
-    assert relic.seen_message is message
+    assert relic.seen_card is card
     assert actions == []
 
 
@@ -531,15 +561,27 @@ def test_high_risk_messages_use_class_level_subscription_metadata():
     bus = MessageBus()
 
     damage_actions = bus.publish(
-        DamageResolvedMessage(amount=9, target=target, source=source, card=card, damage_type="attack"),
+        PhysicalAttackTakenMessage(amount=9, target=target, source=source, card=card, damage_type="physical"),
         participants=[power, target, source, card, relic],
+    )
+    damage_dealt_actions = bus.publish(
+        DamageDealtMessage(amount=9, target=target, source=source, card=card, damage_type="physical"),
+        participants=[target, source, card, relic],
+    )
+    fatal_actions = bus.publish(
+        FatalDamageMessage(amount=9, target=target, source=source, card=card, damage_type="physical"),
+        participants=[target, source, card],
     )
     heal_actions = bus.publish(
         HealedMessage(target=player, amount=5, previous_hp=40, new_hp=45, source=None),
         participants=[player, relic],
     )
     hp_lost_actions = bus.publish(
-        HpLostMessage(target=target, amount=3, source=source, card=card),
+        DirectHpLossMessage(target=target, amount=3, source=source, card=card),
+        participants=[power],
+    )
+    any_hp_lost_actions = bus.publish(
+        AnyHpLostMessage(target=target, amount=3, source=source, card=card),
         participants=[power, target],
     )
     block_actions = bus.publish(
@@ -571,8 +613,11 @@ def test_high_risk_messages_use_class_level_subscription_metadata():
     assert card.fatal_triggered is True
     assert target.death_triggered is True
     assert damage_actions == []
+    assert damage_dealt_actions == []
+    assert fatal_actions == []
     assert heal_actions == []
     assert hp_lost_actions == []
+    assert any_hp_lost_actions == []
     assert block_actions == []
     assert power_actions == []
     assert death_actions == []
@@ -610,13 +655,17 @@ def test_play_and_attack_messages_use_class_level_subscription_metadata():
     assert [type(action).__name__ for action in attack_actions] == ["GainBlockAction"]
 
 
-def test_damage_resolved_dispatches_to_lagavulin_override():
+def test_physical_attack_taken_dispatches_to_lagavulin_override():
     lagavulin = Lagavulin(start_awake=False)
     source = _ReactionCreature()
     bus = MessageBus()
 
     bus.publish(
-        DamageResolvedMessage(amount=7, target=lagavulin, source=source, card=None, damage_type="attack"),
+        PhysicalAttackTakenMessage(amount=7, target=lagavulin, source=source, card=None, damage_type="physical"),
+        participants=[lagavulin],
+    )
+    bus.publish(
+        AnyHpLostMessage(amount=7, target=lagavulin, source=source, card=None),
         participants=[lagavulin],
     )
 
@@ -625,22 +674,22 @@ def test_damage_resolved_dispatches_to_lagavulin_override():
     assert lagavulin.turns_without_damage == 0
 
 
-def test_damage_resolved_dispatches_to_the_champ_override_signature():
+def test_any_hp_lost_dispatches_to_the_champ_override_signature():
     class ChampProbe(TheChamp):
         def __init__(self):
             super().__init__()
             self.observed_damage = None
 
-        def on_damage_taken(self, damage: int):
-            self.observed_damage = damage
-            return TheChamp.on_damage_taken(self, damage)
+        def on_any_hp_lost(self, amount: int, source=None, card=None):
+            self.observed_damage = amount
+            return TheChamp.on_any_hp_lost(self, amount, source=source, card=card)
 
     champ = ChampProbe()
     champ.hp = champ.max_hp // 2
     bus = MessageBus()
 
     bus.publish(
-        DamageResolvedMessage(amount=9, target=champ, source=None, card=None, damage_type="attack"),
+        AnyHpLostMessage(amount=9, target=champ, source=None, card=None),
         participants=[champ],
     )
 

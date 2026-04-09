@@ -31,7 +31,7 @@ class FaceOfCleric(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_combat_end(self, player):
+    def on_combat_end(self):
         """Raise Max HP by 1 after combat"""
         from actions.combat import ModifyMaxHpAction
         from engine.game_state import game_state
@@ -57,9 +57,12 @@ class BloodyIdol(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_gold_gained(self, gold_amount: int, player):
+    def on_gold_gained(self, gold_amount: int):
         """Heal 5 HP when gold is gained."""
         from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
+            return
         add_actions([HealAction(target=player, amount=5)])
         return
 @register("relic")
@@ -70,7 +73,7 @@ class GremlinVisage(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Apply 1 Weak at start of combat"""
         actions = []
         for enemy in self.combat_enemies():
@@ -98,20 +101,23 @@ class MutagenicStrength(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Gain 3 Strength at combat start (will be removed at turn end)"""
         from engine.game_state import game_state
+        player = game_state.player
+        if player is None:
+            return
         add_actions([ApplyPowerAction(power="Strength", target=player, amount=3)])
         return
-    def on_player_turn_end(self, player):
+    def on_player_turn_end(self):
         """Remove all Strength at turn end"""
         from actions.combat import RemovePowerAction
         # Remove all gained Strength (would need to track amount gained)
         # Simplified: remove 3 Strength
         from engine.game_state import game_state
+        player = game_state.player
         assert game_state.current_combat is not None
-        if game_state.current_combat.combat_state.combat_turn == 1:
-            from engine.game_state import game_state
+        if game_state.current_combat.combat_state.combat_turn == 1 and player is not None:
             add_actions([ApplyPowerAction(power="Strength", target=player, amount=-3)])
             return
         else:
@@ -125,12 +131,12 @@ class Necronomicon(Relic):
         self.rarity = RarityType.EVENT
         self.double_attack_played = False
 
-    def on_turn_start(self, player):
+    def on_turn_start(self):
         """Reset tracker at start of combat"""
         from engine.game_state import game_state
         add_actions([LambdaAction(func=lambda: setattr(self, 'double_attack_played', False))])
         return
-    def on_card_play(self, card, player, targets):
+    def on_card_play(self, card, targets):
         """Track high-cost attacks and play twice"""
         if card.cost >= 2 and card.card_type == CardType.ATTACK and not self.double_attack_played:
             self.double_attack_played = True
@@ -146,7 +152,7 @@ class NilrysCodex(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_player_turn_end(self, player):
+    def on_player_turn_end(self):
         from engine.game_state import game_state
         from engine.game_state import game_state
         add_actions([ChooseAddRandomCardAction(pile='draw_pile', namespace=game_state.player.namespace)])
@@ -159,7 +165,7 @@ class Enchiridion(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Add a random Power to hand with 0 cost"""
         from actions.card import AddRandomCardAction
         from engine.game_state import game_state
@@ -186,7 +192,7 @@ class NeowsLament(Relic):
         self.combat_count = 0
         self.uses_remaining = 3
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Set enemy HP to 1 for first 3 combats"""
         if self.uses_remaining > 0:
             self.uses_remaining -= 1
@@ -224,7 +230,7 @@ class OddMushroom(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
     
-    def modify_damage_taken(self, base_damage: int, source=None) -> int:
+    def modify_damage_taken(self, base_damage: int, source=None, damage_type: str = "direct") -> int:
         """Reduce Vulnerable damage from 50% to 25%."""
         from engine.game_state import game_state
 
@@ -257,7 +263,7 @@ class WarpedTongs(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
         
-    def on_player_turn_start(self, player):
+    def on_player_turn_start(self):
         """Upgrade a random card in hand for rest of combat"""
         from actions.card import UpgradeRandomCardAction
         from engine.game_state import game_state
@@ -277,7 +283,7 @@ class RedMask(Relic):
         super().__init__()
         self.rarity = RarityType.EVENT
 
-    def on_combat_start(self, player):
+    def on_combat_start(self, floor: int):
         """Apply 1 Weak to all enemies at start of combat"""
         actions = []
         for enemy in self.combat_enemies():
