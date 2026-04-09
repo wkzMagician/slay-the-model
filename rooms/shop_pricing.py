@@ -4,6 +4,7 @@
 def compute_card_removal_price(
     base_price,
     has_membership_card=False,
+    has_the_courier=False,
     has_smiling_mask=False,
 ):
     """Compute the current card removal service price."""
@@ -13,6 +14,8 @@ def compute_card_removal_price(
     price = int(base_price)
     if has_membership_card:
         price = int(price * 0.5)
+    if has_the_courier:
+        price = int(price * 0.8)
     return price
 
 
@@ -39,6 +42,7 @@ def compute_shop_price(
         return compute_card_removal_price(
             base_price=price,
             has_membership_card=has_membership_card,
+            has_the_courier=has_the_courier,
             has_smiling_mask=has_smiling_mask,
         )
 

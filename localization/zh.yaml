@@ -135,7 +135,11 @@ ui:
     silent: 静默猎人
     defect: 故障机器人
     watcher: 观者
-  shop_removed_card: Removed {card} from deck for {price} gold
+  shop_removed_card: 已从牌组中移除 {card}，花费 {price} 金币
+  choose_relic: 选择 {name}
+  skip_relic: 跳过
+  choose_boss_relic: 选择一个 Boss 遗物
+  done: 完成
 blessing:
   title: 选择祝福
   upgrade_card_option: 升级一张卡牌
@@ -158,6 +162,9 @@ blessing:
   choose_rare_colorless_card_option: 选择一张稀有无色卡牌
   random_rare_relic_option: 获得一个随机稀有遗物
   big_max_hp_option: 获得 {amount} 点最大生命值
+  remove_card_option: 从牌组中移除一张卡牌
+  transform_card_option: 转化牌组中的一张卡牌
+  replace_starter_relic_option: 失去你的初始遗物。获得一个随机 Boss 遗物
 events:
   neo:
     welcome: 你又来了...
@@ -165,7 +172,8 @@ events:
     title: 古老文字
     elegance: 优雅
     simplicity: 简洁
-    description: '在攀爬城市区时，你注意到一面墙壁上写满了 先古之民 的文字。你正在努力推理这些奇怪的符号和图案可能的意思，却发现文字开始 发起了光 。
+    description: '在攀爬城市区时，你注意到一面墙壁上写满了 先古之民 的文字。你正在努力推理这些奇怪的符号和图案可能的意思，却发现文字开始 发起了光
+      。
 
       突然之间，文字的意义变得清晰了……'
   augmenter:
@@ -190,7 +198,8 @@ events:
     option1: 香蕉  回复最大生命值的1/3
     option2: 甜甜圈  最大生命值 +5
     option3: 盒子  获得一件遗物。被诅咒——诅咒牌(悔恨)
-    description: '当你走过一条长廊时，你看见空中 漂浮 着 一根香蕉 ， 一个甜甜圈 ， 和 一个盒子 。 不……仔细一看，它们都是被用绳子系着，从天花板上的几个洞里悬挂下来的。你在接近这几样东西时，上方似乎传来一阵 咯咯 的笑声。
+    description: '当你走过一条长廊时，你看见空中 漂浮 着 一根香蕉 ， 一个甜甜圈 ， 和 一个盒子 。 不……仔细一看，它们都是被用绳子系着，从天花板上的几个洞里悬挂下来的。你在接近这几样东西时，上方似乎传来一阵
+      咯咯 的笑声。
 
       你会怎么做？'
   bonfire_spirits:
@@ -202,7 +211,8 @@ events:
     title: 幽灵议会
     accept: 接受
     refuse: 拒绝
-    description: '在你向上攀升时，突然四周的墙壁和地面开始冒出 浓重的黑烟 ，逐渐聚成了三个戴着面具的形状，它们交头接耳地说起话来。 “看来这又是一个 涅奥 的玩偶。”
+    description: '在你向上攀升时，突然四周的墙壁和地面开始冒出 浓重的黑烟 ，逐渐聚成了三个戴着面具的形状，它们交头接耳地说起话来。 “看来这又是一个
+      涅奥 的玩偶。”
 
       “我看也是！ 她总能做出最有趣的玩具！”
 
@@ -409,11 +419,13 @@ events:
     title: 破烂软泥
     reach: 伸手
     leave: 离开
-    description: 你刚走进房间，就听见奇怪的 咕嘟声 和金属的 摩擦声 。在你面前的是一个史莱姆状的生物，它显然是吃了太多的破铜烂铁，消化不良了。 你在这个生物的中央见到了奇怪的光芒，或许是什么有魔法的物品？看起来只要你愿意把手伸进这东西的……开口，你就能得到什么
-      财宝 。当然，酸液和尖锐的破烂有可能会让你 受伤。
+    description: 你刚走进房间，就听见奇怪的 咕嘟声 和金属的 摩擦声 。在你面前的是一个史莱姆状的生物，它显然是吃了太多的破铜烂铁，消化不良了。
+      你在这个生物的中央见到了奇怪的光芒，或许是什么有魔法的物品？看起来只要你愿意把手伸进这东西的……开口，你就能得到什么 财宝 。当然，酸液和尖锐的破烂有可能会让你
+      受伤。
   secret_portal:
     title: 秘密传送门
-    description: '在你面前有一样与周围奇异景观完全不符合的东西：在深处地区一面活墙壁上，奇怪地出现了一道石做的拱门，里面有一个 旋转的魔法传送门 。
+    description: '在你面前有一样与周围奇异景观完全不符合的东西：在深处地区一面活墙壁上，奇怪地出现了一道石做的拱门，里面有一个 旋转的魔法传送门
+      。
 
 
       你不知道它会通向哪里，但它应该能够节约你爬塔的时间。'
@@ -694,7 +706,8 @@ combat:
   retrieve_zero_cost: 从弃牌堆取回 {count} 张零消耗卡牌到手牌。
   discard_non_attack: 弃掉 {count} 张非攻击牌
   gain_energy_next_turn: 下一回合获得 {amount} 点能量
-  gain_energy_next_turn_scheduled: 计划下一回合获得 {amount} 点能量（存储在 player.pending_energy 中）
+  gain_energy_next_turn_scheduled: 计划下一回合获得 {amount} 点能量（存储在 player.pending_energy
+    中）
   gain_block_next_turn: 下一回合获得 {block} 点格挡
   gain_block_next_turn_scheduled: 计划下一回合获得 {block} 点格挡（存储在 player.pending_block 中）
   reboot_shuffle: 重启动你的手牌和弃牌堆，将它们洗入抽牌堆。
@@ -780,7 +793,8 @@ cards:
     Barricade:
       name: 壁垒
       description: 格挡在回合开始时不再消失。
-      upgrade_description: Block no longer expires at the start of your turn. Costs 2.
+      upgrade_description: Block no longer expires at the start of your turn. Costs
+        2.
     BattleTrance:
       name: 战斗专注
       description: 抽 {draw} 张牌。本回合无法再抽牌。
@@ -1627,254 +1641,254 @@ cards:
       description: 无法打出。固有。
   watcher:
     Alpha:
-      name: '阿尔法'
-      description: '将一张贝塔放入你的抽牌堆中。消耗。'
+      name: 阿尔法
+      description: 将一张贝塔放入你的抽牌堆中。消耗。
     BattleHymn:
-      name: '战歌'
-      description: '在每回合开始时，将一张惩恶加入你的手牌。'
+      name: 战歌
+      description: 在每回合开始时，将一张惩恶加入你的手牌。
     Beta:
-      name: '贝塔'
-      description: '将一张欧米伽放入你的抽牌堆中。消耗。'
+      name: 贝塔
+      description: 将一张欧米伽放入你的抽牌堆中。消耗。
     Blasphemy:
-      name: '渎神'
-      description: '进入神格。在下回合死亡。消耗。'
+      name: 渎神
+      description: 进入神格。在下回合死亡。消耗。
     BowlingBash:
-      name: '碰撞连击'
-      description: '当前每有一名敌人，便造成{damage}点伤害。'
+      name: 碰撞连击
+      description: 当前每有一名敌人，便造成{damage}点伤害。
     Brilliance:
-      name: '光辉'
-      description: '造成{damage}点伤害。额外造成本场战斗中获得的真言总层数的伤害。'
+      name: 光辉
+      description: 造成{damage}点伤害。额外造成本场战斗中获得的真言总层数的伤害。
     CarveReality:
-      name: '改造现实'
-      description: '造成{damage}点伤害。将一张惩恶加入你的手牌。'
+      name: 改造现实
+      description: 造成{damage}点伤害。将一张惩恶加入你的手牌。
     Collect:
-      name: '收集'
-      description: '在你的下X个回合开始时，将一张奇迹+加入你的手牌。消耗。'
+      name: 收集
+      description: 在你的下X个回合开始时，将一张奇迹+加入你的手牌。消耗。
     Conclude:
-      name: '结末'
-      description: '对所有敌人造成{damage}点伤害。结束你的回合。'
+      name: 结末
+      description: 对所有敌人造成{damage}点伤害。结束你的回合。
     ConjureBlade:
-      name: '聚能成刃'
-      description: '将一张灭除之刃放入你的抽牌堆中。消耗。'
+      name: 聚能成刃
+      description: 将一张灭除之刃放入你的抽牌堆中。消耗。
     Consecrate:
-      name: '供奉'
-      description: '对所有敌人造成{damage}点伤害。'
+      name: 供奉
+      description: 对所有敌人造成{damage}点伤害。
     Crescendo:
-      name: '渐强'
-      description: '保留。进入愤怒。消耗。'
+      name: 渐强
+      description: 保留。进入愤怒。消耗。
     CrushJoints:
-      name: '粉碎关节'
-      description: '造成{damage}点伤害。如果本回合打出的上一张牌是技能牌，给予{magic.vuln}层易伤。'
+      name: 粉碎关节
+      description: 造成{damage}点伤害。如果本回合打出的上一张牌是技能牌，给予{magic.vuln}层易伤。
     CutThroughFate:
-      name: '斩破命运'
-      description: '造成{damage}点伤害。预见{magic.scry}。抽{draw}张牌。'
+      name: 斩破命运
+      description: 造成{damage}点伤害。预见{magic.scry}。抽{draw}张牌。
     DeceiveReality:
-      name: '欺瞒现实'
-      description: '获得{block}点格挡。将一张平安加入你的手牌。'
+      name: 欺瞒现实
+      description: 获得{block}点格挡。将一张平安加入你的手牌。
     Defend:
-      name: '防御（紫）'
-      description: '获得{block}点格挡。'
+      name: 防御（紫）
+      description: 获得{block}点格挡。
     DeusExMachina:
-      name: '机械降神'
-      description: '不能被打出。当你抽到这张牌时，将{magic.count}张奇迹加入你的手牌。消耗。'
+      name: 机械降神
+      description: 不能被打出。当你抽到这张牌时，将{magic.count}张奇迹加入你的手牌。消耗。
     DevaForm:
-      name: '天人形态'
-      description: '虚无。在你的回合开始时获得能量，并使此效果增强。'
+      name: 天人形态
+      description: 虚无。在你的回合开始时获得能量，并使此效果增强。
     Devotion:
-      name: '虔信'
-      description: '在你的回合开始时，获得{magic.mantra}层真言。'
+      name: 虔信
+      description: 在你的回合开始时，获得{magic.mantra}层真言。
     EmptyBody:
-      name: '化体为空'
-      description: '获得{block}点格挡。退出当前姿态。'
+      name: 化体为空
+      description: 获得{block}点格挡。退出当前姿态。
     EmptyFist:
-      name: '化拳为空'
-      description: '造成{damage}点伤害。退出当前姿态。'
+      name: 化拳为空
+      description: 造成{damage}点伤害。退出当前姿态。
     EmptyMind:
-      name: '化智为空'
-      description: '退出当前姿态。抽{draw}张牌。'
+      name: 化智为空
+      description: 退出当前姿态。抽{draw}张牌。
     Eruption:
-      name: '暴怒'
-      description: '造成{damage}点伤害。进入愤怒。'
+      name: 暴怒
+      description: 造成{damage}点伤害。进入愤怒。
     Establishment:
-      name: '确立基础'
-      description: '在你的回合结束时，每有一张被保留的牌，便将其本场战斗中的耗能减少1。'
+      name: 确立基础
+      description: 在你的回合结束时，每有一张被保留的牌，便将其本场战斗中的耗能减少1。
     Evaluate:
-      name: '评估'
-      description: '获得{block}点格挡。在你的抽牌堆中加入一张洞见。'
+      name: 评估
+      description: 获得{block}点格挡。在你的抽牌堆中加入一张洞见。
     Expunger:
-      name: '灭除之刃'
-      description: '造成{damage}点伤害X次。消耗。'
+      name: 灭除之刃
+      description: 造成{damage}点伤害X次。消耗。
     Fasting:
-      name: '斋戒'
-      description: '获得{magic.stat}点力量和敏捷。每回合开始时少获得1点能量。'
+      name: 斋戒
+      description: 获得{magic.stat}点力量和敏捷。每回合开始时少获得1点能量。
     FearNoEvil:
-      name: '不惧妖邪'
-      description: '造成{damage}点伤害。如果敌人的意图是攻击，则获得2点能量。'
+      name: 不惧妖邪
+      description: 造成{damage}点伤害。如果敌人的意图是攻击，则获得2点能量。
     FlurryOfBlows:
-      name: '疾风连击'
-      description: '造成{damage}点伤害。每当你转换姿态时，将这张牌从弃牌堆放回你的手牌。'
+      name: 疾风连击
+      description: 造成{damage}点伤害。每当你转换姿态时，将这张牌从弃牌堆放回你的手牌。
     FlyingSleeves:
-      name: '流云飞袖'
-      description: '保留。造成{damage}点伤害{attack_times}次。'
+      name: 流云飞袖
+      description: 保留。造成{damage}点伤害{attack_times}次。
     FollowUp:
-      name: '追击'
-      description: '造成{damage}点伤害。如果本回合打出的上一张牌是攻击牌，获得1点能量。'
+      name: 追击
+      description: 造成{damage}点伤害。如果本回合打出的上一张牌是攻击牌，获得1点能量。
     ForeignInfluence:
-      name: '他山之石'
-      description: '从3张任意颜色的攻击牌中选择1张加入你的手牌。本回合其耗能变为0。消耗。'
+      name: 他山之石
+      description: 从3张任意颜色的攻击牌中选择1张加入你的手牌。本回合其耗能变为0。消耗。
     Foresight:
-      name: '先见之明'
-      description: '在你的回合开始时，预见{magic.scry}。'
+      name: 先见之明
+      description: 在你的回合开始时，预见{magic.scry}。
     Halt:
-      name: '停顿'
-      description: '获得{block}点格挡。如果你处于愤怒，则额外获得{magic.wrath_block}点格挡。'
+      name: 停顿
+      description: 获得{block}点格挡。如果你处于愤怒，则额外获得{magic.wrath_block}点格挡。
     Indignation:
-      name: '义愤填膺'
-      description: '给予{magic.vuln}层易伤。'
+      name: 义愤填膺
+      description: 给予{magic.vuln}层易伤。
     InnerPeace:
-      name: '内心宁静'
-      description: '进入平静。如果你已经处于平静，则抽{draw}张牌。'
+      name: 内心宁静
+      description: 进入平静。如果你已经处于平静，则抽{draw}张牌。
     Insight:
-      name: '洞见'
-      description: '保留。抽{draw}张牌。消耗。'
+      name: 洞见
+      description: 保留。抽{draw}张牌。消耗。
     Judgment:
-      name: '审判'
-      description: '如果敌人的生命值小于等于{magic.threshold}点，则将其消灭。'
+      name: 审判
+      description: 如果敌人的生命值小于等于{magic.threshold}点，则将其消灭。
     JustLucky:
-      name: '幸运一击'
-      description: '造成{damage}点伤害。预见1。获得{block}点格挡。'
+      name: 幸运一击
+      description: 造成{damage}点伤害。预见1。获得{block}点格挡。
     LessonLearned:
-      name: '勤学精进'
-      description: '造成{damage}点伤害。若造成斩杀，则升级你牌组中的一张牌。'
+      name: 勤学精进
+      description: 造成{damage}点伤害。若造成斩杀，则升级你牌组中的一张牌。
     LikeWater:
-      name: '如水'
-      description: '在你的回合结束时，如果你处于平静，则获得{magic.block}点格挡。'
+      name: 如水
+      description: 在你的回合结束时，如果你处于平静，则获得{magic.block}点格挡。
     MasterReality:
-      name: '操控现实'
-      description: '每当有牌在战斗中被创造时，将其升级。'
+      name: 操控现实
+      description: 每当有牌在战斗中被创造时，将其升级。
     Meditate:
-      name: '冥想'
-      description: '将至多{magic.pick}张弃牌堆中的牌放入你的手牌。进入平静。消耗。'
+      name: 冥想
+      description: 将至多{magic.pick}张弃牌堆中的牌放入你的手牌。进入平静。消耗。
     MentalFortress:
-      name: '心灵堡垒'
-      description: '每当你转换姿态时，获得{magic.block}点格挡。'
+      name: 心灵堡垒
+      description: 每当你转换姿态时，获得{magic.block}点格挡。
     Miracle:
-      name: '奇迹'
-      description: '获得{energy_gain}点能量。消耗。'
+      name: 奇迹
+      description: 获得{energy_gain}点能量。消耗。
     Nirvana:
-      name: '涅槃'
-      description: '每当你预见时，获得{magic.block}点格挡。'
+      name: 涅槃
+      description: 每当你预见时，获得{magic.block}点格挡。
     Omega:
-      name: '欧米伽'
-      description: '在你的回合结束时，对所有敌人造成50点伤害。'
+      name: 欧米伽
+      description: 在你的回合结束时，对所有敌人造成50点伤害。
     Omniscience:
-      name: '通晓万物'
-      description: '选择你手牌中的一张牌。将其打出两次。消耗。'
+      name: 通晓万物
+      description: 选择你手牌中的一张牌。将其打出两次。消耗。
     Perseverance:
-      name: '坚韧'
-      description: '保留。获得{block}点格挡。每当这张牌被保留时，其格挡增加{magic.retain_gain}点。'
+      name: 坚韧
+      description: 保留。获得{block}点格挡。每当这张牌被保留时，其格挡增加{magic.retain_gain}点。
     Pray:
-      name: '祈祷'
-      description: '获得{block}点格挡。获得3层真言。'
+      name: 祈祷
+      description: 获得{block}点格挡。获得3层真言。
     PressurePoints:
-      name: '点穴'
-      description: '给予{magic.mark}层印记。所有敌人失去等同于其印记层数的生命。'
+      name: 点穴
+      description: 给予{magic.mark}层印记。所有敌人失去等同于其印记层数的生命。
     Prostrate:
-      name: '五体投地'
-      description: '获得{block}点格挡。获得2层真言。消耗。'
+      name: 五体投地
+      description: 获得{block}点格挡。获得2层真言。消耗。
     Protect:
-      name: '护身'
-      description: '保留。获得{block}点格挡。'
+      name: 护身
+      description: 保留。获得{block}点格挡。
     Ragnarok:
-      name: '诸神之黄昏'
-      description: '随机对一名敌人造成{damage}点伤害{attack_times}次。'
+      name: 诸神之黄昏
+      description: 随机对一名敌人造成{damage}点伤害{attack_times}次。
     ReachHeaven:
-      name: '立地升天'
-      description: '造成{damage}点伤害。在你的抽牌堆中加入一张以暴易暴。'
+      name: 立地升天
+      description: 造成{damage}点伤害。在你的抽牌堆中加入一张以暴易暴。
     Rushdown:
-      name: '猛虎下山'
-      description: '每当你进入愤怒时，抽{magic.draw}张牌。'
+      name: 猛虎下山
+      description: 每当你进入愤怒时，抽{magic.draw}张牌。
     Safety:
-      name: '平安'
-      description: '保留。获得{block}点格挡。消耗。'
+      name: 平安
+      description: 保留。获得{block}点格挡。消耗。
     Sanctity:
-      name: '圣洁'
-      description: '获得{block}点格挡。如果你处于平静，则抽2张牌。'
+      name: 圣洁
+      description: 获得{block}点格挡。如果你处于平静，则抽2张牌。
     SandsOfTime:
-      name: '时之沙'
-      description: '保留。造成{damage}点伤害。每当这张牌被保留时，其耗能减少1。'
+      name: 时之沙
+      description: 保留。造成{damage}点伤害。每当这张牌被保留时，其耗能减少1。
     SashWhip:
-      name: '腰带抽打'
-      description: '造成{damage}点伤害。如果本回合打出的上一张牌是攻击牌，给予{magic.weak}层虚弱。'
+      name: 腰带抽打
+      description: 造成{damage}点伤害。如果本回合打出的上一张牌是攻击牌，给予{magic.weak}层虚弱。
     Scrawl:
-      name: '潦草急就'
-      description: '抽牌直到你的手牌已满。消耗。'
+      name: 潦草急就
+      description: 抽牌直到你的手牌已满。消耗。
     SignatureMove:
-      name: '招牌技'
-      description: '只有当这张牌是你手中唯一的攻击牌时才能打出。造成{damage}点伤害。'
+      name: 招牌技
+      description: 只有当这张牌是你手中唯一的攻击牌时才能打出。造成{damage}点伤害。
     SimmeringFury:
-      name: '怒火中烧'
-      description: '进入愤怒。下回合抽{magic.next_draw}张牌。'
+      name: 怒火中烧
+      description: 进入愤怒。下回合抽{magic.next_draw}张牌。
     Smite:
-      name: '惩恶'
-      description: '保留。造成{damage}点伤害。消耗。'
+      name: 惩恶
+      description: 保留。造成{damage}点伤害。消耗。
     SpiritShield:
-      name: '精神护盾'
-      description: '你每有一张手牌，便获得{magic.per_card}点格挡。'
+      name: 精神护盾
+      description: 你每有一张手牌，便获得{magic.per_card}点格挡。
     Strike:
-      name: '打击（紫）'
-      description: '造成{damage}点伤害。'
+      name: 打击（紫）
+      description: 造成{damage}点伤害。
     Study:
-      name: '研习'
-      description: '在你的回合结束时，在你的抽牌堆中加入{magic.amount}张洞见。'
+      name: 研习
+      description: 在你的回合结束时，在你的抽牌堆中加入{magic.amount}张洞见。
     Swivel:
-      name: '旋身'
-      description: '获得{block}点格挡。你本回合打出的下一张攻击牌耗能变为0。'
+      name: 旋身
+      description: 获得{block}点格挡。你本回合打出的下一张攻击牌耗能变为0。
     TalkToTheHand:
-      name: '以手拒之'
-      description: '造成{damage}点伤害。施加一个减益，使你每次攻击该敌人时获得{magic.block}点格挡。'
+      name: 以手拒之
+      description: 造成{damage}点伤害。施加一个减益，使你每次攻击该敌人时获得{magic.block}点格挡。
     Tantrum:
-      name: '发泄'
-      description: '造成{damage}点伤害{attack_times}次。进入愤怒。'
+      name: 发泄
+      description: 造成{damage}点伤害{attack_times}次。进入愤怒。
     ThirdEye:
-      name: '天眼'
-      description: '获得{block}点格挡。预见{magic.scry}。'
+      name: 天眼
+      description: 获得{block}点格挡。预见{magic.scry}。
     ThroughViolence:
-      name: '以暴易暴'
-      description: '保留。造成{damage}点伤害。消耗。'
+      name: 以暴易暴
+      description: 保留。造成{damage}点伤害。消耗。
     Tranquility:
-      name: '安宁'
-      description: '保留。进入平静。消耗。'
+      name: 安宁
+      description: 保留。进入平静。消耗。
     Vault:
-      name: '腾跃'
-      description: '结束你的回合。在这之后再进行一个回合。'
+      name: 腾跃
+      description: 结束你的回合。在这之后再进行一个回合。
     Vigilance:
-      name: '警惕'
-      description: '获得{block}点格挡。进入平静。'
+      name: 警惕
+      description: 获得{block}点格挡。进入平静。
     Wallop:
-      name: '当头棒喝'
-      description: '造成{damage}点伤害。获得等同于造成伤害的格挡。'
+      name: 当头棒喝
+      description: 造成{damage}点伤害。获得等同于造成伤害的格挡。
     WaveOfTheHand:
-      name: '摆手'
-      description: '每当你在本回合获得格挡时，给予所有敌人{magic.weak}层虚弱。'
+      name: 摆手
+      description: 每当你在本回合获得格挡时，给予所有敌人{magic.weak}层虚弱。
     Weave:
-      name: '迂回'
-      description: '造成{damage}点伤害。每当你预见时，将这张牌从弃牌堆放回你的手牌。'
+      name: 迂回
+      description: 造成{damage}点伤害。每当你预见时，将这张牌从弃牌堆放回你的手牌。
     WheelKick:
-      name: '回环踢'
-      description: '造成{damage}点伤害。抽{draw}张牌。'
+      name: 回环踢
+      description: 造成{damage}点伤害。抽{draw}张牌。
     WindmillStrike:
-      name: '旋转打击'
-      description: '保留。造成{damage}点伤害。每当这张牌被保留时，其伤害增加{magic.gain}点。'
+      name: 旋转打击
+      description: 保留。造成{damage}点伤害。每当这张牌被保留时，其伤害增加{magic.gain}点。
     Wish:
-      name: '许愿'
-      description: '选择一项：获得金币、力量或多层护甲。消耗。'
+      name: 许愿
+      description: 选择一项：获得金币、力量或多层护甲。消耗。
     Worship:
-      name: '敬拜'
-      description: '获得5层真言。'
+      name: 敬拜
+      description: 获得5层真言。
     WreathOfFlame:
-      name: '火焰纹'
-      description: '你的下一张攻击牌额外造成{magic.bonus}点伤害。'
+      name: 火焰纹
+      description: 你的下一张攻击牌额外造成{magic.bonus}点伤害。
 powers:
   EnragePower:
     name: 激怒
@@ -2085,7 +2099,7 @@ potions:
     description: 从你的抽牌堆打出 {amount} 张随机卡牌。
   DuplicationPotion:
     name: 复制药水
-    description: 本战斗复制你手牌中的一张卡牌。
+    description: 本回合中，你打出的下一张牌会额外触发一次。
   EssenceOfSteel:
     name: 钢铁精华
     description: 获得 {block} 点格挡。
@@ -2120,96 +2134,96 @@ potions:
     name: 混沌药水
     description: 向你的空物品栏添加随机药水。
   BattleHymnPower:
-    name: '战歌'
-    description: '在每回合开始时，将一张惩恶加入你的手牌。'
+    name: 战歌
+    description: 在每回合开始时，将一张惩恶加入你的手牌。
   BlasphemerPower:
-    name: '渎神'
-    description: '在你的下一回合开始时，死亡。'
+    name: 渎神
+    description: 在你的下一回合开始时，死亡。
   CollectPower:
-    name: '收集'
-    description: '在你的回合开始时，将一张奇迹+加入你的手牌。'
+    name: 收集
+    description: 在你的回合开始时，将一张奇迹+加入你的手牌。
   DevaPower:
-    name: '天人'
-    description: '在你的回合开始时，获得能量，然后使该效果增加1。'
+    name: 天人
+    description: 在你的回合开始时，获得能量，然后使该效果增加1。
   DevotionPower:
-    name: '虔信'
-    description: '在你的回合开始时，获得{amount}层真言。'
+    name: 虔信
+    description: 在你的回合开始时，获得{amount}层真言。
   EstablishmentPower:
-    name: '确立基础'
-    description: '在你的回合结束时，将被保留牌的耗能减少1。'
+    name: 确立基础
+    description: 在你的回合结束时，将被保留牌的耗能减少1。
   FastingPower:
-    name: '斋戒'
-    description: '每回合开始时少获得1点能量。'
+    name: 斋戒
+    description: 每回合开始时少获得1点能量。
   ForesightPower:
-    name: '先见之明'
-    description: '在你的回合开始时，预见{amount}。'
+    name: 先见之明
+    description: 在你的回合开始时，预见{amount}。
   LikeWaterPower:
-    name: '如水'
-    description: '在你的回合结束时，如果你处于平静，则获得{amount}点格挡。'
+    name: 如水
+    description: 在你的回合结束时，如果你处于平静，则获得{amount}点格挡。
   MantraPower:
-    name: '真言'
-    description: '当达到10层时，进入神格。'
+    name: 真言
+    description: 当达到10层时，进入神格。
   MarkPower:
-    name: '印记'
-    description: '触发时，失去等同于印记层数的生命。'
+    name: 印记
+    description: 触发时，失去等同于印记层数的生命。
   MasterRealityPower:
-    name: '操控现实'
-    description: '每当有牌在战斗中被创造时，将其升级。'
+    name: 操控现实
+    description: 每当有牌在战斗中被创造时，将其升级。
   MentalFortressPower:
-    name: '心灵堡垒'
-    description: '每当你转换姿态时，获得{amount}点格挡。'
+    name: 心灵堡垒
+    description: 每当你转换姿态时，获得{amount}点格挡。
   NirvanaPower:
-    name: '涅槃'
-    description: '每当你预见时，获得{amount}点格挡。'
+    name: 涅槃
+    description: 每当你预见时，获得{amount}点格挡。
   OmegaPower:
-    name: '欧米伽'
-    description: '在你的回合结束时，对所有敌人造成{amount}点伤害。'
+    name: 欧米伽
+    description: 在你的回合结束时，对所有敌人造成{amount}点伤害。
   RushdownPower:
-    name: '猛虎下山'
-    description: '每当你进入愤怒时，抽{amount}张牌。'
+    name: 猛虎下山
+    description: 每当你进入愤怒时，抽{amount}张牌。
   StudyPower:
-    name: '研习'
-    description: '在你的回合结束时，在你的抽牌堆中加入{amount}张洞见。'
+    name: 研习
+    description: 在你的回合结束时，在你的抽牌堆中加入{amount}张洞见。
   TalkToTheHandPower:
-    name: '以手拒之'
-    description: '每当你攻击该敌人时，获得{amount}点格挡。'
+    name: 以手拒之
+    description: 每当你攻击该敌人时，获得{amount}点格挡。
   TemporaryDexterityPower:
-    name: '临时敏捷'
-    description: '本回合的敏捷。'
+    name: 临时敏捷
+    description: 本回合的敏捷。
   WaveOfTheHandPower:
-    name: '摆手'
-    description: '每当你在本回合获得格挡时，给予所有敌人{amount}层虚弱。'
+    name: 摆手
+    description: 每当你在本回合获得格挡时，给予所有敌人{amount}层虚弱。
   WreathOfFlamePower:
-    name: '火焰纹'
-    description: '你的下一张攻击牌额外造成{amount}点伤害。'
+    name: 火焰纹
+    description: 你的下一张攻击牌额外造成{amount}点伤害。
 relics:
   PureWater:
-    name: '至纯之水'
-    description: '在每场战斗开始时，将一张奇迹放入你的手牌。'
+    name: 至纯之水
+    description: 在每场战斗开始时，将一张奇迹放入你的手牌。
   Damaru:
-    name: '手摇鼓'
-    description: '在你的回合开始时，获得1层真言。'
+    name: 手摇鼓
+    description: 在你的回合开始时，获得1层真言。
   Duality:
-    name: '两仪'
-    description: '每当你打出一张攻击牌时，获得1点临时敏捷。'
+    name: 两仪
+    description: 每当你打出一张攻击牌时，获得1点临时敏捷。
   TeardropLocket:
-    name: '泪滴吊坠盒'
-    description: '每场战斗开始时进入平静。'
+    name: 泪滴吊坠盒
+    description: 每场战斗开始时进入平静。
   CloakClasp:
-    name: '斗篷扣'
-    description: '在你的回合结束时，你每有一张手牌便获得1点格挡。'
+    name: 斗篷扣
+    description: 在你的回合结束时，你每有一张手牌便获得1点格挡。
   GoldenEye:
-    name: '黄金眼'
-    description: '每当你预见时，额外预见2。'
+    name: 黄金眼
+    description: 每当你预见时，额外预见2。
   HolyWater:
-    name: '圣水'
-    description: '在每场战斗开始时，将3张奇迹放入你的手牌。'
+    name: 圣水
+    description: 在每场战斗开始时，将3张奇迹放入你的手牌。
   VioletLotus:
-    name: '紫色莲花'
-    description: '每次你离开平静时，获得1点额外能量。'
+    name: 紫色莲花
+    description: 每次你离开平静时，获得1点额外能量。
   Melange:
-    name: '美琅脂'
-    description: '使用时，预见3。'
+    name: 美琅脂
+    description: 使用时，预见3。
   AncientTeaSet:
     name: 古茶具套装
     description: 每当你进入休息点时，下场战斗的第一个回合获得 2 点额外能量。
@@ -3482,17 +3496,23 @@ enemies:
         name: 爆炸
         description: 造成 {damage} 点伤害
 ai:
-  decision_system_prompt: "你是《杀戮尖塔》游戏的AI玩家。\n根据当前游戏状态，从给定选项中做出最优选择。\n\n## 思维链约束（极其重要）:\n- 思考过程必须精简，控制在3-5个短句内\n- 直接聚焦关键决策因素，不要冗余分析\n\
-    - 采用\"问题→关键因素→结论\"的简洁逻辑\n- 禁止重复描述已知信息\n- 禁止列举所有选项的详细分析\n- 示例好思维：\"血量30%低，精英风险大，选休息点回血\"（仅1句）\n- 示例坏思维：\"让我分析一下当前情况...首先我有30%血量...然后精英有这些风险...选项1是...选项2是...\"\
-    （冗长）\n\n游戏背景:\n- 这是一款Roguelike卡牌构建游戏\n- 目标是生存并击败敌人\n- 管理生命值、能量、卡牌、遗物和其他资源\n\n## 地图选择风险评估（极其重要）:\n\n**精英房间(ELITE)是高风险高回报的选择！**\n\
-    - 精英敌人比普通敌人强得多，可能导致大量生命值损失甚至死亡\n- 奖励：遗物和更好的卡牌奖励\n\n**在以下情况下，不要选择精英房间：**\n- 当前生命值低于50%或低于30点\n- 牌组中缺乏高质量攻击牌（如打击牌伤害不足）\n\
-    - 牌组中缺乏防御牌（格挡牌太少）\n- 没有强力遗物（如燃烧之血只能回复6点）\n- 刚经历多场战斗，状态不佳\n- 当前楼层有更安全的选择（如休息点、商店）\n\n**只有在以下情况下才考虑精英房间：**\n- 生命值充足（>60%或>40点）\n\
-    - 牌组已经有一定战斗力\n- 有回复手段（药水、遗物、吸血卡牌）\n- 有强力的遗物加成\n- 没有更紧急的需求（如不需要立即休息回血）\n\n**优先级排序（生存第一）：**\n1. 休息点（低血量时必须优先）> 商店 > 宝藏 >\
-    \ 普通怪物 > 精英\n2. 高血量且牌组强时：可以考虑精英获取遗物\n3. 永远不要在低血量时挑战精英！\n\n## 战斗策略指南:\n- **敌人意图**: 观察敌人下回合会做什么（攻击/防御/增益）\n  - 如果敌人意图造成高伤害，优先打出格挡牌\n\
-    \  - 如果敌人易伤或低血量，考虑攻击来击杀\n  - 如果敌人在增益，考虑施加减益或快速击杀\n\n- **能量管理（极其重要）**: \n  - **能量每回合结束时会重置为最大值，不能累计到下回合！**\n  - **因此，每回合应该尽量把所有能量用完，不要保留能量**\n\
-    \  - 如果有可打的好牌，一定要打出来，否则能量就浪费了\n  - 只有当剩余牌都不值得打出时才结束回合\n  - 优先级（低血量时）: 防御 > 伤害 > 功能牌\n  - 有好牌时高效使用所有能量\n\n- **出牌优先级**:\n\
-    \  - 敌人即将攻击且你血量低时 → 格挡牌\n  - 敌人易伤或低血量时 → 攻击牌\n  - 长期优势 → 能力牌\n  - 功能性（抽牌、获得能量）→ 技能牌\n\n- **何时结束回合**:\n  - 没有可打的好牌，或剩余牌不值得打出\n\
-    \  - 有格挡牌但敌人不攻击\n  - 保留牌到下回合更好\n\n## 输出格式:\n只输出选项编号（从1开始）。不要解释，不要文字。\n示例: 单选输出\"1\"或\"2\"或\"3\"，多选输出\"1, 3, 5\"。\n"
+  decision_system_prompt: "你是《杀戮尖塔》游戏的AI玩家。\n根据当前游戏状态，从给定选项中做出最优选择。\n\n## 思维链约束（极其重要）:\n\
+    - 思考过程必须精简，控制在3-5个短句内\n- 直接聚焦关键决策因素，不要冗余分析\n- 采用\"问题→关键因素→结论\"的简洁逻辑\n- 禁止重复描述已知信息\n\
+    - 禁止列举所有选项的详细分析\n- 示例好思维：\"血量30%低，精英风险大，选休息点回血\"（仅1句）\n- 示例坏思维：\"让我分析一下当前情况...首先我有30%血量...然后精英有这些风险...选项1是...选项2是...\"\
+    （冗长）\n\n游戏背景:\n- 这是一款Roguelike卡牌构建游戏\n- 目标是生存并击败敌人\n- 管理生命值、能量、卡牌、遗物和其他资源\n\n\
+    ## 地图选择风险评估（极其重要）:\n\n**精英房间(ELITE)是高风险高回报的选择！**\n- 精英敌人比普通敌人强得多，可能导致大量生命值损失甚至死亡\n\
+    - 奖励：遗物和更好的卡牌奖励\n\n**在以下情况下，不要选择精英房间：**\n- 当前生命值低于50%或低于30点\n- 牌组中缺乏高质量攻击牌（如打击牌伤害不足）\n\
+    - 牌组中缺乏防御牌（格挡牌太少）\n- 没有强力遗物（如燃烧之血只能回复6点）\n- 刚经历多场战斗，状态不佳\n- 当前楼层有更安全的选择（如休息点、商店）\n\
+    \n**只有在以下情况下才考虑精英房间：**\n- 生命值充足（>60%或>40点）\n- 牌组已经有一定战斗力\n- 有回复手段（药水、遗物、吸血卡牌）\n\
+    - 有强力的遗物加成\n- 没有更紧急的需求（如不需要立即休息回血）\n\n**优先级排序（生存第一）：**\n1. 休息点（低血量时必须优先）> 商店 >\
+    \ 宝藏 > 普通怪物 > 精英\n2. 高血量且牌组强时：可以考虑精英获取遗物\n3. 永远不要在低血量时挑战精英！\n\n## 战斗策略指南:\n- **敌人意图**:\
+    \ 观察敌人下回合会做什么（攻击/防御/增益）\n  - 如果敌人意图造成高伤害，优先打出格挡牌\n  - 如果敌人易伤或低血量，考虑攻击来击杀\n  -\
+    \ 如果敌人在增益，考虑施加减益或快速击杀\n\n- **能量管理（极其重要）**: \n  - **能量每回合结束时会重置为最大值，不能累计到下回合！**\n\
+    \  - **因此，每回合应该尽量把所有能量用完，不要保留能量**\n  - 如果有可打的好牌，一定要打出来，否则能量就浪费了\n  - 只有当剩余牌都不值得打出时才结束回合\n\
+    \  - 优先级（低血量时）: 防御 > 伤害 > 功能牌\n  - 有好牌时高效使用所有能量\n\n- **出牌优先级**:\n  - 敌人即将攻击且你血量低时\
+    \ → 格挡牌\n  - 敌人易伤或低血量时 → 攻击牌\n  - 长期优势 → 能力牌\n  - 功能性（抽牌、获得能量）→ 技能牌\n\n- **何时结束回合**:\n\
+    \  - 没有可打的好牌，或剩余牌不值得打出\n  - 有格挡牌但敌人不攻击\n  - 保留牌到下回合更好\n\n## 输出格式:\n只输出选项编号（从1开始）。不要解释，不要文字。\n\
+    示例: 单选输出\"1\"或\"2\"或\"3\"，多选输出\"1, 3, 5\"。\n"
   selection_single: '**重要：这是单选任务。**
 
     你必须且只能选择一个选项。
@@ -3610,3 +3630,7 @@ orbs:
     name: 黑暗充能球
   PlasmaOrb:
     name: 等离子充能球
+stance:
+  calm: 平静
+  wrath: 愤怒
+  choose_stance: 选择姿态

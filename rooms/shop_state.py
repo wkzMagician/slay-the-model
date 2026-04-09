@@ -114,6 +114,15 @@ def get_card_price(rarity, rng):
     return rng.randint(135, 165)
 
 
+def roll_card_rarity(rng):
+    rarity_roll = rng.random()
+    if rarity_roll < 0.54:
+        return RarityType.COMMON
+    if rarity_roll < 0.91:
+        return RarityType.UNCOMMON
+    return RarityType.RARE
+
+
 
 def get_colorless_card_price(rarity, rng):
     if rarity == RarityType.UNCOMMON:
@@ -142,33 +151,43 @@ def get_relic_price(rarity, rng):
 
 
 
-def generate_colored_cards(player, card_provider=get_random_card):
+def generate_colored_cards(player, card_provider=get_random_card, rng=None):
     """Generate 5 colored cards for the shop."""
     card_namespaces = build_card_namespaces(player)
+    rng = rng or random
     cards = []
+    seen_ids = []
 
     for _ in range(2):
+        rarity = roll_card_rarity(rng)
         card = card_provider(
-            rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+            rarities=[rarity],
             card_types=[CardType.ATTACK],
             namespaces=card_namespaces,
+            exclude_card_ids=seen_ids,
         )
         if card:
             cards.append(card)
+            seen_ids.append(getattr(card, "idstr", getattr(card, "label", card.__class__.__name__)))
 
     for _ in range(2):
+        rarity = roll_card_rarity(rng)
         card = card_provider(
-            rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+            rarities=[rarity],
             card_types=[CardType.SKILL],
             namespaces=card_namespaces,
+            exclude_card_ids=seen_ids,
         )
         if card:
             cards.append(card)
+            seen_ids.append(getattr(card, "idstr", getattr(card, "label", card.__class__.__name__)))
 
+    rarity = roll_card_rarity(rng)
     card = card_provider(
-        rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+        rarities=[rarity],
         card_types=[CardType.POWER],
         namespaces=card_namespaces,
+        exclude_card_ids=seen_ids,
     )
     if card:
         cards.append(card)
@@ -213,7 +232,7 @@ def generate_shop_items(
     items = []
     namespace = getattr(player, "namespace", None) or "ironclad"
 
-    colored_cards = generate_colored_cards(player=player, card_provider=card_provider)
+    colored_cards = generate_colored_cards(player=player, card_provider=card_provider, rng=rng)
     colored_start_idx = len(items)
     for card in colored_cards:
         if card is None:
@@ -262,16 +281,30 @@ def restock_shop_item(
     namespace = getattr(player, "namespace", None) or "ironclad"
 
     if shop_item.item_type == "card":
-        card_type = rng.choice([CardType.ATTACK, CardType.SKILL, CardType.POWER])
-        new_item = card_provider(
-            rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
-            card_types=[card_type],
-            namespaces=build_card_namespaces(player),
-        )
+        namespace = getattr(getattr(shop_item, "item", None), "namespace", None)
+        if namespace == "colorless":
+            rarity = getattr(getattr(shop_item, "item", None), "rarity", RarityType.UNCOMMON)
+            if rarity not in {RarityType.UNCOMMON, RarityType.RARE}:
+                rarity = RarityType.UNCOMMON
+            new_item = card_provider(
+                rarities=[rarity, RarityType.RARE] if rarity == RarityType.UNCOMMON else [RarityType.RARE],
+                card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
+                namespaces=["colorless"],
+            )
+            base_price = get_colorless_card_price(getattr(new_item, "rarity", rarity), rng) if new_item else None
+        else:
+            card_type = getattr(getattr(shop_item, "item", None), "card_type", None) or rng.choice([CardType.ATTACK, CardType.SKILL, CardType.POWER])
+            rarity = roll_card_rarity(rng)
+            new_item = card_provider(
+                rarities=[rarity],
+                card_types=[card_type],
+                namespaces=build_card_namespaces(player),
+            )
+            base_price = get_card_price(getattr(new_item, "rarity", rarity), rng) if new_item else None
         if not new_item:
             return
         shop_item.item = new_item
-        shop_item.base_price = get_card_price(new_item.rarity, rng)
+        shop_item.base_price = base_price
     elif shop_item.item_type == "potion":
         rarity = roll_potion_rarity(rng)
         new_item = potion_provider(characters=[namespace], rarities=[rarity])

@@ -102,6 +102,16 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
     """
     # Get base probabilities for this encounter type
     base_probs = card_rarity_probabilities.get(encounter_type, card_rarity_probabilities["normal"]).copy()
+    rolling_offset = 0
+    if use_rolling_offset:
+        try:
+            from engine.game_state import game_state
+            rolling_offset = int(getattr(game_state, "card_chance_common_counter", 0))
+        except Exception:
+            rolling_offset = 0
+        rolling_offset = max(0, min(rolling_offset, 40))
+        base_probs[RarityType.RARE] = base_probs.get(RarityType.RARE, 0) + rolling_offset
+        base_probs[RarityType.COMMON] = max(0, base_probs.get(RarityType.COMMON, 0) - rolling_offset)
 
     # N'loth's Gift: rare chance x3, taken from common chance.
     try:
@@ -181,17 +191,6 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
     # Randomly select rarity based on weights
     selected_rarity, card_list = random.choices(available_rarities, weights=weights, k=1)[0]
     
-    # Apply rolling offset if enabled
-    if use_rolling_offset:
-        base_probs[RarityType.RARE] += 1
-        # Decrease common chance proportionally
-        base_probs[RarityType.COMMON] -= 1
-    
-    if selected_rarity == RarityType.RARE:
-        # reset prob
-        card_rarity_probabilities.clear()
-        card_rarity_probabilities.update(CARD_RARITY_PROBABILITIES.copy())
-
     # Randomly select a card from the chosen rarity
     selected_card_idstr = random.choice(card_list)
     selected_card_cls = get_registered("card", selected_card_idstr)

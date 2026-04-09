@@ -116,6 +116,11 @@ class AddCardAction(Action):
                             self.card.upgrade()
 
                 game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
+                if self.source == "reward" and target_pile == "deck":
+                    if getattr(self.card, "rarity", None) == RarityType.COMMON:
+                        game_state.card_chance_common_counter += 1
+                    elif getattr(self.card, "rarity", None) == RarityType.RARE:
+                        game_state.card_chance_common_counter = 0
                 get_card_location = getattr(game_state.player.card_manager, "get_card_location", None)
                 actual_pile_obj = (
                     get_card_location(self.card)

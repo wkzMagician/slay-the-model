@@ -141,6 +141,48 @@ class TestGetRandomCardRewardIntegration:
         assert len(cards_offset_0) == 10
         assert len(cards_offset_47) == 10
 
+    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
+    @patch('utils.random.random.choices')
+    @patch('utils.random.list_registered')
+    @patch('utils.random.get_registered')
+    @patch('engine.game_state.game_state')
+    def test_rolling_offset_uses_global_common_counter_in_rarity_weights(
+        self, mock_gs, mock_get, mock_list, mock_choices, _mock_choice
+    ):
+        mock_gs.card_chance_common_counter = 7
+        mock_gs.player.relics = []
+        mock_list.return_value = ["common_card", "uncommon_card", "rare_card"]
+
+        def _build(rarity):
+            card_cls = MagicMock()
+            card = MagicMock()
+            card.namespace = "test"
+            card.card_type = CardType.ATTACK
+            card.set = None
+            card.rarity = rarity
+            card.can_upgrade.return_value = False
+            card_cls.return_value = card
+            return card_cls
+
+        registry = {
+            "common_card": _build(RarityType.COMMON),
+            "uncommon_card": _build(RarityType.UNCOMMON),
+            "rare_card": _build(RarityType.RARE),
+        }
+        mock_get.side_effect = lambda _kind, name: registry[name]
+        mock_choices.return_value = [(RarityType.RARE, ["rare_card"])]
+
+        from utils.random import get_random_card_reward
+
+        get_random_card_reward(
+            namespaces=["test"],
+            encounter_type="normal",
+            use_rolling_offset=True,
+        )
+
+        available = mock_choices.call_args.kwargs["weights"]
+        assert available == [53 / 100, 37 / 100, 10 / 100]
+
     @patch('utils.random.list_registered')
     @patch('utils.random.get_registered')
     def test_different_encounter_types(self, mock_get, mock_list):

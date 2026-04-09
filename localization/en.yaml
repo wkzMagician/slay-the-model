@@ -8,6 +8,10 @@ ui:
   choose_cards_to_transform: Choose a card to transform
   choose_cards_to_remove: Choose a card to remove
   shop_removed_card: Removed {card} from deck for {price} gold
+  choose_relic: Choose {name}
+  skip_relic: Skip
+  choose_boss_relic: Choose a Boss Relic
+  done: Done
   skip_potion_option: Skip
   replace_potion_option: Replace {name}
   potion_full_title: Select a potion to swap
@@ -140,6 +144,8 @@ blessing:
   title: Choose blessings
   upgrade_card_option: Upgrade a card
   choose_card_option: Choose a card to add to your deck
+  remove_card_option: Remove a card from your deck
+  transform_card_option: Transform a card in your deck
   uncommon_colorless_option: Choose an Uncommon colorless card
   random_rare_card_option: Obtain a random Rare card
   max_hp_option: Gain {amount} Max HP
@@ -158,6 +164,11 @@ blessing:
   choose_rare_colorless_card_option: Choose a Rare colorless card
   random_rare_relic_option: Obtain a random Rare relic
   big_max_hp_option: Gain {amount} Max HP
+  replace_starter_relic_option: Lose your starter relic. Obtain a random Boss relic
+stance:
+  calm: Calm
+  wrath: Wrath
+  choose_stance: Choose a stance
 events:
   neo:
     welcome: Before you stands a dark shrine to Neow, the enigmatic spirit of the Spire.
@@ -2066,7 +2077,7 @@ potions:
     description: Enter a stance of your choice.
   Ambrosia:
     name: Ambrosia
-    description: Gain 1 Intangible, lose 1 HP at end of turn.
+    description: Enter Divinity.
   AttackPotion:
     name: Attack Potion
     description: Add a random Attack card to your hand. It costs 0 this turn.
@@ -2123,7 +2134,7 @@ potions:
     description: Play {amount} random cards from your draw pile.
   DuplicationPotion:
     name: Duplication Potion
-    description: Duplicate a card in your hand this combat.
+    description: This turn, your next card is played twice.
   EssenceOfSteel:
     name: Essence of Steel
     description: Gain {block} Block.

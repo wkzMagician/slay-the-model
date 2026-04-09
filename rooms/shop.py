@@ -23,6 +23,9 @@ class ShopRoom(Room):
 
     def init(self):
         """Initialize the shop inventory."""
+        from engine.game_state import game_state
+
+        self.card_removal_price = getattr(game_state, "card_removal_price", 75)
         self.items = self._generate_items()
 
     def enter(self) -> None:

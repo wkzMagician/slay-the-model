@@ -39,6 +39,7 @@ def build_shop_menu(
         removal_price = compute_card_removal_price(
             base_price=card_removal_price,
             has_membership_card=has_membership_card,
+            has_the_courier=has_the_courier,
             has_smiling_mask=has_smiling_mask,
         )
         if player_gold is None or player_gold >= removal_price:

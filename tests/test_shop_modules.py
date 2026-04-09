@@ -1,6 +1,7 @@
 """Tests for extracted shop helper modules."""
 
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from actions.misc import LeaveRoomAction
 
@@ -19,6 +20,8 @@ class _DummyCard:
     def __init__(self, label="Dummy Strike", rarity=RarityType.COMMON):
         self.label = label
         self.rarity = rarity
+        self.namespace = "silent"
+        self.idstr = label
 
     def info(self):
         return self.label
@@ -62,6 +65,26 @@ class _DeterministicRng:
 def test_shop_pricing_applies_membership_discount():
     price = compute_shop_price(base_price=100, has_membership_card=True)
     assert price == 50
+
+
+def test_card_removal_price_applies_courier_discount():
+    price = compute_card_removal_price(
+        base_price=75,
+        has_membership_card=False,
+        has_the_courier=True,
+        has_smiling_mask=False,
+    )
+    assert price == 60
+
+
+def test_card_removal_price_stacks_membership_and_courier():
+    price = compute_card_removal_price(
+        base_price=100,
+        has_membership_card=True,
+        has_the_courier=True,
+        has_smiling_mask=False,
+    )
+    assert price == 40
 
 
 
@@ -123,7 +146,7 @@ def test_generate_shop_items_builds_expected_inventory_shape_and_price_bands():
     potion_calls = []
     relic_calls = []
     rng = _DeterministicRng(
-        random_values=[0.1, 0.8, 0.95, 0.2, 0.7],
+        random_values=[0.1, 0.8, 0.95, 0.2, 0.7, 0.1, 0.8, 0.95, 0.2, 0.7],
         randint_values=[45, 68, 135, 50, 83, 3, 81, 162, 48, 71, 95, 143, 238, 150],
     )
 
@@ -172,6 +195,25 @@ def test_build_shop_menu_filters_unaffordable_items_and_uses_card_removal_pricin
     assert removal_action.shop_item.base_price == 50
 
 
+def test_build_shop_menu_uses_courier_discount_for_card_removal():
+    menu = build_shop_menu(
+        title="shop-title",
+        localize=lambda key, **kwargs: (key, kwargs),
+        items=[],
+        player_gold=100,
+        ascension_level=0,
+        card_removal_price=75,
+        card_removal_used=False,
+        has_smiling_mask=False,
+        has_membership_card=False,
+        has_the_courier=True,
+        room=object(),
+    )
+
+    removal_action = menu.options[0].actions[0]
+    assert removal_action.shop_item.base_price == 60
+
+
 
 def test_restock_shop_item_uses_same_potion_namespace_rules_as_initial_inventory():
     player = SimpleNamespace(namespace="defect", relics=[])
@@ -210,14 +252,14 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
         ]
     )
     rng = _DeterministicRng(
-        random_values=[0.1, 0.1, 0.1, 0.1, 0.1],
+        random_values=[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
         randint_values=[45, 45, 45, 45, 45, 0, 81, 162, 48, 48, 48, 143, 143, 143, 45],
     )
 
     items = generate_shop_items(
         player=shard_player,
         rng=rng,
-        card_provider=lambda **kwargs: card_calls.append(kwargs) or next(cards),
+        card_provider=lambda **kwargs: card_calls.append({k: list(v) if isinstance(v, list) else v for k, v in kwargs.items()}) or next(cards),
         potion_provider=lambda **kwargs: _DummyPotion(),
         relic_provider=lambda **kwargs: _DummyRelic(),
     )
@@ -225,22 +267,22 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
         shop_item=items[0],
         player=shard_player,
         rng=rng,
-        card_provider=lambda **kwargs: card_calls.append(kwargs) or next(cards),
+        card_provider=lambda **kwargs: card_calls.append({k: list(v) if isinstance(v, list) else v for k, v in kwargs.items()}) or next(cards),
     )
 
     assert card_calls[:5] == [
-        {"rarities": [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE], "card_types": [CardType.ATTACK], "namespaces": None},
-        {"rarities": [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE], "card_types": [CardType.ATTACK], "namespaces": None},
-        {"rarities": [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE], "card_types": [CardType.SKILL], "namespaces": None},
-        {"rarities": [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE], "card_types": [CardType.SKILL], "namespaces": None},
-        {"rarities": [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE], "card_types": [CardType.POWER], "namespaces": None},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": None, "exclude_card_ids": []},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": None, "exclude_card_ids": ["Atk1"]},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": None, "exclude_card_ids": ["Atk1", "Atk2"]},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": None, "exclude_card_ids": ["Atk1", "Atk2", "Skill1"]},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": None, "exclude_card_ids": ["Atk1", "Atk2", "Skill1", "Skill2"]},
     ]
     assert card_calls[5:7] == [
         {"rarities": [RarityType.UNCOMMON], "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER], "namespaces": ["colorless"]},
         {"rarities": [RarityType.RARE], "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER], "namespaces": ["colorless"]},
     ]
     assert card_calls[7] == {
-        "rarities": [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+        "rarities": [RarityType.COMMON],
         "card_types": [CardType.ATTACK],
         "namespaces": None,
     }
@@ -261,3 +303,60 @@ def test_restock_shop_item_never_requests_shop_relic_rarity():
     )
 
     assert relic_calls == [{"rarities": [RarityType.UNCOMMON]}]
+
+
+def test_restock_colorless_card_preserves_colorless_pool():
+    player = SimpleNamespace(namespace="silent", relics=[])
+    shop_item = ShopItem("card", _DummyCard("Colorless Old", RarityType.UNCOMMON), 81)
+    shop_item.item.namespace = "colorless"
+    card_calls = []
+    rng = _DeterministicRng(random_values=[], randint_values=[90])
+
+    def provider(**kwargs):
+        card_calls.append(kwargs)
+        card = _DummyCard("Colorless New", RarityType.UNCOMMON)
+        card.namespace = "colorless"
+        return card
+
+    restock_shop_item(
+        shop_item=shop_item,
+        player=player,
+        rng=rng,
+        card_provider=provider,
+    )
+
+    assert card_calls == [{
+        "rarities": [RarityType.UNCOMMON, RarityType.RARE],
+        "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER],
+        "namespaces": ["colorless"],
+    }]
+    assert shop_item.base_price == 90
+
+
+def test_generate_colored_cards_rolls_rarity_per_slot_instead_of_pooling_all_rarities():
+    from rooms.shop_state import generate_colored_cards
+
+    player = SimpleNamespace(namespace="silent", relics=[])
+    calls = []
+
+    class _FixedRng:
+        def __init__(self):
+            self.values = iter([0.10, 0.80, 0.96, 0.20, 0.50])
+
+        def random(self):
+            return next(self.values)
+
+    def provider(**kwargs):
+        calls.append({k: list(v) if isinstance(v, list) else v for k, v in kwargs.items()})
+        return _DummyCard("Card", kwargs["rarities"][0])
+
+    cards = generate_colored_cards(player=player, card_provider=provider, rng=_FixedRng())
+
+    assert len(cards) == 5
+    assert calls == [
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["silent"], "exclude_card_ids": []},
+        {"rarities": [RarityType.UNCOMMON], "card_types": [CardType.ATTACK], "namespaces": ["silent"], "exclude_card_ids": ["Card"]},
+        {"rarities": [RarityType.RARE], "card_types": [CardType.SKILL], "namespaces": ["silent"], "exclude_card_ids": ["Card", "Card"]},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["silent"], "exclude_card_ids": ["Card", "Card", "Card"]},
+        {"rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": ["silent"], "exclude_card_ids": ["Card", "Card", "Card", "Card"]},
+    ]

@@ -72,6 +72,7 @@ class GameState:
 
         # Gold spending tracking for MawBank relic
         self.gold_spent_in_shop = 0
+        self.card_removal_price = 75
 
         # Card chance rolling offset (each common card gained increases rare chance)
         self.card_chance_common_counter = 0

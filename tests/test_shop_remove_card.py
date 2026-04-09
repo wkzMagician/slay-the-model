@@ -26,6 +26,12 @@ class _DummyCard:
         self.display_name = _DummyDisplayName(name)
 
 
+class _DummyPotion:
+    def __init__(self, name: str = "Dummy Potion"):
+        self.name = name
+        self.display_name = _DummyDisplayName(name)
+
+
 class _DummyCardManager:
     def __init__(self):
         self.added = []
@@ -46,6 +52,8 @@ class _DummyPlayer:
         self.relics = relics or []
         self.character = "Ironclad"
         self.card_manager = _DummyCardManager()
+        self.potions = []
+        self.potion_limit = 3
 
 
 class _DummyRoom:
@@ -71,6 +79,7 @@ class TestShopRemoveCard(unittest.TestCase):
         assert game_state.current_room is not None
         self.assertTrue(game_state.current_room.card_removal_used)
         self.assertEqual(game_state.current_room.card_removal_price, 100)
+        self.assertEqual(game_state.card_removal_price, 100)
 
     @patch("actions.card.ChooseRemoveCardAction.execute", return_value=None)
     def test_card_removal_with_smiling_mask_does_not_increase_price(self, _):
@@ -85,6 +94,16 @@ class TestShopRemoveCard(unittest.TestCase):
         self.assertTrue(game_state.current_room.card_removal_used)
         self.assertEqual(game_state.current_room.card_removal_price, 75)
 
+    @patch("actions.card.ChooseRemoveCardAction.execute", return_value=None)
+    def test_card_removal_with_the_courier_uses_discounted_price(self, _):
+        game_state.player.relics = [_DummyRelic("TheCourier")]
+        item = ShopItem("card_removal", None, 60)
+
+        BuyItemAction(item, -1).execute()
+
+        self.assertEqual(game_state.player.gold, 40)
+        self.assertEqual(game_state.card_removal_price, 100)
+
     def test_normal_card_purchase_still_spends_gold(self):
         card = _DummyCard("Test Card")
         item = ShopItem("card", card, 50)
@@ -94,6 +113,16 @@ class TestShopRemoveCard(unittest.TestCase):
         self.assertEqual(game_state.player.gold, 50)
         self.assertTrue(item.purchased)
         self.assertEqual(len(cast(Any, game_state.player.card_manager).added), 1)
+
+    def test_potion_purchase_obtains_displayed_potion(self):
+        potion = _DummyPotion("Shown Potion")
+        item = ShopItem("potion", potion, 40)
+
+        BuyItemAction(item, 0).execute()
+
+        self.assertEqual(game_state.player.gold, 60)
+        self.assertEqual(len(game_state.player.potions), 1)
+        self.assertIs(game_state.player.potions[0], potion)
 
 
 if __name__ == "__main__":
