@@ -1,7 +1,7 @@
 # Watcher Potions - Character-specific potions for Watcher
-from actions.base import LambdaAction
 from actions.card import AddCardAction
 from actions.display import InputRequestAction
+from actions.watcher import ChangeStanceAction
 from localization import LocalStr
 from player.player import Player
 from potions.base import Potion
@@ -54,11 +54,11 @@ class StancePotion(Potion):
         options = [
             Option(
                 name=LocalStr("stance.calm"),
-                actions=[LambdaAction(func=lambda: player.status_manager.change_to_status(StatusType.CALM))]
+                actions=[ChangeStanceAction(StatusType.CALM)]
             ),
             Option(
                 name=LocalStr("stance.wrath"),
-                actions=[LambdaAction(func=lambda: player.status_manager.change_to_status(StatusType.WRATH))]
+                actions=[ChangeStanceAction(StatusType.WRATH)]
             )
         ]
         self.queue_actions([InputRequestAction(options=options, title=LocalStr("stance.choose_stance"))])
@@ -77,5 +77,4 @@ class Ambrosia(Potion):
     def on_use(self, targets) -> None:
         # Enter Divinity stance
         assert isinstance(targets[0], Player), "Ambrosia can only be used by the player"
-        targets[0].status_manager.change_to_status(StatusType.DIVINITY)
-        return
+        self.queue_actions([ChangeStanceAction(StatusType.DIVINITY)])

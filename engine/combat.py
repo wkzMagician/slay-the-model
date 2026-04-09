@@ -210,7 +210,7 @@ class Combat(Localizable):
 
         # 1. Display combat information
         from localization import t, LocalStr
-        from utils.types import CombatType
+        from utils.types import CombatType, TargetType
 
         # Get player info
         player = game_state.player
@@ -247,9 +247,10 @@ class Combat(Localizable):
         from actions.combat import UsePotionAction
         for potion in game_state.player.potions:
             if potion.can_be_used_actively:
+                potion_target = game_state.player if getattr(potion, "target_type", None) == TargetType.SELF else None
                 options.append(Option(
                     name=LocalStr(potion.info()),
-                    actions=[UsePotionAction(potion=potion, target=game_state.player)]
+                    actions=[UsePotionAction(potion=potion, target=potion_target)]
                 ))
             
         # 4. Add option to end turn

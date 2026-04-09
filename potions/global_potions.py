@@ -7,7 +7,7 @@ from actions.display import InputRequestAction
 from actions.misc import EscapeAction
 from actions.reward import AddRandomPotionAction
 from potions.base import Potion
-from utils.types import CardType, RarityType, TargetType
+from utils.types import CardType, CombatType, DamageType, RarityType, TargetType
 from utils.option import Option
 from utils.random import get_random_card
 from utils.registry import register
@@ -116,10 +116,18 @@ class ExplosivePotion(Potion):
         self._amount = 10  # Sacred Bark doubles to 20
 
     def on_use(self, targets) -> None:
+        from engine.game_state import game_state
         actions = []
         # targets is already resolved as list of all enemies
         for enemy in targets:
-            actions.append(DealDamageAction(damage=self.amount, target=enemy))
+            actions.append(
+                DealDamageAction(
+                    damage=self.amount,
+                    target=enemy,
+                    source=game_state.player,
+                    damage_type=DamageType.MAGICAL,
+                )
+            )
         self.queue_actions(actions)
 
 @register("potion")
@@ -149,7 +157,18 @@ class FirePotion(Potion):
         self._amount = 20  # Sacred Bark doubles to 40
 
     def on_use(self, targets) -> None:
-        self.queue_actions([DealDamageAction(damage=self.amount, target=targets[0])])
+        from engine.game_state import game_state
+
+        self.queue_actions(
+            [
+                DealDamageAction(
+                    damage=self.amount,
+                    target=targets[0],
+                    source=game_state.player,
+                    damage_type=DamageType.MAGICAL,
+                )
+            ]
+        )
 
 @register("potion")
 class FlexPotion(Potion):
@@ -300,7 +319,7 @@ class AncientPotion(Potion):
 @register("potion")
 class BlessingOfTheForge(Potion):
     """Upgrade all cards in hand for this battle"""
-    rarity = RarityType.UNCOMMON
+    rarity = RarityType.COMMON
     category = "Global"
     name = "Blessing of the Forge"
 
@@ -444,7 +463,16 @@ class LiquidMemories(Potion):
         ))
         
         # Let player choose which card to return to hand
-        self.queue_actions([InputRequestAction(title="Liquid Memories", options=options)])
+        self.queue_actions(
+            [
+                InputRequestAction(
+                    title="Liquid Memories",
+                    options=options,
+                    max_select=max(1, self.amount),
+                    must_select=False,
+                )
+            ]
+        )
 
 @register("potion")
 class RegenPotion(Potion):
@@ -472,11 +500,18 @@ class SmokeBomb(Potion):
         super().__init__()
 
     def on_use(self, targets) -> None:
-        from engine.game_state import game_state
-        # Cannot use Smoke Bomb while Surrounded (Spire Shield + Spear elite)
-        if game_state.player and game_state.player.has_power("Surrounded"):
-            return  # Blocked by Surrounded
         self.queue_actions([EscapeAction()])
+
+    def can_use(self, targets) -> bool:
+        from engine.game_state import game_state
+
+        player = getattr(game_state, "player", None)
+        combat = getattr(game_state, "current_combat", None)
+        if player is not None and player.has_power("Surrounded"):
+            return False
+        if combat is not None and getattr(combat, "combat_type", None) == CombatType.BOSS:
+            return False
+        return True
 
 # Rare Potions
 @register("potion")
@@ -568,9 +603,12 @@ class EntropicBrew(Potion):
         from engine.game_state import game_state
         
         actions = []
+        occupied_slots = len(game_state.player.potions)
+        if self in game_state.player.potions:
+            occupied_slots -= 1
         
         # reuse AddRandomPotionAction for each empty slot
-        for _ in range(game_state.player.potions.limit - len(game_state.player.potions)):
+        for _ in range(max(0, game_state.player.potions.limit - occupied_slots)):
             actions.append(AddRandomPotionAction(game_state.player.character))
             
         self.queue_actions(actions)

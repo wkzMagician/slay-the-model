@@ -37,6 +37,10 @@ class Potion(Localizable):
     def on_use(self, targets: List[Creature]) -> None:
         """Base use method to be overridden by specific potions."""
         return
+
+    def can_use(self, targets: List[Creature]) -> bool:
+        """Return whether this potion may be consumed in the current state."""
+        return True
     
     def info(self):
         """Return a stable human-readable potion summary."""

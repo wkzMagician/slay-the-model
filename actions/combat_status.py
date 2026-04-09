@@ -152,6 +152,9 @@ class UsePotionBHAction(Action):
         from engine.game_state import game_state
         from engine.messages import PotionUsedMessage
 
+        if not self.potion.can_use(self.targets):
+            return
+
         if self.targets:
             from enemies.base import Enemy
             first_target = self.targets[0]

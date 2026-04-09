@@ -430,6 +430,12 @@ class PotionBelt(Relic):
         player = game_state.player
         player.potions.trim_to_limit(player.potion_limit + 2)
         return
+
+    def can_spawn(self) -> bool:
+        from engine.game_state import game_state
+
+        current_floor = getattr(game_state, "current_floor", 0)
+        return current_floor <= 48
 @register("relic")
 class PreservedInsect(Relic):
     """Enemies in Elite rooms have 25% less HP."""

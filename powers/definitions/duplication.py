@@ -35,3 +35,9 @@ class DuplicationPower(Power):
         if self.owner is not None and self.amount <= 0:
             self.owner.remove_power(self.name)
         return
+
+    def on_turn_end(self):
+        super().on_turn_end()
+        self.amount -= 1
+        if self.owner is not None and self.amount <= 0:
+            self.owner.remove_power(self)

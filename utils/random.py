@@ -288,6 +288,13 @@ def get_random_relic(characters: Optional[List[str]] = None,
         # Check if relic is excluded
         if exclude and relic_idstr in exclude:
             continue
+
+        can_spawn = getattr(relic_instance, "can_spawn", None)
+        if callable(can_spawn) and not can_spawn():
+            continue
+        can_spawn_legacy = getattr(relic_instance, "canSpawn", None)
+        if callable(can_spawn_legacy) and not can_spawn_legacy():
+            continue
         
         # Check if relic was already obtained
         from engine.game_state import game_state
