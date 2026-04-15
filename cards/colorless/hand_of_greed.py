@@ -1,14 +1,9 @@
 """
 Colorless Rare Attack card - Hand of Greed
 """
-from engine.runtime_api import add_action, add_actions
-
-from typing import List
-from actions.base import Action
-from actions.combat import AttackAction
+from engine.runtime_api import add_actions
 from actions.reward import AddGoldAction
 from cards.base import Card
-from entities.creature import Creature
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
 
@@ -28,15 +23,14 @@ class HandOfGreed(Card):
     upgrade_damage = 25
     upgrade_magic = {"gold_on_kill": 25}
 
-    def on_fatal(self):
+    def on_fatal(self, damage: int, target=None, source=None, card=None, damage_type: str = "direct"):
         """If this kills enemy, gain gold"""
+        if card is not self or target is None:
+            return
+
         actions = []
 
         gold_amount = self.get_magic_value("gold_on_kill")
         actions.append(AddGoldAction(amount=gold_amount))
 
-        from engine.game_state import game_state
-
         add_actions(actions)
-
-        return
