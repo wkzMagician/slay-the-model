@@ -16,6 +16,3 @@ class Normality(Card):
 
     base_cost = COST_UNPLAYABLE
     upgradeable = False
-    
-    def on_draw(self):
-        return

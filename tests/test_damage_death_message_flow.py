@@ -2,6 +2,8 @@ from actions.combat import DealDamageAction, LoseHPAction
 from cards.ironclad.feed import Feed
 from cards.ironclad.blood_for_blood import BloodForBlood
 from cards.ironclad.strike import Strike
+from cards.colorless.hand_of_greed import HandOfGreed
+from cards.colorless.ritual_dagger import RitualDagger
 from cards.silent.masterful_stab import MasterfulStab
 from enemies.act1.cultist import Cultist
 from enemies.act1.fungi_beast import FungiBeast
@@ -95,6 +97,38 @@ def test_deal_damage_action_preserves_card_on_fatal(monkeypatch):
     assert "CreatureDiedMessage" in published
     assert "FatalDamageMessage" in published
     assert player.max_hp == initial_max_hp + 3
+
+
+def test_hand_of_greed_on_fatal_grants_gold_without_error():
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=10)
+    helper.start_combat([enemy])
+    card = HandOfGreed()
+    initial_gold = player.gold
+
+    DealDamageAction(damage=10, target=enemy, source=player, card=card, damage_type="attack").execute()
+    helper.game_state.drive_actions()
+
+    assert player.gold == initial_gold + card.get_magic_value("gold_on_kill")
+
+
+def test_ritual_dagger_on_fatal_increases_own_damage_without_error():
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=10)
+    helper.start_combat([enemy])
+    card = RitualDagger()
+    initial_damage = card.damage
+
+    DealDamageAction(damage=10, target=enemy, source=player, card=card, damage_type="attack").execute()
+    helper.game_state.drive_actions()
+
+    expected_increase = card.get_magic_value(
+        "damage_increase",
+        card.get_magic_value("fatal_bonus"),
+    )
+    assert card.damage == initial_damage + expected_increase
 
 
 def test_damage_type_exposes_explicit_semantics():

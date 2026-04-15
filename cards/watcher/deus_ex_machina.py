@@ -17,7 +17,7 @@ class DeusExMachina(Card):
     text_name = "Deus Ex Machina"
     text_description = "Unplayable. When drawn, add {magic.count} Miracles to your hand. Exhaust."
 
-    def on_draw(self):
+    def on_draw(self, card):
         from cards.colorless.miracle import Miracle
 
         for _ in range(self.get_magic_value("count")):

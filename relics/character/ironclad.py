@@ -169,7 +169,7 @@ class RunicCube(Relic):
 Runicube = RunicCube
 # Shop Relic
 @register("relic")
-class BrimStone(Relic):
+class Brimstone(Relic):
     """At the start of your turn, gain 2 Strength and ALL enemies gain 1 Strength."""
     
     def __init__(self):

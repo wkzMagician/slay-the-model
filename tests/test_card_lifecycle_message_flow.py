@@ -8,6 +8,7 @@ from cards.colorless.void import Void
 from cards.ironclad.pommel_strike import PommelStrike
 from cards.ironclad.shrug_it_off import ShrugItOff
 from cards.ironclad.strike import Strike
+from cards.watcher.deus_ex_machina import DeusExMachina
 from enemies.act1.cultist import Cultist
 from powers.definitions.rage import RagePower
 from relics.global_relics.boss import RunicPyramid
@@ -95,6 +96,29 @@ def test_draw_cards_action_publishes_card_drawn_message(monkeypatch):
     assert "CardDrawnMessage" in published
     assert status_card in player.card_manager.get_pile("hand")
     assert player.energy == 2
+
+
+def test_deus_ex_machina_on_draw_adds_miracles_and_exhausts_self():
+    helper = create_test_helper()
+    player = helper.create_player(hp=80, max_hp=80, energy=3)
+    enemy = helper.create_enemy(Cultist, hp=20)
+    helper.start_combat([enemy])
+
+    player.card_manager.get_pile("draw_pile").clear()
+    player.card_manager.get_pile("hand").clear()
+    player.card_manager.get_pile("exhaust_pile").clear()
+
+    deus = DeusExMachina()
+    helper.add_card_to_draw_pile(deus)
+
+    DrawCardsAction(count=1).execute()
+    helper.game_state.drive_actions()
+
+    hand = player.card_manager.get_pile("hand")
+    miracles_in_hand = [card for card in hand if card.__class__.__name__ == "Miracle"]
+    assert len(miracles_in_hand) == deus.get_magic_value("count")
+    assert deus not in hand
+    assert deus in player.card_manager.get_pile("exhaust_pile")
 
 
 def test_auto_shuffle_from_empty_draw_publishes_shuffle_message(monkeypatch):

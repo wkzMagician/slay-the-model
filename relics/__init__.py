@@ -146,7 +146,7 @@ from .global_relics import (
 )
 from .character.ironclad import (
     BlackBlood,
-    BrimStone,
+    Brimstone,
     BurningBlood,
     ChampionBelt,
     CharonsAshes,
