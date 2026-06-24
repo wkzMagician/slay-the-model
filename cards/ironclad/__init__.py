@@ -22,6 +22,7 @@ from cards.ironclad.limit_break import LimitBreak
 from cards.ironclad.pummel import Pummel
 from cards.ironclad.uppercut import Uppercut
 from cards.ironclad.offering import Offering
+from cards.ironclad.hellraiser import Hellraiser
 
 __all__ = [
     # Starter
@@ -31,5 +32,5 @@ __all__ = [
     # Uncommon
     'Clothesline', 'Inflame', 'BodySlam', 'Carnage',
     # Rare
-    'Bludgeon', 'LimitBreak', 'Pummel', 'Uppercut', 'Offering',
+    'Bludgeon', 'LimitBreak', 'Pummel', 'Uppercut', 'Offering', 'Hellraiser',
 ]

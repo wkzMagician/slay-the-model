@@ -65,6 +65,7 @@ from powers.definitions.draw_card_next_turn import DrawCardNextTurnPower
 from powers.definitions.next_turn_block import NextTurnBlockPower
 from powers.definitions.choke import ChokePower
 from powers.definitions.sharp_hide import SharpHidePower
+from powers.definitions.hellraiser import HellraiserPower
 
 __all__ = [
     "StrengthPower",
@@ -144,6 +145,7 @@ __all__ = [
     "ToolsOfTheTradePower",
     "WellLaidPlansPower",
     "EquilibriumPower",
+    "HellraiserPower",
 ]
 from powers.definitions.after_image import AfterImagePower
 from powers.definitions.envenom import EnvenomPower
