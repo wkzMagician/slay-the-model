@@ -40,7 +40,7 @@ class MindBloom(Event):
         
         # Create random Act 1 boss for "I am War" option
         import random
-        act1_bosses = ['hexaghost', 'slaver', 'the_guardian']  # Act 1 bosses
+        act1_bosses = ['the_hexaghost', 'slime_boss', 'the_guardian']  # Act 1 bosses
         boss_name = random.choice(act1_bosses)
         boss_class = get_registered("enemy", boss_name)
         boss_enemies = [boss_class()] if boss_class else []

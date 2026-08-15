@@ -44,13 +44,40 @@ def register(category: str):
     return decorator
 
 
+def _normalize_key(name: str) -> str:
+    """Normalize an identifier for tolerant matching.
+
+    Converts CamelCase to snake_case and lowercases, e.g. 'FungiBeast' ->
+    'fungi_beast'.  Existing snake_case names are returned unchanged.
+    """
+    out = []
+    for i, ch in enumerate(name):
+        if ch.isupper() and i > 0 and (name[i - 1].islower() or name[i - 1].isdigit()):
+            out.append("_")
+        out.append(ch.lower())
+    return "".join(out)
+
+
 def get_registered(category: str, name: str):
-    """Get registered item(s) from a category."""
+    """Get registered item(s) from a category.
+
+    Lookup is tolerant: keys stored as class names (e.g. 'FungiBeast') can
+    be queried in snake_case (e.g. 'fungi_beast').
+    """
     if category not in _REGISTRY:
         return None
 
-    if name:
-        return _REGISTRY[category].get(name)
+    if not name:
+        return None
+
+    registry = _REGISTRY[category]
+    if name in registry:
+        return registry[name]
+
+    needle = _normalize_key(name)
+    for key, value in registry.items():
+        if _normalize_key(key) == needle:
+            return value
     return None
 
 

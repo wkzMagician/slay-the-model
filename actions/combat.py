@@ -143,7 +143,11 @@ class StartFightAction(Action):
         from engine.game_state import game_state
 
         if not self.enemies:
-            return
+            raise ValueError(
+                "StartFightAction requires at least one enemy: an empty enemy "
+                "list silently skips victory actions (e.g. end_event) and "
+                "strands the game flow in an infinite loop."
+            )
 
         combat = Combat(enemies=self.enemies, combat_type=self.combat_type)
         result = combat.start()
