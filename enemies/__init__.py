@@ -107,3 +107,13 @@ __all__ = [
 ]
 
 __all_names__ = __all__
+
+# Register every enemy class in the unified registry, keyed by class name.
+# Lookups are case/format-insensitive, so get_registered("enemy", "fungi_beast")
+# resolves the FungiBeast class registered here.
+from utils.registry import register
+
+for _enemy_name in __all__:
+    _enemy_cls = globals().get(_enemy_name)
+    if isinstance(_enemy_cls, type) and issubclass(_enemy_cls, Enemy):
+        register("enemy")(_enemy_cls)

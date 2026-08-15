@@ -49,7 +49,7 @@ class DeadAdventurer(Event):
             enemy_class = get_registered("enemy", 'gremlin_nob')
             return [enemy_class()] if enemy_class else []
         elif self.elite_type == 'lagavulin':
-            enemy_class = get_registered("enemy", 'lagavulin_awake')
+            enemy_class = get_registered("enemy", 'lagavulin')
             return [enemy_class()] if enemy_class else []
         else:
             enemy_class = get_registered("enemy", 'sentry')

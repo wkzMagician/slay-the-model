@@ -47,16 +47,21 @@ class MaskedBandits(Event):
                 name=LocalStr('events.masked_bandits.pay'),
                 actions=[LoseGoldAction(amount='all')]
             ),
-            Option(
-                name=LocalStr('events.masked_bandits.fight'),
-                actions=[
-                    StartFightAction(
-                        enemies=bandits,
-                        victory_actions=[AddRelicAction(relic=RedMask())]
-                    )
-                ]
-            )
         ]
+        # The bandit enemies (Bear / Pointy / Romeo) are not implemented yet,
+        # so only offer the fight when they can actually be constructed.
+        if bandits:
+            options.append(
+                Option(
+                    name=LocalStr('events.masked_bandits.fight'),
+                    actions=[
+                        StartFightAction(
+                            enemies=bandits,
+                            victory_actions=[AddRelicAction(relic=RedMask())]
+                        )
+                    ]
+                )
+            )
         
         actions.append(InputRequestAction(
             title=LocalStr('events.masked_bandits.title'),
