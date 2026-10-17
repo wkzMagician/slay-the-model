@@ -9,6 +9,7 @@ from actions.card import ChooseAddRandomCardAction
 from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDamageAction, ApplyPowerAction, ModifyMaxHpAction
 # GainGoldAction imported lazily when needed to avoid circular import
 from relics.base import Relic
+from relics.global_relics.special import NeowsLament
 from utils.types import CardType, RarityType
 from utils.registry import register
 
@@ -188,28 +189,6 @@ class Enchiridion(Relic):
         )
         return
 
-@register("relic")
-class NeowsLament(Relic):
-    """Enemies in your first 3 combats will have 1 HP."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.EVENT
-        self.combat_count = 0
-        self.uses_remaining = 3
-
-    def on_combat_start(self, floor: int):
-        """Set enemy HP to 1 for first 3 combats"""
-        if self.uses_remaining > 0:
-            self.uses_remaining -= 1
-            actions = []
-            for enemy in self.combat_enemies():
-                # Set current HP to 1, not max HP
-                enemy.hp = 1
-            from engine.game_state import game_state
-            add_actions(actions)
-            return
-        return
 @register("relic")
 class NlothHungryFace(Relic):
     """The next non-boss chest you open is empty."""

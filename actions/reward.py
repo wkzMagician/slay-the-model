@@ -2,7 +2,7 @@ from engine.runtime_api import add_action, add_actions, publish_message, request
 from typing import List, Optional, TYPE_CHECKING
 
 from tui.print_utils import tui_print
-from actions.base import Action
+from actions.base import Action, LambdaAction
 from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register, get_registered_instance
@@ -21,7 +21,16 @@ def _handle_obtained_relic(relic: "Relic"):
     if not relic or not game_state.player:
         return
 
-    game_state.player.relics.append(relic)
+    player = game_state.player
+    replacement = relic.replaces_relic
+    if replacement is not None:
+        index = next((i for i, old in enumerate(player.relics) if getattr(old, "idstr", None) == replacement), None)
+        if index is None:
+            return
+        player.relics[index] = relic
+        game_state.obtained_relics.add(replacement)
+    else:
+        player.relics.append(relic)
     game_state.obtained_relics.add(relic.idstr)
     tui_print(t("ui.received_relic", default=f"Received relic: {relic.idstr}!", name=relic.local("name")))
     publish_message(
@@ -147,48 +156,50 @@ class LoseRelicAction(Action):
 
 @register("action")
 class ChooseBossRelicAction(Action):
-    """Let player choose from a selection of boss relics
-    
-    Required:
-        None
-        
-    Optional:
-        amount (int): Number of relics to choose from. Default is 3.
-    """
-    def __init__(self, amount: int = 3):
+    """Offer cached Boss candidates and resolve at most one choice."""
+    def __init__(self, amount: int = 3, room=None):
         self.amount = amount
-    
+        self.room = room
+        self._request = None
+        self._presented = False
+        self._resolved = False
+
     def execute(self) -> None:
-        from engine.game_state import game_state
-        from relics.base import RarityType
         from actions.display import InputRequestAction
-        
-        # Generate boss relics (rare tier)
-        relics = []
-        for _ in range(self.amount):
-            relic = get_random_relic(rarities=[RarityType.BOSS])
-            if relic:
-                relics.append(relic)
-        
-        if not relics:
+        from relics.boss_pool import draw_boss_relic_choices
+
+        if self._presented or self._resolved or (self.room is not None and self.room.boss_choice_resolved):
             return
-        
-        # Create selection action
-        options = []
-        for relic in relics:
-            options.append({
-                'name': relic.idstr,
-                'actions': [AddRelicAction(relic=relic)]
-            })
-        
-        from engine.game_state import game_state
-        add_action(
-            InputRequestAction(
-                title="Choose a boss relic:",
-                options=options,
-            ),
-            to_front=True,
-        )
+        if self._request is None:
+            candidates = self.room.boss_relic_choices() if self.room is not None else draw_boss_relic_choices(self.amount)
+            options = [
+                Option(
+                    name=LocalStr("ui.choose_relic", name=relic.local("name")),
+                    detail=relic.display_description(),
+                    actions=[LambdaAction(lambda relic=relic: self._resolve(relic))],
+                )
+                for relic in candidates
+            ]
+            options.append(Option(
+                name=LocalStr("ui.skip_relic"),
+                actions=[LambdaAction(lambda: self._resolve(None))],
+            ))
+            self._request = InputRequestAction(title=LocalStr("ui.choose_boss_relic"), options=options)
+        self._presented = True
+        add_action(self._request)
+
+    def _resolve(self, relic) -> None:
+        from actions.misc import LeaveRoomAction
+
+        if self._resolved or (self.room is not None and self.room.boss_choice_resolved):
+            return
+        self._resolved = True
+        if self.room is not None:
+            self.room.boss_choice_resolved = True
+        if relic is not None:
+            _handle_obtained_relic(relic)
+        if self.room is not None:
+            add_action(LeaveRoomAction(room=self.room))
 
 @register("action")            
 class AddGoldAction(Action):

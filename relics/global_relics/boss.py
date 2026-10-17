@@ -10,9 +10,9 @@ from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDa
 from powers.definitions.confused import ConfusedPower
 from powers.definitions.strength import StrengthPower
 from cards.colorless.curse_of_the_bell import CurseOfTheBell
-from cards.colorless.wound import Wound
 from relics.base import Relic
-from utils.types import CombatType, PilePosType, RarityType, CardType
+from relics.character.ironclad import BlackBlood, MarkOfPain
+from utils.types import CombatType, RarityType, CardType
 from utils.registry import register
 from utils.random import get_random_card
 
@@ -65,19 +65,6 @@ class BlackStar(Relic):
         from actions.reward import AddRandomRelicAction
         from engine.game_state import game_state
         add_actions([AddRandomRelicAction()])
-        return
-@register("relic")
-class BlackBlood(Relic):
-    """Replaces Burning Blood. At the end of combat, heal 12 HP."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.BOSS
-    
-    def on_combat_end(self):
-        """Heal 12 HP at combat end"""
-        from engine.game_state import game_state
-        add_actions([HealAction(amount=12)])
         return
 @register("relic")
 class BustedCrown(Relic):
@@ -196,25 +183,6 @@ class FusionHammer(Relic):
         return
     # Implement logic in RestRoom
 
-@register("relic")
-class MarkOfPain(Relic):
-    """Gain 1 Energy at start of each turn. Start combats with 2 Wounds in your Drawpile."""
-    
-    def __init__(self):
-        super().__init__()
-        self.rarity = RarityType.BOSS
-        self.wounds_added = False
-
-    def on_combat_start(self, floor: int):
-        """Add Wounds to draw pile at combat start"""
-        from engine.game_state import game_state
-        add_actions([AddCardAction(Wound(), "draw_pile", pos=PilePosType.RANDOM) * 2])
-        return
-    def on_player_turn_start(self):
-        """Gain 1 Energy at start of each turn"""
-        from engine.game_state import game_state
-        add_actions([GainEnergyAction(energy=1)])
-        return
 @register("relic")
 class PandorasBox(Relic):
     """Transform all Strikes and Defends."""
@@ -363,6 +331,15 @@ class TinyHouse(Relic):
 @register("relic")
 class VelvetChoker(Relic):
     """Gain 1 Energy at start of each turn. You cannot play more than 6 Cards per turn."""
+    counter_limit = 6
+    counter_kind = "cards"
+
+    def counter_value(self) -> int | None:
+        combat = self._display_combat()
+        if combat is None or combat.combat_state.current_phase not in ("player_start", "player_action"):
+            return None
+        return combat.combat_state.turn_cards_played
+
     
     def __init__(self):
         super().__init__()

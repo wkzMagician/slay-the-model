@@ -27,25 +27,14 @@ class Akabeko(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
-        self.damage_phase = DamagePhase.ADDITIVE  # +8 damage
-        
-        # Track if first attack has been played this combat
-        self.first_attack_played = False
-    
+
     def on_combat_start(self, floor: int):
-        """Reset first attack tracker at start of combat"""
-        self.first_attack_played = False
-        return
-    def on_card_play(self, card, targets):
-        """Track when first attack is played"""
-        if not self.first_attack_played and card.card_type == CardType.ATTACK:
-            self.first_attack_played = True
-        return
-    def modify_damage_dealt(self, base_damage: int, card=None, target=None) -> int:
-        """Add 8 damage to first attack each combat"""
-        if not self.first_attack_played and card and card.card_type == CardType.ATTACK:
-            return base_damage + 8
-        return base_damage
+        from engine.game_state import game_state
+        from powers.definitions.vigor import VigorPower
+
+        player = game_state.player
+        if player is not None:
+            add_action(ApplyPowerAction(VigorPower(amount=8, owner=player), player))
 
 @register("relic")
 class Anchor(Relic):
@@ -66,6 +55,11 @@ class Anchor(Relic):
 class AncientTeaSet(Relic):
     """If last room is rest, gain 2 energy on_combat_start"""
     
+    def status_text(self) -> str:
+        from localization import t
+
+        return t("ui.relic_status.ready") if self.is_rest_last_room else ""
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
@@ -236,7 +230,9 @@ class DreamCatcher(Relic):
 @register("relic")
 class HappyFlower(Relic):
     """Every 3 turns, gain 1 Energy."""
-    
+    counter_field = "turn_counter"
+    counter_limit = 3
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
@@ -244,7 +240,7 @@ class HappyFlower(Relic):
     
     # doesn't need to reset in a new combat
     
-    def on_player_turn_end(self):
+    def on_player_turn_start(self):
         """Check if we've reached 3 turns"""
         self.turn_counter += 1
         if self.turn_counter % 3 == 0 and self.turn_counter > 0:
@@ -284,6 +280,11 @@ class Lantern(Relic):
 class MawBank(Relic):
     """Whenever you climb a floor, gain 12 Gold. No longer works when you spend any Gold at Shop."""
     
+    def status_text(self) -> str:
+        from localization import t
+
+        return "" if self.still_working else t("ui.relic_status.exhausted")
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
@@ -329,7 +330,9 @@ class MealTicket(Relic):
 @register("relic")
 class Nunchaku(Relic):
     """Every time you play 10 Attacks, gain 1 Energy."""
-    
+    counter_field = "attacks_played"
+    counter_limit = 10
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
@@ -365,7 +368,10 @@ class OddlySmoothStone(Relic):
 @register("relic")
 class Omamori(Relic):
     """Negate next 2 Curses you obtain."""
-    
+    counter_field = "curses_to_negate"
+    counter_kind = "remaining"
+    dynamic_remaining = True
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
@@ -398,29 +404,33 @@ class Orichalcum(Relic):
 @register("relic")
 class PenNib(Relic):
     """Every 10th Attack you play deals double damage."""
-    
+    counter_field = "attacks_played"
+    counter_limit = 10
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON
         self.attacks_played = 0
     
     def on_combat_start(self, floor: int):
-        """Reset tracker at start of combat"""
-        self.attacks_played = 0
-        return
+        """Restore the primed attack after combat powers have been cleared."""
+        if self.attacks_played == 9:
+            self._prime_next_attack()
+
+    def _prime_next_attack(self):
+        from engine.game_state import game_state
+
+        player = game_state.player
+        if player is not None:
+            add_action(ApplyPowerAction(PenNibPower(amount=1, owner=player), player))
+
     def on_card_play(self, card, targets):
         """Prime the next attack after every ninth attack played."""
-        from utils.types import CardType
         if card.card_type == CardType.ATTACK:
-            self.attacks_played += 1
-            if self.attacks_played % 10 == 9:
-                from engine.game_state import game_state
-                player = game_state.player
-                if player is None:
-                    return
-                add_actions([ApplyPowerAction(PenNibPower(amount=1, owner=player), player)])
-                return
-        return
+            self.attacks_played = (self.attacks_played + 1) % 10
+            if self.attacks_played == 9:
+                self._prime_next_attack()
+
 @register("relic")
 class PotionBelt(Relic):
     """Upon pick up, gain 2 Potion slots."""
@@ -509,7 +519,13 @@ class TheBoot(Relic):
 @register("relic")
 class TinyChest(Relic):
     """Every 4th Event room is a Treasure room."""
-    
+    counter_field = "event_count"
+    counter_limit = 4
+
+    def advance_unknown_room(self) -> bool:
+        self.event_count = (self.event_count + 1) % 4
+        return self.event_count == 0
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.COMMON

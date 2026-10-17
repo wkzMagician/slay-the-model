@@ -1,19 +1,19 @@
 """
 Test for Tiny Chest relic functionality.
 """
-import pytest
-from unittest.mock import patch, MagicMock
 from utils.types import RoomType
+from tests.test_combat_utils import create_test_helper
+from relics.global_relics.common import TinyChest
 
 
 class TestTinyChestRelic:
     """Test Tiny Chest relic."""
 
-    @patch('map.map_manager.MapManager._player_has_relic')
-    def test_tiny_chest_forces_treasure_every_4th_room(self, mock_has_relic):
+    def test_tiny_chest_forces_treasure_every_4th_room(self):
         """Test that Tiny Chest forces Treasure room every 4th ? room."""
-        # Mock that player has Tiny Chest relic
-        mock_has_relic.side_effect = lambda relic_name: relic_name in ["tiny_chest", "tinychest"]
+        # Give the player a real Tiny Chest instance
+        helper = create_test_helper()
+        helper.game_state.player.relics = [TinyChest()]
 
         from map.map_manager import MapManager
 
@@ -31,11 +31,11 @@ class TestTinyChestRelic:
             if (i + 1) % 4 == 0:
                 assert room_type == RoomType.TREASURE, f"Visit {i+1} should be Treasure but got {room_type.value}"
 
-    @patch('map.map_manager.MapManager._player_has_relic')
-    def test_tiny_chest_resets_treasure_counter(self, mock_has_relic):
+    def test_tiny_chest_resets_treasure_counter(self):
         """Test that Tiny Chest resets the treasure visit counter."""
-        # Mock that player has Tiny Chest relic
-        mock_has_relic.side_effect = lambda relic_name: relic_name in ["tiny_chest", "tinychest"]
+        # Give the player a real Tiny Chest instance
+        helper = create_test_helper()
+        helper.game_state.player.relics = [TinyChest()]
 
         from map.map_manager import MapManager
 
@@ -58,11 +58,10 @@ class TestTinyChestRelic:
         assert room_type == RoomType.TREASURE, "4th visit should force Treasure"
         assert map_manager.unknown_room_visits[RoomType.TREASURE] == 0, "Treasure counter should be reset to 0 after forcing treasure"
 
-    @patch('map.map_manager.MapManager._player_has_relic')
-    def test_no_tiny_chest_normal_behavior(self, mock_has_relic):
+    def test_no_tiny_chest_normal_behavior(self):
         """Test normal behavior when player doesn't have Tiny Chest."""
-        # Mock that player doesn't have Tiny Chest relic
-        mock_has_relic.return_value = False
+        # Start without relics relic
+        create_test_helper()
 
         from map.map_manager import MapManager
 

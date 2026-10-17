@@ -269,6 +269,9 @@ def get_random_relic(characters: Optional[List[str]] = None,
     
     from engine.game_state import game_state
 
+    if rarities and set(rarities) == {RarityType.BOSS}:
+        return game_state.boss_relic_pool.draw(exclude=exclude or (), characters=characters)
+
     normalized_characters: Optional[set[str]] = None
     if characters:
         normalized_characters = {str(character).lower() for character in characters}

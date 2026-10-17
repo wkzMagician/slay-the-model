@@ -25,6 +25,8 @@ class TreasureRoom(Room):
         self.is_boss = is_boss
         self.chest_type = None
         self.chest_opened = False
+        self._boss_relic_choices = None
+        self.boss_choice_resolved = False
 
     def init(self):
         """Initialize the treasure room"""
@@ -73,14 +75,17 @@ class TreasureRoom(Room):
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.RARE, "relics": [relic] if relic else []}
 
+    def boss_relic_choices(self):
+        from relics.boss_pool import draw_boss_relic_choices
+
+        if self._boss_relic_choices is None:
+            self._boss_relic_choices = draw_boss_relic_choices()
+        return self._boss_relic_choices
+
     def _get_boss_chest_contents(self):
-        """Get contents for a boss chest."""
         from utils.types import RarityType
-        from relics.relics import get_random_relic_by_rarity
-        # Boss chest: choice of boss relics
-        boss_relic_classes = get_random_relic_by_rarity(RarityType.BOSS, count=3)
-        boss_relics = [cls() for cls in boss_relic_classes]
-        return {"gold": 0, "relic": RarityType.BOSS, "relics": boss_relics}
+
+        return {"gold": 0, "relic": RarityType.BOSS, "relics": self.boss_relic_choices()}
 
     def get_chest_open_actions(self):
         """Collect relic actions triggered when this chest is opened."""

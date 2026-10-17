@@ -45,7 +45,7 @@ class DisplayPanel(Widget):
         
         relics_str = ""
         if player.relics:
-            relic_names = [r.local('name').resolve() for r in player.relics[:5]]
+            relic_names = [r.display_name() for r in player.relics[:5]]
             relics_str = f"Relics: {', '.join(relic_names)}"
             if len(player.relics) > 5:
                 relics_str += f" (+{len(player.relics) - 5})"

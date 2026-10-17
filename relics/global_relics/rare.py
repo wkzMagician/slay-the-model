@@ -37,7 +37,10 @@ class BirdFacedUrn(Relic):
 @register("relic")
 class CaptainsWheel(Relic):
     """At the start of your 3rd turn, gain 18 Block."""
-    
+    counter_field = "combat_turn"
+    counter_limit = 3
+    counter_scope = "combat"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
@@ -50,6 +53,7 @@ class CaptainsWheel(Relic):
                 player = game_state.player
                 if player is None:
                     return
+                self._counter_triggered = True
                 add_actions([GainBlockAction(block=18, target=player)])
                 return
         return
@@ -81,6 +85,19 @@ class DuVuDoll(Relic):
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
+
+    counter_kind = "curses"
+
+    def counter_value(self) -> int | None:
+        from engine.game_state import game_state
+
+        player = game_state.player
+        if player is None:
+            return 0
+        return sum(card.card_type == CardType.CURSE for card in player.card_manager.get_pile("deck"))
+
+    def description_kwargs(self) -> dict:
+        return {"curses": self.counter_value()}
 
     def on_combat_start(self, floor: int):
         """Gain additional Strength based on curses in deck"""
@@ -128,7 +145,13 @@ class Ginger(Relic):
 @register("relic")
 class Girya(Relic):
     """You can now gain Strength at Rest Sites. (3 times max)"""
-    
+    counter_field = "uses_remaining"
+    counter_limit = 3
+    counter_kind = "used"
+
+    def counter_value(self) -> int | None:
+        return 3 - self.uses_remaining
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
@@ -175,6 +198,11 @@ class IceCream(Relic):
 class LizardTail(Relic):
     """When you would die, heal to 50% of your Max HP instead (works once)."""
     
+    def status_text(self) -> str:
+        from localization import t
+
+        return "" if self.can_revive else t("ui.relic_status.exhausted")
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
@@ -230,7 +258,10 @@ class PeacePipe(Relic):
 @register("relic")
 class Pocketwatch(Relic):
     """Whenever you play 3 or less Cards in a turn, draw 3 additional Cards at start of your next turn."""
-    
+    counter_field = "cards_played_this_turn"
+    counter_scope = "turn"
+    counter_kind = "cards"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
@@ -287,7 +318,10 @@ class Shovel(Relic):
 @register("relic")
 class StoneCalendar(Relic):
     """At the end of turn 7, deal 52 damage to ALL enemies."""
-    
+    counter_field = "combat_turn"
+    counter_limit = 7
+    counter_scope = "combat"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.RARE
@@ -297,6 +331,7 @@ class StoneCalendar(Relic):
         from engine.game_state import game_state
         if game_state.current_combat is not None:
             if game_state.current_combat.combat_state.combat_turn == 7:
+                self._counter_triggered = True
                 actions = []
                 for enemy in self.combat_enemies():
                     actions.append(DealDamageAction(damage=52, target=enemy))

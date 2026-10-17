@@ -23,12 +23,12 @@ class TestPenNib(unittest.TestCase):
         self.assertEqual(self.pen_nib.attacks_played, 0)
         self.assertEqual(self.pen_nib.rarity, RarityType.COMMON)
 
-    def test_pen_nib_resets_on_combat_start(self):
-        """Test attack counter resets on combat start."""
-        self.pen_nib.attacks_played = 15
+    def test_pen_nib_preserves_counter_on_combat_start(self):
+        """Test attack counter persists across combat starts."""
+        self.pen_nib.attacks_played = 5
         self.pen_nib.on_combat_start(1)
 
-        self.assertEqual(self.pen_nib.attacks_played, 0)
+        self.assertEqual(self.pen_nib.attacks_played, 5)
         self.assertTrue(game_state.action_queue.is_empty())
 
     def test_pen_nib_tracks_attacks(self):

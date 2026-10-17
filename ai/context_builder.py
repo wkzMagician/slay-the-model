@@ -82,8 +82,8 @@ class AIContextBuilder:
         lines = [f"## {t('ai_context.relics')} ({len(player.relics)})"]
         
         for i, relic in enumerate(player.relics, 1):
-            name = relic.local("name").resolve()
-            desc = relic.local("description").resolve()
+            name = relic.display_name()
+            desc = relic.display_description()
             # Clean up description formatting
             desc = desc.replace("{amount}", str(getattr(relic, 'amount', '')))
             lines.append(f"{i}. **{name}**: {desc}")
@@ -222,8 +222,8 @@ class AIContextBuilder:
             lines.append(f"### {t('ai_context.relics_for_sale')}:")
             for i, relic in enumerate(room.relics, 1):
                 price = getattr(relic, 'price', '?')
-                name = relic.local("name").resolve()
-                desc = relic.local("description").resolve()
+                name = relic.display_name()
+                desc = relic.display_description()
                 lines.append(f"{i}. **{name}**: {desc} - {t('ai_context.price')}: {price}g")
         
         # Potions for sale

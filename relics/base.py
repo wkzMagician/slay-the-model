@@ -42,7 +42,13 @@ class Relic(Localizable):
     localization_prefix = "relics"
     localizable_fields: Tuple[str, ...] = ("name", "description")
     rarity = RarityType.COMMON
-    
+    counter_field: str | None = None
+    counter_limit: int | None = None
+    counter_scope = "run"
+    counter_kind = "progress"
+    dynamic_remaining = False
+    replaces_relic: str | None = None
+
     # Damage modification phase (same as Power)
     # ADDITIVE: Applied first (e.g., +3 damage)
     # MULTIPLICATIVE: Applied second (e.g., 2x damage)
@@ -51,6 +57,18 @@ class Relic(Localizable):
 
     def __init__(self):
         self.namespace = self._resolve_namespace()
+        self._counter_triggered = False
+        self._display_ended = False
+
+    def can_spawn(self) -> bool:
+        from engine.game_state import game_state
+
+        if self.replaces_relic is None:
+            return True
+        player = game_state.player
+        return player is not None and any(
+            getattr(relic, "idstr", None) == self.replaces_relic for relic in player.relics
+        )
 
     def allows_card_play(self, card) -> tuple[bool, Optional[str]]:
         """Whether this relic allows the given card to be played."""
@@ -386,12 +404,81 @@ class Relic(Localizable):
         """
         return
     
+    @subscribe(CombatStartedMessage, priority=MessagePriority.PLAYER_RELIC)
+    def reset_display_state(self, floor: int):
+        self._counter_triggered = False
+        self._display_ended = False
+
+    @subscribe(CombatEndedMessage, priority=MessagePriority.PLAYER_RELIC)
+    def end_display_state(self):
+        self._display_ended = True
+
+    def _display_combat(self):
+        from engine.game_state import game_state
+
+        combat = game_state.current_combat
+        if combat is None or combat.combat_ended or self._display_ended:
+            return None
+        return combat
+
+    def counter_value(self) -> int | None:
+        """Read the explicitly declared source without maintaining a UI copy."""
+        if self.counter_field is None:
+            return None
+        if self.counter_scope != "run":
+            combat = self._display_combat()
+            if combat is None:
+                return None
+            if self.counter_scope == "turn" and combat.combat_state.current_phase not in (
+                "player_start", "player_action",
+            ):
+                return None
+            if self.counter_scope == "combat":
+                if self._counter_triggered:
+                    return None
+                return combat.combat_state.combat_turn
+        value = int(getattr(self, self.counter_field))
+        return value if value >= 0 else None
+
+    def counter_target(self) -> int | None:
+        return self.counter_limit
+
+    def description_kwargs(self) -> dict:
+        if self.dynamic_remaining:
+            return {"remaining": self.counter_value()}
+        return {}
+
+    def description_key(self) -> str:
+        if self.dynamic_remaining and self.counter_value() == 0:
+            return "description_exhausted"
+        return "description"
+
+    def display_description(self) -> str:
+        return self.local(self.description_key(), **self.description_kwargs()).resolve()
+
+    def status_text(self) -> str:
+        value = self.counter_value()
+        if value is None:
+            return ""
+        if self.counter_kind == "remaining":
+            if value == 0:
+                return t("ui.relic_status.exhausted")
+            return t("ui.relic_status.remaining", remaining=value)
+        target = self.counter_target()
+        progress = f"{value}/{target}" if target is not None else str(value)
+        if self.counter_kind == "used":
+            return t("ui.relic_status.used", progress=progress)
+        if self.counter_kind == "curses":
+            return t("ui.relic_status.curses", count=value)
+        if self.counter_kind == "cards":
+            return t("ui.relic_status.cards", count=progress)
+        return progress
+
+    def display_name(self) -> str:
+        name = self.local("name").resolve()
+        status = self.status_text()
+        return f"{name} ({status})" if status else name
+
     def info(self):
-        """
-        获取遗物的完整信息显示
-        
-        返回格式：
-        RelicName (Rarity: Common)
-        Description text
-        """
-        return self.local("name") + f" ({t('ui.rarity_label', 'Rarity: {rarity}', rarity=self.rarity.value)})\n" + self.local("description")
+        rarity = t('ui.rarity_label', 'Rarity: {rarity}', rarity=self.rarity.value)
+        return f"{self.display_name()} ({rarity})\n{self.display_description()}"

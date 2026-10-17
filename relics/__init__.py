@@ -102,6 +102,7 @@ from .global_relics import (
     PreservedInsect,
     PrismaticShard,
     QuestionCard,
+    RedCirclet,
     RedKey,
     RedMask,
     RegalPillow,

@@ -18,7 +18,10 @@ from utils.damage_phase import DamagePhase
 @register("relic")
 class HornCleat(Relic):
     """At the start of your 2nd turn, gain 14 Block."""
-    
+    counter_field = "combat_turn"
+    counter_limit = 2
+    counter_scope = "combat"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -31,6 +34,7 @@ class HornCleat(Relic):
                 player = game_state.player
                 if player is None:
                     return
+                self._counter_triggered = True
                 add_actions([GainBlockAction(block=14, target=player)])
                 return
         return
@@ -189,7 +193,9 @@ class GremlinHorn(Relic):
 @register("relic")
 class InkBottle(Relic):
     """Whenever you play 10 cards, draw 1 Card."""
-    
+    counter_field = "cards_played"
+    counter_limit = 10
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -207,7 +213,10 @@ class InkBottle(Relic):
 @register("relic")
 class Kunai(Relic):
     """Every time you play 3 Attacks in a single turn, gain 1 Dexterity."""
-    
+    counter_field = "attacks_played_this_turn"
+    counter_limit = 3
+    counter_scope = "turn"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -222,6 +231,7 @@ class Kunai(Relic):
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn == 3:
+                self.attacks_played_this_turn = 0
                 from engine.game_state import game_state
                 player = game_state.player
                 if player is None:
@@ -232,7 +242,10 @@ class Kunai(Relic):
 @register("relic")
 class LetterOpener(Relic):
     """Every time you play 3 Skills in a single turn, deal 5 damage to ALL enemies."""
-    
+    counter_field = "skills_played_this_turn"
+    counter_limit = 3
+    counter_scope = "turn"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -247,6 +260,7 @@ class LetterOpener(Relic):
         if card.card_type == CardType.SKILL:
             self.skills_played_this_turn += 1
             if self.skills_played_this_turn == 3:
+                self.skills_played_this_turn = 0
                 from engine.game_state import game_state
                 current_combat = getattr(game_state, "current_combat", None)
                 enemies = getattr(current_combat, "enemies", []) if current_combat is not None else []
@@ -261,7 +275,10 @@ class LetterOpener(Relic):
 @register("relic")
 class Matryoshka(Relic):
     """The next 2 Chests you open contain 2 Relics."""
-    
+    counter_field = "chests_to_spawn"
+    counter_kind = "remaining"
+    dynamic_remaining = True
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -389,7 +406,10 @@ class MummifiedHand(Relic):
 @register("relic")
 class OrnamentalFan(Relic):
     """Every time you play 3 Attacks in a single turn, gain 4 Block."""
-    
+    counter_field = "attacks_played_this_turn"
+    counter_limit = 3
+    counter_scope = "turn"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -404,6 +424,7 @@ class OrnamentalFan(Relic):
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn == 3:
+                self.attacks_played_this_turn = 0
                 from engine.game_state import game_state
                 player = game_state.player
                 if player is None:
@@ -420,18 +441,16 @@ class Pantograph(Relic):
         self.rarity = RarityType.UNCOMMON
     
     def on_combat_start(self, floor: int):
-        """Heal 25 HP at start of boss combat"""
+        """Heal once immediately when the encounter contains a boss."""
         from engine.game_state import game_state
-        from utils.types import CombatType
-        
-        if game_state.current_combat is not None:
-            if game_state.current_combat.combat_type != CombatType.NORMAL:
-                player = game_state.player
-                if player is None:
-                    return
-                add_actions([ApplyPowerAction(power="Regeneration", target=player, amount=25, duration=1)])
-                return
-        return
+        from utils.types import EnemyType
+
+        player = game_state.player
+        if player is not None and any(
+            enemy.enemy_type == EnemyType.BOSS for enemy in self.combat_enemies()
+        ):
+            add_action(HealAction(amount=25, target=player))
+
 @register("relic")
 class PaperPhrog(Relic):
     """Enemies with Vulnerable take 75% more damage rather than 50%."""
@@ -506,7 +525,10 @@ class SelfFormingClay(Relic):
 @register("relic")
 class Shuriken(Relic):
     """Every time you play 3 Attacks in a single turn, gain 1 Strength."""
-    
+    counter_field = "attacks_played_this_turn"
+    counter_limit = 3
+    counter_scope = "turn"
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
@@ -521,6 +543,7 @@ class Shuriken(Relic):
         if card.card_type == CardType.ATTACK:
             self.attacks_played_this_turn += 1
             if self.attacks_played_this_turn == 3:
+                self.attacks_played_this_turn = 0
                 from engine.game_state import game_state
                 player = game_state.player
                 if player is None:
@@ -563,7 +586,9 @@ class StrikeDummy(Relic):
 @register("relic")
 class Sundial(Relic):
     """Every 3 times you shuffle your Drawpile, gain 2 Energy."""
-    
+    counter_field = "shuffle_count"
+    counter_limit = 3
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.UNCOMMON

@@ -2,7 +2,7 @@ from actions.combat_status import ApplyPowerAction
 from cards.base import Card
 import engine.game_state as game_state_module
 from engine.runtime_api import add_action
-from powers.definitions.wreath_of_flame import WreathOfFlamePower
+from powers.definitions.vigor import VigorPower
 from typing import List
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
@@ -19,4 +19,4 @@ class WreathOfFlame(Card):
     text_description = "Your next Attack deals {magic.bonus} additional damage."
 
     def on_play(self, targets: List = []):
-        add_action(ApplyPowerAction(WreathOfFlamePower(amount=self.get_magic_value("bonus"), owner=game_state_module.game_state.player), game_state_module.game_state.player))
+        add_action(ApplyPowerAction(VigorPower(amount=self.get_magic_value("bonus"), owner=game_state_module.game_state.player), game_state_module.game_state.player))

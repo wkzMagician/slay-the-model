@@ -117,6 +117,8 @@ class GameState:
         rd.seed(self.config.seed)
         # character
         self.player = create_player(self.config.character)
+        from relics.boss_pool import BossRelicPool
+        self.boss_relic_pool = BossRelicPool(self.config.seed)
         
         # temp value for select result
         self.last_select_idx = -1

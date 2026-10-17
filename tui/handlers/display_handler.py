@@ -83,7 +83,7 @@ class DisplayHandler:
             lines.append("")
             lines.append(t("combat.relics", default="Relics:"))
             for relic in player.relics:
-                relic_name = relic.local("name").resolve() if hasattr(relic, "local") else relic.name
+                relic_name = relic.display_name()
                 lines.append(f"  - {relic_name}")
 
         if player.potions:
@@ -222,8 +222,8 @@ class DisplayHandler:
                 relic_id = relic.__class__.__name__
                 if relic_id not in shown_relics:
                     shown_relics.add(relic_id)
-                    relic_name = relic.local("name").resolve() if hasattr(relic, "local") else relic.name
-                    relic_desc = relic.local("description").resolve() if hasattr(relic, "local") else ""
+                    relic_name = relic.display_name()
+                    relic_desc = relic.display_description()
                     if relic_desc and not relic_desc.startswith("relics."):
                         relic_details.append(f"  {relic_name}: {relic_desc}")
                     else:

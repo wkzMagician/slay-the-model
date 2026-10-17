@@ -150,7 +150,6 @@ from .event import (
     Necronomicon,
     NilrysCodex,
     Enchiridion,
-    NeowsLament,
     NlothHungryFace,
     OddMushroom,
     SsserpentHead,
@@ -161,6 +160,8 @@ from .event import (
 )
 
 from .special import (
+    RedCirclet,
+    NeowsLament,
     RedKey,
     BlueKey,
     GreenKey,
@@ -192,6 +193,6 @@ __all__ = [
     'PotionBeltShop', 'SlingOfCourage', 'StrangeSpoonShop', 'TheAbacus', 'Toolbox',
     'CultistHeadpiece', 'FaceOfCleric', 'GoldenIdol', 'BloodyIdol', 'GremlinVisage',
     'MarkOfBloom', 'MutagenicStrength', 'Necronomicon', 'NilrysCodex', 'Enchiridion',
-    'NeowsLament', 'NlothHungryFace', 'OddMushroom', 'SsserpentHead', 'WarpedTongs',
+    'RedCirclet', 'NeowsLament', 'NlothHungryFace', 'OddMushroom', 'SsserpentHead', 'WarpedTongs',
     'RedMask', 'NlothGift', 'SpiritPoop', 'RedKey', 'BlueKey', 'GreenKey',
 ]

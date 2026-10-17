@@ -241,38 +241,9 @@ class OpenChestAction(Action):
 
         # Handle chest contents based on type
         if self.treasure_room.chest_type == "boss":
-            # 3 boss relics to choose from
-            relics = []
-            for _ in range(3):
-                relic = get_random_relic(rarities=[RarityType.BOSS])
-                if relic:
-                    relics.append(relic)
+            from actions.reward import ChooseBossRelicAction
 
-            assert len(relics) == 3, "cannot get random relics"
-
-            # Create selection options
-            options = []
-            for relic in relics:
-                options.append(Option(
-                    name=LocalStr("ui.choose_relic", name=relic.local("name")),
-                    actions=[
-                        AddRelicByNameAction(relic_id=relic.idstr),
-                        LeaveRoomAction(room=self.treasure_room),
-                    ]
-                ))
-
-            options.append(Option(
-                name=LocalStr("ui.skip_relic"),
-                actions=[LeaveRoomAction(room=self.treasure_room)]
-            ))
-
-            select_action = InputRequestAction(
-                title=LocalStr("ui.choose_boss_relic"),
-                options=options
-            )
-            if chest_open_actions:
-                add_actions(chest_open_actions, to_front=True)
-            add_action(select_action)
+            add_actions([*chest_open_actions, ChooseBossRelicAction(room=self.treasure_room)])
             return
 
         elif self.treasure_room.chest_type == "small":

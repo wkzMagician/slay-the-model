@@ -83,7 +83,10 @@ def test_tiny_chest():
     
     # Create map manager with Tiny Chest relic
     map_manager = MapManager(seed=42, act_id=1)
-    map_manager.set_relic_effect('tiny_chest', True)
+    from tests.test_combat_utils import create_test_helper
+    from relics.global_relics.common import TinyChest
+    helper = create_test_helper()
+    helper.game_state.player.relics = [TinyChest()]
     
     print("Testing Tiny Chest: Every 4th ? room should be Treasure")
     print()

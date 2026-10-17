@@ -1,4 +1,11 @@
 ui:
+  relic_status:
+    exhausted: "已耗尽"
+    remaining: "剩余 {remaining} 次"
+    used: "已举重 {progress}"
+    curses: "诅咒 {count}"
+    cards: "本回合 {count} 张"
+    ready: "已就绪"
   room_entered: 进入房间：{room_type}（第 {floor} 层，位置 {position}）
   game_welcome: 欢迎来到杀戮尖塔！
   game_awaken: 你在尖塔中醒来，准备开始攀登...
@@ -2072,6 +2079,9 @@ powers:
   WaveOfTheHandPower:
     name: 摆手
     description: 每当你在本回合获得格挡时，给予所有敌人{amount}层虚弱。
+  VigorPower:
+    name: 活力
+    description: "你的下一张攻击牌额外造成{amount}点伤害。"
   WreathOfFlamePower:
     name: 火焰纹
     description: 你的下一张攻击牌额外造成{amount}点伤害。
@@ -2203,6 +2213,9 @@ potions:
     name: 混沌药水
     description: 用随机药水填满所有空的药水栏。
 relics:
+  RedCirclet:
+    name: "红头环"
+    description: "已经没有可获得的 Boss 遗物了。"
   PureWater:
     name: 至纯之水
     description: 在每场战斗开始时，将一张奇迹放入你的手牌。
@@ -2283,7 +2296,8 @@ relics:
     description: 每场战斗开始时获得 1 点敏捷。
   Omamori:
     name: 御守
-    description: 获得的下 2 个诅咒将变成正效果。
+    description: "抵消接下来获得的 {remaining} 张诅咒。"
+    description_exhausted: "已耗尽。"
   Orichalcum:
     name: 奥利哈钢
     description: 如果你在回合结束时没有格挡，获得 6 点格挡。
@@ -2358,7 +2372,8 @@ relics:
     description: 每在单回合打出 3 次技能，对所有敌人造成 5 点伤害。
   Matryoshka:
     name: 套娃
-    description: 你打开的下 2 个宝箱包含 2 个遗物。
+    description: "接下来打开的 {remaining} 个非 Boss 宝箱包含一个额外遗物。"
+    description_exhausted: "已耗尽。"
   MeatOnBone:
     name: 带骨肉
     description: 如果战斗结束时你的生命值在或低于 50%，恢复 12 点生命值。
@@ -2430,7 +2445,7 @@ relics:
     description: 每当你消耗一张卡牌，向手牌添加一张随机卡牌。
   DuVuDoll:
     name: 毒巫娃娃
-    description: 牌组中的每个诅咒使每场战斗开始时获得 1 点额外力量。
+    description: "牌组中的每个诅咒使每场战斗开始时获得 1 点额外力量。当前诅咒数：{curses}。"
   FossilizedHelix:
     name: 螺类化石
     description: 防止战斗中第一次失去生命值。
@@ -2646,7 +2661,9 @@ relics:
     description: 回合开始时，向你的手牌添加一个随机能力，持续到回合结束。
   NeowsLament:
     name: 涅奥的悲恸
-    description: 你最初 3 场战斗中的敌人有 1 点生命值。
+    description: "接下来 {remaining} 场战斗中的敌人有 1 点生命值。"
+    description_exhausted: "这个祝福已经耗尽。"
+    effect: "涅奥的悲恸已触发，剩余 {remaining} 场战斗。"
   NlothHungryFace:
     name: 恩洛斯的饥饿的脸
     description: 下一个非 Boss 宝箱是空的。

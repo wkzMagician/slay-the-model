@@ -120,6 +120,8 @@ class EmotionChip(Relic):
 @register("relic")
 class FrozenCore(Relic):
     """If you end your turn with any empty Orb slots, channel 1 Frost."""
+    replaces_relic = "CrackedCore"
+
 
     def __init__(self):
         super().__init__()
@@ -137,6 +139,11 @@ class FrozenCore(Relic):
 @register("relic")
 class Inserter(Relic):
     """Every 2 turns, gain 1 Orb slot."""
+    counter_field = "counter"
+    counter_limit = 2
+
+    def counter_value(self) -> int | None:
+        return self.counter % 2
 
     def __init__(self):
         super().__init__()

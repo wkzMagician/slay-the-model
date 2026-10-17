@@ -85,7 +85,7 @@ def test_path_selection(manager):
         print(f"Moving to: Floor {target.floor}, Position {target.position}")
         # Patch the _create_room_instance method to return a SimpleRoom
         original_create = manager._create_room_instance
-        manager._create_room_instance = lambda room_type: SimpleRoom()
+        manager._create_room_instance = lambda room_type, floor_in_act=None: SimpleRoom()
         
         room = manager.move_to_node(target.floor, target.position)
         print(f"Created room: {type(room).__name__}")

@@ -4,13 +4,13 @@ Ironclad-specific relics - all Ironclad relics in one file.
 from engine.runtime_api import add_action, add_actions
 from typing import List
 from actions.base import Action, LambdaAction
-from actions.card import DrawCardsAction
+from actions.card import DrawCardsAction, AddCardAction
 from actions.combat import GainBlockAction, GainEnergyAction, HealAction, DealDamageAction, ApplyPowerAction
 from powers.definitions.strength import StrengthPower
 from powers.definitions.weak import WeakPower
 # GainGoldAction imported lazily when needed to avoid circular import
 from relics.base import Relic
-from utils.types import RarityType, CardType
+from utils.types import RarityType, CardType, PilePosType
 from utils.registry import register
 
 # Common Relic - Ironclad starting relic
@@ -140,6 +140,8 @@ class MagicFlower(Relic):
 @register("relic")
 class BlackBlood(Relic):
     """Replaces Burning Blood. At the end of combat, heal 12 HP."""
+    replaces_relic = "BurningBlood"
+
     
     def __init__(self):
         super().__init__()
@@ -243,3 +245,27 @@ class OrangePellets(Relic):
         self.power_count = 0
         self.attack_count = 0
         self.skill_count = 0
+
+@register("relic")
+class MarkOfPain(Relic):
+    """Gain 1 Energy at start of each turn. Start combats with 2 Wounds in your Drawpile."""
+
+    def __init__(self):
+        super().__init__()
+        self.rarity = RarityType.BOSS
+        self.wounds_added = False
+
+    def on_combat_start(self, floor: int):
+        """Add Wounds to draw pile at combat start"""
+        from engine.game_state import game_state
+        from cards.colorless.wound import Wound
+        add_actions([
+            AddCardAction(Wound(), "draw_pile", position=PilePosType.RANDOM)
+            for _ in range(2)
+        ])
+        return
+    def on_player_turn_start(self):
+        """Gain 1 Energy at start of each turn"""
+        from engine.game_state import game_state
+        add_actions([GainEnergyAction(energy=1)])
+        return

@@ -71,12 +71,10 @@ class MapManager:
             RoomType.ELITE: 0,        # Starts at 20% (only with deadly_events, floor 6+), +20% per non-elite visit
         }
         
-        self._tiny_chest_counter = 0
         self.relic_effects = {}
         
         # Relic effects that modify unknown room probabilities
         self._relic_effects = {
-            'tiny_chest': False,
             'juzu_bracelet': False,
         }
         
@@ -89,7 +87,7 @@ class MapManager:
         Enable or disable a relic effect that modifies unknown room probabilities.
         
         Args:
-            effect_name: Name of relic effect (e.g., 'tiny_chest', 'juzu_bracelet')
+            effect_name: Name of relic effect (e.g., 'juzu_bracelet')
             enabled: Whether the effect is active
         """
         if effect_name in self._relic_effects:
@@ -710,7 +708,7 @@ class MapManager:
 
     @property
     def has_tiny_chest(self) -> bool:
-        return self._player_has_relic("tiny_chest") or self._player_has_relic("tinychest") or self._relic_effects.get("tiny_chest", False)
+        return self._player_has_relic("tiny_chest") or self._player_has_relic("tinychest")
 
     @property
     def has_juzu_bracelet(self) -> bool:
@@ -765,14 +763,14 @@ class MapManager:
         assert node is not None
         
         # Create room instance based on room type
-        room = self._create_room_instance(node.room_type)
+        room = self._create_room_instance(node.room_type, floor_in_act=floor_in_act)
         
         # Update current position
         self.map_data.set_current_position(floor_in_act, position)
         
         return room
     
-    def _create_room_instance(self, room_type: RoomType):
+    def _create_room_instance(self, room_type: RoomType, floor_in_act: int | None = None):
         """
         Create a Room instance based on room type.
         
@@ -794,10 +792,12 @@ class MapManager:
         from rooms.victory import VictoryRoom
         from engine.game_state import game_state
         
+        target_floor = self.map_data.current_floor if floor_in_act is None else floor_in_act
+
         if room_type == RoomType.MONSTER:
             # Get monster encounter from encounter pool
             enemies, encounter_name = self.encounter_pool.get_normal_encounter(
-                floor=self.map_data.current_floor,
+                floor=target_floor,
                 encounter_count=game_state.normal_encounters_fought,
                 encounter_history=game_state.encounter_history,
             )
@@ -806,7 +806,7 @@ class MapManager:
         elif room_type == RoomType.ELITE:
             # Get elite encounter from encounter pool
             enemies, encounter_name = self.encounter_pool.get_elite_encounter(
-                floor=self.map_data.current_floor,
+                floor=target_floor,
                 last_elite=game_state.elite_history[-1] if game_state.elite_history else None
             )
             return CombatRoom(enemies=enemies, room_type=RoomType.ELITE, encounter_name=encounter_name)
@@ -815,9 +815,9 @@ class MapManager:
             # Boss combat room - fight the boss!
             boss_index = 0
             if self.act_id == 3 and game_state.ascension >= 20:
-                boss_index = 0 if self.map_data.current_floor == 16 else 1
+                boss_index = 0 if target_floor == 16 else 1
             enemies, encounter_name = self.encounter_pool.get_boss_encounter(
-                floor=self.map_data.current_floor,
+                floor=target_floor,
                 boss_index=boss_index,
             )
             return CombatRoom(enemies=enemies, room_type=RoomType.BOSS, encounter_name=encounter_name)
@@ -829,7 +829,7 @@ class MapManager:
             return ShopRoom()
         
         elif room_type == RoomType.TREASURE:
-            is_boss = self.map_data.current_floor == 17 and self.act_id < 3
+            is_boss = target_floor == 17 and self.act_id < 3
             return TreasureRoom(is_boss=is_boss)
         
         elif room_type == RoomType.EVENT:
@@ -840,8 +840,8 @@ class MapManager:
         
         elif room_type == RoomType.UNKNOWN:
             # Resolve unknown room type
-            actual_type = self._resolve_unknown_type(self.map_data.current_floor)
-            return self._create_room_instance(actual_type)
+            actual_type = self._resolve_unknown_type(target_floor)
+            return self._create_room_instance(actual_type, floor_in_act=target_floor)
         
         else:
             # Fallback to EventRoom for unknown types
@@ -1388,8 +1388,13 @@ class MapManager:
             The actual RoomType for this unknown room
         """
         # Check Tiny Chest relic - every 4th ? room is Treasure
-        self._tiny_chest_counter += 1
-        if self.has_tiny_chest and self._tiny_chest_counter % 4 == 0:
+        from relics.global_relics.common import TinyChest
+
+        tiny_chest = next(
+            (relic for relic in self._get_player_relics() if isinstance(relic, TinyChest)),
+            None,
+        )
+        if tiny_chest is not None and tiny_chest.advance_unknown_room():
             # Tiny Chest forces Treasure room, resets treasure visit counter
             self.unknown_room_visits[RoomType.TREASURE] = 0
             return RoomType.TREASURE

@@ -90,6 +90,7 @@ __all__ = [
     "DuplicationPower",
     "RegenerationPower",
     "PenNibPower",
+    "VigorPower",
     "BarricadePower",
     "BerserkPower",
     "BrutalityPower",
@@ -193,4 +194,5 @@ from powers.definitions.study import StudyPower
 from powers.definitions.talk_to_the_hand import TalkToTheHandPower
 from powers.definitions.temporary_dexterity import TemporaryDexterityPower
 from powers.definitions.wave_of_the_hand import WaveOfTheHandPower
+from powers.definitions.vigor import VigorPower
 from powers.definitions.wreath_of_flame import WreathOfFlamePower

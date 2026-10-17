@@ -28,6 +28,7 @@ from powers.definitions import (
     BattleTranceDrawPower,
     BufferPower,
     PenNibPower,
+    VigorPower,
 )
 
 __all__ = [
@@ -57,4 +58,5 @@ __all__ = [
     "BattleTranceDrawPower",
     "BufferPower",
     "PenNibPower",
+    "VigorPower",
 ]

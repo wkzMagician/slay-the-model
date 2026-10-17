@@ -162,6 +162,8 @@ class HoveringKite(Relic):
 @register("relic")
 class RingOfTheSerpent(Relic):
     """Replaces Ring of the Snake. Draw 1 additional card each turn."""
+    replaces_relic = "RingOfTheSnake"
+
 
     def __init__(self):
         super().__init__()

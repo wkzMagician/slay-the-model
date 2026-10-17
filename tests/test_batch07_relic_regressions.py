@@ -222,6 +222,8 @@ def test_ring_of_the_serpent_increases_base_draw_count_when_obtained():
     helper = create_test_helper()
     player = helper.create_player(hp=80, max_hp=80, energy=3)
 
+    from relics.character.silent import RingOfTheSnake
+    player.relics = [RingOfTheSnake()]
     AddRelicAction(RingOfTheSerpent()).execute()
     helper.game_state.drive_actions()
 

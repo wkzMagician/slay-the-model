@@ -46,7 +46,10 @@ class GreenKey(Relic):
 @register("relic")
 class NeowsLament(Relic):
     """Neow's Lament - A special relic."""
-    
+    counter_field = "stacks"
+    counter_kind = "remaining"
+    dynamic_remaining = True
+
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.SPECIAL
@@ -67,7 +70,7 @@ class NeowsLament(Relic):
                     
             # 添加显示消息
             actions.append(DisplayTextAction(
-                text_key="relics.neows_lament.effect"
+                text_key="relics.NeowsLament.effect", remaining=self.stacks - 1
             ))
             
             self.stacks -= 1
@@ -79,3 +82,9 @@ class NeowsLament(Relic):
             return
         return
     # This relic provides benefits when certain conditions are met
+
+
+@register("relic")
+class RedCirclet(Relic):
+    """Repeatable fallback when the Boss relic pool is exhausted."""
+    rarity = RarityType.SPECIAL

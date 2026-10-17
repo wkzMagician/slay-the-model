@@ -84,6 +84,8 @@ class GoldenEye(Relic):
 
 @register("relic")
 class HolyWater(Relic):
+    replaces_relic = "PureWater"
+
     rarity = RarityType.BOSS
     text_name = "Holy Water"
     text_description = "At the start of each combat, add 3 Miracles to your hand."
