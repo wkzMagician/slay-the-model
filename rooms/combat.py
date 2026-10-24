@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, List
 
 from actions.base import Action
 from actions.display import DisplayTextAction
-from actions.reward import AddGoldAction, AddRandomPotionAction
+from actions.reward import AddEliteRelicAction, AddGoldAction, AddRandomPotionAction
 from actions.card import AddRandomCardAction, ChooseAddRandomCardAction, ChooseObtainCardAction
 from actions.misc import LeaveRoomAction
 from utils.result_types import GameTerminalState
@@ -133,26 +133,33 @@ class CombatRoom(Room):
         if gold_amount > 0:
             actions.append(AddGoldAction(amount=gold_amount))
 
+        if self.room_type == RoomType.ELITE:
+            actions.append(AddEliteRelicAction())
+
         # Add card reward (non-boss)
         if self.room_type != RoomType.BOSS:
             reward_options = 1 if _has_relic("Busted Crown", game_state) else 3
 
             
-            # Check for PrayerWheel - adds extra card reward for normal enemies
+            reward_amount = 1
             combat_type_str = "normal" if combat.combat_type == CombatType.NORMAL else "elite"
             for relic in game_state.player.relics:
                 hook = getattr(relic, "modify_card_reward_count", None)
                 if hook is not None:
                     reward_options = hook(reward_options, combat_type_str)
+                amount_hook = getattr(relic, "modify_card_reward_amount", None)
+                if amount_hook is not None:
+                    reward_amount = amount_hook(reward_amount, combat_type_str)
             
             # 3 choose 1, rarity determined by encounter type
-            actions.append(ChooseObtainCardAction(
-                total=reward_options,
-                namespace=game_state.player.namespace,
-                encounter_type=combat_type_str,
-                use_rolling_offset=True,
-                allow_upgraded=True,
-            ))
+            for _ in range(reward_amount):
+                actions.append(ChooseObtainCardAction(
+                    total=reward_options,
+                    namespace=game_state.player.namespace,
+                    encounter_type=combat_type_str,
+                    use_rolling_offset=True,
+                    allow_upgraded=True,
+                ))
         else:  # boss - 3 rare cards
             actions.append(ChooseAddRandomCardAction(
                 pile='deck',

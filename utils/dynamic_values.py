@@ -140,15 +140,20 @@ def _apply_dealt_phase(damage, attacker, phase: DamagePhase, card, target):
     return damage
 
 
-def _apply_taken_phase(damage, target, attacker, phase: DamagePhase, damage_type):
+def _apply_taken_phase(damage, target, attacker, phase: DamagePhase, damage_type, *, for_card_snapshot=False):
     from player.player import Player
 
     if target is None:
         return damage
     if hasattr(target, "powers"):
         for power in _modifiers_in_phase(target.powers, phase):
+            if for_card_snapshot and getattr(power, "damage_is_runtime", False):
+                continue
             if hasattr(power, "modify_damage_taken"):
                 damage = cast(Any, power).modify_damage_taken(damage)
+    # Capping relics (Torii) run when damage is received, not on the card.
+    if for_card_snapshot and phase == DamagePhase.CAPPING:
+        return damage
     if isinstance(target, Player) and hasattr(target, "relics"):
         for relic in _modifiers_in_phase(target.relics, phase):
             if hasattr(relic, "modify_damage_taken"):
@@ -170,7 +175,8 @@ def _apply_back_attack(damage, attacker):
 
 
 def resolve_potential_damage(base_damage: int, attacker: Optional[Creature], 
-                         target: Optional[Creature], card=None, damage_type: str | None = None) -> int:
+                         target: Optional[Creature], card=None, damage_type: str | None = None,
+                         *, for_card_snapshot: bool = False) -> int:
     """
     Resolve final damage value with one floor at the end.
 
@@ -211,7 +217,34 @@ def resolve_potential_damage(base_damage: int, attacker: Optional[Creature],
         damage = _apply_back_attack(damage, attacker)
         damage = _apply_taken_phase(damage, target, attacker, DamagePhase.FINAL, damage_type)
 
-    damage = _apply_taken_phase(damage, target, attacker, DamagePhase.CAPPING, damage_type)
+    damage = _apply_taken_phase(
+        damage, target, attacker, DamagePhase.CAPPING, damage_type,
+        for_card_snapshot=for_card_snapshot,
+    )
+    return max(0, math.floor(damage))
+
+
+def resolve_calculated_damage(damage: int, attacker, target, damage_type) -> int:
+    """Apply only live defenses to an already calculated card attack.
+
+    Flight and enemy Intangible belong to calculateCardDamage. Invincible
+    belongs to damage(), as does the player's extra Intangible safeguard.
+    Block and Buffer are handled by DealDamageAction after this step.
+    """
+    from player.player import Player
+    from powers.definitions.intangible import IntangiblePower
+
+    for power in _modifiers_in_phase(getattr(target, "powers", []), DamagePhase.CAPPING):
+        if getattr(power, "damage_is_runtime", False) or (
+            isinstance(target, Player) and isinstance(power, IntangiblePower)
+        ):
+            damage = cast(Any, power).modify_damage_taken(damage)
+    if isinstance(target, Player):
+        for relic in _modifiers_in_phase(target.relics, DamagePhase.CAPPING):
+            if hasattr(relic, "modify_damage_taken"):
+                damage = cast(Any, relic).modify_damage_taken(
+                    damage, source=attacker, damage_type=damage_type,
+                )
     return max(0, math.floor(damage))
 
 

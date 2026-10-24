@@ -19,6 +19,7 @@ class BeatOfDeathPower(Power):
     name = "Beat of Death"
     description = "Whenever you play a card, take damage."
     stack_type = StackType.INTENSITY
+    observes_all_player_card_plays = True
     is_buff = True
 
     def __init__(self, amount: int = 1, duration: int = -1, owner=None):

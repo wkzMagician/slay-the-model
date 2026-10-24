@@ -16,9 +16,12 @@ class AmplifyPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
     def on_card_play(self, card, targets):
+        if getattr(card, "_is_replay", False) or self.amount <= 0:
+            return
         if getattr(card, "card_type", None) != CardType.POWER:
             return
-        card.on_play(targets=targets or [])
+        from actions.autoplay import queue_replay
+        queue_replay(card)
         self.amount -= 1
         if self.owner is not None and self.amount <= 0:
             self.owner.remove_power(self.name)

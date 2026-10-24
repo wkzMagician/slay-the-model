@@ -62,9 +62,9 @@ class BlackStar(Relic):
     
     def on_elite_victory(self):
         """Drop an additional random relic when defeating an elite."""
-        from actions.reward import AddRandomRelicAction
+        from actions.reward import AddEliteRelicAction
         from engine.game_state import game_state
-        add_actions([AddRandomRelicAction()])
+        add_actions([AddEliteRelicAction()])
         return
 @register("relic")
 class BustedCrown(Relic):

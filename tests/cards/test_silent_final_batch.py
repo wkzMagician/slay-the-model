@@ -202,8 +202,8 @@ class TestSilentFinalBatch:
         self.helper.start_combat([])
         card = Nightmare()
         card.on_play([])
-        queued = self.helper.game_state.action_queue.queue[1]
-        assert isinstance(queued, ChooseCardLambdaAction)
+        assert any(isinstance(action, ChooseCardLambdaAction)
+                   for action in self.helper.game_state.action_queue.queue)
 
     def test_setup_sets_cost_zero_until_card_is_played(self):
         combat = self.helper.start_combat([])

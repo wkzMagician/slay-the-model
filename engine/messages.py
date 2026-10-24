@@ -316,6 +316,16 @@ class EnemyHpDepletedMessage(GameMessage):
 
 
 @dataclass(frozen=True)
+class EnemyDefeatedMessage(GameMessage):
+    """Notify player relics of one actual collapse, before species cleanup."""
+
+    target: "Creature"
+    source: Any = None
+    card: Optional["Card"] = None
+    half_dead: bool = False
+
+
+@dataclass(frozen=True)
 class CreatureDiedMessage(GameMessage):
     """A creature has already died."""
 
@@ -337,6 +347,7 @@ EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES = (
     CombatStartedMessage,
     CreatureDiedMessage,
     EnemyHpDepletedMessage,
+    EnemyDefeatedMessage,
     DamageDealtMessage,
     FatalDamageMessage,
     DirectHpLossMessage,

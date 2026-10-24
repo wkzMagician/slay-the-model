@@ -1,5 +1,4 @@
-from actions.card_lifecycle import ExhaustCardAction
-from actions.combat_cards import PlayCardAction
+from actions.autoplay import PlayTwiceAction
 from actions.display import InputRequestAction
 from cards.base import Card, RawLocalStr
 import engine.game_state as game_state_module
@@ -30,9 +29,7 @@ class Omniscience(Card):
                 Option(
                     name=card.info(),
                     actions=[
-                        PlayCardAction(card, ignore_energy=True),
-                        PlayCardAction(card, ignore_energy=True),
-                        ExhaustCardAction(card, source_pile="discard_pile"),
+                        PlayTwiceAction(card),
                     ],
                 )
             )

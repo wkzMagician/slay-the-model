@@ -342,23 +342,8 @@ class DistilledChaos(Potion):
         self._amount = 3  # Sacred Bark doubles to 6
 
     def on_use(self, targets) -> None:
-        from actions.combat import PlayCardAction
-        from actions.card import RemoveCardAction, AddCardAction
-        from engine.game_state import game_state
-        
-        actions = []
-        draw_pile = game_state.player.card_manager.get_pile("draw_pile")
-        
-        # Play top cards from draw pile
-        for _ in range(min(self.amount, len(draw_pile))):
-            if draw_pile:
-                card = draw_pile.pop()
-                # Play card automatically
-                actions.extend([
-                    PlayCardAction(card=card, is_auto=True, ignore_energy=True)
-                ])
-        
-        self.queue_actions(actions)
+        from actions.autoplay import PlayTopCardAction
+        self.queue_actions([PlayTopCardAction() for _ in range(self.amount)])
 
 @register("potion")
 class DuplicationPotion(Potion):

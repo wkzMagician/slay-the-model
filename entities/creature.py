@@ -49,8 +49,8 @@ class Creature(Localizable):
 
     @max_hp.setter
     def max_hp(self, value: int) -> None:
-        self._hp += value - self._max_hp
         self._max_hp = max(1, int(value))
+        self.hp = min(self.hp, self._max_hp)
 
     @property
     def block(self) -> int:

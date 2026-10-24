@@ -8,7 +8,13 @@ from utils.registry import register
 @register("action")
 class OrbPassiveAction(Action):
     def __init__(self, orb):
+        from orbs.frost import FrostOrb
+        from orbs.lightning import LightningOrb
+
         self.orb = orb
+        # These wrappers represent queued BLOCK/DAMAGE work in the original.
+        # Plasma's ordinary passive energy gain is removed by combat cleanup.
+        self.preserve_after_combat = isinstance(orb, (FrostOrb, LightningOrb))
 
     def execute(self) -> None:
         if self.orb:
@@ -17,6 +23,8 @@ class OrbPassiveAction(Action):
 
 @register("action")
 class OrbEvokeAction(Action):
+    preserve_after_combat = True
+
     def __init__(self, orb):
         self.orb = orb
 
@@ -46,6 +54,8 @@ class ChannelOrbAction(Action):
 
 @register("action")
 class EvokeOrbAction(Action):
+    preserve_after_combat = True
+
     def __init__(self, index: int = 0, times: int = 1):
         self.index = index
         self.times = times
@@ -72,6 +82,8 @@ class EvokeOrbAction(Action):
 
 @register("action")
 class EvokeAllOrbsAction(Action):
+    preserve_after_combat = True
+
     def execute(self) -> None:
         from engine.game_state import game_state
 

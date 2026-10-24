@@ -293,8 +293,8 @@ class PrayerWheel(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    def modify_card_reward_count(self, base_count: int, combat_type: str) -> int:
-        """Add an additional card reward for normal enemies"""
+    def modify_card_reward_amount(self, base_count: int, combat_type: str) -> int:
+        """Add a separate card reward for normal enemies."""
         if combat_type == "normal":
             return base_count + 1
         return base_count

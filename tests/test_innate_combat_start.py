@@ -47,6 +47,9 @@ class _DummyEnemy:
     def on_player_turn_start(self):
         return None
 
+    def is_dead(self):
+        return self.hp <= 0
+
 
 class _StubCard:
     """Minimal card stub for card manager/combat draw tests."""

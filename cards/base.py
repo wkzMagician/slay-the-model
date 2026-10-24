@@ -421,7 +421,7 @@ class Card(Localizable):
                 GainEnergyAction,
                 LoseHPAction,
             )
-            from actions.card import ExhaustCardAction, DrawCardsAction
+            from actions.card import DrawCardsAction
             
             from utils.dynamic_values import attack_base_damage, resolve_card_value
             from engine.game_state import game_state
@@ -437,7 +437,12 @@ class Card(Localizable):
             # 伤害
             if self.damage > 0:
                 hits = max(1, resolve_card_value(self, 'attack_times'))
+                if self.target_type == TargetType.ENEMY_RANDOM and source is not None:
+                    from actions.combat_cards import RandomCardAttackAction
+                    actions.extend(RandomCardAttackAction(self, source) for _ in range(hits))
                 for target in targets:
+                    if self.target_type == TargetType.ENEMY_RANDOM:
+                        break
                     for _ in range(hits):
                         # Use unified damage pipeline via AttackAction so Strength/Weak/Vulnerable etc. are applied correctly.
                         action = AttackAction(
@@ -468,9 +473,7 @@ class Card(Localizable):
                 energy_value = resolve_card_value(self, 'energy_gain')
                 actions.append(GainEnergyAction(energy=lambda: energy_value))
             
-            # 消耗
-            if self.exhaust:
-                actions.append(ExhaustCardAction(card=self, source_pile="hand"))
+            # The play request owns exhaustion after all card effects resolve.
             
             add_actions(actions)
             return

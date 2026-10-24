@@ -44,7 +44,7 @@ class FiendFire(Card):
         damage = self._magic.get("exhaust_damage", 7)
         for _ in cards_in_hand:
             if target and target.hp > 0:
-                actions.append(AttackAction(damage=damage, target=target, source=player))
+                actions.append(AttackAction(damage=damage, target=target, source=player, card=self))
 
         from engine.game_state import game_state
 

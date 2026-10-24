@@ -31,14 +31,8 @@ class MayhemPower(Power):
         """Play top card of draw pile at start of turn."""
         from engine.game_state import game_state
 
-        # Get top card from draw pile
-        if game_state.player and hasattr(game_state.player, "card_manager"):
-            card_manager = game_state.player.card_manager
-            draw_cards = list(card_manager.get_pile("draw_pile"))
-            if draw_cards:
-                top_card = draw_cards[-1]
-                if card_manager.get_card_location(top_card) == "draw_pile":
-                    card_manager.move_to(top_card, "hand", "draw_pile")
-                add_actions([PlayCardAction(card=top_card, is_auto=True, ignore_energy=True)])
-                return
+        from actions.autoplay import PlayTopCardAction
+        from actions.base import LambdaAction
+        if game_state.player:
+            add_action(LambdaAction(lambda: add_action(PlayTopCardAction(), to_front=True)))
         return

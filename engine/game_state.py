@@ -100,6 +100,8 @@ class GameState:
         # Global action queue - shared across all rooms and events
         from actions.base import ActionQueue
         self.action_queue = ActionQueue()
+        self.pending_card_plays = []
+        self.active_card_plays = []
         self.message_bus = MessageBus()
         
         # Current combat (None when not in combat)
@@ -318,6 +320,8 @@ class GameState:
             if self.terminal_state is not None:
                 result = self.terminal_state
                 self.terminal_state = None
+                from actions.card_play_lifecycle import cleanup_terminal_card_plays
+                cleanup_terminal_card_plays()
                 return result
 
             if self.pending_input_request is not None:
@@ -329,6 +333,30 @@ class GameState:
                 continue
 
             if self.action_queue.is_empty():
+                from actions.card_play_lifecycle import finalize_card_play
+                from actions.combat_cards import PlayCardAction
+
+                active = getattr(self, "active_card_plays", [])
+                if active:
+                    finalize_card_play(active.pop(0))
+                    continue
+                pending = getattr(self, "pending_card_plays", [])
+                if pending:
+                    request = pending.pop(0)
+                    combat = self.current_combat
+                    monsters_finished = (combat is not None and bool(combat.enemies)
+                        and all(enemy.is_dead() and not getattr(enemy, "half_dead", False)
+                                for enemy in combat.enemies))
+                    if (combat is None or combat.combat_ended or monsters_finished
+                            or self.player.is_dead() or getattr(self.player, "half_dead", False)
+                            or combat.combat_state.current_phase in
+                            {"player_end", "enemy_action", "enemy_end"}):
+                        request.cancelled = True
+                        finalize_card_play(request)
+                    else:
+                        PlayCardAction(request.card, is_auto=True, ignore_energy=True,
+                                       request=request).execute()
+                    continue
                 return None
 
             self.action_queue.execute_next()

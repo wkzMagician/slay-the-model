@@ -596,6 +596,8 @@ class Combat(Localizable):
         
         # Set current combat reference
         game_state.current_combat = self
+        game_state.pending_card_plays = []
+        game_state.active_card_plays = []
         
         # Reset and setup combat state
         self.combat_state.reset_combat_info()
@@ -716,11 +718,13 @@ class Combat(Localizable):
         if game_state.player.status_manager.status == StatusType.DIVINITY:
             ChangeStanceAction(StatusType.NEUTRAL).execute()
 
-        alive_enemies = [e for e in self.enemies if e.hp > 0]
+        # Half-dead enemies still need to select their revival intention.
+        # Attack target selection separately excludes creatures with zero HP.
+        turn_enemies = [e for e in self.enemies if not e.is_dead()]
         publish_message(
             PlayerTurnStartedMessage(
                 owner=game_state.player,
-                enemies=alive_enemies,
+                enemies=turn_enemies,
             )
         )
 

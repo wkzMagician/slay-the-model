@@ -399,7 +399,8 @@ class TestDefectCommonCluster:
 
     def test_sunder_refunds_energy_only_when_it_kills(self):
         enemy = _NoOpEnemy(hp=20)
-        self.helper.start_combat([enemy])
+        # Keep combat running: a final kill clears Sunder's queued refund.
+        self.helper.start_combat([enemy, _NoOpEnemy(hp=100)])
         self.player.energy = 3
         card = Sunder()
         self.helper.add_card_to_hand(card)

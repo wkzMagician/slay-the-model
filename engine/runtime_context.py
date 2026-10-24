@@ -224,6 +224,11 @@ class RuntimeContext:
                 for pile_card in list(card_manager.get_pile(pile_name) or []):
                     add_participant(pile_card)
 
+        if type(message).__name__ == "EnemyDefeatedMessage":
+            # The original onMonsterDeath relic phase follows power onDeath,
+            # including half-dead transitions, without permanent-death hooks.
+            return list(getattr(self.player, "relics", []))
+
         if type(message).__name__ == "EnemyHpDepletedMessage":
             # Half-dead transitions notify the owner's powers before cleanup,
             # without invoking the creature's permanent-death handler.
