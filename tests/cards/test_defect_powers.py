@@ -255,13 +255,17 @@ class TestDefectPowers:
 
     def test_echo_form_duplicates_first_card_each_turn(self):
         enemy = _NoOpEnemy(hp=20)
-        self.helper.start_combat([enemy])
+        combat = self.helper.start_combat([enemy])
         echo = EchoForm()
         beam = BeamCell()
         self.helper.add_card_to_hand(echo)
         self.helper.add_card_to_hand(beam)
 
         assert self.helper.play_card(echo) is True
+        # A newly obtained Echo Form cannot copy the second card of this turn.
+        # Start the next player turn through the real turn-start reset/hooks.
+        combat._start_player_turn()
+        assert self.helper.game_state.drive_actions() is None
         assert self.helper.play_card(beam, enemy) is True
 
         assert enemy.hp == 13

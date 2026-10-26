@@ -20,6 +20,7 @@ class CardManager:
             'discard_pile': [],
             'hand': [],
             'exhaust_pile': [],
+            'limbo': [],
         }
 
     @property
@@ -39,6 +40,7 @@ class CardManager:
         self.piles['discard_pile'] = []
         self.piles['hand'] = []
         self.piles['exhaust_pile'] = []
+        self.piles['limbo'] = []
 
     def shuffle_discard_to_draw(self) -> bool:
         """Move discard into draw pile and shuffle.

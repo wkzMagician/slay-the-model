@@ -122,6 +122,33 @@ class AddRandomRelicAction(Action):
                 _handle_obtained_relic(relic)
             
 @register("action")
+class AddEliteRelicAction(Action):
+    """Grant an elite relic with the normal 50/33/17 tier distribution."""
+
+    def execute(self) -> None:
+        import random
+        from engine.game_state import game_state
+        from relics.global_relics.special import RedCirclet
+
+        player = game_state.player
+        if player is None:
+            return
+        roll = random.randint(0, 99)
+        tiers = [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]
+        first = 0 if roll < 50 else (2 if roll > 82 else 1)
+        excluded = list(game_state.obtained_relics | {
+            str(getattr(relic, "idstr", "")) for relic in player.relics
+        })
+        # Exhausted common/uncommon pools fall through to the next tier.
+        for tier in tiers[first:]:
+            relic = get_random_relic(rarities=[tier], exclude=excluded)
+            if relic is not None:
+                _handle_obtained_relic(relic)
+                return
+        _handle_obtained_relic(RedCirclet())
+
+
+@register("action")
 class LoseRelicAction(Action):
     """Lose a specific relic from player
     

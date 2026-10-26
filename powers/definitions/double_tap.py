@@ -2,8 +2,6 @@
 Double Tap power for Ironclad.
 This turn, your next Attack is played twice.
 """
-from typing import List, Any
-from actions.base import Action
 from cards.base import Card
 from powers.base import Power, StackType
 from utils.registry import register
@@ -28,12 +26,12 @@ class DoubleTapPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
         
     def on_card_play(self, card: Card, targets):
-        if card.card_type == CardType.ATTACK:
-            from engine.game_state import game_state
-
-            resolved_targets = getattr(game_state.current_combat.combat_state, "last_card_targets", []) if game_state.current_combat else []
-            card.on_play(targets=resolved_targets)
-            self.amount -= 1
-            if self.owner is not None and self.amount <= 0:
-                self.owner.remove_power(self.name)
-        return
+        if getattr(card, "_is_replay", False) or self.amount <= 0:
+            return
+        if getattr(card, "card_type", None) != CardType.ATTACK:
+            return
+        from actions.autoplay import queue_replay
+        queue_replay(card)
+        self.amount -= 1
+        if self.owner is not None and self.amount <= 0:
+            self.owner.remove_power(self.name)

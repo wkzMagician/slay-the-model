@@ -4,6 +4,9 @@ Includes global relics (available to all characters) and character-specific reli
 """
 
 from .global_relics import (
+    GamblingChip,
+    IncenseBurner,
+    WingBoots,
     Akabeko,
     Anchor,
     AncientTeaSet,

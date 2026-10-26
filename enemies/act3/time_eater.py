@@ -75,8 +75,11 @@ class TimeEater(Enemy):
         reverberate_count = 0
         head_slam_count = 0
         ripple_count = 0
+        last_move = self.history_intentions[-1] if self.history_intentions else None
         
         for move in reversed(self.history_intentions):
+            if move != last_move:
+                break
             if move == "Reverberate":
                 reverberate_count += 1
             elif move == "Head Slam":

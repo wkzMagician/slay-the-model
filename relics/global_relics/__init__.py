@@ -72,6 +72,9 @@ from .uncommon import (
 )
 
 from .rare import (
+    GamblingChip,
+    IncenseBurner,
+    WingBoots,
     BirdFacedUrn,
     Calipers,
     CaptainsWheel,
@@ -180,6 +183,7 @@ __all__ = [
     'MummifiedHand', 'OrnamentalFan', 'Pantograph', 'PaperPhrog', 'Pear', 'QuestionCard',
     'SelfFormingClay', 'Shuriken', 'SingingBowl', 'StrikeDummy', 'Sundial', 'TheCourier',
     'ToxicEgg', 'WhiteBeastStatue',
+    'GamblingChip', 'IncenseBurner', 'WingBoots',
     'BirdFacedUrn', 'Calipers', 'CaptainsWheel', 'DeadBranch', 'DuVuDoll', 'FossilizedHelix',
     'Ginger', 'Girya', 'IceCream', 'LizardTail', 'Mango', 'OldCoin', 'PeacePipe',
     'Pocketwatch', 'PrayerWheel', 'Shovel', 'StoneCalendar', 'ThreadAndNeedle', 'Torii',

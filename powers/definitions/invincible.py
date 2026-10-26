@@ -16,6 +16,7 @@ class InvinciblePower(Power):
     stack_type = StackType.INTENSITY
     is_buff = True
     modify_phase = DamagePhase.CAPPING
+    damage_is_runtime = True
 
     def __init__(self, amount: int = 300, duration: int = -1, owner=None):
         super().__init__(amount=amount, duration=duration, owner=owner)

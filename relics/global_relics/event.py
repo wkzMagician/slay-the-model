@@ -150,7 +150,8 @@ class Necronomicon(Relic):
         if self._attack_cost_paid(card) < 2:
             return
         self.double_attack_played = True
-        card.on_play(targets=list(targets or []))
+        from actions.autoplay import queue_replay
+        queue_replay(card)
 @register("relic")
 class NilrysCodex(Relic):
     """At end of each turn, you can choose 1 of 3 random Cards to shuffle into your Drawpile."""

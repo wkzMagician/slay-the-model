@@ -53,18 +53,24 @@ class Whirlwind(Card):
             times += 2
 
         actions = []
+        from utils.dynamic_values import resolve_potential_damage
         for enemy in combat.enemies:
             if enemy.hp <= 0:
                 continue
+            damage = resolve_potential_damage(
+                self.damage, game_state.player, enemy, card=self,
+                damage_type=DamageType.PHYSICAL, for_card_snapshot=True,
+            )
             for _ in range(times):
                 actions.append(
                     DealDamageAction(
                         target=enemy,
-                        damage=self.damage,
+                        damage=damage,
                         damage_type=DamageType.PHYSICAL,
                         card=self,
                         source=game_state.player,
                         cancel_on_source_death=False,
+                        damage_is_calculated=True,
                     )
                 )
         from engine.game_state import game_state

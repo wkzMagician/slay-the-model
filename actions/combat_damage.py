@@ -76,7 +76,7 @@ def _resolve_enemy_hp_depletion(
     """Resolve one enemy collapse before deciding permanent death notifications."""
     from enemies.base import Enemy
     from engine.game_state import game_state
-    from engine.messages import EnemyHpDepletedMessage, CreatureDiedMessage, FatalDamageMessage
+    from engine.messages import EnemyHpDepletedMessage, EnemyDefeatedMessage, CreatureDiedMessage, FatalDamageMessage
 
     if not isinstance(target, Enemy) or previous_hp <= 0 or target.hp > 0:
         return
@@ -91,6 +91,10 @@ def _resolve_enemy_hp_depletion(
     enemy_target.on_hp_depleted()
     publish_message(EnemyHpDepletedMessage(
         creature=enemy_target, source=source, card=card, damage_type=damage_type,
+        half_dead=enemy_target.half_dead,
+    ))
+    publish_message(EnemyDefeatedMessage(
+        target=enemy_target, source=source, card=card,
         half_dead=enemy_target.half_dead,
     ))
     enemy_target.after_hp_depleted()
@@ -158,6 +162,8 @@ def _resolve_player_hp_depletion(
 class HealAction(Action):
     """Heal a creature for a specified amount or percentage."""
 
+    preserve_after_combat = True
+
     def __init__(self, amount: int | None = None, percent: float | None = None, target: Creature | None = None):
         self.amount = amount
         self.percent = percent
@@ -204,6 +210,8 @@ class HealAction(Action):
 @register("action")
 class LoseHPAction(Action):
     """Make a creature lose HP without interacting with block."""
+
+    preserve_after_combat = True
 
     def __init__(self, amount: int | None = None, percent: float | None = None, target: Creature | None = None, card=None, source=None):
         self.amount = amount
@@ -277,18 +285,23 @@ class LoseHPAction(Action):
                 lose_target, old_hp, lost, source=self.source, card=self.card,
                 damage_type=DamageType.HP_LOSS,
             )
+            from actions.combat_cleanup import clear_post_combat_actions_if_finished
+            clear_post_combat_actions_if_finished()
 
 
 @register("action")
 class DealDamageAction(Action):
     """Deal damage to a target creature."""
 
-    def __init__(self, damage: int, target: Creature, damage_type: str | DamageType = DamageType.MAGICAL, card=None, source=None, direct: bool | None = None, *, cancel_on_source_death: bool | None = None):
+    preserve_after_combat = True
+
+    def __init__(self, damage: int, target: Creature, damage_type: str | DamageType = DamageType.MAGICAL, card=None, source=None, direct: bool | None = None, *, cancel_on_source_death: bool | None = None, damage_is_calculated: bool = False):
         self.damage = damage
         self.target = target
         self.damage_type = _normalize_damage_type(damage_type, direct=bool(direct))
         self.card = card
         self.source = source
+        self.damage_is_calculated = damage_is_calculated
         # Ordinary single-target attacks follow DamageAction's source guard.
         # AoE producers opt out; magical/orb/power effects have other contracts.
         self.cancel_on_source_death = (
@@ -323,20 +336,22 @@ class DealDamageAction(Action):
             PhysicalAttackDealtMessage,
             PhysicalAttackTakenMessage,
         )
-        from utils.dynamic_values import resolve_potential_damage
+        from utils.dynamic_values import resolve_calculated_damage, resolve_potential_damage
 
         if not self.target or self.target.is_dead():
             return
         if self.should_cancel_source():
             return
 
-        damage_amount = resolve_potential_damage(
-            self.damage,
-            self.source,
-            self.target,
-            card=self.card,
-            damage_type=self.damage_type,
-        )
+        if getattr(self, "damage_is_calculated", False):
+            damage_amount = resolve_calculated_damage(
+                self.damage, self.source, self.target, self.damage_type,
+            )
+        else:
+            damage_amount = resolve_potential_damage(
+                self.damage, self.source, self.target,
+                card=self.card, damage_type=self.damage_type,
+            )
 
         block_absorbed = min(self.target.block, damage_amount)
         hp_loss = damage_amount - block_absorbed
@@ -419,11 +434,15 @@ class DealDamageAction(Action):
                 self.target, damage_dealt, source=self.source,
                 card=self.card, damage_type=self.damage_type,
             )
+        from actions.combat_cleanup import clear_post_combat_actions_if_finished
+        clear_post_combat_actions_if_finished()
 
 
 @register("action")
 class GainBlockAction(Action):
     """Gain block for a creature."""
+
+    preserve_after_combat = True
 
     def __init__(
         self,

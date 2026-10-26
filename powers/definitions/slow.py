@@ -21,6 +21,7 @@ class SlowPower(Power):
     name = "Slow"
     description = "Whenever you play a card, receive 10% more damage from Attacks this turn."
     stack_type = StackType.INTENSITY
+    observes_all_player_card_plays = True
     is_buff = False  # Debuff from enemy's perspective (more damage taken)
     
     def __init__(self, amount: int = 0, duration: int = -1, owner=None):

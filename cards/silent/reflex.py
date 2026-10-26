@@ -18,7 +18,7 @@ class Reflex(Card):
 
     upgrade_magic = {"draw": 3}
 
-    def on_discard(self):
+    def on_discard(self, card):
         from engine.runtime_api import add_actions
 
         add_actions([DrawCardsAction(count=self.get_magic_value("draw"))])

@@ -76,7 +76,7 @@ class SquareOfProtection(Intention):
         # This is handled by checking ascension in the Deca class
         if hasattr(self.enemy, '_add_plated_armor') and self.enemy._add_plated_armor:
             actions.append(ApplyPowerAction(
-                power="plated_armor",
+                power="PlatedArmor",
                 target=self.enemy,
                 amount=3
             ))

@@ -76,7 +76,10 @@ def test_regular_and_unknown_treasure_do_not_become_boss_chests(state, monkeypat
             monkeypatch.setattr(manager, '_resolve_unknown_type', lambda floor: RoomType.TREASURE)
             room = manager._create_room_instance(RoomType.UNKNOWN, floor_in_act=floor)
         else:
-            room = manager.move_to_node(floor, 0)
+            # This test covers room creation,not movement from floor zero.
+            node = manager.map_data.get_node(floor, 0)
+            assert node is not None
+            room = manager._create_room_instance(node.room_type, floor_in_act=floor)
         assert isinstance(room, TreasureRoom)
         treasure = cast(TreasureRoom, room)
         treasure.init()
@@ -89,6 +92,7 @@ def test_regular_and_unknown_treasure_do_not_become_boss_chests(state, monkeypat
 ])
 def test_final_acts_have_no_boss_treasure_and_a20_selects_two_bosses(state, monkeypatch, act, ascension, boss_floors, victory_floor):
     state.ascension = ascension
+    state.current_act = act
     manager = MapManager(seed=42, act_id=act)
     data = manager.generate_map()
     assert all(node.room_type != RoomType.TREASURE for row in data.nodes[16:] for node in row)
@@ -98,6 +102,10 @@ def test_final_acts_have_no_boss_treasure_and_a20_selects_two_bosses(state, monk
         return [], 'test boss'
     monkeypatch.setattr(manager.encounter_pool, 'get_boss_encounter', encounter)
     start = manager._get_act_start_floor(act)
+    # Arrive through a real connection before exercising the final-floor route.
+    previous_floor = boss_floors[0] - 1
+    previous = next(node for node in data.nodes[previous_floor] if 0 in node.connections_up)
+    data.set_current_position(previous_floor, previous.position)
     for floor in boss_floors:
         assert isinstance(manager.move_to_node(start + floor, 0), CombatRoom)
     assert indexes == list(range(len(boss_floors)))

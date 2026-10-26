@@ -10,6 +10,8 @@ from tui.print_utils import tui_print
 class Action(Localizable):
     """Base action class - executable game logic unit"""
 
+    preserve_after_combat = False
+
     def __init__(self) -> None:
         super().__init__()
 

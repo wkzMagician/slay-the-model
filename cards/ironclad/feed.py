@@ -1,10 +1,6 @@
 """
 Ironclad Rare Attack card - Feed
 """
-from engine.runtime_api import add_action, add_actions
-
-from typing import List
-from actions.base import Action
 from cards.base import Card
 from entities.creature import Creature
 from utils.dynamic_values import get_magic_value
@@ -30,19 +26,17 @@ class Feed(Card):
 
     def on_fatal(self, damage: int, target: Creature, source=None, card: Card | None = None, damage_type: str = "direct"):
         """When this card kills an enemy, gain max HP"""
-        from engine.game_state import game_state
         from actions.combat import ModifyMaxHpAction
 
         if card is not self or target is None or getattr(target, "is_minion", False):
             return
 
-        actions = []
         max_hp_gain = get_magic_value(
             self,
             "max_hp",
             get_magic_value(self, "max_health_gain"),
         )
-        actions.append(ModifyMaxHpAction(amount=max_hp_gain))
-        from engine.game_state import game_state
-        add_actions(actions)
+        # FeedAction raises HP inside the damage action, before post-combat
+        # queue cleanup. Queuing this reward would discard a final-kill gain.
+        ModifyMaxHpAction(amount=max_hp_gain).execute()
         return

@@ -28,7 +28,12 @@ class ModifyMaxHpAction(Action):
         from engine.game_state import game_state
 
         if game_state.player:
-            game_state.player.max_hp += self.amount
+            player = game_state.player
+            old_max_hp = player.max_hp
+            player.max_hp += self.amount
+            gained = player.max_hp - old_max_hp
+            if gained > 0:
+                HealAction(amount=gained, target=player).execute()
             print(t("ui.max_hp_changed", default=f"Max HP changed by {self.amount}!", amount=self.amount))
 
 
@@ -97,6 +102,8 @@ class EndTurnAction(Action):
         if game_state.current_combat is None:
             return
         game_state.current_combat.combat_state.current_phase = "player_end"
+        from actions.card_play_lifecycle import cancel_pending_card_plays
+        cancel_pending_card_plays()
         print(t("combat.end_turn"))
 
 

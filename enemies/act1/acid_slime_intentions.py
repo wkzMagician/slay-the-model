@@ -179,12 +179,12 @@ class SplitIntention(Intention):
             from enemies.act1.spike_slime import SpikeSlimeS
             
             acid_m = AcidSlimeM()
-            acid_m.hp = current_hp
             acid_m.max_hp = current_hp
+            acid_m.hp = current_hp
             
             spike_s = SpikeSlimeS()
-            spike_s.hp = current_hp
             spike_s.max_hp = current_hp
+            spike_s.hp = current_hp
             
             actions.append(AddEnemyAction(enemy=acid_m))
             actions.append(AddEnemyAction(enemy=spike_s))

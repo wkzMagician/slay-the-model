@@ -718,6 +718,20 @@ class MapManager:
     def has_ssserpent_head(self) -> bool:
         return self._player_has_relic("ssserpent_head") or self._player_has_relic("ssserpenthead")
     
+    def _wing_boots(self):
+        return next((relic for relic in self._get_player_relics()
+                     if getattr(relic, "idstr", None) == "WingBoots"
+                     and getattr(relic, "charges", 0) > 0), None)
+
+    def _can_move_to(self, node: MapNode) -> bool:
+        current = self.map_data.get_current_node()
+        return (
+            current is not None
+            and node.floor == self._get_act_start_floor(self.act_id) + self.map_data.current_floor + 1
+            and (node.position in current.connections_up
+                 or (bool(current.connections_up) and self._wing_boots() is not None))
+        )
+
     def get_available_moves(self) -> List[MapNode]:
         """
         Get all nodes that can be moved to from the current position.
@@ -728,23 +742,19 @@ class MapManager:
         if self.map_data.current_floor >= len(self.map_data.nodes) - 1:
             return []
         
-        current_node = self.map_data.get_current_node()
-        available_nodes = []
-        
         next_floor = self.map_data.current_floor + 1
-        is_boss_floor = next_floor >= len(self.map_data.nodes) - 1
-        
-        if current_node:
-            for pos in current_node.connections_up:
-                if next_floor < len(self.map_data.nodes):
-                    try:
-                        node = self.map_data.get_node(next_floor, pos)
-                        # Include all connected nodes - dead ends will be handled by game flow
-                        available_nodes.append(node)
-                    except IndexError:
-                        pass
-        
-        return available_nodes
+        current = self.map_data.get_current_node()
+        if current is None:
+            return []
+        available = []
+        for position in current.connections_up:
+            node = self.map_data.get_node(next_floor, position)
+            if node is not None and self._can_move_to(node):
+                available.append(node)
+        if self._wing_boots() is not None:
+            available.extend(node for node in self.map_data.nodes[next_floor]
+                             if node.position not in current.connections_up and self._can_move_to(node))
+        return available
     
     def move_to_node(self, floor: int, position: int):
         """
@@ -760,13 +770,18 @@ class MapManager:
         act_start_floor = self._get_act_start_floor(self.act_id)
         floor_in_act = floor - act_start_floor
         node = self.map_data.get_node(floor_in_act, position)
-        assert node is not None
+        if node is None or not self._can_move_to(node):
+            raise ValueError("Destination must be an available node on the next floor")
+        current = self.map_data.get_current_node()
+        boots = self._wing_boots() if current is not None and position not in current.connections_up else None
         
         # Create room instance based on room type
         room = self._create_room_instance(node.room_type, floor_in_act=floor_in_act)
         
         # Update current position
         self.map_data.set_current_position(floor_in_act, position)
+        if boots is not None:
+            boots.charges -= 1
         
         return room
     

@@ -113,12 +113,12 @@ class SplitIntention(Intention):
             from enemies.act1.spike_slime import SpikeSlimeM
             
             slime_m1 = SpikeSlimeM()
-            slime_m1.hp = current_hp
             slime_m1.max_hp = current_hp
+            slime_m1.hp = current_hp
             
             slime_m2 = SpikeSlimeM()
-            slime_m2.hp = current_hp
             slime_m2.max_hp = current_hp
+            slime_m2.hp = current_hp
             
             actions.append(AddEnemyAction(enemy=slime_m1))
             actions.append(AddEnemyAction(enemy=slime_m2))

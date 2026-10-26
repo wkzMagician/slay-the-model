@@ -1,4 +1,5 @@
 ui:
+  gambling_chip_choose: Choose any cards to discard and redraw, or skip.
   selection_locked: "Locked: {name}"
   selection_disabled: "This option is locked. Choose an available option."
   selection_duplicate: "Select each option only once."
@@ -2669,6 +2670,16 @@ relics:
   UnceasingTop:
     name: Unceasing Top
     description: Whenever you have no Cards in hand during your turn, draw a Card.
+  GamblingChip:
+    name: Gambling Chip
+    description: At the start of each combat, discard any number of cards, then draw that many cards.
+  IncenseBurner:
+    name: Incense Burner
+    description: Every 6 turns, gain 1 Intangible. The counter carries between combats.
+  WingBoots:
+    name: Wing Boots
+    description: "You may ignore paths when choosing the next room. {remaining} uses remaining."
+    description_exhausted: You have used all 3 path jumps.
   SneckoEye:
     name: Snecko Eye
     description: Draw 2 additional cards each turn. Start each combat Confused.

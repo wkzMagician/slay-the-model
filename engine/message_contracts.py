@@ -18,6 +18,7 @@ from engine.messages import (
     CombatStartedMessage,
     CreatureDiedMessage,
     EnemyHpDepletedMessage,
+    EnemyDefeatedMessage,
     DamageDealtMessage,
     DirectHpLossMessage,
     EliteVictoryMessage,
@@ -263,6 +264,11 @@ def _build_contracts() -> dict[type[GameMessage], MessageContract]:
             message_type=PhysicalAttackDealtMessage,
             param_names=("damage", "target", "source", "card", "damage_type"),
             binder=_bind(_AMOUNT, _TARGET, _SOURCE, _CARD, _DAMAGE_TYPE),
+        ),
+        EnemyDefeatedMessage: MessageContract(
+            message_type=EnemyDefeatedMessage,
+            param_names=("target",),
+            binder=_bind(_TARGET),
         ),
         CreatureDiedMessage: MessageContract(
             message_type=CreatureDiedMessage,

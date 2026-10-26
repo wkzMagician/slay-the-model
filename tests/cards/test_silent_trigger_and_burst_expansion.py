@@ -1,4 +1,5 @@
 from actions.combat_cards import PlayCardBHAction
+from actions.card import DiscardCardAction
 from cards.silent.endless_agony import EndlessAgony
 from cards.silent.escape_plan import EscapePlan
 from cards.silent.phantasmal_killer import PhantasmalKiller
@@ -37,8 +38,7 @@ class TestSilentTriggerAndBurstExpansion:
         self.player.card_manager.add_to_pile(Strike(), 'draw_pile', PilePosType.TOP)
         card = Reflex()
         self.helper.add_card_to_hand(card)
-        self.helper.game_state.player.card_manager.move_to(card, 'discard_pile', src='hand')
-        card.on_discard()
+        self.helper.game_state.add_action(DiscardCardAction(card, source_pile='hand'))
         self.helper.game_state.drive_actions()
         assert len(self.player.card_manager.get_pile('hand')) == 2
 
@@ -48,8 +48,7 @@ class TestSilentTriggerAndBurstExpansion:
         self.helper.start_combat([])
         card = Tactician()
         self.helper.add_card_to_hand(card)
-        self.helper.game_state.player.card_manager.move_to(card, 'discard_pile', src='hand')
-        card.on_discard()
+        self.helper.game_state.add_action(DiscardCardAction(card, source_pile='hand'))
         self.helper.game_state.drive_actions()
         assert self.player.energy == 4
 

@@ -1,7 +1,6 @@
 """
 Colorless Rare Attack card - Hand of Greed
 """
-from engine.runtime_api import add_actions
 from actions.reward import AddGoldAction
 from cards.base import Card
 from utils.registry import register
@@ -28,9 +27,6 @@ class HandOfGreed(Card):
         if card is not self or target is None:
             return
 
-        actions = []
-
         gold_amount = self.get_magic_value("gold_on_kill")
-        actions.append(AddGoldAction(amount=gold_amount))
-
-        add_actions(actions)
+        # GreedAction gains gold before clearing post-combat queued actions.
+        AddGoldAction(amount=gold_amount).execute()

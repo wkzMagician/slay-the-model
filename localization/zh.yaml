@@ -1,4 +1,5 @@
 ui:
+  gambling_chip_choose: 选择任意数量的手牌弃掉并补抽，也可以不换牌。
   selection_locked: "已锁定：{name}"
   selection_disabled: "此选项已锁定，请选择可用选项。"
   selection_duplicate: "同一选项只能选择一次。"
@@ -2631,6 +2632,16 @@ relics:
   UnceasingTop:
     name: 不休陀螺
     description: 回合期间手中没有卡牌时，抽一张牌。
+  GamblingChip:
+    name: 筹码
+    description: 每场战斗首次抽牌后，可以弃掉任意数量的手牌，再抽取相同数量的牌。
+  IncenseBurner:
+    name: 香炉
+    description: 每累计 6 个回合，获得 1 回合无实体。计数跨战斗保留。
+  WingBoots:
+    name: 羽翼之靴
+    description: "选择下一层房间时可以忽略路径连接，还可使用 {remaining} 次。"
+    description_exhausted: 已用完 3 次跨路径移动。
   SneckoEye:
     name: 异蛇之眼
     description: 每回合多抽 2 张牌。每场战斗开始时混乱。

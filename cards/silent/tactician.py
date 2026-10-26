@@ -18,7 +18,7 @@ class Tactician(Card):
 
     upgrade_magic = {"energy": 2}
 
-    def on_discard(self):
+    def on_discard(self, card):
         from engine.runtime_api import add_actions
 
         add_actions([GainEnergyAction(energy=self.get_magic_value("energy"))])

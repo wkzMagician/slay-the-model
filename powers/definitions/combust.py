@@ -34,7 +34,7 @@ class CombustPower(Power):
         player = game_state.player
         actions = []
         
-        actions.append(LoseHPAction(damage=1, target=player))
+        actions.append(LoseHPAction(amount=1, target=player, source=self.owner))
 
         if game_state.current_combat:
             enemies = game_state.current_combat.enemies

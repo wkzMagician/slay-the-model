@@ -12,6 +12,7 @@ class ChokePower(Power):
     name = "Choke"
     description = "Whenever you play a card this turn, take damage."
     stack_type = StackType.INTENSITY
+    observes_all_player_card_plays = True
     is_buff = False
 
     def __init__(self, amount: int = 3, duration: int = 1, owner=None):

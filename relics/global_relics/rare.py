@@ -17,6 +17,68 @@ from utils.types import DamageType
 # to avoid circular import between actions.reward -> relics.base -> relics.global_relics.rare
 
 @register("relic")
+class GamblingChip(Relic):
+    """Once per combat, replace any cards after the opening draw."""
+
+    def __init__(self):
+        super().__init__()
+        self.rarity = RarityType.RARE
+        self._opening_choice_used = False
+
+    def on_combat_start(self, floor: int):
+        self._opening_choice_used = False
+
+    def on_player_turn_post_draw(self):
+        if not self._opening_choice_used:
+            from actions.card_choice import GamblingChipAction
+
+            self._opening_choice_used = True
+            add_action(GamblingChipAction())
+
+
+@register("relic")
+class IncenseBurner(Relic):
+    """Every sixth player turn grants one round of Intangible."""
+
+    counter_field = "counter"
+    counter_limit = 6
+
+    def __init__(self):
+        super().__init__()
+        self.rarity = RarityType.RARE
+        self.counter = 0
+
+    def on_player_turn_start(self):
+        self.counter += 1
+        if self.counter == 6:
+            from engine.game_state import game_state
+
+            self.counter = 0
+            player = game_state.player
+            if player is not None:
+                add_action(ApplyPowerAction("Intangible", player, amount=1, duration=1))
+
+
+@register("relic")
+class WingBoots(Relic):
+    """Ignore an absent connection to the next floor up to three times."""
+
+    counter_field = "charges"
+    counter_kind = "remaining"
+    dynamic_remaining = True
+
+    def __init__(self):
+        super().__init__()
+        self.rarity = RarityType.RARE
+        self.charges = 3
+
+    def can_spawn(self) -> bool:
+        from engine.game_state import game_state
+
+        return game_state.current_floor <= 40
+
+
+@register("relic")
 class BirdFacedUrn(Relic):
     """Whenever you play a Power card, heal 2 HP."""
     
@@ -293,8 +355,8 @@ class PrayerWheel(Relic):
         super().__init__()
         self.rarity = RarityType.RARE
 
-    def modify_card_reward_count(self, base_count: int, combat_type: str) -> int:
-        """Add an additional card reward for normal enemies"""
+    def modify_card_reward_amount(self, base_count: int, combat_type: str) -> int:
+        """Add a separate card reward for normal enemies."""
         if combat_type == "normal":
             return base_count + 1
         return base_count

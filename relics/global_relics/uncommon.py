@@ -3,6 +3,8 @@ Uncommon Global Relics
 Global relics available to all characters at uncommon rarity.
 """
 from engine.runtime_api import add_action, add_actions
+from engine.messages import EnemyDefeatedMessage
+from engine.subscriptions import MessagePriority, subscribe
 from typing import List
 from actions.base import Action, LambdaAction
 from actions.card import DrawCardsAction
@@ -179,9 +181,10 @@ class GremlinHorn(Relic):
         super().__init__()
         self.rarity = RarityType.UNCOMMON
     
-    def on_damage_dealt(self, damage, target, source=None, card=None, damage_type="direct"):
-        """When an enemy dies, gain energy and draw card"""
-        if target.is_dead() and self.alive_enemies():
+    @subscribe(EnemyDefeatedMessage, priority=MessagePriority.PLAYER_RELIC)
+    def on_enemy_defeated(self, target):
+        """Reward each collapse while the battle has enemies remaining."""
+        if target.hp == 0 and self.alive_enemies():
             add_actions(
             [
                 GainEnergyAction(energy=1),

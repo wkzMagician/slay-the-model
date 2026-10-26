@@ -63,6 +63,10 @@ class Room(Localizable):
 
         # Clear global action queue
         game_state.action_queue.clear()
+        game_state.pending_card_plays = []
+        game_state.active_card_plays = []
+        if player is not None:
+            player.card_manager.piles.setdefault("limbo", []).clear()
 
         # Clear event stack in game state
         game_state.event_stack.clear()

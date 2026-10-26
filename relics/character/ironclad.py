@@ -39,26 +39,34 @@ class RedSkull(Relic):
         
     def on_combat_start(self, floor: int):
         self.strength_applied = False
+        # The original checks HP when its battle-start action resolves, after
+        # any earlier opening relic actions, rather than when it is queued.
+        add_action(LambdaAction(self._apply_opening_strength))
+
+    def _apply_opening_strength(self):
         from engine.game_state import game_state
         player = game_state.player
-        if player is None:
+        combat = game_state.current_combat
+        if player is None or combat is None or combat.combat_ended:
             return
-        # Check if HP is already <= 50% at combat start
-        if player.hp <= player.max_hp // 2:
+        if not self.strength_applied and player.hp <= player.max_hp // 2:
             self.strength_applied = True
-            add_actions([ApplyPowerAction(StrengthPower(amount=3, owner=player), player)])
-            return
-        return
+            player.add_power(StrengthPower(amount=3, owner=player))
+
+    def on_combat_end(self):
+        self.strength_applied = False
+
     def on_any_hp_lost(self, amount, source=None, card=None):
         """Check if HP dropped to 50% or below"""
         from engine.game_state import game_state
 
         player = game_state.player
-        if player is None:
+        combat = game_state.current_combat
+        if player is None or combat is None or combat.combat_ended:
             return
         if not self.strength_applied and amount > 0 and player.hp <= player.max_hp // 2:
             self.strength_applied = True
-            add_actions([ApplyPowerAction(StrengthPower(amount=3, owner=player), player)])
+            add_action(ApplyPowerAction(StrengthPower(amount=3, owner=player), player), to_front=True)
             return
         return
     def on_heal(self, amount, source=None):
@@ -68,11 +76,14 @@ class RedSkull(Relic):
         if player is None:
             return
         if self.strength_applied:
-            # Calculate HP after heal (before actual HP change)
+            # The HealedMessage binder temporarily restores previous_hp for
+            # legacy on_heal hooks, so compute the post-heal HP here.
             new_hp = min(player.hp + amount, player.max_hp)
             if new_hp > player.max_hp // 2:
                 self.strength_applied = False
-                add_actions([ApplyPowerAction(StrengthPower(amount=-3, owner=player), player)])
+                combat = game_state.current_combat
+                if combat is not None and not combat.combat_ended:
+                    add_action(ApplyPowerAction(StrengthPower(amount=-3, owner=player), player), to_front=True)
                 return
         return
 # PaperPhrog removed - duplicate of PaperPhrog in global_relics/uncommon.py

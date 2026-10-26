@@ -1,4 +1,5 @@
 from cards.ironclad.strike import Strike
+from enemies.act1.cultist import Cultist
 from cards.defect.zap import Zap
 from engine.game_state import game_state
 from powers.definitions.mayhem import MayhemPower
@@ -7,7 +8,11 @@ from utils.types import PilePosType
 
 
 def test_mayhem_power_uses_draw_pile_on_turn_start():
-    card_manager = game_state.player.card_manager
+    helper = create_test_helper()
+    player = helper.create_player()
+    player.base_draw_count = 0
+    helper.start_combat([Cultist()])
+    card_manager = player.card_manager
     card_manager.get_pile("draw_pile").clear()
     card_manager.get_pile("hand").clear()
     top_card = Strike()
@@ -18,8 +23,9 @@ def test_mayhem_power_uses_draw_pile_on_turn_start():
     game_state.action_queue.clear()
     power.on_turn_start()
 
-    assert len(game_state.action_queue.queue) == 1
-    assert getattr(game_state.action_queue.queue[0], "card", None) is top_card
+    assert game_state.drive_actions() is None
+    assert card_manager.get_card_location(top_card) == "discard_pile"
+    assert top_card not in card_manager.get_pile("hand")
 
 
 def test_mayhem_plays_top_card_before_normal_turn_draw():

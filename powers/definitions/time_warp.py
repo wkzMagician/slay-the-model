@@ -24,6 +24,7 @@ class TimeWarpPower(Power):
     name = "Time Warp"
     description = "Whenever you play 12 cards, end your turn and gain 1 Strength."
     stack_type = StackType.INTENSITY
+    observes_all_player_card_plays = True
     is_buff = True
     localization_prefix = "powers"
     localizable_fields = ("name", "description")

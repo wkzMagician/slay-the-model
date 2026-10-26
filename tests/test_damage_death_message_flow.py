@@ -67,7 +67,9 @@ def test_deal_damage_action_publishes_creature_died_message(monkeypatch):
     helper = create_test_helper()
     player = helper.create_player(hp=80, max_hp=80, energy=3)
     enemy = helper.create_enemy(FungiBeast, hp=1)
-    helper.start_combat([enemy])
+    # Keep combat running: the final kill clears queued Spore Cloud debuffs.
+    anchor = helper.create_enemy(Cultist, hp=100)
+    helper.start_combat([enemy, anchor])
 
     published = _capture_published_message_types(helper.game_state, monkeypatch)
 

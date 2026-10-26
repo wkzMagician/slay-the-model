@@ -489,6 +489,47 @@ class ChooseDiscardCardAction(Action):
         )
 
 @register("action")
+class GamblingChipAction(Action):
+    """Choose any opening cards, discard the whole selection, then refill."""
+
+    def execute(self) -> None:
+        from actions.base import LambdaAction
+        from actions.card_lifecycle import DiscardCardAction, DrawCardsAction
+        from actions.display import InputRequestAction
+        from engine.game_state import game_state
+
+        player = game_state.player
+        if player is None:
+            return
+        hand = player.card_manager.get_pile("hand")
+        if not hand:
+            return
+        selected: list[Card] = []
+
+        def replace_selected():
+            cards = [card for card in selected if card in player.card_manager.get_pile("hand")]
+            if cards:
+                add_actions([
+                    *[DiscardCardAction(card, source_pile="hand") for card in cards],
+                    DrawCardsAction(len(cards)),
+                ], to_front=True)
+
+        options = [
+            Option(card.info(), [LambdaAction(lambda card=card: selected.append(card))])
+            for card in list(hand)
+        ]
+        add_actions([
+            InputRequestAction(
+                title=LocalStr("ui.gambling_chip_choose"),
+                options=options,
+                max_select=-1,
+                must_select=False,
+            ),
+            LambdaAction(replace_selected),
+        ], to_front=True)
+
+
+@register("action")
 class ChooseCopyCardAction(Action):
     """Choose a card to copy and add to hand
 
