@@ -413,14 +413,39 @@ def _create_boss_corrupt_heart():
     from enemies.act4.corrupt_heart import CorruptHeart
     return [CorruptHeart()]
 
+def _create_cultist():
+    from enemies.act1.cultist import Cultist
+    return [Cultist()]
+
+
+def _create_jaw_worm():
+    from enemies.act1.jaw_worm import JawWorm
+    return [JawWorm()]
+
+
+def _create_blue_slaver():
+    from enemies.act1.slaver import BlueSlaver
+    return [BlueSlaver()]
+
+
+def _create_red_slaver():
+    from enemies.act1.slaver import RedSlaver
+    return [RedSlaver()]
+
+
+def _create_fungi_pair():
+    from enemies.act1.fungi_beast import FungiBeast
+    return [FungiBeast(), FungiBeast()]
+
+
 class EncounterPool:
     """Manages enemy encounter selection based on game rules."""
     
     EASY_ENCOUNTER_COUNTS = {1: 3, 2: 2, 3: 2}
     
     ACT1_EASY_POOL = {
-        "Cultist": (lambda: [__import__("enemies.act1.cultist", fromlist=["Cultist"]).Cultist()], 2),
-        "Jaw Worm": (lambda: [__import__("enemies.act1.jaw_worm", fromlist=["JawWorm"]).JawWorm()], 2),
+        "Cultist": (_create_cultist, 2),
+        "Jaw Worm": (_create_jaw_worm, 2),
         "2 Louse": (_create_louse_pair, 2),
         "Small Slimes": (_create_small_slimes, 2),
     }
@@ -429,10 +454,10 @@ class EncounterPool:
         "Gang of Gremlins": (_create_gremlin_gang, 1),
         "Large Slime": (_create_large_slime, 2),
         "Swarm of Slimes": (_create_swarm_slimes, 1),
-        "Blue Slaver": (lambda: [__import__("enemies.act1.slaver", fromlist=["BlueSlaver"]).BlueSlaver()], 1),
-        "Red Slaver": (lambda: [__import__("enemies.act1.slaver", fromlist=["RedSlaver"]).RedSlaver()], 1),
+        "Blue Slaver": (_create_blue_slaver, 1),
+        "Red Slaver": (_create_red_slaver, 1),
         "3 Louse": (_create_triple_louse, 2),
-        "2 Fungi Beasts": (lambda: [__import__("enemies.act1.fungi_beast", fromlist=["FungiBeast"]).FungiBeast() for _ in range(2)], 2),
+        "2 Fungi Beasts": (_create_fungi_pair, 2),
         "Exordium Thugs": (_create_exordium_thugs, 1.5),
         "Exordium Wildlife": (_create_exordium_wildlife, 1.5),
         "Looter": (_create_looter, 2),
@@ -610,7 +635,8 @@ class EncounterPool:
         """Get a boss encounter for the current act.
         
         Args:
-            floor: Floor within act (0-indexed), expects 15 or 16 for boss floors
+            floor: Map row within act, including the extra opening row:
+                16 normally, 16/17 for Act 3 A20, or 3 for Act 4.
             boss_index: For A20 Act 3 double boss, 0=first boss, 1=second boss
         """
         from engine.game_state import game_state
@@ -618,10 +644,10 @@ class EncounterPool:
         is_act3_a20 = self.act_id == 3 and game_state.ascension >= 20
         
         if is_act3_a20:
-            if floor not in [15, 16]:
+            if floor not in [16, 17]:
                 return [], ""
         else:
-            if floor != 15:
+            if floor != (3 if self.act_id == 4 else 16):
                 return [], ""
         
         boss_names = list(self.boss_pool.keys())

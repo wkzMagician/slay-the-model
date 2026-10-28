@@ -25,6 +25,8 @@ class BurningBlood(Relic):
     def on_combat_end(self):
         """Heal 6 HP at combat end"""
         from engine.game_state import game_state
+        if game_state.player.is_dead():
+            return
         add_actions([HealAction(amount=6)])
         return
 # Common Relic (Ironclad-specific)
@@ -163,6 +165,8 @@ class BlackBlood(Relic):
     def on_combat_end(self):
         """Heal 12 HP at combat end"""
         from engine.game_state import game_state
+        if game_state.player.is_dead():
+            return
         add_actions([HealAction(amount=12)])
         return
 @register("relic")

@@ -4,7 +4,7 @@ Colorless Curse card - Regret
 from engine.runtime_api import add_action, add_actions
 
 from typing import List
-from actions.base import Action
+from actions.base import Action, LambdaAction
 from actions.combat import LoseHPAction
 from cards.base import Card, COST_UNPLAYABLE
 from utils.registry import register
@@ -22,6 +22,10 @@ class Regret(Card):
     upgradeable = False
 
     def on_player_turn_end(self):
+        from actions.card_play_lifecycle import queue_turn_end_card
+        queue_turn_end_card(self, LambdaAction(self._resolve_turn_end))
+
+    def _resolve_turn_end(self):
         """Lose 1 HP for each card in hand"""
         from engine.game_state import game_state
 

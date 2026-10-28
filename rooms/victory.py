@@ -39,6 +39,7 @@ class VictoryRoom(Room):
         if game_state.current_act == 4:
             if game_state.has_all_keys:
                 self._handle_act4_transition()
+                self.should_leave = True
                 return None
             else:
                 self._handle_act3_victory()

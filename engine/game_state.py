@@ -102,6 +102,7 @@ class GameState:
         self.action_queue = ActionQueue()
         self.pending_card_plays = []
         self.active_card_plays = []
+        self.pending_turn_end_cards = []
         self.message_bus = MessageBus()
         
         # Current combat (None when not in combat)
@@ -356,6 +357,20 @@ class GameState:
                     else:
                         PlayCardAction(request.card, is_auto=True, ignore_energy=True,
                                        request=request).execute()
+                    continue
+                # Ordinary actions and their reactions precede cardQueue.
+                # Keep hand requests cancellable until the effect starts.
+                turn_end = getattr(self, "pending_turn_end_cards", [])
+                if turn_end:
+                    request = turn_end.pop(0)
+                    combat = self.current_combat
+                    finished = (combat is None or combat.combat_ended
+                                or not combat.enemies
+                                or all(enemy.is_dead() for enemy in combat.enemies))
+                    if not finished and not self.player.is_dead():
+                        hand = self.player.card_manager.get_pile("hand")
+                        if any(card is request.card for card in hand):
+                            request.effect.execute()
                     continue
                 return None
 

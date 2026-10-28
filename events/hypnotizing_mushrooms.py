@@ -11,7 +11,7 @@ from actions.display import InputRequestAction, DisplayTextAction
 from actions.card import AddCardAction
 from actions.reward import AddRelicAction
 from actions.combat import HealAction, StartFightAction
-from utils.registry import get_registered
+from enemies.act1.fungi_beast import FungiBeast
 from localization import LocalStr
 from utils.option import Option
 from engine.game_state import game_state
@@ -38,8 +38,7 @@ class HypnotizingColoredMushrooms(Event):
         ))
         
         # Create fungi beast instances for combat
-        fungi_beast_class = get_registered("enemy", 'fungi_beast')
-        fungi_beasts = [fungi_beast_class(), fungi_beast_class(), fungi_beast_class()] if fungi_beast_class else []
+        fungi_beasts = [FungiBeast(), FungiBeast(), FungiBeast()]
         
         # Build options
         options = [
@@ -49,6 +48,7 @@ class HypnotizingColoredMushrooms(Event):
                 actions=[
                     StartFightAction(
                         enemies=fungi_beasts,
+                        escape_actions=[LambdaAction(self.end_event)],
                         victory_actions=[
                             AddRelicAction(relic=OddMushroom()),
                             LambdaAction(lambda: self.end_event()),

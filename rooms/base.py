@@ -65,6 +65,7 @@ class Room(Localizable):
         game_state.action_queue.clear()
         game_state.pending_card_plays = []
         game_state.active_card_plays = []
+        game_state.pending_turn_end_cards = []
         if player is not None:
             player.card_manager.piles.setdefault("limbo", []).clear()
 

@@ -30,6 +30,9 @@ class CombatRoom(Room):
         """Initialize the combat instance"""
         from engine.game_state import game_state
 
+        if self.room_type == RoomType.BOSS and not self.enemies:
+            raise ValueError("Boss room requires a nonempty encounter")
+
         if (
             self.room_type == RoomType.ELITE
             and game_state.player is not None

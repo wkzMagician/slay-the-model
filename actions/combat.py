@@ -140,10 +140,12 @@ class StartFightAction(Action):
         enemies: List["Enemy"],
         combat_type: CombatType = CombatType.NORMAL,
         victory_actions: List[Action] | None = None,
+        escape_actions: List[Action] | None = None,
     ):
         self.enemies = enemies
         self.combat_type = combat_type
         self.victory_actions = victory_actions or []
+        self.escape_actions = escape_actions or []
 
     def execute(self) -> None:
         from engine.combat import Combat
@@ -160,9 +162,12 @@ class StartFightAction(Action):
                 add_action(action)
             game_state.drive_actions()
             return
-        if result in {GameTerminalState.GAME_LOSE, GameTerminalState.COMBAT_ESCAPE}:
-            if result == GameTerminalState.GAME_LOSE:
-                set_terminal_state(result)
+        if result == GameTerminalState.COMBAT_ESCAPE:
+            add_actions(self.escape_actions)
+            game_state.drive_actions()
+            return
+        if result == GameTerminalState.GAME_LOSE:
+            set_terminal_state(result)
             return
 
 

@@ -26,6 +26,22 @@ class CardPlayRequest:
     will_exhaust: bool = False
 
 
+@dataclass
+class TurnEndCardRequest:
+    """A hand card's pending end-turn use, before it creates damage actions."""
+
+    card: "Card"
+    effect: Action
+
+
+def queue_turn_end_card(card: "Card", effect: Action) -> None:
+    from engine.game_state import game_state
+
+    if not hasattr(game_state, "pending_turn_end_cards"):
+        game_state.pending_turn_end_cards = []
+    game_state.pending_turn_end_cards.append(TurnEndCardRequest(card, effect))
+
+
 def put_in_limbo(card: "Card") -> None:
     from engine.game_state import game_state
 
@@ -131,6 +147,7 @@ def cleanup_terminal_card_plays() -> None:
     pending = list(getattr(game_state, "pending_card_plays", []))
     game_state.active_card_plays = []
     game_state.pending_card_plays = []
+    game_state.pending_turn_end_cards = []
     for request in active + pending:
         request.cancelled = True
         finalize_card_play(request, trigger_effects=False)

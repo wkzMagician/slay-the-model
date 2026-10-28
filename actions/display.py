@@ -203,10 +203,23 @@ class MenuAction(Action):
     def _save_game(self, gs):
         import os
         import pickle
+        import tempfile
 
-        save_path = os.path.join(os.path.dirname(__file__), "..", "savegame.pkl")
-        with open(save_path, "wb") as f:
-            pickle.dump(gs, f)
+        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "savegame.pkl"))
+        temporary_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="wb", dir=os.path.dirname(save_path),
+                prefix=".savegame-", suffix=".tmp", delete=False,
+            ) as f:
+                temporary_path = f.name
+                pickle.dump(gs, f)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(temporary_path, save_path)
+        finally:
+            if temporary_path is not None and os.path.exists(temporary_path):
+                os.unlink(temporary_path)
         self._emit_lines(["Game saved."])
 
     def _exit_game(self):

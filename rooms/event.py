@@ -120,6 +120,7 @@ class EventRoom(Room):
         emit_text(
             self.local("empty_pool", default="The room is quiet. Nothing happens.")
         )
+        self.should_leave = True
         return None
 
     def _select_event(self, event):

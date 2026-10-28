@@ -565,6 +565,11 @@ class Combat(Localizable):
         """
         from engine.game_state import game_state
         
+        # Revival resolves synchronously at the lethal hit. Actual death
+        # takes precedence over enemy cleanup and victory hooks.
+        if game_state.player.is_dead():
+            return GameTerminalState.GAME_LOSE
+
         # Remove dead enemies first
         self._remove_dead_enemies()
         
@@ -598,6 +603,7 @@ class Combat(Localizable):
         game_state.current_combat = self
         game_state.pending_card_plays = []
         game_state.active_card_plays = []
+        game_state.pending_turn_end_cards = []
         
         # Reset and setup combat state
         self.combat_state.reset_combat_info()

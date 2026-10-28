@@ -7,6 +7,8 @@ from utils.result_types import GameTerminalState
 
 class GameOverAction(Action):
     """Action that ends the game with a death result."""
+
+    preserve_after_combat = True
     
     def execute(self) -> None:
         """End the game."""

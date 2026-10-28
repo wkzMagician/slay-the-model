@@ -73,6 +73,7 @@ class TheColosseum(Event):
                         actions=[
                             StartFightAction(
                                 enemies=[BlueSlaver(), RedSlaver()],
+                                escape_actions=[LambdaAction(self.end_event)],
                                 victory_actions=[LambdaAction(self._finish_first_fight)],
                             )
                         ],
@@ -92,6 +93,7 @@ class TheColosseum(Event):
                         actions=[
                             StartFightAction(
                                 enemies=[Taskmaster(), GremlinNob()],
+                                escape_actions=[LambdaAction(self.end_event)],
                                 victory_actions=[
                                     AddGoldAction(amount=100),
                                     AddRandomRelicAction(rarity='rare'),

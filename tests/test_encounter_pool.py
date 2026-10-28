@@ -122,7 +122,7 @@ class TestEncounterPool(unittest.TestCase):
 
     def test_get_boss_encounter_returns_tuple(self):
         """Test getting boss encounter returns (enemies, name) tuple"""
-        result = self.pool.get_boss_encounter(floor=15)
+        result = self.pool.get_boss_encounter(floor=16)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 2)
         enemies, name = result
@@ -131,7 +131,7 @@ class TestEncounterPool(unittest.TestCase):
 
     def test_get_boss_encounter_valid_floor(self):
         """Test boss encounter for valid boss floor"""
-        enemies, name = self.pool.get_boss_encounter(floor=15)
+        enemies, name = self.pool.get_boss_encounter(floor=16)
         # Should return a boss
         self.assertGreater(len(enemies), 0)
         self.assertIn(name, self.pool.boss_pool)

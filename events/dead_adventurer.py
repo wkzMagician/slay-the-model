@@ -128,6 +128,7 @@ class DeadAdventurer(Event):
                         LambdaAction(self._count_search),
                         StartFightAction(
                             enemies=elite_enemies,
+                            escape_actions=[LambdaAction(self.end_event)],
                             victory_actions=victory_rewards
                         )
                     ]
