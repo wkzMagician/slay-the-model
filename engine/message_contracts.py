@@ -342,6 +342,12 @@ def invoke_subscription_contract(bound_method: Callable, message: GameMessage, m
     param_names = validate_bound_subscription(bound_method, type(message), resolved_method_name)
     if contract.param_names != param_names:
         return None
+    # A pickup's one-time hook belongs to that acquired instance. Other
+    # subscribers still observe every RelicObtainedMessage normally.
+    if (isinstance(message, RelicObtainedMessage)
+            and resolved_method_name == "on_obtain"
+            and getattr(bound_method, "__self__", None) is not message.relic):
+        return None
     if not contract.predicate(bound_method, message):
         return None
     return contract.binder(bound_method, message)
