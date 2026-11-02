@@ -2,7 +2,7 @@
 Snecko - Normal enemy (Act 2)
 Snake enemy that confuses the player.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.snecko_intentions import (
@@ -48,7 +48,7 @@ class Snecko(Enemy):
             return self.intentions["tail_whip"]
         
         # Normal pattern after first turn: Bite (60%), Tail Whip (40%)
-        if random.random() < 0.60:
+        if get_rng("ai").random() < 0.60:
             return self.intentions["bite"]
         else:
             return self.intentions["tail_whip"]

@@ -2,6 +2,7 @@
 Uncommon Global Relics
 Global relics available to all characters at uncommon rarity.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 from engine.messages import EnemyDefeatedMessage
 from engine.subscriptions import MessagePriority, subscribe
@@ -293,17 +294,16 @@ class Matryoshka(Relic):
             return
         from actions.reward import AddRandomRelicAction
         from engine.game_state import game_state
-        import random
 
         self.chests_to_spawn -= 1
         if chest_type == "small":
             rarity = (
                 RarityType.COMMON
-                if random.random() < 0.75
+                if get_rng("relic").random() < 0.75
                 else RarityType.UNCOMMON
             )
         elif chest_type == "medium":
-            rarity_roll = random.random()
+            rarity_roll = get_rng("relic").random()
             if rarity_roll < 0.35:
                 rarity = RarityType.COMMON
             elif rarity_roll < 0.85:
@@ -313,7 +313,7 @@ class Matryoshka(Relic):
         elif chest_type == "large":
             rarity = (
                 RarityType.COMMON
-                if random.random() < 0.25
+                if get_rng("relic").random() < 0.25
                 else RarityType.UNCOMMON
             )
         else:
@@ -402,8 +402,7 @@ class MummifiedHand(Relic):
                 if getattr(hand_card, "_cost", 0) > 0 and hand_card.cost > 0
             ]
             if hand:
-                import random
-                target_card = random.choice(hand)
+                target_card = get_rng("card_random").choice(hand)
                 target_card.cost_until_end_of_turn = 0
         return
 @register("relic")

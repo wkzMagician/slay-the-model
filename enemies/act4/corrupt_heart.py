@@ -1,6 +1,6 @@
 """Corrupt Heart - Act 4 Final Boss."""
+from engine.random_streams import get_rng
 
-import random
 from typing import Optional
 
 from enemies.act4.corrupt_heart_intentions import (
@@ -68,7 +68,7 @@ class CorruptHeart(Enemy):
             return "Buff"
 
         if self._pair_index >= len(self._pair_sequence):
-            self._pair_sequence = random.choice(
+            self._pair_sequence = get_rng("ai").choice(
                 [["Blood Shots", "Echo"], ["Echo", "Blood Shots"]]
             )
             self._pair_index = 0

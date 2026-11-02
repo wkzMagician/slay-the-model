@@ -1,13 +1,13 @@
 """
 Map manager for generating and navigating game maps.
 """
-import random
 from typing import List, Dict, TYPE_CHECKING, Optional
 from localization import t
 from utils.types import RoomType
 from .map_node import MapNode
 from .map_data import MapData
 from .encounter_pool import EncounterPool
+from engine.random_streams import RandomStreams, StreamRandom, using_streams
 
 from tui.print_utils import tui_print
 # Avoid circular import - use TYPE_CHECKING for type hints
@@ -44,7 +44,8 @@ class MapManager:
     }
     MAP_SLOT_WIDTH = 8
     
-    def __init__(self, seed: int, act_id: int = 1, deadly_events: bool = False):
+    def __init__(self, seed: int, act_id: int = 1, deadly_events: bool = False,
+                 random_streams: RandomStreams | None = None):
         """
         Initialize map manager.
         
@@ -55,12 +56,13 @@ class MapManager:
         """
         self.seed = seed
         self.act_id = act_id
-        self.rng = random.Random(seed)
+        self.random_streams = random_streams if random_streams is not None else RandomStreams(seed)
+        self.rng = self.random_streams.map_rng if random_streams is not None else StreamRandom(seed)
         self.map_data = MapData(act_id)
         self.deadly_events = deadly_events
         
         # Initialize encounter pool system
-        self.encounter_pool = EncounterPool(seed, act_id=act_id)
+        self.encounter_pool = EncounterPool(seed, act_id=act_id, streams=self.random_streams)
         
         # Track visits to each ? room type for "bad luck protection"
         # Each increment represents a visit that didn't result in that type
@@ -774,9 +776,17 @@ class MapManager:
             raise ValueError("Destination must be an available node on the next floor")
         current = self.map_data.get_current_node()
         boots = self._wing_boots() if current is not None and position not in current.connections_up else None
+
+        # Validate first, then establish this room's streams before constructing
+        # enemies, random variants, or question-room contents.
+        self.random_streams.enter_room(floor)
+        from engine.game_state import game_state
+        if getattr(game_state, "map_manager", None) is self:
+            game_state.current_floor = floor
         
         # Create room instance based on room type
-        room = self._create_room_instance(node.room_type, floor_in_act=floor_in_act)
+        with using_streams(self.random_streams):
+            room = self._create_room_instance(node.room_type, floor_in_act=floor_in_act)
         
         # Update current position
         self.map_data.set_current_position(floor_in_act, position)
@@ -1429,7 +1439,7 @@ class MapManager:
         event_chance = 100 - total_chances
         
         # Roll for encounter type
-        roll = self.rng.randint(1, 100)
+        roll = self.random_streams["event"].randint(1, 100)
         
         rolled_monster = roll <= monster_chance
         if rolled_monster:

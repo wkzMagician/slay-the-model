@@ -1,5 +1,6 @@
 import yaml
 import os
+from utils.seed import encode_seed, parse_seed_code
 
 class GameConfig:
     def __init__(self, **kwargs):
@@ -43,7 +44,22 @@ class GameConfig:
         # Set attributes explicitly
         self.mode = defaults["mode"]
         self.language = defaults["language"]
-        self.seed = defaults["seed"]
+        legacy_seed = defaults["seed"]
+        code = defaults.get("seed_code")
+        if code is not None:
+            if legacy_seed != -1:
+                raise ValueError("Specify either seed_code or seed, not both")
+            parsed = parse_seed_code(code)
+        elif isinstance(legacy_seed, str):
+            parsed = parse_seed_code(legacy_seed)
+        elif type(legacy_seed) is int and -(1 << 63) <= legacy_seed < (1 << 63):
+            parsed = None if legacy_seed == -1 else legacy_seed
+        else:
+            raise ValueError("seed must be a signed 64-bit integer or a seed code string")
+        self.seed: int = parsed if parsed is not None else -1
+        self.seed_specified: bool = parsed is not None
+        self.seed_code: str = (encode_seed(parsed) or "0") if parsed is not None else ""
+        self._seed_resolved: bool = parsed is not None
         self.character = defaults["character"]
         self.ascension = defaults["ascension"]
         self.daily_run = bool(defaults["daily_run"])
@@ -56,6 +72,15 @@ class GameConfig:
         self.human = defaults["human"]
         self.ai = defaults["ai"]
         self.debug = defaults["debug"]
+
+    def resolve_seed(self, automatic_seed: int) -> None:
+        """Resolve automatic seeds once while retaining their automatic identity."""
+        if not self._seed_resolved:
+            if type(automatic_seed) is not int or not -(1 << 63) <= automatic_seed < (1 << 63):
+                raise ValueError("Automatic seed must be a signed 64-bit integer")
+            self.seed = automatic_seed
+            self.seed_code = encode_seed(automatic_seed) or "0"
+            self._seed_resolved = True
 
     def get(self, key, default=None):
         """Dict-like access for compatibility with config.get usage.

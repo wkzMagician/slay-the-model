@@ -6,6 +6,7 @@ from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, PilePosType, RarityType
 from utils.random import get_random_card, get_random_card_reward
+from engine.random_streams import get_rng
 if TYPE_CHECKING:
     from cards.base import Card
 
@@ -309,7 +310,8 @@ class ChooseAddRandomCardAction(Action):
                 rarities=[self.rarity] if self.rarity else None,
                 card_types=[self.card_type] if self.card_type else None,
                 exclude_card_ids=selected_card_ids,  # Exclude already selected cards
-                exclude_starter=True  # Exclude STARTER rarity from rewards
+                exclude_starter=True,  # Exclude STARTER rarity from rewards
+                rng=get_rng("card" if self.pile == "deck" else "card_random"),
             )
             if not random_card:
                 continue

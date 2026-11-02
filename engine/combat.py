@@ -1,8 +1,9 @@
-﻿"""
+"""
 Combat logic class - independent from rooms.
 Can be triggered by CombatRoom or Events.
 Uses global action queue for action management.
 """
+from utils.card_display import draw_pile_display_order
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from collections import Counter
 from typing import Any, List, cast
@@ -276,7 +277,6 @@ class Combat(Localizable):
 
     def _print_combat_state(self):
         """Print detailed combat state for player feedback"""
-        import random
         from engine.game_state import game_state
         from localization import t
         from tui import get_app, is_tui_mode
@@ -328,9 +328,7 @@ class Combat(Localizable):
         for i, card in enumerate(hand):
             tui_print(f"  [{i+1}] {card.info()}")
 
-        draw_display = list(reversed(draw_pile))
-        if not has_frozen_eye:
-            random.shuffle(draw_display)
+        draw_display = draw_pile_display_order(draw_pile, reveal_order=has_frozen_eye)
         draw_text = ", ".join(card.display_name.resolve() for card in draw_display)
         discard_text = ", ".join(card.display_name.resolve() for card in discard_pile)
         tui_print(f"\n{t('ui.draw_pile', default='Draw Pile')} ({len(draw_pile)}): {draw_text}")

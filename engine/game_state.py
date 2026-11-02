@@ -6,7 +6,6 @@ Global action queue architecture:
 - Use game_state.execute_all_actions() to execute queued actions
 - No individual action queues in rooms/events/combat
 """
-import random as rd
 from typing import List, Optional
 
 from engine.input_protocol import InputRequest, InputSubmission
@@ -14,6 +13,7 @@ from engine.message_bus import MessageBus
 from engine.runtime_context import RuntimeContext
 from engine.event_pool_state import EventPoolState
 from engine.run_clock import RunClock
+from engine.random_streams import RandomStreams, using_streams
 from utils.result_types import GameTerminalState
 from config.game_config import GameConfig
 import os
@@ -44,6 +44,8 @@ class GameState:
         # Configuration
         config_path = os.path.join(os.path.dirname(__file__), "..", "config", "game_config.yaml")
         self.config = GameConfig.load(config_path)
+        self.config.resolve_seed(int(time.time()))
+        self.random_streams = RandomStreams(self.config.seed)
         
         from localization import set_language
         set_language(self.config.language)
@@ -117,14 +119,13 @@ class GameState:
         
         
         # game setup
-        if self.config.seed == -1:
-            self.config.seed = int(time.time())
-        rd.seed(self.config.seed)
-        self.event_pool_state = EventPoolState(self.config.seed)
+        self.event_pool_state = EventPoolState(self.config.seed, self.random_streams["event"])
         # character
-        self.player = create_player(self.config.character)
+        with using_streams(self.random_streams):
+            self.player = create_player(self.config.character)
         from relics.boss_pool import BossRelicPool
-        self.boss_relic_pool = BossRelicPool(self.config.seed)
+        pool_seeds = self.random_streams.initialize_relic_pool_seeds()
+        self.boss_relic_pool = BossRelicPool(self.config.seed, child_seed=pool_seeds["boss"])
         
         # temp value for select result
         self.last_select_idx = -1
@@ -307,8 +308,10 @@ class GameState:
         from map import MapManager
         
         self.event_pool_state.enter_act(self.current_act)
+        self.random_streams.enter_act(self.current_act)
         self.run_clock.start()
-        self.map_manager = MapManager(self.config.seed + self.current_act, act_id=self.current_act)
+        self.map_manager = MapManager(self.random_streams.map_seed(self.current_act),
+                                      act_id=self.current_act, random_streams=self.random_streams)
         self.map_data = self.map_manager.generate_map()
 
     def execute_all_actions(self):

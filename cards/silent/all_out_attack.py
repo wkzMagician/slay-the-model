@@ -1,6 +1,6 @@
 """Silent uncommon attack card - All Out Attack."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List
 
 from actions.card import DiscardCardAction
@@ -31,4 +31,4 @@ class AllOutAttack(Card):
         hand = list(game_state.player.card_manager.get_pile("hand"))
         if not hand:
             return
-        add_actions([DiscardCardAction(card=random.choice(hand), source_pile="hand")])
+        add_actions([DiscardCardAction(card=get_rng("card_random").choice(hand), source_pile="hand")])

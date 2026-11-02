@@ -13,11 +13,12 @@ Dynamic Enemy Initialization:
 - Support for random enemy variants (e.g., Red/Green Louse 50/50)
 - Support for initial powers/intents on enemies
 """
+from engine.random_streams import get_rng
 
 from typing import Dict, List, Tuple, Optional, Callable, Any
 from utils.types import EnemyType
 from utils.registry import register
-import random
+from engine.random_streams import RandomStreams, using_streams
 
 
 EnemyFactory = Callable[[], List[Any]]
@@ -26,7 +27,7 @@ EnemyFactory = Callable[[], List[Any]]
 def _create_louse_pair():
     """Create 2 louses, each independently 50% red or green."""
     from enemies.act1.louse import RedLouse, GreenLouse
-    rng = random.Random()
+    rng = get_rng("misc")
     louses = []
     for _ in range(2):
         if rng.random() < 0.5:
@@ -39,7 +40,7 @@ def _create_louse_pair():
 def _create_triple_louse():
     """Create 3 louses, each independently 50% red or green."""
     from enemies.act1.louse import RedLouse, GreenLouse
-    rng = random.Random()
+    rng = get_rng("misc")
     louses = []
     for _ in range(3):
         if rng.random() < 0.5:
@@ -55,7 +56,7 @@ def _create_small_slimes():
     from enemies.act1.spike_slime import SpikeSlimeM, SpikeSlimeS
     from enemies.act1.acid_slime import AcidSlimeM, AcidSlimeS
     
-    rng = random.Random()
+    rng = get_rng("misc")
     if rng.random() < 0.5:
         return [SpikeSlimeM(), AcidSlimeS()]
     else:
@@ -67,7 +68,7 @@ def _create_large_slime():
     from enemies.act1.acid_slime import AcidSlimeL
     from enemies.act1.spike_slime import SpikeSlimeL
 
-    return [AcidSlimeL()] if random.random() < 0.5 else [SpikeSlimeL()]
+    return [AcidSlimeL()] if get_rng("misc").random() < 0.5 else [SpikeSlimeL()]
 
 
 def _create_swarm_slimes():
@@ -76,7 +77,7 @@ def _create_swarm_slimes():
     from enemies.act1.acid_slime import AcidSlimeS
 
     slimes = [SpikeSlimeS() for _ in range(3)] + [AcidSlimeS() for _ in range(2)]
-    rng = random.Random()
+    rng = get_rng("misc")
     rng.shuffle(slimes)
     return slimes
 
@@ -86,7 +87,7 @@ def _create_gremlin_gang():
     from enemies.act1.gremlin import (
         FatGremlin, SneakyGremlin, MadGremlin, ShieldGremlin, GremlinWizard
     )
-    rng = random.Random()
+    rng = get_rng("misc")
 
     valid_compositions = [
         [FatGremlin, FatGremlin, SneakyGremlin, SneakyGremlin],
@@ -114,7 +115,7 @@ def _create_exordium_thugs():
     from enemies.act1.spike_slime import SpikeSlimeM
     from enemies.act1.slaver import BlueSlaver, RedSlaver
     from enemies.act1.looter import Looter
-    rng = random.Random()
+    rng = get_rng("misc")
     first_pool = [RedLouse, GreenLouse, SpikeSlimeM]
     second_pool = [BlueSlaver, RedSlaver, Looter]
     return [rng.choice(first_pool)(), rng.choice(second_pool)()]
@@ -126,7 +127,7 @@ def _create_exordium_wildlife():
     from enemies.act1.jaw_worm import JawWorm
     from enemies.act1.louse import RedLouse, GreenLouse
     from enemies.act1.spike_slime import SpikeSlimeM
-    rng = random.Random()
+    rng = get_rng("misc")
     first_pool = [FungiBeast, JawWorm]
     second_pool = [RedLouse, GreenLouse, SpikeSlimeM]
     return [rng.choice(first_pool)(), rng.choice(second_pool)()]
@@ -306,7 +307,7 @@ def _create_three_shapes():
     from enemies.act3.repulsor import Repulsor
     from enemies.act3.exploder import Exploder
     from enemies.act3.spiker import Spiker
-    rng = random.Random()
+    rng = get_rng("misc")
     pool = [Repulsor, Repulsor, Exploder, Exploder, Spiker, Spiker]
     selected = rng.sample(pool, 3)
     return [cls() for cls in selected]
@@ -317,7 +318,7 @@ def _create_four_shapes():
     from enemies.act3.repulsor import Repulsor
     from enemies.act3.exploder import Exploder
     from enemies.act3.spiker import Spiker
-    rng = random.Random()
+    rng = get_rng("misc")
     pool = [Repulsor, Repulsor, Exploder, Exploder, Spiker, Spiker]
     selected = rng.sample(pool, 4)
     return [cls() for cls in selected]
@@ -329,7 +330,7 @@ def _create_spheric_guardian_two_shapes():
     from enemies.act3.repulsor import Repulsor
     from enemies.act3.exploder import Exploder
     from enemies.act3.spiker import Spiker
-    rng = random.Random()
+    rng = get_rng("misc")
     pool = [Repulsor, Repulsor, Exploder, Exploder, Spiker, Spiker]
     selected = rng.sample(pool, 2)
     return [SphericGuardian()] + [cls() for cls in selected]
@@ -555,8 +556,9 @@ class EncounterPool:
     # Alias for backwards compatibility
     BOSS_POOL = ACT1_BOSS_POOL
 
-    def __init__(self, seed: int, act_id: int = 1):
-        self.rng = random.Random(seed)
+    def __init__(self, seed: int, act_id: int = 1, streams: RandomStreams | None = None):
+        self.random_streams = streams if streams is not None else RandomStreams(seed)
+        self.rng = self.random_streams["monster"]
         self.act_id = act_id
         self._load_act_pools(act_id)
     
@@ -616,7 +618,8 @@ class EncounterPool:
         if not selected_name:
             return [], ""
         factory, _ = available[selected_name]
-        enemies = factory()
+        with using_streams(self.random_streams):
+            enemies = factory()
         return enemies, selected_name
 
     def get_elite_encounter(self, floor, last_elite=None):
@@ -628,7 +631,8 @@ class EncounterPool:
         if not selected_name:
             return [], ""
         factory, _ = self.elite_pool[selected_name]
-        enemies = factory()
+        with using_streams(self.random_streams):
+            enemies = factory()
         return enemies, selected_name
 
     def get_boss_encounter(self, floor, boss_index=0):
@@ -664,7 +668,8 @@ class EncounterPool:
             boss_name = self.rng.choice(boss_names)
         
         factory = self.boss_pool[boss_name]
-        enemies = factory()
+        with using_streams(self.random_streams):
+            enemies = factory()
         return enemies, boss_name
 
 

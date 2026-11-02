@@ -2,9 +2,9 @@
 
 Remove a card for HP or gain gold with a high-damage attack.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -30,7 +30,7 @@ class WingStatue(Event):
         ))
         
         # Gold: 50-80 random
-        gold_amount = random.randint(50, 80)
+        gold_amount = get_rng("misc").randint(50, 80)
         
         has_10_damage_attack = any(
             card.card_type == CardType.ATTACK and card.damage >= 10

@@ -1,7 +1,7 @@
 """Bronze Orb - Minion summoned by Bronze Automaton."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
-import random
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.bronze_orb_intentions import Steal, SupportBeam, Beam
@@ -42,14 +42,14 @@ class BronzeOrb(Enemy):
         
         # First turn: use Steal (75% chance) or Beam (25%)
         if not self._has_used_steal:
-            if random.random() < 0.75:
+            if get_rng("ai").random() < 0.75:
                 self._has_used_steal = True
                 self.current_intention = self.intentions["Steal"]
                 return
         
         # After using Beam, 70% Support Beam, 30% Beam
         if last == "Beam":
-            if random.random() < 0.70:
+            if get_rng("ai").random() < 0.70:
                 self.current_intention = self.intentions["Support Beam"]
             else:
                 self._beam_count += 1

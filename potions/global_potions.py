@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 # Global Potions - Available to all characters
 from typing import List
 from actions.base import Action, LambdaAction
@@ -558,11 +559,10 @@ class SneckoOil(Potion):
         self.queue_actions(actions)
     
     def randomize_costs(self, game_state):
-        import random as rd
         # Randomize costs of cards in hand (including newly drawn cards)
         for card in game_state.player.card_manager.get_pile("hand"):
             # random: [0, 3]
-            card.cost_until_end_of_turn = rd.randint(0, 3)
+            card.cost_until_end_of_turn = get_rng("card_random").randint(0, 3)
 
 @register("potion")
 class CultistPotion(Potion):

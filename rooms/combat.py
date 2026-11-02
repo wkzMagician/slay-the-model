@@ -1,6 +1,7 @@
 """
 Combat room implementation - manages Combat instance execution.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from typing import TYPE_CHECKING, List
 
@@ -181,8 +182,7 @@ class CombatRoom(Room):
             ))
             game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
         else:
-            import random as rd
-            if rd.randint(1, 100) <= game_state.potion_drop_chance:
+            if get_rng("potion").randint(1, 100) <= game_state.potion_drop_chance:
                 actions.append(AddRandomPotionAction(
                     character=game_state.player.character
                 ))
@@ -204,11 +204,10 @@ class CombatRoom(Room):
         Elite enemy gold with random fluctuation: 25-35
         Boss gold with random fluctuation: 95-105
         """
-        import random as rd
 
         if self.room_type == RoomType.BOSS:
-            return rd.randint(95, 105)
+            return get_rng("misc").randint(95, 105)
         elif self.room_type == RoomType.ELITE:
-            return rd.randint(25, 35)
+            return get_rng("treasure").randint(25, 35)
         else:
-            return rd.randint(10, 20)
+            return get_rng("treasure").randint(10, 20)

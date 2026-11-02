@@ -1,6 +1,6 @@
+from engine.random_streams import get_rng
 from cards.base import Card
 import engine.game_state as game_state_module
-import random
 from utils.registry import register
 from utils.types import CardType, RarityType, TargetType
 
@@ -25,4 +25,4 @@ class LessonLearned(Card):
             if candidate.can_upgrade()
         ]
         if candidates:
-            random.choice(candidates).upgrade()
+            get_rng("misc").choice(candidates).upgrade()

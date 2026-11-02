@@ -3,9 +3,9 @@
 A risk/reward event where you search for loot with increasing chance of elite ambush.
 Elite encounter probability: 0% -> 25% -> 50% -> 75% per search (A15+: 10% -> 35% -> 60% -> 85%)
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -33,7 +33,7 @@ class DeadAdventurer(Event):
         self.found_gold = False
         self.found_relic = False
         self.found_nothing = False
-        self.elite_type = random.choice(['gremlin_nob', 'lagavulin', 'sentries'])
+        self.elite_type = get_rng("misc").choice(['gremlin_nob', 'lagavulin', 'sentries'])
     
     def _get_elite_chance(self) -> int:
         """Get elite encounter chance based on search count."""
@@ -70,7 +70,7 @@ class DeadAdventurer(Event):
         if not available_rewards:
             return [DisplayTextAction(text_key='events.dead_adventurer.nothing')]
         
-        reward = random.choice(available_rewards)
+        reward = get_rng("misc").choice(available_rewards)
         actions = []
         
         if reward == 'gold':
@@ -105,7 +105,7 @@ class DeadAdventurer(Event):
         if self.search_count < 3:
             elite_chance = self._get_elite_chance()
             
-            if random.randint(1, 100) <= elite_chance:
+            if get_rng("misc").randint(1, 100) <= elite_chance:
                 # Elite encounter - fight with rewards on victory
                 elite_enemies = self._get_elite_enemies()
                 
@@ -117,7 +117,7 @@ class DeadAdventurer(Event):
                     victory_rewards.append(AddRandomRelicAction(
                         rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]
                     ))
-                victory_rewards.append(AddGoldAction(amount=random.randint(25, 35)))
+                victory_rewards.append(AddGoldAction(amount=get_rng("misc").randint(25, 35)))
                 victory_rewards.append(LambdaAction(lambda: self.end_event()))
                 
                 options.append(Option(

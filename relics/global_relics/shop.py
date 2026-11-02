@@ -2,6 +2,7 @@
 Shop Relics
 Relics available only at shop.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 from typing import List
 from actions.base import Action, LambdaAction
@@ -219,9 +220,8 @@ class StrangeSpoonShop(Relic):
 
     def should_prevent_exhaust(self, card=None) -> bool:
         """50% chance to discard a card instead of exhausting it."""
-        import random
 
-        return random.random() < 0.5
+        return get_rng("card_random").random() < 0.5
 
 
 @register("relic")

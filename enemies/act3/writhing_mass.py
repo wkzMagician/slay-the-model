@@ -1,6 +1,6 @@
 """Writhing Mass enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List, Optional, TYPE_CHECKING
 
 from enemies.act3.writhing_mass_intentions import (
@@ -42,13 +42,13 @@ class WrithingMass(Enemy):
         
         if self._turn_count == 1:
             # First turn: equal chance of Multi Hit, Big Hit, or Debuff Attack
-            choice = random.choice(["Multi Hit", "Big Hit", "Debuff Attack"])
+            choice = get_rng("ai").choice(["Multi Hit", "Big Hit", "Debuff Attack"])
             self._last_intention = choice
             return self.intentions[choice]
         
         # After first turn:
         # Parasite 10%, Block Attack 30%, Debuff Attack 30%, Big Hit 30%
-        roll = random.random()
+        roll = get_rng("ai").random()
         
         if roll < 0.1:  # 10% Parasite
             if self._last_intention != "Parasite":
@@ -71,7 +71,7 @@ class WrithingMass(Enemy):
         available = ["Multi Hit", "Debuff Attack", "Big Hit", "Block Attack"]
         if self._last_intention in available:
             available.remove(self._last_intention)
-        choice = random.choice(available)
+        choice = get_rng("ai").choice(available)
         self._last_intention = choice
         return self.intentions[choice]
     
@@ -123,7 +123,7 @@ class WrithingMass(Enemy):
                 if self._last_intention in available:
                     available.remove(self._last_intention)
                 if available:
-                    new_intention = random.choice(available)
+                    new_intention = get_rng("ai").choice(available)
                     self._last_intention = new_intention
                     # Update current_intention
                     if new_intention in self.intentions:

@@ -3,6 +3,7 @@
 Display handler - manages content for the display panel.
 Handles player info, map view, combat view, and room-specific displays.
 """
+from utils.card_display import draw_pile_display_order
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -50,7 +51,6 @@ class DisplayHandler:
 
     def display_combat(self, combat: "Combat", gs: "GameState"):
         """Display combat state."""
-        import random
         from localization import t
 
         player = gs.player
@@ -135,9 +135,7 @@ class DisplayHandler:
             lines.append(f"  {i + 1}. {cost_str} {card_name} [{type_str}] {card_desc}")
 
         lines.append("")
-        draw_display = list(reversed(draw_pile))
-        if not has_frozen_eye:
-            random.shuffle(draw_display)
+        draw_display = draw_pile_display_order(draw_pile, reveal_order=has_frozen_eye)
         draw_names = ", ".join(card.display_name.resolve() for card in draw_display) if draw_display else t("ui.empty", default="Empty")
         lines.append(f"{t('ui.draw_pile', default='Draw Pile')} ({len(draw_pile)}): {draw_names}")
 

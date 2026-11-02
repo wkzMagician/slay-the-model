@@ -1,6 +1,7 @@
 """
 Colorless Uncommon Skill card - Madness
 """
+from engine.random_streams import get_rng
 from typing import List
 from cards.base import Card
 from entities.creature import Creature
@@ -22,7 +23,6 @@ class Madness(Card):
 
     def on_play(self, targets: List[Creature] = []):
         from engine.game_state import game_state
-        import random
 
         super().on_play(targets)
 
@@ -35,4 +35,4 @@ class Madness(Card):
             ]
             candidates = better_candidates or fallback_candidates
             if candidates:
-                random.choice(candidates).cost = 0
+                get_rng("card_random").choice(candidates).cost = 0

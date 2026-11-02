@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 FRESH_START = r'''
 import collections,contextlib,io,json,random,sys
 with contextlib.redirect_stdout(io.StringIO()):
+    from config.game_config import GameConfig
+    GameConfig.load=staticmethod(lambda _: GameConfig(seed=int(sys.argv[2]),character=sys.argv[1]))
     import potions,powers.definitions,relics
     from player.player_factory import create_player
     from engine.game_state import game_state
@@ -18,7 +20,7 @@ with contextlib.redirect_stdout(io.StringIO()):
     from utils.random import get_random_card
     from utils.types import RarityType
     character=sys.argv[1]
-    random.seed(int(sys.argv[2]))
+    from engine.random_streams import get_rng
     player=create_player(character)
     game_state.player=player
     game_state.config.mode='debug'
@@ -30,12 +32,13 @@ with contextlib.redirect_stdout(io.StringIO()):
         if card.namespace==player.namespace:
             cards[key]=card.rarity.name
     pools={}
-    real_choice=random.choice
+    rng=get_rng("card_random")
+    real_choice=rng.choice
     seen=[]
     def observe_choice(seq):
         if seq and isinstance(seq[0],str):seen.append(list(seq))
         return real_choice(seq)
-    random.choice=observe_choice
+    rng.choice=observe_choice
     try:
         for rarity in [RarityType.COMMON,RarityType.UNCOMMON,RarityType.RARE]:
             result=get_random_card(namespaces=[player.namespace],rarities=[rarity])
@@ -43,7 +46,7 @@ with contextlib.redirect_stdout(io.StringIO()):
             assert result.namespace==player.namespace and result.rarity==rarity
             pools[rarity.name]=seen[-1]
     finally:
-        random.choice=real_choice
+        rng.choice=real_choice
     starting=[card.idstr for card in player.card_manager.piles['deck']]
     # Run the real card reward choice and permanent acquisition paths.
     from actions.card import ChooseObtainCardAction

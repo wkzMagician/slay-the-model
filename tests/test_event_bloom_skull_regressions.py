@@ -1,4 +1,5 @@
 """Mind Bloom combat rewards and Knowing Skull independent HP payments."""
+from engine.random_streams import get_rng, StreamRandom
 from typing import cast
 
 import pytest
@@ -49,7 +50,7 @@ def test_bloom_creates_real_boss_only_after_selection(player, monkeypatch, boss_
     def choose(classes):
         seen.append(tuple(classes))
         return boss_class
-    monkeypatch.setattr('events.mind_bloom.random.choice', choose)
+    monkeypatch.setattr(get_rng("misc"), "choice", choose)
     event = MindBloom()
     event.trigger()
     menu = queued_menu()

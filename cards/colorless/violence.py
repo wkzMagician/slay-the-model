@@ -1,6 +1,7 @@
 """
 Colorless Rare Skill card - Violence
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
 from typing import List
@@ -42,8 +43,7 @@ class Violence(Card):
             attack_cards = [c for c in draw_cards if c.card_type == CardType.ATTACK]
 
             # Get up to draw_count random attacks
-            import random
-            selected = random.sample(attack_cards, min(draw_count, len(attack_cards)))
+            selected = get_rng("shuffle").sample(attack_cards, min(draw_count, len(attack_cards)))
 
             for card in selected:
                 actions.append(MoveCardAction(

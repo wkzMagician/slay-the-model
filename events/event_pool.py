@@ -3,6 +3,7 @@ import random
 from typing import Callable, List, Type
 
 from engine.event_pool_state import EventPoolState
+from engine.random_streams import StreamRandom
 
 
 class EventMetadata:
@@ -46,7 +47,7 @@ class EventPool:
     """Registry shared by definitions; usage and RNG belong to a single run."""
     SHRINE_CHANCE = 0.25
 
-    def __init__(self, seed: int = 0, rng: random.Random | None = None,
+    def __init__(self, seed: int = 0, rng: random.Random | StreamRandom | None = None,
                  state_provider: Callable[[], EventPoolState] | None = None):
         self._event_registry: dict[str, EventMetadata] = {}
         self._state = EventPoolState(seed, rng)

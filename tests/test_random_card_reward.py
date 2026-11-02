@@ -1,7 +1,17 @@
 """
 Tests for random card reward system with rarity weights.
 """
+from engine.random_streams import get_rng, StreamRandom
+from engine.random_streams import RandomStreams, using_streams
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def bind_test_random_streams():
+    # Some tests replace the global GameState with a mock for reward counters.
+    # Bind real independent random streams so that mock does not replace RNGs.
+    with using_streams(RandomStreams(1)):
+        yield
 from unittest.mock import patch, MagicMock
 from utils.random import CARD_RARITY_PROBABILITIES
 from utils.types import RarityType, CardType
@@ -85,8 +95,8 @@ class TestRollingOffsetCounter:
 class TestGetRandomCardRewardIntegration:
     """Integration tests for get_random_card_reward function."""
 
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
+    @patch("utils.random.list_registered")
+    @patch("utils.random.get_registered")
     @patch('engine.game_state.game_state')
     def test_rolling_offset_increases_rare_chance(self, mock_gs, mock_get, mock_list):
         """Test that rolling offset increases rare probability."""
@@ -141,10 +151,10 @@ class TestGetRandomCardRewardIntegration:
         assert len(cards_offset_0) == 10
         assert len(cards_offset_47) == 10
 
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
+    @patch.object(StreamRandom, "choice", side_effect=lambda seq: seq[0])
+    @patch.object(StreamRandom, "choices")
+    @patch("utils.random.list_registered")
+    @patch("utils.random.get_registered")
     @patch('engine.game_state.game_state')
     def test_rolling_offset_uses_global_common_counter_in_rarity_weights(
         self, mock_gs, mock_get, mock_list, mock_choices, _mock_choice
@@ -183,8 +193,8 @@ class TestGetRandomCardRewardIntegration:
         available = mock_choices.call_args.kwargs["weights"]
         assert available == [53 / 100, 37 / 100, 10 / 100]
 
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
+    @patch("utils.random.list_registered")
+    @patch("utils.random.get_registered")
     def test_different_encounter_types(self, mock_get, mock_list):
         """Test different encounter types work correctly."""
         # Setup mock registry
@@ -229,10 +239,10 @@ class TestGetRandomCardRewardIntegration:
 class TestRewardCardUpgradeChance:
     """Tests for combat reward upgraded card chance by act/ascension."""
 
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
+    @patch.object(StreamRandom, "choice", side_effect=lambda seq: seq[0])
+    @patch.object(StreamRandom, "choices")
+    @patch("utils.random.list_registered")
+    @patch("utils.random.get_registered")
     @patch('engine.game_state.game_state')
     def test_act2_reward_can_upgrade(self, mock_gs, mock_get, mock_list,
                                      mock_choices, _mock_choice):
@@ -255,7 +265,7 @@ class TestRewardCardUpgradeChance:
 
         from utils.random import get_random_card_reward
 
-        with patch('utils.random.random.random', return_value=0.2):
+        with patch.object(StreamRandom, "random", return_value=0.2):
             card = get_random_card_reward(
                 namespaces=["test"],
                 encounter_type="normal",
@@ -265,10 +275,10 @@ class TestRewardCardUpgradeChance:
         assert card is mock_card
         mock_card.upgrade.assert_called_once()
 
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
+    @patch.object(StreamRandom, "choice", side_effect=lambda seq: seq[0])
+    @patch.object(StreamRandom, "choices")
+    @patch("utils.random.list_registered")
+    @patch("utils.random.get_registered")
     @patch('engine.game_state.game_state')
     def test_act1_reward_never_upgrades(self, mock_gs, mock_get, mock_list,
                                         mock_choices, _mock_choice):
@@ -291,7 +301,7 @@ class TestRewardCardUpgradeChance:
 
         from utils.random import get_random_card_reward
 
-        with patch('utils.random.random.random', return_value=0.0):
+        with patch.object(StreamRandom, "random", return_value=0.0):
             card = get_random_card_reward(
                 namespaces=["test"],
                 encounter_type="normal",
@@ -301,10 +311,10 @@ class TestRewardCardUpgradeChance:
         assert card is mock_card
         mock_card.upgrade.assert_not_called()
 
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
+    @patch.object(StreamRandom, "choice", side_effect=lambda seq: seq[0])
+    @patch.object(StreamRandom, "choices")
+    @patch("utils.random.list_registered")
+    @patch("utils.random.get_registered")
     @patch('engine.game_state.game_state')
     def test_asc12_act2_upgrade_chance_halved(self, mock_gs, mock_get, mock_list,
                                               mock_choices, _mock_choice):
@@ -327,7 +337,7 @@ class TestRewardCardUpgradeChance:
 
         from utils.random import get_random_card_reward
 
-        with patch('utils.random.random.random', return_value=0.2):
+        with patch.object(StreamRandom, "random", return_value=0.2):
             card = get_random_card_reward(
                 namespaces=["test"],
                 encounter_type="normal",

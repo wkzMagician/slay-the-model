@@ -1,5 +1,5 @@
 """Run-wide Boss relic draws without replacement."""
-from random import Random
+from utils.compatible_random import GameRandom, JavaRandom48
 from typing import TYPE_CHECKING, Sequence
 
 from utils.registry import get_registered_instance, list_registered
@@ -10,9 +10,14 @@ if TYPE_CHECKING:
 
 
 class BossRelicPool:
-    def __init__(self, seed: int):
+    def __init__(self, seed: int, child_seed: int | None = None):
         self.remaining: list[str] | None = None
-        self.rng = Random(f"{seed}:boss_relics")
+        if child_seed is None:
+            parent = GameRandom(seed)
+            for _ in range(5):
+                child_seed = parent.random_long()
+        assert child_seed is not None
+        self.rng = JavaRandom48(child_seed)
 
     def _initialize(self) -> None:
         import relics  # Register all character and global relics before building the pool.

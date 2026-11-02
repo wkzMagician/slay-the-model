@@ -1,6 +1,6 @@
 """Awakened One - Act 3 Boss."""
+from engine.random_streams import get_rng
 from argparse import Action
-import random
 from typing import List, Optional
 
 from enemies.act3.awakened_one_intentions import (
@@ -133,7 +133,7 @@ class AwakenedOne(Enemy):
             
             # 70% Slash, 25% Soul Strike
             while True:
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.70:  # 70% Slash
                     if slash_count < 2:  # Not 3x in a row
                         return self.intentions["Slash"]
@@ -164,7 +164,7 @@ class AwakenedOne(Enemy):
             
             # 50/50 Tackle or Sludge
             while True:
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.50:  # 50% Tackle
                     if tackle_count < 2:  # Not 3x in a row
                         return self.intentions["Tackle"]

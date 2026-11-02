@@ -1,6 +1,7 @@
 """
 Neo blessing event.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from utils.result_types import GameTerminalState
 from events.event_pool import register_event
@@ -80,6 +81,10 @@ class NeoEvent(Event):
         )
     
     def _show_four_blessings(self):
+        # Original generateBlessing starts a separate RNG from the run seed.
+        from engine.random_streams import current_streams, StreamRandom
+        streams = current_streams()
+        streams.neow_rng = StreamRandom(streams.seed)
         """Show advanced blessing options (after reaching boss)"""
         max_hp_small_increase = game_stats.neow_max_hp_small_increases.get(game_state.player.character, 0)
         max_hp_large_increase = game_stats.neow_max_hp_large_increases.get(game_state.player.character, 0)
@@ -193,13 +198,12 @@ class NeoEvent(Event):
             )
         ]
         
-        import random
         
         # Randomly select one from each category
-        card_blessing = random.choice(card_blessings)
-        non_card_blessing = random.choice(non_card_blessings)
-        disadvantage_blessing = random.choice(disadvantage_blessings)
-        advantage_blessing = random.choice(advantage_blessings)
+        card_blessing = get_rng("neow").choice(card_blessings)
+        non_card_blessing = get_rng("neow").choice(non_card_blessings)
+        disadvantage_blessing = get_rng("neow").choice(disadvantage_blessings)
+        advantage_blessing = get_rng("neow").choice(advantage_blessings)
         
         # Mixed blessing (disadvantage + advantage)
         mixed_blessing = Option(

@@ -1,6 +1,6 @@
 """The Champ - Act 2 Boss enemy."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List
 
 from enemies.act2.the_champ_intentions import (
@@ -170,7 +170,7 @@ class TheChamp(Enemy):
         # Select random move based on weights
         if available:
             total_weight = sum(prob for _, prob in available)
-            roll = random.randint(1, total_weight)
+            roll = get_rng("ai").randint(1, total_weight)
             cumulative = 0
             for name, prob in available:
                 cumulative += prob

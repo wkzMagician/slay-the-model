@@ -2,7 +2,7 @@
 Slaver enemies - Blue and Red Slaver.
 Human enemies with various attacks.
 """
-import random
+from engine.random_streams import get_rng
 from typing import List, TYPE_CHECKING
 from enemies.base import Enemy
 from utils.types import EnemyType
@@ -41,7 +41,7 @@ class BlueSlaver(Enemy):
         """
         # First turn: random choice
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.60:
                 return self.intentions["stab"]
             else:
@@ -64,7 +64,7 @@ class BlueSlaver(Enemy):
                 return self.intentions["stab"]
         
         # Normal pattern: 60% Stab, 40% Rake
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.60:
             return self.intentions["stab"]
         else:
@@ -107,7 +107,7 @@ class RedSlaver(Enemy):
         
         # If Entangle hasn't been used, 25% chance to use it
         if not self._entangle_used:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.25:
                 self._entangle_used = True
                 return self.intentions["entangle"]
@@ -131,7 +131,7 @@ class RedSlaver(Enemy):
         # After Entangle: 55% Stab, 45% Scrape
         # Before Entangle: Scrape, Scrape, Stab pattern
         if self._entangle_used:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.55:
                 return self.intentions["stab"]
             else:

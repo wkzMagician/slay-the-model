@@ -7,7 +7,7 @@ Act 3 Hard Mode (Jaw Worm Horde):
 - Strength: 3 (A2+: 4, A17+: 5)
 - Block: 6 (A17+: 9)
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act1.jaw_worm_intentions import ChompIntention, BellowIntention, ThrashIntention
@@ -62,7 +62,7 @@ class JawWorm(Enemy):
             # Check if in Act 3+ (floor 17+)
             if floor >= 17:
                 # 45% Bellow, 30% Thrash, 25% Chomp
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.45:
                     return self.intentions["bellow"]
                 elif roll < 0.75:  # 0.45 + 0.30
@@ -86,7 +86,7 @@ class JawWorm(Enemy):
         
         # After Chomp: 59% Bellow, 41% Thrash
         if last == "chomp":
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.59:
                 return self.intentions["bellow"]
             else:
@@ -94,7 +94,7 @@ class JawWorm(Enemy):
         
         # After Bellow: 56% Thrash, 44% Chomp
         elif last == "bellow":
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.56:
                 return self.intentions["thrash"]
             else:
@@ -105,14 +105,14 @@ class JawWorm(Enemy):
             # If Thrash used 2 times in a row
             if thrash_count >= 2:
                 # 64% Bellow, 36% Chomp
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.64:
                     return self.intentions["bellow"]
                 else:
                     return self.intentions["chomp"]
             else:
                 # 45% Bellow, 30% Thrash, 25% Chomp
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.45:
                     return self.intentions["bellow"]
                 elif roll < 0.75:  # 0.45 + 0.30

@@ -1,6 +1,6 @@
 """The Collector - Act 2 Elite enemy."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List
 
 from enemies.act2.the_collector_intentions import Buff, Fireball, MegaDebuff, Spawn
@@ -118,7 +118,7 @@ class TheCollector(Enemy):
         if torch_heads >= 2:
             # Both Torch Heads alive: 70% Fireball, 30% Buff
             if can_fireball and can_buff:
-                if random.random() < 0.70:
+                if get_rng("ai").random() < 0.70:
                     self.current_intention = self.intentions["Fireball"]
                 else:
                     self.current_intention = self.intentions["Buff"]
@@ -129,7 +129,7 @@ class TheCollector(Enemy):
         else:
             # 0-1 Torch Heads: 25% Spawn, 45% Fireball, 30% Buff
             if can_spawn and can_fireball and can_buff:
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.25:
                     self.current_intention = self.intentions["Spawn"]
                 elif roll < 0.70:
@@ -137,7 +137,7 @@ class TheCollector(Enemy):
                 else:
                     self.current_intention = self.intentions["Buff"]
             elif can_fireball and can_buff:
-                if random.random() < 0.60:
+                if get_rng("ai").random() < 0.60:
                     self.current_intention = self.intentions["Fireball"]
                 else:
                     self.current_intention = self.intentions["Buff"]

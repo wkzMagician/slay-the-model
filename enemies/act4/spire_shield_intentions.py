@@ -1,7 +1,7 @@
 """Spire Shield Elite intentions for Act 4."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
-import random
 from typing import List
 
 from actions.base import Action
@@ -21,7 +21,7 @@ class Bash(Intention):
         from engine.game_state import game_state
 
         player = game_state.player
-        damage = random.choice([12, 14])
+        damage = get_rng("ai").choice([12, 14])
         actions = [
             AttackAction(
                 damage=damage,
@@ -35,7 +35,7 @@ class Bash(Intention):
             hasattr(player, "orb_manager")
             and getattr(player.orb_manager, "max_orb_slots", 0) > 0
         )
-        if has_orb_slot and random.choice([True, False]):
+        if has_orb_slot and get_rng("ai").choice([True, False]):
             actions.append(ApplyPowerAction(FocusPower(amount=-1, owner=player), player))
         else:
             actions.append(ApplyPowerAction(StrengthPower(amount=-1, owner=player), player))
@@ -78,7 +78,7 @@ class Smash(Intention):
     def execute(self):
         from engine.game_state import game_state
 
-        base_damage, fixed_block = random.choice(
+        base_damage, fixed_block = get_rng("ai").choice(
             [(34, None), (38, None), (38, 99)]
         )
         block_gain = fixed_block if fixed_block is not None else base_damage

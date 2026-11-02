@@ -2,7 +2,7 @@
 Byrd - Normal enemy (Act 2)
 Flying bird that uses aerial attacks.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.byrd_intentions import (
@@ -72,7 +72,7 @@ class Byrd(Enemy):
         
         # Byrd never starts with Swoop
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.50:
                 return self.intentions["peck"]
             elif roll < 0.80:  # 0.50 + 0.30
@@ -81,7 +81,7 @@ class Byrd(Enemy):
                 return self.intentions["peck"]  # Don't use swoop first
         
         # After patterns
-        roll = random.random()
+        roll = get_rng("ai").random()
         
         # Can't use Caw twice in a row
         if last == "caw":

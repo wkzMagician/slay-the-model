@@ -2,7 +2,7 @@
 Chosen - Normal enemy (Act 2)
 Cultist with hex and drain abilities.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.chosen_intentions import (
@@ -55,13 +55,13 @@ class Chosen(Enemy):
         
         if pattern_step == 0:
             # Step 1: Debilitate or Drain
-            if random.random() < 0.50:
+            if get_rng("ai").random() < 0.50:
                 return self.intentions["debilitate"]
             else:
                 return self.intentions["drain"]
         else:
             # Step 2: Poke or Zap
-            if random.random() < 0.60:
+            if get_rng("ai").random() < 0.60:
                 return self.intentions["poke"]
             else:
                 return self.intentions["zap"]

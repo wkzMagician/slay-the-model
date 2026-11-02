@@ -2,6 +2,7 @@
 
 Gold for deck services (upgrade, remove, transform).
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
 from events.base_event import Event
@@ -14,7 +15,6 @@ from actions.base import LambdaAction
 from localization import LocalStr
 from utils.option import Option
 from engine.game_state import game_state
-import random
 
 
 @register_event(category='special', event_id='designer_in_spire', acts=[2, 3], weight=100)
@@ -51,7 +51,7 @@ class DesignerInSpire(Event):
                     LoseGoldAction(amount=adjust_cost),
                     LambdaAction(lambda: (
                         ChooseUpgradeCardAction().execute()
-                        if random.random() < 0.5
+                        if get_rng("misc").random() < 0.5
                         else [UpgradeRandomCardAction().execute(), UpgradeRandomCardAction().execute()]
                     ))
                 ],
@@ -65,7 +65,7 @@ class DesignerInSpire(Event):
                     LoseGoldAction(amount=clean_cost),
                     LambdaAction(lambda: (
                         ChooseRemoveCardAction().execute()
-                        if random.random() < 0.5
+                        if get_rng("misc").random() < 0.5
                         else [TransformRandomCardAction().execute(), TransformRandomCardAction().execute()]
                     ))
                 ],

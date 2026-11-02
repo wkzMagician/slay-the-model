@@ -1,4 +1,5 @@
 """Regressions for the four defects blocking lifecycle continuations."""
+from engine.random_streams import get_rng, StreamRandom
 import random
 
 import pytest
@@ -128,7 +129,7 @@ def test_combust_self_damage_reaches_death_or_real_save(save,expected):
 def test_elite_relic_tier_boundaries_use_live_pool(monkeypatch,roll,expected):
     h = create_test_helper()
     p = h.create_player()
-    monkeypatch.setattr('random.randint',lambda *args:roll)
+    monkeypatch.setattr(get_rng("relic"), "randint",lambda *args:roll)
     AddEliteRelicAction().execute()
     h.game_state.drive_actions()
     assert len(p.relics) == 1
@@ -142,7 +143,7 @@ def test_elite_relic_exhaustion_falls_through_and_excludes_owned(monkeypatch):
     h = create_test_helper()
     p = h.create_player()
     h.game_state.obtained_relics.update(list_registered('relic'))
-    monkeypatch.setattr('random.randint',lambda *args:0)
+    monkeypatch.setattr(get_rng("relic"), "randint",lambda *args:0)
     AddEliteRelicAction().execute()
     assert relic_ids(p) == ['RedCirclet']
 
@@ -152,7 +153,7 @@ def test_elite_reward_excludes_held_relic_even_without_obtain_history(monkeypatc
     h = create_test_helper()
     p = h.create_player()
     p.relics = [RedSkull()]
-    monkeypatch.setattr('random.randint', lambda *args: 0)
+    monkeypatch.setattr(get_rng("relic"), "randint", lambda *args: 0)
     AddEliteRelicAction().execute()
     assert len(p.relics) == 2
     assert relic_ids(p)[1] != 'RedSkull'

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Gremlin Nob - Act 1 Elite enemy"""
+from engine.random_streams import get_rng
 
-import random
 from enemies.base import Enemy
 from utils.types import EnemyType
 from utils.registry import register
@@ -19,9 +19,9 @@ class GremlinNob(Enemy):
 
         ascension = max(ascension, getattr(game_state, "ascension", 0))
         if ascension >= 8:
-            hp = random.randint(85, 90)
+            hp = get_rng("monster_hp").randint(85, 90)
         else:
-            hp = random.randint(82, 86)
+            hp = get_rng("monster_hp").randint(82, 86)
         
         super().__init__(hp_range=(hp, hp))
         self.ascension = ascension
@@ -59,7 +59,7 @@ class GremlinNob(Enemy):
             if self.last_action == "bull" and self.bull_rush_count >= 2:
                 intention = self.intentions["skull_bash"]
             else:
-                intention = self.intentions["skull_bash"] if random.random() < 0.33 else self.intentions["bull_rush"]
+                intention = self.intentions["skull_bash"] if get_rng("ai").random() < 0.33 else self.intentions["bull_rush"]
         
         # Update tracking state for next turn
         if intention == self.intentions["bull_rush"]:

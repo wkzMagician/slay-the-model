@@ -1,6 +1,6 @@
 """Reptomancer enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List, Optional
 
 from enemies.act3.reptomancer_intentions import (
@@ -71,6 +71,6 @@ class Reptomancer(Enemy):
             if "Snake Strike" not in choices:
                 choices.append("Snake Strike")
         
-        choice = random.choice(choices)
+        choice = get_rng("ai").choice(choices)
         self._last_intention = choice
         return choice

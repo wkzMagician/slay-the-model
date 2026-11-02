@@ -1,5 +1,5 @@
 """Shop inventory state helpers."""
-import random
+from engine.random_streams import get_rng, route_domains
 
 from utils.random import get_random_card, get_random_potion, get_random_relic
 from utils.types import CardType, RarityType
@@ -151,10 +151,11 @@ def get_relic_price(rarity, rng):
 
 
 
+@route_domains(card_random="card")
 def generate_colored_cards(player, card_provider=get_random_card, rng=None):
     """Generate 5 colored cards for the shop."""
     card_namespaces = build_card_namespaces(player)
-    rng = rng or random
+    rng = rng if rng is not None else get_rng("card")
     cards = []
     seen_ids = []
 
@@ -196,6 +197,7 @@ def generate_colored_cards(player, card_provider=get_random_card, rng=None):
 
 
 
+@route_domains(card_random="card")
 def generate_colorless_cards(card_provider=get_random_card):
     """Generate 2 colorless cards for the shop."""
     cards = []
@@ -228,11 +230,12 @@ def generate_shop_items(
     relic_provider=get_random_relic,
 ):
     """Generate the current shop inventory."""
-    rng = rng or random
+    explicit_rng = rng
+    rng = rng if rng is not None else get_rng("merchant")
     items = []
     namespace = getattr(player, "namespace", None) or "ironclad"
 
-    colored_cards = generate_colored_cards(player=player, card_provider=card_provider, rng=rng)
+    colored_cards = generate_colored_cards(player=player, card_provider=card_provider, rng=explicit_rng)
     colored_start_idx = len(items)
     for card in colored_cards:
         if card is None:
@@ -250,7 +253,7 @@ def generate_shop_items(
         items.append(ShopItem("card", card, get_colorless_card_price(card.rarity, rng)))
 
     for _ in range(3):
-        rarity = roll_potion_rarity(rng)
+        rarity = roll_potion_rarity(explicit_rng if explicit_rng is not None else get_rng("potion"))
         potion = potion_provider(characters=[namespace], rarities=[rarity])
         items.append(ShopItem("potion", potion, get_potion_price(rarity, rng)))
 
@@ -265,6 +268,7 @@ def generate_shop_items(
 
 
 
+@route_domains(card_random="card")
 def restock_shop_item(
     shop_item,
     player,
@@ -277,7 +281,8 @@ def restock_shop_item(
     if not player or not shop_item:
         return
 
-    rng = rng or random
+    explicit_rng = rng
+    rng = rng if rng is not None else get_rng("merchant")
     namespace = getattr(player, "namespace", None) or "ironclad"
 
     if shop_item.item_type == "card":
@@ -306,7 +311,7 @@ def restock_shop_item(
         shop_item.item = new_item
         shop_item.base_price = base_price
     elif shop_item.item_type == "potion":
-        rarity = roll_potion_rarity(rng)
+        rarity = roll_potion_rarity(explicit_rng if explicit_rng is not None else get_rng("potion"))
         new_item = potion_provider(characters=[namespace], rarities=[rarity])
         if not new_item:
             return

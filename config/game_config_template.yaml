@@ -1,6 +1,10 @@
 mode: debug # human | ai | debug
 language: en
+# Legacy integer seed is an internal signed 64-bit value; -1 means automatic.
 seed: 1
+# For an original-game seed code, replace the seed line above with:
+# seed_code: "20261029"
+# Quoted legacy strings (seed: "ABC123") are also interpreted as seed codes.
 character: Ironclad
 ascension: 0  # 0-20, 0 = no ascension
 daily_run: false

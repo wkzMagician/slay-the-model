@@ -2,7 +2,7 @@
 Snake Plant - Normal enemy (Act 2)
 Plant enemy with debuff attacks.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.snake_plant_intentions import (
@@ -64,7 +64,7 @@ class SnakePlant(Enemy):
         
         # Normal pattern: Chomp Chomp (60%), Enfeebling Spores (35%)
         # Note: The remaining 5% is likely an idle/unknown state
-        roll = random.random()
+        roll = get_rng("ai").random()
         
         if roll < 0.60:
             return self.intentions["chomp_chomp"]

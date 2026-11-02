@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng, StreamRandom
 from cards.silent.adrenaline import Adrenaline
 from cards.silent.all_out_attack import AllOutAttack
 from cards.silent.caltrops import Caltrops
@@ -37,7 +38,7 @@ class TestSilentAdvancedExpansion:
         enemy_b = self.helper.create_enemy(Cultist, hp=40)
         self.helper.start_combat([enemy_a, enemy_b])
         keeper = Strike()
-        monkeypatch.setattr('random.choice', lambda seq: keeper)
+        monkeypatch.setattr(get_rng("card_random"), "choice", lambda seq: keeper)
         card = AllOutAttack()
         self.helper.add_card_to_hand(card)
         self.helper.add_card_to_hand(keeper)

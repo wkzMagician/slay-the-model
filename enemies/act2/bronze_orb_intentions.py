@@ -1,4 +1,5 @@
 """Bronze Orb minion intentions."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
 from typing import List
@@ -32,8 +33,7 @@ class Steal(Intention):
             # Find cards of this rarity
             candidates = [c for c in draw_pile if c.rarity == rarity]
             if candidates:
-                import random
-                stolen_card = random.choice(candidates)
+                stolen_card = get_rng("card_random").choice(candidates)
                 # Remove from draw pile
                 card_manager.remove_from_pile(stolen_card, 'draw_pile')
                 # Store in enemy's stolen cards
@@ -41,8 +41,7 @@ class Steal(Intention):
                 return
         
         # Fallback: steal any card
-        import random
-        stolen_card = random.choice(draw_pile)
+        stolen_card = get_rng("card_random").choice(draw_pile)
         card_manager.remove_from_pile(stolen_card, 'draw_pile')
         self.enemy.stolen_cards.append(stolen_card)
 class SupportBeam(Intention):

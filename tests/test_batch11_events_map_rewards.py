@@ -1,4 +1,5 @@
 from __future__ import annotations
+from engine.random_streams import get_rng, StreamRandom
 
 from typing import Any
 
@@ -82,7 +83,7 @@ def test_get_random_relic_defaults_to_current_character(monkeypatch):
 
     monkeypatch.setattr("utils.random.list_registered", lambda kind: list(registry) if kind == "relic" else [])
     monkeypatch.setattr("utils.random.get_registered", lambda kind, name: registry.get(name) if kind == "relic" else None)
-    monkeypatch.setattr("utils.random.random.choice", lambda seq: seq[0])
+    monkeypatch.setattr(get_rng("relic"), "choice", lambda seq: seq[0])
 
     relic = get_random_relic()
 
@@ -117,8 +118,8 @@ def test_get_random_potion_rolls_rarity_before_sampling(monkeypatch):
 
     monkeypatch.setattr("utils.random.list_registered", lambda kind: list(registry) if kind == "potion" else [])
     monkeypatch.setattr("utils.random.get_registered", lambda kind, name: registry.get(name) if kind == "potion" else None)
-    monkeypatch.setattr("utils.random.random.random", lambda: 0.8)
-    monkeypatch.setattr("utils.random.random.choice", lambda seq: seq[0])
+    monkeypatch.setattr(get_rng("potion"), "random", lambda: 0.8)
+    monkeypatch.setattr(get_rng("potion"), "choice", lambda seq: seq[0])
 
     potion = get_random_potion()
 
@@ -227,12 +228,12 @@ def test_juzu_bracelet_keeps_monster_counter_reset_when_monster_roll_is_redirect
     manager.set_relic_effect("juzu_bracelet", True)
     manager.unknown_room_visits[RoomType.MONSTER] = 3
 
-    original_randint = manager.rng.randint
-    manager.rng.randint = lambda a, b: 1
+    original_randint = manager.random_streams["event"].randint
+    manager.random_streams["event"].randint = lambda a, b: 1
     try:
         result = manager._resolve_unknown_type(7)
     finally:
-        manager.rng.randint = original_randint
+        manager.random_streams["event"].randint = original_randint
 
     assert result == RoomType.EVENT
     assert manager.unknown_room_visits[RoomType.MONSTER] == 0
@@ -247,8 +248,8 @@ def test_dead_adventurer_search_without_elite_rebuilds_event_menu(monkeypatch):
 
     event = DeadAdventurer()
 
-    monkeypatch.setattr("events.dead_adventurer.random.randint", lambda a, b: 100)
-    monkeypatch.setattr("events.dead_adventurer.random.choice", lambda seq: seq[0])
+    monkeypatch.setattr(get_rng("misc"), "randint", lambda a, b: 100)
+    monkeypatch.setattr(get_rng("misc"), "choice", lambda seq: seq[0])
 
     event.trigger()
 
@@ -342,10 +343,10 @@ def test_we_meet_again_option_text_describes_trade_effects(monkeypatch):
         player.card_manager.deck.append(Inflame())
         helper.game_state.action_queue.clear()
         monkeypatch.setattr(
-            "events.we_meet_again.random.choice",
+            get_rng("misc"), "choice",
             lambda seq: kind if kind in seq else seq[0],
         )
-        monkeypatch.setattr("events.we_meet_again.random.randint", lambda a, b: 50)
+        monkeypatch.setattr(get_rng("misc"), "randint", lambda a, b: 50)
         WeMeetAgain().trigger()
         menu = cast(InputRequestAction, helper.game_state.action_queue.queue[-1])
         assert isinstance(menu, InputRequestAction)

@@ -1,6 +1,6 @@
 """Spire Growth enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List, Optional
 
 from enemies.act3.spire_growth_intentions import Constrict, QuickTackle, Smash
@@ -46,7 +46,7 @@ class SpireGrowth(Enemy):
                 return self.intentions["Smash"]
         
         # 50/50 Quick Tackle or Constrict
-        if random.random() < 0.5:
+        if get_rng("ai").random() < 0.5:
             # Check consecutive constraint
             if self._consecutive_quick_tackle < 2:
                 self._last_was_constrict = False

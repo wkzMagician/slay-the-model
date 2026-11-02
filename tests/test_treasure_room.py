@@ -1,4 +1,5 @@
 """Test TreasureRoom basic functionality."""
+from engine.random_streams import get_rng, StreamRandom
 import pytest
 from unittest.mock import Mock
 
@@ -31,7 +32,7 @@ class TestTreasureRoomBasic:
     
     def test_treasure_room_init_determines_chest_type(self):
         """Test init() determines chest type for non-boss."""
-        import random
+        random = get_rng("treasure")
         original_random = random.random
         
         # Mock random to test
@@ -111,8 +112,8 @@ class TestTreasureRoomBasic:
         treasure_room = TreasureRoom()
         treasure_room.chest_type = "small"
 
-        monkeypatch.setattr(misc_actions.random, "random", lambda: 0.0)
-        monkeypatch.setattr(misc_actions.random, "randint", lambda a, b: a)
+        monkeypatch.setattr(get_rng("treasure"), "random", lambda: 0.0)
+        monkeypatch.setattr(get_rng("treasure"), "randint", lambda a, b: a)
         monkeypatch.setattr(misc_actions, "get_random_relic", lambda rarities=None: None)
 
         OpenChestAction(treasure_room).execute()

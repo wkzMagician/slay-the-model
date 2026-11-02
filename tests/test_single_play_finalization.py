@@ -3,6 +3,7 @@
 Cross-character hands are explicit prepared combat inputs. Randomness is only
 fixed where indicated; card, potion, selection and effect implementations run.
 """
+from engine.random_streams import get_rng, StreamRandom
 
 import pytest
 
@@ -168,7 +169,7 @@ def test_strange_spoon_decides_single_final_destination_and_exhaust_benefits(rol
     player.add_power(FeelNoPainPower(amount=3, owner=player))
     player.add_power(DarkEmbracePower(amount=1, owner=player))
     # Prepared RNG input chooses the real relic's two branches; no hook replaced.
-    monkeypatch.setattr("random.random", lambda: roll)
+    monkeypatch.setattr(get_rng("card_random"), "random", lambda: roll)
     card = Shiv()
     assert play(helper, card) is None
     assert enemy.hp == 996
@@ -225,7 +226,7 @@ def test_chaos_preselected_dead_target_does_not_retarget_second_attack(monkeypat
     player.card_manager.piles["draw_pile"] = [defense, attack2, attack1]
     # All three original PlayTopCard producers preselect the first living enemy.
     # This fixes RNG only and delegates the real potion and card implementations.
-    monkeypatch.setattr("random.choice", lambda choices: choices[0])
+    monkeypatch.setattr(get_rng("card_random"), "choice", lambda choices: choices[0])
     item = DistilledChaos()
     player.potions.append(item)
     helper.game_state.add_action(UsePotionAction(item, target=player))
@@ -246,7 +247,7 @@ def test_chaos_enemy_all_ignores_single_preselected_target(monkeypatch):
     card = DaggerSpray()
     player.card_manager.piles["draw_pile"] = [card]
     # Preselect one enemy through the real producer; AoE must still hit both.
-    monkeypatch.setattr("random.choice", lambda choices: choices[0])
+    monkeypatch.setattr(get_rng("card_random"), "choice", lambda choices: choices[0])
     item = DistilledChaos()
     player.potions.append(item)
     helper.game_state.add_action(UsePotionAction(item, target=player))

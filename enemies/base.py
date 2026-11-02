@@ -1,7 +1,7 @@
 """Base enemy class for all monsters in combat."""
+from engine.random_streams import get_rng
 
 from typing import Any, Tuple, Dict, List, Optional, TYPE_CHECKING
-import random
 
 from entities.creature import Creature
 from engine.messages import (
@@ -56,7 +56,7 @@ class Enemy(Creature):
             actual_max_hp = max_hp
         else:
             min_hp, max_hp_val = hp_range
-            actual_max_hp = random.randint(min_hp, max_hp_val)
+            actual_max_hp = get_rng("monster_hp").randint(min_hp, max_hp_val)
         super().__init__(max_hp=actual_max_hp)
         
         # Store optional overrides
@@ -130,7 +130,7 @@ class Enemy(Creature):
         if self.intentions:
             intention_list = list(self.intentions.values())
             if intention_list:
-                return random.choice(intention_list)
+                return get_rng("ai").choice(intention_list)
         raise ValueError("No intentions defined for enemy")
 
     def _resolve_next_intention(self, selection: Any) -> 'Intention':

@@ -1,4 +1,4 @@
-﻿import random as rd
+import random as rd
 import sys
 import os
 from typing import List, Optional, cast
@@ -64,6 +64,8 @@ class RuntimeContext:
         self._player = player
         self._config = config
         self._decision_engine = decision_engine
+        # Standalone contexts still have deterministic, non-gameplay policy state.
+        self._policy_rng = rd.Random(0)
 
     @property
     def player(self):
@@ -521,7 +523,9 @@ class RuntimeContext:
             indices = self._coerce_selected_indices(heuristic)
             if selection_error(options, indices, request.max_select, request.must_select) is None:
                 return indices
-        return sorted(rd.sample(enabled_indices, sample_size))
+        streams = getattr(self.game_state, "random_streams", None)
+        policy_rng = streams.policy_rng if streams is not None else self._policy_rng
+        return sorted(policy_rng.sample(enabled_indices, sample_size))
 
     def default_resolve_debug_selection_with_heuristics(
         self,

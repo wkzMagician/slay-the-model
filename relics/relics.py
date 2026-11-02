@@ -1,6 +1,6 @@
 """Relic helper functions."""
+from engine.random_streams import get_rng
 
-import random
 from typing import Optional, List, Type
 from utils.types import RarityType
 
@@ -56,7 +56,7 @@ def get_random_relic_by_rarity(rarity: RarityType, count: int = 1) -> List[Type]
     relics = RELICS_BY_RARITY.get(rarity, [])
     if not relics:
         return []
-    return random.sample(relics, min(count, len(relics)))
+    return get_rng("relic").sample(relics, min(count, len(relics)))
 
 
 def get_single_random_relic_by_rarity(rarity: RarityType) -> Optional[Type]:

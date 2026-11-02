@@ -2,9 +2,9 @@
 
 Spin a wheel for random outcomes: gold, relic, heal, curse, remove card, or damage.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -75,7 +75,7 @@ class WheelOfChange(Event):
         ]
         
         # Random outcome
-        chosen_outcome = random.choice(outcomes)
+        chosen_outcome = get_rng("misc").choice(outcomes)
         
         # Build options
         options = [

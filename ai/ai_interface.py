@@ -342,8 +342,6 @@ class MockAIDecisionEngine(AIDecisionEngine):
         """
         super().__init__(debug)
         self.strategy = strategy
-        import random
-        self.random = random.Random()
     
     def make_map_decision(self, map_context: Dict) -> int:
         """
@@ -370,7 +368,8 @@ class MockAIDecisionEngine(AIDecisionEngine):
             choice_index = len(available_moves) - 1
         
         elif self.strategy == "random":
-            choice_index = self.random.randint(0, len(available_moves) - 1)
+            from engine.random_streams import get_rng
+            choice_index = get_rng("policy").randint(0, len(available_moves) - 1)
         
         elif self.strategy == "least_risk":
             # Choose move with lowest risk level

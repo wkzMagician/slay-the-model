@@ -2,9 +2,9 @@
 
 Trade a relic for N'loth's Gift (50% chance to duplicate obtained cards).
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from typing import cast
 from relics.base import Relic
 
@@ -36,7 +36,7 @@ class Nloth(Event):
         
         # Select 2 random relics to offer on first trigger
         if not self.offered_relics and len(game_state.player.relics) >= 2:
-            self.offered_relics = random.sample(
+            self.offered_relics = get_rng("misc").sample(
                 list(game_state.player.relics), 
                 min(2, len(game_state.player.relics))
             )

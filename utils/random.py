@@ -1,7 +1,7 @@
+from engine.random_streams import get_rng
 from typing import Any, List, Optional, TYPE_CHECKING
 from utils.registry import get_registered, list_registered
 from utils.types import CardType, RarityType
-import random
 
 # Type hinting only, avoid circular import
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ def get_random_card(namespaces: Optional[List[str]] = None,
                      target_set: Optional[List[str]] = None, 
                      exclude_set: Optional[List[str]] = None,
                      exclude_card_ids: Optional[List[str]] = None,
-                     exclude_starter: bool = False) -> Optional[Card]:
+                     exclude_starter: bool = False, rng=None) -> Optional[Card]:
     """
     Get a random card from the registry based on criteria.
     
@@ -37,8 +37,9 @@ def get_random_card(namespaces: Optional[List[str]] = None,
         Optional[Card]: A random card matching the criteria, or None if none found.
     """
     
+    rng = rng if rng is not None else get_rng("card_random")
     if target_set:
-        target_card_idstr = random.choices(target_set, k=1)[0]
+        target_card_idstr = rng.choices(target_set, k=1)[0]
         card_cls = get_registered("card", target_card_idstr)
         return card_cls() if card_cls else None
     
@@ -68,7 +69,7 @@ def get_random_card(namespaces: Optional[List[str]] = None,
     if not filtered_card_idstrs:
         return None
 
-    selected_card_idstr = random.choice(filtered_card_idstrs)
+    selected_card_idstr = rng.choice(filtered_card_idstrs)
     selected_card_cls = get_registered("card", selected_card_idstr)
     return selected_card_cls() if selected_card_cls else None
 
@@ -189,10 +190,10 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
         weights = [effective_probs[rarity] / total_prob for rarity, _ in available_rarities]
 
     # Randomly select rarity based on weights
-    selected_rarity, card_list = random.choices(available_rarities, weights=weights, k=1)[0]
+    selected_rarity, card_list = get_rng("card").choices(available_rarities, weights=weights, k=1)[0]
     
     # Randomly select a card from the chosen rarity
-    selected_card_idstr = random.choice(card_list)
+    selected_card_idstr = get_rng("card").choice(card_list)
     selected_card_cls = get_registered("card", selected_card_idstr)
     selected_card = selected_card_cls() if selected_card_cls else None
 
@@ -214,7 +215,7 @@ def get_random_card_reward(namespaces: Optional[List[str]] = None,
             act=act,
             ascension=ascension,
         )
-        if random.random() < upgrade_chance:
+        if get_rng("card").random() < upgrade_chance:
             selected_card.upgrade()
 
     return selected_card
@@ -316,7 +317,7 @@ def get_random_relic(characters: Optional[List[str]] = None,
     if not filtered_relic_idstrs:
         return None
     
-    selected_relic_idstr = random.choice(filtered_relic_idstrs)
+    selected_relic_idstr = get_rng("relic").choice(filtered_relic_idstrs)
     selected_relic_cls = get_registered("relic", selected_relic_idstr)
     return selected_relic_cls() if selected_relic_cls else None
 
@@ -373,7 +374,7 @@ def get_random_potion(characters: Optional[List[str]] = None,
         return None
 
     if not rarities:
-        rarity_roll = random.random()
+        rarity_roll = get_rng("potion").random()
         if rarity_roll < 0.65:
             rolled_rarity = RarityType.COMMON
         elif rarity_roll < 0.90:
@@ -390,7 +391,7 @@ def get_random_potion(characters: Optional[List[str]] = None,
         if rarity_filtered:
             filtered_potion_idstrs = rarity_filtered
 
-    selected_potion_idstr = random.choice(filtered_potion_idstrs)
+    selected_potion_idstr = get_rng("potion").choice(filtered_potion_idstrs)
     selected_potion_cls = get_registered("potion", selected_potion_idstr)
     return selected_potion_cls() if selected_potion_cls else None
 
