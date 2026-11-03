@@ -160,6 +160,13 @@ class PrismaticShard(Relic):
         """Allow card rewards to use all colors."""
         return True
 
+    def on_obtain(self):
+        from engine.game_state import game_state
+        player = game_state.player
+        if player.namespace != "defect" and player.base_orb_slots == 0:
+            player.base_orb_slots = 1
+            player.orb_manager.max_orb_slots = max(1, player.orb_manager.max_orb_slots)
+
 
 @register("relic")
 class Orrery(Relic):

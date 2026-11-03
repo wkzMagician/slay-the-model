@@ -18,7 +18,7 @@ class CharacterConfig:
         max_hp: Starting max HP
         energy: Energy per turn
         gold: Starting gold
-        orb_slots: Number of orb slots (default 1)
+        orb_slots: Number of orb slots (default 0)
         potion_limit: Potion slot limit (default 3)
         deck: List of card IDs for starting deck
         starting_relics: List of relic IDs for starting relics
@@ -33,7 +33,7 @@ class CharacterConfig:
     gold: int
     deck: List[str]
     starting_relics: List[str]
-    orb_slots: int = 1
+    orb_slots: int = 0
     potion_limit: int = 3
     draw_count: int = 5
     playable: bool = True
@@ -52,7 +52,7 @@ def register_character(
     gold: int,
     deck: List[str],
     starting_relics: List[str],
-    orb_slots: int = 1,
+    orb_slots: int = 0,
     potion_limit: int = 3,
     draw_count: int = 5,
     playable: bool = True,

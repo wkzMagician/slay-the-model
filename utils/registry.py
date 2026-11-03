@@ -39,6 +39,10 @@ def register(category: str):
 
         if name:
             _REGISTRY[category][name] = obj
+            if category == "card":
+                from cards.namespaces import CARD_NAMESPACES, namespace_from_module
+                namespace = namespace_from_module(obj.__module__)
+                CARD_NAMESPACES[namespace][name.lower()] = obj
 
         return obj
     return decorator

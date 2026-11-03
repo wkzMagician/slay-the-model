@@ -21,12 +21,13 @@ def _import_character_relics(character: str):
     importlib.import_module(f"relics.character.{character.lower()}")
 
 
-def create_player(character=None):
+def create_player(character=None, *, ascension: int = 0):
     """Create a player with character-specific starting deck and stats.
 
     Args:
         character: Character name (e.g., "Ironclad", "ironclad", "Silent")
                  If None, uses default character from config
+        ascension: New-run ascension level; callers without a run default to A0.
 
     Returns:
         Initialized Player instance with character-specific configuration
@@ -37,8 +38,7 @@ def create_player(character=None):
     from player.player import Player
     from player.character_config import get_character_config
     from player.card_manager import CardManager
-    from cards.namespaces import get_namespace_for_character
-    from utils.registry import get_registered_instance
+    from cards.namespaces import CARD_NAMESPACES, get_namespace_for_character
 
     # Normalize character name
     if not character:
@@ -61,8 +61,11 @@ def create_player(character=None):
     _import_character_cards(character)
     _import_character_relics(character)
 
+    max_hp = char_config.max_hp
+    if ascension >= 14:
+        max_hp -= 5 if char_config.name.lower() == "ironclad" else 4
     player = Player(
-        max_hp=char_config.max_hp,
+        max_hp=max_hp,
         max_energy=char_config.energy
     )
     player.character = char_config.display_name
@@ -71,19 +74,23 @@ def create_player(character=None):
     player.base_draw_count = char_config.draw_count
     player.base_orb_slots = char_config.orb_slots
     player.orb_manager.max_orb_slots = char_config.orb_slots
-    player.potion_limit = char_config.potion_limit
+    player.potion_limit = char_config.potion_limit - (1 if ascension >= 11 else 0)
+    if ascension >= 6:
+        # MathUtils.round(maxHealth * 0.9f), for positive starting health.
+        player.hp = (max_hp * 9 + 5) // 10
 
     starting_deck = []
     for card_id in char_config.deck:
-        if "." in card_id:
-            class_name = card_id.split(".")[-1].capitalize()
-        else:
-            class_name = card_id.capitalize()
+        namespace, _, class_name = card_id.rpartition(".")
+        namespace = namespace.lower() or player.namespace
+        card_class = CARD_NAMESPACES.get(namespace, {}).get(class_name.lower())
+        if card_class is None:
+            raise ValueError(f"Card not found in namespace registry: {card_id}")
+        starting_deck.append(card_class())
 
-        card = get_registered_instance("card", class_name)
-        if card is None:
-            raise ValueError(f"Card not found in registry: {card_id} (tried {class_name})")
-        starting_deck.append(card)
+    if ascension >= 10:
+        from cards.colorless.ascenders_bane import AscendersBane
+        starting_deck.append(AscendersBane())
 
     player.card_manager = CardManager(starting_deck)
 

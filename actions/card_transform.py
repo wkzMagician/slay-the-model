@@ -54,7 +54,8 @@ class RemoveAllStrikesAction(Action):
     """
     def execute(self) -> None:
         from engine.game_state import game_state
-        from cards.ironclad.strike import Strike
+        from cards.namespaces import CARD_NAMESPACES
+        strike_class = CARD_NAMESPACES["ironclad"].get("strike")
 
         if not game_state.player:
             return
@@ -71,7 +72,7 @@ class RemoveAllStrikesAction(Action):
                 continue
 
             # Find all Strike cards in this pile
-            strikes = [card for card in pile if isinstance(card, Strike)]
+            strikes = [card for card in pile if strike_class is not None and isinstance(card, strike_class)]
             for strike in strikes:
                 game_state.player.card_manager.remove_from_pile(strike, pile_name)
                 removed_count += 1

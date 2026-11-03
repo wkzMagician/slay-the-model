@@ -23,7 +23,7 @@ from player.character_config import register_character
     starting_relics=[
         "BurningBlood",
     ],
-    orb_slots=1,
+    orb_slots=0,
     potion_limit=3,
     draw_count=5,
 )
