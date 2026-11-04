@@ -455,7 +455,7 @@ class EncounterPool:
         "Gang of Gremlins": (_create_gremlin_gang, 1),
         "Large Slime": (_create_large_slime, 2),
         "Swarm of Slimes": (_create_swarm_slimes, 1),
-        "Blue Slaver": (_create_blue_slaver, 1),
+        "Blue Slaver": (_create_blue_slaver, 2),
         "Red Slaver": (_create_red_slaver, 1),
         "3 Louse": (_create_triple_louse, 2),
         "2 Fungi Beasts": (_create_fungi_pair, 2),
@@ -573,24 +573,28 @@ class EncounterPool:
         (self.easy_pool, self.hard_pool, 
          self.elite_pool, self.boss_pool) = pools.get(act_id, pools[1])
 
-    def get_pool_name(self, encounter_count: int, act: int = 1) -> str:
+    def get_pool_name(self, encounter_count: int, act: int | None = None) -> str:
         """Determine if current encounter should be from easy or hard pool."""
-        easy_count = self.EASY_ENCOUNTER_COUNTS.get(act, 2)
+        easy_count = self.EASY_ENCOUNTER_COUNTS.get(self.act_id if act is None else act, 2)
         return "easy" if encounter_count < easy_count else "hard"
 
     def _get_available_encounters(self, pool, encounter_history, is_first_hard=False, last_encounter=None):
         """Filter out recently used encounters."""
         available = {}
+        transitions = {
+            1: {"2 Louse": {"3 Louse"}, "Small Slimes": {"Large Slime", "Swarm of Slimes"},
+                "Looter": {"Exordium Thugs"}},
+            2: {"Spheric Guardian": {"Sentry and Spheric Guardian"},
+                "3 Byrds": {"Chosen and Byrds"},
+                "Chosen": {"Chosen and Byrds", "Cultist and Chosen"}},
+            3: {"3 Shapes": {"4 Shapes"}},
+        }
+        excluded = transitions.get(self.act_id, {}).get(last_encounter, set()) if is_first_hard else set()
         for name, (factory, weight) in pool.items():
             if name in encounter_history[-2:]:
                 continue
-            if is_first_hard and last_encounter:
-                if name == "3 Louse" and last_encounter == "2 Louse":
-                    continue
-                if name in ["Large Slime", "Swarm of Slimes"] and last_encounter == "Small Slimes":
-                    continue
-                if name == "Exordium Thugs" and last_encounter == "Looter":
-                    continue
+            if name in excluded:
+                continue
             available[name] = (factory, weight)
         return available
 
@@ -609,7 +613,7 @@ class EncounterPool:
             encounter_history = []
         pool_name = self.get_pool_name(encounter_count)
         pool = self.easy_pool if pool_name == "easy" else self.hard_pool
-        is_first_hard = pool_name == "hard" and encounter_count == self.EASY_ENCOUNTER_COUNTS.get(1, 3)
+        is_first_hard = pool_name == "hard" and encounter_count == self.EASY_ENCOUNTER_COUNTS.get(self.act_id, 2)
         last_encounter = encounter_history[-1] if encounter_history else None
         available = self._get_available_encounters(pool, encounter_history, is_first_hard, last_encounter)
         if not available:

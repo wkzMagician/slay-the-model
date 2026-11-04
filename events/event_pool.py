@@ -85,9 +85,10 @@ class EventPool:
         return metadata.requires_condition is None or bool(metadata.requires_condition())
 
     def get_available_events(self, act: int = 1) -> List[EventMetadata]:
-        # Sorting avoids hash-order-dependent seeded results. This query consumes nothing.
-        return [metadata for _, metadata in sorted(self._event_registry.items())
-                if self._matches_act(metadata, act) and self._is_event_available(metadata, act)]
+        from engine.event_order import ordered_ids
+        return [self._event_registry[key] for key in ordered_ids(act, self._event_registry)
+                if self._matches_act(self._event_registry[key], act)
+                and self._is_event_available(self._event_registry[key], act)]
 
     def draw_metadata(self, act: int = 1) -> EventMetadata | None:
         if act not in (1, 2, 3):
@@ -125,8 +126,10 @@ class EventPool:
         self._get_state().reset()
 
     def get_events_by_act(self, act: int) -> List[str]:
-        return sorted(key for key, metadata in self._event_registry.items()
-                      if self._matches_act(metadata, act) and metadata.category != 'excluded')
+        from engine.event_order import ordered_ids
+        return [key for key in ordered_ids(act, self._event_registry)
+                if self._matches_act(self._event_registry[key], act)
+                and self._event_registry[key].category != 'excluded']
 
     def get_all_registered_events(self) -> dict[str, EventMetadata]:
         return self._event_registry.copy()

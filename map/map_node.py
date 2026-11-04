@@ -31,6 +31,7 @@ class MapNode:
         self.room_type = room_type
         self.connections_up = connections_up or []
         self.visited = visited
+        self.map_x: int | None = None  # original grid column, before compacting
     
     def add_connection_up(self, position: int):
         """Add an upward connection to the specified node position."""

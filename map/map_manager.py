@@ -19,12 +19,8 @@ class MapManager:
     """
     Manages map generation and navigation for a single act.
     
-    Based on Slay the Spire's map generation algorithm:
-    - Each act has 17 floors (0-16)
-    - Floors 0, 8, 14, 15 have fixed room types
-    - Other floors have random room types with weighted probabilities
-    - Each floor has 2-6 nodes
-    - Nodes have 1-3 connections to adjacent floors
+    Normal acts adapt a 15-by-7 original path grid to compact selectable
+    positions, with separate entry, boss and exit rows. Act 4 is a fixed chain.
     """
     
     # Room type probabilities for random floors (weights)
@@ -36,6 +32,8 @@ class MapManager:
         RoomType.UNKNOWN: 22,
     }
     MAP_SLOT_LAYOUTS = {
+        6: [0, 1, 2, 4, 5, 6],
+        7: list(range(7)),
         1: [2],
         2: [1, 3],
         3: [0, 2, 4],
@@ -83,6 +81,8 @@ class MapManager:
         # Store floor counts per act for accurate true floor calculation
         # This is populated when maps are generated for each act
         self._act_floor_counts = {}
+        self.original_grid = None
+        self.generated_room_counts = {}
     
     def set_relic_effect(self, effect_name: str, enabled: bool) -> None:
         """
@@ -96,584 +96,46 @@ class MapManager:
             self._relic_effects[effect_name] = enabled
     
     def generate_map(self) -> MapData:
-        """
-        Generate a complete map for act.
-        
-        Returns:
-            MapData containing generated map
-        """
-        # Generate floor structure (number of nodes per floor)
-        floor_sizes = self._generate_floor_structure()
-        
-        # Store floor count for this act (needed for accurate true floor display)
-        self._act_floor_counts[self.act_id] = len(floor_sizes)
-        
-        # Generate nodes with connections
-        nodes_with_connections = self._generate_nodes_with_connections(floor_sizes)
-        
-        # Assign room types
-        self._assign_room_types(nodes_with_connections)
-        
-        # Store in map data
-        self.map_data.nodes = nodes_with_connections
-        
+        """Generate original normal-mode grid, then adapt navigation coordinates."""
+        from engine.game_state import game_state
+        from .original_map import generate_paths, assign_rooms
+
+        act_start = self._get_act_start_floor(self.act_id)
+        if self.act_id == 4:
+            kinds = [RoomType.REST, RoomType.MERCHANT, RoomType.ELITE,
+                     RoomType.BOSS, RoomType.VICTORY]
+            nodes = [[MapNode(act_start + row, 0, kind, [0] if row < 4 else [])]
+                     for row, kind in enumerate(kinds)]
+        else:
+            self.original_grid = generate_paths(self.rng)
+            self.generated_room_counts = assign_rooms(self.original_grid, self.rng, game_state.ascension)
+            connected = [[node for node in row if node.edges] for row in self.original_grid]
+            positions = [{node.x: index for index, node in enumerate(row)} for row in connected]
+            entry = MapNode(act_start, 0, RoomType.NEO, list(range(len(connected[0]))))
+            entry.map_x = 3
+            nodes = [[entry]]
+            for y, row in enumerate(connected):
+                compact = []
+                for position, original in enumerate(row):
+                    destinations = ([positions[y + 1][x] for x in original.edges]
+                                    if y < 14 else [0])
+                    node = MapNode(act_start + y + 1, position,
+                                   original.room_type or RoomType.MONSTER, destinations)
+                    node.map_x = original.x
+                    compact.append(node)
+                nodes.append(compact)
+            tail = ([RoomType.BOSS, RoomType.BOSS, RoomType.VICTORY]
+                    if self.act_id == 3 and game_state.ascension >= 20 else
+                    [RoomType.BOSS, RoomType.VICTORY if self.act_id == 3 else RoomType.TREASURE])
+            for offset, kind in enumerate(tail):
+                node = MapNode(act_start + 16 + offset, 0, kind,
+                               [0] if offset < len(tail) - 1 else [])
+                node.map_x = 3
+                nodes.append([node])
+        self._act_floor_counts[self.act_id] = len(nodes)
+        self.map_data.nodes = nodes
         return self.map_data
-    
-    def _generate_floor_structure(self) -> List[int]:
-        """
-        Generate number of nodes for each floor.
-        
-        Returns:
-            List of node counts for each floor
-        """
-        from engine.game_state import game_state
-        
-        if self.act_id == 4:
-            return [1, 1, 1, 1, 1]
-        
-        if self.act_id == 3 and game_state.ascension >= 20:
-            floor_sizes = []
-            for floor in range(19):
-                if floor == 0:
-                    floor_sizes.append(1)
-                elif floor == 1:
-                    floor_sizes.append(3)
-                elif floor == 9:
-                    floor_sizes.append(3)
-                elif floor == 15:
-                    floor_sizes.append(3)
-                elif floor == 16:
-                    floor_sizes.append(1)
-                elif floor == 17:
-                    floor_sizes.append(1)
-                elif floor == 18:
-                    floor_sizes.append(1)
-                else:
-                    floor_sizes.append(self.rng.randint(3, 5))
-            return floor_sizes
-        
-        floor_sizes = []
-        for floor in range(18):
-            if floor == 0:
-                floor_sizes.append(1)
-            elif floor == 1:
-                floor_sizes.append(3)
-            elif floor == 9:
-                floor_sizes.append(3)
-            elif floor == 15:
-                floor_sizes.append(3)
-            elif floor == 16:
-                floor_sizes.append(1)
-            elif floor == 17:
-                floor_sizes.append(1)
-            else:
-                floor_sizes.append(self.rng.randint(3, 5))
-        
-        return floor_sizes
-    
-    def _generate_nodes_with_connections(self, floor_sizes: List[int]) -> List[List[MapNode]]:
-        """
-        Generate all nodes with their connections.
-        
-        Args:
-            floor_sizes: Number of nodes per floor
-            
-        Returns:
-            2D array of MapNode objects with connections set
-        """
-        nodes: List[List[MapNode]] = []
-        
-        # Create nodes floor by floor
-        act_start_floor = self._get_act_start_floor(self.act_id)
-        for floor_in_act, size in enumerate(floor_sizes):
-            true_floor = act_start_floor + floor_in_act
-            floor_nodes = []
-            for position in range(size):
-                # Default room type, will be reassigned later
-                node = MapNode(true_floor, position, RoomType.MONSTER)
-                floor_nodes.append(node)
-            nodes.append(floor_nodes)
-        
-        # Create connections between adjacent floors
-        for floor in range(len(floor_sizes) - 1):
-            current_floor_nodes = nodes[floor]
-            next_floor_nodes = nodes[floor + 1]
-            
-            if not current_floor_nodes or not next_floor_nodes:
-                continue
-            
-            # Step 1: Ensure every source node has at least one outgoing connection
-            # Map each source node to at least one destination (using relative positions)
-            for src_pos, src_node in enumerate(current_floor_nodes):
-                dest_pos = min(src_pos * len(next_floor_nodes) // len(current_floor_nodes),
-                              len(next_floor_nodes) - 1)
-                src_node.add_connection_up(dest_pos)
-            
-            # Step 2: Ensure every destination node has at least one incoming connection
-            # (may already be satisfied by Step 1, but verify and fix if not)
-            for dest_pos in range(len(next_floor_nodes)):
-                has_incoming = any(dest_pos in node.connections_up for node in current_floor_nodes)
-                if not has_incoming:
-                    src_pos = self._find_non_crossing_source_for_destination(
-                        current_floor_nodes=current_floor_nodes,
-                        dest_pos=dest_pos,
-                        next_floor_size=len(next_floor_nodes),
-                    )
-                    if src_pos is not None:
-                        current_floor_nodes[src_pos].add_connection_up(dest_pos)
-            
-            # Step 3: Add additional connections for variety (30% chance per node)
-            if len(current_floor_nodes) > 1:
-                for src_pos, src_node in enumerate(current_floor_nodes):
-                    if self.rng.random() < 0.3:
-                        available = [p for p in range(len(next_floor_nodes)) 
-                                    if p not in src_node.connections_up
-                                    and not self._would_connection_cross(
-                                        current_floor_nodes=current_floor_nodes,
-                                        src_pos=src_pos,
-                                        dest_pos=p,
-                                    )]
-                        if available:
-                            src_node.add_connection_up(self.rng.choice(available))
-        
-        return nodes
 
-    def _would_connection_cross(
-        self,
-        current_floor_nodes: List[MapNode],
-        src_pos: int,
-        dest_pos: int,
-    ) -> bool:
-        """Return True when adding this edge would reverse left-to-right order."""
-        for other_src_pos, other_node in enumerate(current_floor_nodes):
-            if other_src_pos == src_pos:
-                continue
-            for other_dest_pos in other_node.connections_up:
-                if other_src_pos < src_pos and other_dest_pos > dest_pos:
-                    return True
-                if other_src_pos > src_pos and other_dest_pos < dest_pos:
-                    return True
-        return False
-
-    def _find_non_crossing_source_for_destination(
-        self,
-        current_floor_nodes: List[MapNode],
-        dest_pos: int,
-        next_floor_size: int,
-    ) -> Optional[int]:
-        """Pick the closest source that can connect to dest_pos without crossing."""
-        current_floor_size = len(current_floor_nodes)
-        ideal_src_pos = min(
-            dest_pos * current_floor_size // next_floor_size,
-            current_floor_size - 1,
-        )
-        candidate_positions = sorted(
-            range(current_floor_size),
-            key=lambda pos: (abs(pos - ideal_src_pos), pos),
-        )
-        for src_pos in candidate_positions:
-            if not self._would_connection_cross(current_floor_nodes, src_pos, dest_pos):
-                return src_pos
-        return None
-    
-    def _assign_room_types(self, nodes: List[List[MapNode]]):
-        """
-        Assign room types to all nodes based on rules.
-        
-        Algorithm:
-        1. Calculate total room counts for each type based on probabilities
-        2. Assign fixed floor types (floor 1=M, 9=T, 15=R)
-        3. Assign remaining rooms respecting constraints:
-           - No elite/rest in first 5 floors
-           - No rest on floor 14
-           - No consecutive elite/rest/shop rooms
-           - Floor 8 (floor index) rooms have diverse types (for floor 9 treasure)
-        
-        Args:
-            nodes: 2D array of MapNode objects
-        """
-        from engine.game_state import game_state
-        
-        total_floors = len(nodes)
-        
-        # Handle special cases for Act 4 and Act 3 with ascension 20+
-        if self.act_id == 4:
-            self._assign_act4_rooms(nodes)
-            return
-        
-        if self.act_id == 3 and game_state.ascension >= 20:
-            self._assign_act3_asc20_rooms(nodes)
-            return
-        
-        if self.act_id == 3:
-            self._assign_act3_rooms(nodes)
-            return
-        
-        # Normal act (1 or 2) room assignment
-        self._assign_normal_act_rooms(nodes)
-    
-    def _assign_act4_rooms(self, nodes: List[List[MapNode]]):
-        """Assign rooms for Act 4 (fixed pattern)"""
-        for floor in range(len(nodes)):
-            for node in nodes[floor]:
-                if floor == 0:
-                    node.room_type = RoomType.REST
-                elif floor == 1:
-                    node.room_type = RoomType.MERCHANT
-                elif floor == 2:
-                    node.room_type = RoomType.ELITE
-                elif floor == 3:
-                    node.room_type = RoomType.BOSS
-                else:
-                    node.room_type = RoomType.VICTORY
-    
-    def _assign_act3_asc20_rooms(self, nodes: List[List[MapNode]]):
-        """Assign rooms for Act 3 with ascension 20+"""
-        for floor in range(len(nodes)):
-            for node in nodes[floor]:
-                if floor == 16:
-                    node.room_type = RoomType.BOSS
-                elif floor == 17:
-                    node.room_type = RoomType.BOSS
-                elif floor == 18:
-                    node.room_type = RoomType.VICTORY
-                elif floor == 0:
-                    node.room_type = RoomType.NEO
-                elif floor == 1:
-                    node.room_type = RoomType.MONSTER
-                elif floor == 9:
-                    node.room_type = RoomType.TREASURE
-                elif floor == 15:
-                    node.room_type = RoomType.REST
-                else:
-                    node.room_type = self._get_random_room_type()
-    
-    def _assign_act3_rooms(self, nodes: List[List[MapNode]]):
-        """Assign rooms for Act 3"""
-        for floor in range(len(nodes)):
-            for node in nodes[floor]:
-                if floor == 16:
-                    node.room_type = RoomType.BOSS
-                elif floor == 17:
-                    node.room_type = RoomType.VICTORY
-                elif floor == 0:
-                    node.room_type = RoomType.NEO
-                elif floor == 1:
-                    node.room_type = RoomType.MONSTER
-                elif floor == 9:
-                    node.room_type = RoomType.TREASURE
-                elif floor == 15:
-                    node.room_type = RoomType.REST
-                else:
-                    node.room_type = self._get_random_room_type()
-    
-    # Define fixed floor types for normal acts (1 or 2)
-    FIXED_FLOOR_TYPES = {
-        0: RoomType.NEO,
-        1: RoomType.MONSTER,
-        9: RoomType.TREASURE,
-        15: RoomType.REST,
-        16: RoomType.BOSS,
-        17: RoomType.TREASURE,
-    }
-    
-    def _is_fixed_floor(self, floor: int) -> bool:
-        """Check if a floor has a fixed room type."""
-        return floor in self.FIXED_FLOOR_TYPES
-    
-    def _get_fixed_room_type(self, floor: int) -> Optional[RoomType]:
-        """Get the fixed room type for a floor, or None if not fixed."""
-        return self.FIXED_FLOOR_TYPES.get(floor)
-    
-    def _assign_normal_act_rooms(self, nodes: List[List[MapNode]]):
-        """
-        Assign rooms for normal acts (1 or 2) with all constraints.
-        
-        Algorithm:
-        1. Assign fixed floors first (they are immutable)
-        2. Calculate room counts for remaining floors
-        3. Assign remaining floors respecting all constraints
-        """
-        total_floors = len(nodes)
-        
-        # Step 1: Assign fixed floors FIRST and make them immutable
-        for floor in range(total_floors):
-            fixed_type = self._get_fixed_room_type(floor)
-            if fixed_type:
-                for node in nodes[floor]:
-                    node.room_type = fixed_type
-        
-        # Step 2: Create a list of only non-fixed rooms for assignment
-        rooms_data = []
-        for floor in range(total_floors):
-            # Skip fixed floors entirely
-            if self._is_fixed_floor(floor):
-                continue
-            for pos, node in enumerate(nodes[floor]):
-                rooms_data.append({
-                    'floor': floor,
-                    'position': pos,
-                    'node': node,
-                    'floor_size': len(nodes[floor])
-                })
-        
-        # Step 3: Calculate room counts for non-fixed floors only
-        room_counts = self._calculate_room_counts(total_floors, nodes)
-        
-        # Step 4: Assign remaining rooms with constraints
-        self._assign_remaining_rooms(rooms_data, room_counts, nodes)
-    
-    def _calculate_room_counts(self, total_floors: int, nodes: List[List[MapNode]]) -> Dict[RoomType, int]:
-        """
-        Calculate how many rooms of each type to generate based on probabilities.
-        
-        Based on ROOM_TYPE_WEIGHTS, calculates expected counts and rounds to integers.
-        """
-        # Count total nodes (excluding fixed floors that will be assigned separately)
-        # Fixed floors: 0 (NEO), 1 (M), 9 (T), 15 (R), 16 (B), 17 (T)
-        fixed_floor_indices = {0, 1, 9, 15, 16, 17}
-        
-        total_nodes = 0
-        for floor in range(total_floors):
-            if floor not in fixed_floor_indices:
-                total_nodes += len(nodes[floor])
-        
-        # Calculate from room weights
-        # The weights represent distribution across all non-fixed rooms
-        total_weight = sum(self.ROOM_TYPE_WEIGHTS.values())
-        
-        # Calculate counts
-        counts = {}
-        for room_type, weight in self.ROOM_TYPE_WEIGHTS.items():
-            # Calculate expected count based on weight proportion
-            if room_type == RoomType.UNKNOWN:
-                # Unknown rooms resolve to other types, so skip in count calculation
-                continue
-            counts[room_type] = int(weight * total_nodes / total_weight)
-        
-        # Fill remaining with MONSTER
-        assigned_count = sum(counts.values())
-        counts[RoomType.MONSTER] += (total_nodes - assigned_count)
-        
-        # Ensure all room types in available list are in counts
-        # Add EVENT type with 0 count if not present
-        if RoomType.EVENT not in counts:
-            counts[RoomType.EVENT] = 0
-        
-        return counts
-    
-    def _assign_fixed_floors(self, rooms_data: List[Dict], room_counts: Dict[RoomType, int], nodes: List[List[MapNode]]):
-        """
-        Assign room types to fixed floors.
-        
-        Fixed assignments:
-        - Floor 0: NEO
-        - Floor 1: MONSTER
-        - Floor 9: TREASURE
-        - Floor 15: REST
-        - Floor 16: BOSS
-        - Floor 17: TREASURE
-        """
-        for room_info in rooms_data:
-            floor = room_info['floor']
-            node = room_info['node']
-            
-            if floor == 0:
-                node.room_type = RoomType.NEO
-                room_info['assigned'] = True
-            elif floor == 1:
-                node.room_type = RoomType.MONSTER
-                room_info['assigned'] = True
-            elif floor == 9:
-                node.room_type = RoomType.TREASURE
-                room_info['assigned'] = True
-            elif floor == 15:
-                node.room_type = RoomType.REST
-                room_info['assigned'] = True
-            elif floor == 16:
-                node.room_type = RoomType.BOSS
-                room_info['assigned'] = True
-            elif floor == 17:
-                node.room_type = RoomType.TREASURE
-                room_info['assigned'] = True
-            else:
-                room_info['assigned'] = False
-    
-    def _assign_remaining_rooms(self, rooms_data: List[Dict], room_counts: Dict[RoomType, int], nodes: List[List[MapNode]]):
-        """
-        Assign room types to non-fixed floor nodes respecting all constraints.
-        
-        Note: This method only receives rooms_data for non-fixed floors.
-        Fixed floors are already assigned in _assign_normal_act_rooms and are not passed here.
-        
-        Constraints:
-        1. No elite/rest in first 5 floors (floors 2-4, since 0-1 are fixed)
-        2. No rest on floor 14
-        3. No consecutive elite/rest/shop rooms between adjacent floors
-        4. Floor 8 rooms have diverse types (for floor 9 treasure)
-        5. No duplicate room types within same floor
-        """
-        # All rooms in rooms_data are unassigned (fixed floors are already excluded)
-        unassigned = rooms_data
-        
-        # Sort by floor to ensure lower floors get assigned first
-        unassigned.sort(key=lambda x: x['floor'])
-        
-        # Track previous room type for consecutive check
-        prev_room_types = {}  # floor -> room_type
-        
-        # Track assigned room types within each floor
-        assigned_this_floor = {}  # floor -> {position: room_type}
-        
-        for room_info in unassigned:
-            floor = room_info['floor']
-            position = room_info['position']
-            node = room_info['node']
-            
-            # Get assigned types for this floor (excluding current position)
-            floor_assigned = {
-                pos: rtype 
-                for pos, rtype in assigned_this_floor.get(floor, {}).items() 
-                if pos != position
-            }
-            
-            # Get available room types for this floor position
-            available_types = self._get_available_types_for_floor(
-                floor, 
-                position, 
-                nodes, 
-                prev_room_types,
-                assigned_this_floor
-            )
-            
-            # Choose a type from available types based on remaining counts
-            chosen_type = self._choose_type_from_available(available_types, room_counts)
-            
-            # Assign and update counts
-            node.room_type = chosen_type
-            room_counts[chosen_type] -= 1
-            prev_room_types[floor] = chosen_type
-            
-            # Track this assignment for the floor
-            if floor not in assigned_this_floor:
-                assigned_this_floor[floor] = {}
-            assigned_this_floor[floor][position] = chosen_type
-    
-    def _get_available_types_for_floor(
-        self, 
-        floor: int, 
-        position: int, 
-        nodes: List[List[MapNode]],
-        prev_room_types: Dict[int, RoomType],
-        assigned_this_floor: Dict[int, Dict[int, RoomType]]
-    ) -> List[RoomType]:
-        """
-        Get list of available room types for a specific floor position.
-        
-        Constraints:
-        - No elite/rest in first 5 floors (floors 2-4, since 0-1 are fixed)
-        - No rest on floor 14
-        - No consecutive elite/rest/shop between adjacent floors
-        - Floor 8: ensure diversity from previous floor's outgoing rooms
-        - All rooms on floor 8 connect to different room types (for floor 9 treasure)
-        - No duplicate room types within the same floor's connections
-        
-        Args:
-            floor: Current floor being assigned
-            position: Position index on current floor
-            nodes: All nodes in the map
-            prev_room_types: Room types already assigned to previous floors
-            assigned_this_floor: Room types already assigned to positions on this floor
-            
-        Returns:
-            List of available RoomType for this position
-        """
-        available = [RoomType.MONSTER, RoomType.ELITE, RoomType.REST, 
-                   RoomType.MERCHANT, RoomType.EVENT]
-        
-        # Constraint 1: No elite/rest in first 5 floors (floors 2-4)
-        if floor <= 4:
-            available = [t for t in available if t not in [RoomType.ELITE, RoomType.REST]]
-        
-        # Constraint 2: No rest on floor 14
-        if floor == 14:
-            available = [t for t in available if t != RoomType.REST]
-        
-        # Constraint 3: No consecutive elite/rest/shop between adjacent floors
-        # Check if previous floor has any REST/ELITE/MERCHANT rooms
-        if floor > 0:
-            prev_floor_types = set()
-            for node in nodes[floor - 1]:
-                prev_floor_types.add(node.room_type)
-            
-            # If previous floor has REST/ELITE/MERCHANT, avoid those types
-            if prev_floor_types & {RoomType.ELITE, RoomType.REST, RoomType.MERCHANT}:
-                available = [t for t in available if t not in prev_floor_types]
-        
-        # Constraint 4: Floor 8 must have diverse types (for floor 9 treasure)
-        # All rooms on floor 8 should connect to different room types on floor 9
-        if floor == 8:
-            # Get room types already assigned on floor 8
-            floor8_types = set()
-            if assigned_this_floor and floor in assigned_this_floor:
-                floor8_types = set(assigned_this_floor[floor].values())
-            # For floor 8, avoid types already used on this floor
-            available = [t for t in available if t not in floor8_types]
-        
-        # Constraint 5: Avoid duplicate room types within the same floor
-        # Don't assign the same type as already assigned on this floor
-        if assigned_this_floor and floor in assigned_this_floor:
-            used_types = set(assigned_this_floor[floor].values())
-            available = [t for t in available if t not in used_types]
-        
-        return available
-    
-    def _choose_type_from_available(
-        self, 
-        available_types: List[RoomType], 
-        room_counts: Dict[RoomType, int]
-    ) -> RoomType:
-        """
-        Choose a room type from available types, preferring those with remaining counts.
-        
-        Args:
-            available_types: List of valid room types for this position
-            room_counts: Remaining count of each room type to assign
-            
-        Returns:
-            Chosen RoomType
-        """
-        # Filter to only types with remaining count > 0
-        valid_types = [t for t in available_types if room_counts.get(t, 0) > 0]
-        
-        if valid_types:
-            # Choose weighted by remaining count
-            total_remaining = sum(room_counts[t] for t in valid_types)
-            
-            if total_remaining == 0:
-                return self.rng.choice(valid_types)
-            
-            # Weighted random choice
-            weights = [room_counts[t] / total_remaining for t in valid_types]
-            return self.rng.choices(valid_types, weights=weights, k=1)[0]
-        
-        # Fallback: if no valid types due to constraints, try relaxed constraints
-        # Return the first available type regardless of count
-        # This allows the map to complete even if exact counts can't be met
-        return self.rng.choice(available_types) if available_types else RoomType.MONSTER
-    
-    def _get_random_room_type(self) -> RoomType:
-        """
-        Get a random room type based on weighted probabilities.
-        
-        Returns:
-            A random RoomType
-        """
-        room_types = list(self.ROOM_TYPE_WEIGHTS.keys())
-        weights = list(self.ROOM_TYPE_WEIGHTS.values())
-        
-        return self.rng.choices(room_types, weights=weights, k=1)[0]
-    
     @staticmethod
     def _normalize_relic_name(name) -> str:
         if not name:
@@ -1190,7 +652,7 @@ class MapManager:
     ) -> str:
         """Format a floor line using fixed grid slots for each node."""
         row = self._blank_map_row()
-        slots = self._slot_columns_for_count(len(floor_nodes))
+        slots = self._slots_for_nodes(floor_nodes)
         for pos, (node, slot) in enumerate(zip(floor_nodes, slots)):
             symbol = self._get_room_symbol(node.room_type)
             prefix = " "
@@ -1208,6 +670,11 @@ class MapManager:
 
         return label + "".join(row).rstrip()
 
+    def _slots_for_nodes(self, nodes: List[MapNode]) -> List[int]:
+        if all(node.map_x is not None for node in nodes):
+            return [int(node.map_x) for node in nodes if node.map_x is not None]
+        return self._slot_columns_for_count(len(nodes))
+
     def _slot_columns_for_count(self, count: int) -> List[int]:
         """Return fixed slot columns for a floor node count."""
         if count not in self.MAP_SLOT_LAYOUTS:
@@ -1220,12 +687,12 @@ class MapManager:
 
     def _blank_map_row(self) -> List[str]:
         """Create an empty row for the fixed-width map canvas."""
-        return list(" " * (self.MAP_SLOT_WIDTH * 5))
+        return list(" " * (self.MAP_SLOT_WIDTH * 7))
 
     def _format_floor_index_line(self, label: str, floor_nodes: List[MapNode]) -> str:
         """Render visible position indices above the node row."""
         row = self._blank_map_row()
-        for pos, slot in enumerate(self._slot_columns_for_count(len(floor_nodes))):
+        for pos, slot in enumerate(self._slots_for_nodes(floor_nodes)):
             row[slot * self.MAP_SLOT_WIDTH] = str(pos)
         return label + "".join(row).rstrip()
 
@@ -1236,8 +703,8 @@ class MapManager:
         row_cruise = self._blank_map_row()
         row_approach = self._blank_map_row()
         row_land = self._blank_map_row()
-        src_slots = self._slot_columns_for_count(len(floor_nodes))
-        dst_slots = self._slot_columns_for_count(len(next_floor_nodes))
+        src_slots = self._slots_for_nodes(floor_nodes)
+        dst_slots = self._slots_for_nodes(next_floor_nodes)
 
         def mark(buffer: List[str], index: int, char: str) -> None:
             if not (0 <= index < len(buffer)):
