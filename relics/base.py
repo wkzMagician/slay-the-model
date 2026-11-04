@@ -11,6 +11,7 @@ from engine.messages import (
     CardExhaustedMessage,
     CombatEndedMessage,
     CombatStartedMessage,
+    CombatPreDrawMessage,
     DamageDealtMessage,
     DirectHpLossMessage,
     EliteVictoryMessage,
@@ -106,6 +107,11 @@ class Relic(Localizable):
         return
     
     # ==================== Phase Hooks ====================
+
+    @subscribe(CombatPreDrawMessage, priority=MessagePriority.PLAYER_RELIC)
+    def on_combat_start_pre_draw(self, floor: int):
+        """Queue effects that must apply before the opening hand is drawn."""
+        return
     
     @subscribe(CombatStartedMessage, priority=MessagePriority.PLAYER_RELIC)
     def on_combat_start(self, floor: int):

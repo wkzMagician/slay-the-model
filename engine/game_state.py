@@ -105,6 +105,7 @@ class GameState:
         self.pending_card_plays = []
         self.active_card_plays = []
         self.pending_turn_end_cards = []
+        self.pending_turn_start_actions = []
         self.message_bus = MessageBus()
         
         # Current combat (None when not in combat)
@@ -324,6 +325,7 @@ class GameState:
             if self.terminal_state is not None:
                 result = self.terminal_state
                 self.terminal_state = None
+                self.pending_turn_start_actions = []
                 from actions.card_play_lifecycle import cleanup_terminal_card_plays
                 cleanup_terminal_card_plays()
                 return result
@@ -337,6 +339,12 @@ class GameState:
                 continue
 
             if self.action_queue.is_empty():
+                # Original preTurnActions follow ordinary actions, before
+                # cardQueue auto-play. Opening innate overflow uses this lane.
+                turn_start = getattr(self, "pending_turn_start_actions", [])
+                if turn_start:
+                    self.action_queue.add_action(turn_start.pop(0))
+                    continue
                 from actions.card_play_lifecycle import finalize_card_play
                 from actions.combat_cards import PlayCardAction
 

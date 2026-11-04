@@ -73,8 +73,8 @@ def _reset_state_with_deck(deck_cards):
     return player
 
 
-def test_init_combat_moves_innate_cards_to_hand():
-    """Innate cards should be moved from draw pile to hand at combat start."""
+def test_init_combat_places_innate_cards_on_top_before_draw():
+    """Preparation preserves cards in draw pile until queued draws execute."""
     player = _reset_state_with_deck(
         [_StubCard(), _StubCard(innate=True), _StubCard(), _StubCard()]
     )
@@ -85,14 +85,14 @@ def test_init_combat_moves_innate_cards_to_hand():
     hand = player.card_manager.get_pile("hand")
     draw_pile = player.card_manager.get_pile("draw_pile")
 
-    assert len(hand) == 1
-    assert hand[0].innate is True
-    assert all(not card.innate for card in draw_pile)
-    assert len(draw_pile) == 3
+    assert len(hand) == 0
+    assert draw_pile[-1].innate is True
+    assert sum(card.innate for card in draw_pile) == 1
+    assert len(draw_pile) == 4
 
 
-def test_first_turn_draw_only_fills_to_draw_count_when_innate_exists():
-    """First turn draw should fill hand to draw_count after innate setup."""
+def test_first_turn_draw_includes_innate_in_base_draw_count():
+    """The queued base draw includes the innate card on top of the pile."""
     player = _reset_state_with_deck(
         [_StubCard(innate=True), _StubCard(), _StubCard(), _StubCard(),
          _StubCard(), _StubCard()]
@@ -100,13 +100,13 @@ def test_first_turn_draw_only_fills_to_draw_count_when_innate_exists():
     combat = Combat(enemies=[_DummyEnemy()])
 
     combat._init_combat()
-    assert len(player.card_manager.get_pile("hand")) == 1
+    assert len(player.card_manager.get_pile("hand")) == 0
 
     combat._start_player_turn()
     game_state.execute_all_actions()
 
-    # X=1 innate already in hand, Y=5 draw target => draw max(Y-X, 0)=4.
     assert len(player.card_manager.get_pile("hand")) == 5
+    assert player.card_manager.get_pile("hand")[0].innate
 
 
 def test_god_mode_sets_all_enemies_to_one_hp():

@@ -16,6 +16,7 @@ from engine.messages import (
     CardPlayedMessage,
     CombatEndedMessage,
     CombatStartedMessage,
+    CombatPreDrawMessage,
     CreatureDiedMessage,
     EnemyHpDepletedMessage,
     EnemyDefeatedMessage,
@@ -125,6 +126,11 @@ _NEW_STATUS = lambda _bound_method, message: message.new_status
 
 def _build_contracts() -> dict[type[GameMessage], MessageContract]:
     contracts = {
+        CombatPreDrawMessage: MessageContract(
+            message_type=CombatPreDrawMessage,
+            param_names=("floor",),
+            binder=_bind(_FLOOR),
+        ),
         CombatStartedMessage: MessageContract(
             message_type=CombatStartedMessage,
             param_names=("floor",),

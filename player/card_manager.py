@@ -42,6 +42,9 @@ class CardManager:
         self.piles['hand'] = []
         self.piles['exhaust_pile'] = []
         self.piles['limbo'] = []
+        # CardGroup.initializeDeck consumes one shuffle-domain long even for
+        # an empty/singleton deck, then uses Java48 Collections.shuffle.
+        get_rng("shuffle").shuffle(self.piles['draw_pile'])
 
     def shuffle_discard_to_draw(self) -> bool:
         """Move discard into draw pile and shuffle.

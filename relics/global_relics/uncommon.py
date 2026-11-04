@@ -77,15 +77,8 @@ class BottledFlame(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.ATTACK)])
         return
-    def on_combat_start(self, floor: int):
-        """Add selected card to hand at start of combat."""
-        if self.selected_card:
-            # Add a copy of selected card to hand
-            from actions.card import AddCardAction
-            from engine.game_state import game_state
-            add_actions([AddCardAction(card=self.selected_card, dest_pile='hand', position=PilePosType.TOP)])
-            return
-        return
+    # Combat prepares the selected card's combat copy on top of the draw pile.
+    # No extra card is created by this relic at battle start.
 @register("relic")
 class BottledLightning(Relic):
     """Upon pick up, choose a Skill. Start each combat with this Card in your hand."""
@@ -100,15 +93,8 @@ class BottledLightning(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.SKILL)])
         return
-    def on_combat_start(self, floor: int):
-        """Add selected card to hand at start of combat."""
-        if self.selected_card:
-            # Add a copy of selected card to hand
-            from actions.card import AddCardAction
-            from engine.game_state import game_state
-            add_actions([AddCardAction(card=self.selected_card, dest_pile='hand', position=PilePosType.TOP)])
-            return
-        return
+    # Combat prepares the selected card's combat copy on top of the draw pile.
+    # No extra card is created by this relic at battle start.
 @register("relic")
 class BottledTornado(Relic):
     """Upon pick up, choose a Power. Start each combat with this Card in your hand."""
@@ -123,15 +109,8 @@ class BottledTornado(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.POWER)])
         return
-    def on_combat_start(self, floor: int):
-        """Add selected card to hand at start of combat."""
-        if self.selected_card:
-            # Add a copy of selected card to hand
-            from actions.card import AddCardAction
-            from engine.game_state import game_state
-            add_actions([AddCardAction(card=self.selected_card, dest_pile='hand', position=PilePosType.TOP)])
-            return
-        return
+    # Combat prepares the selected card's combat copy on top of the draw pile.
+    # No extra card is created by this relic at battle start.
 @register("relic")
 class DarkstonePeriapt(Relic):
     """Whenever you obtain a Curse, increase your Max HP by 6."""
