@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from actions.base import Action
 from typing import List, Optional, TYPE_CHECKING
@@ -5,7 +6,7 @@ from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, PilePosType, RarityType
-from utils.random import get_random_card, get_random_card_reward
+from utils.random import get_random_card
 if TYPE_CHECKING:
     from cards.base import Card
 
@@ -38,7 +39,7 @@ class TransformCardAction(Action):
 
         add_actions([
             RemoveCardAction(card=self.card, src_pile=self.pile),
-            AddCardAction(card=get_random_card(namespaces=[namespace]), dest_pile=self.pile),
+            AddCardAction(card=get_random_card(namespaces=[namespace], rng=get_rng("misc"), pool_kind="transform"), dest_pile=self.pile),
         ], to_front=True)
 
 @register("action")
@@ -53,7 +54,8 @@ class RemoveAllStrikesAction(Action):
     """
     def execute(self) -> None:
         from engine.game_state import game_state
-        from cards.ironclad.strike import Strike
+        from cards.namespaces import CARD_NAMESPACES
+        strike_class = CARD_NAMESPACES["ironclad"].get("strike")
 
         if not game_state.player:
             return
@@ -70,7 +72,7 @@ class RemoveAllStrikesAction(Action):
                 continue
 
             # Find all Strike cards in this pile
-            strikes = [card for card in pile if isinstance(card, Strike)]
+            strikes = [card for card in pile if strike_class is not None and isinstance(card, strike_class)]
             for strike in strikes:
                 game_state.player.card_manager.remove_from_pile(strike, pile_name)
                 removed_count += 1
@@ -91,7 +93,6 @@ class RemoveRandomCardAction(Action):
         self.card_type = card_type
 
     def execute(self) -> None:
-        import random
         from engine.game_state import game_state
         from utils.types import CardType
 
@@ -119,7 +120,7 @@ class RemoveRandomCardAction(Action):
             print(f"[Event] No {self.card_type} cards found to remove")
             return
 
-        card_to_remove = random.choice(all_cards)
+        card_to_remove = get_rng("misc").choice(all_cards)
         card_manager.remove_from_pile(card_to_remove, "deck")
         print(f"[Event] Removed {card_to_remove.display_name} ({self.card_type})")
 
@@ -160,7 +161,7 @@ class AddRandomCardAction(Action):
     def __init__(self, pile: str = 'hand', upgrade: bool = False,
                  card_type: Optional[CardType] = None, rarity: Optional[RarityType] = None, namespace: Optional[str] = None,
                  permanent_cost: Optional[int] = None, cost_until_end_of_turn: Optional[int] = None,
-                 exclude_card_ids: Optional[List[str]] = None):
+                 exclude_card_ids: Optional[List[str]] = None, pool_kind: Optional[str] = None):
         self.pile = pile
         self.upgrade = upgrade
         self.card_type = card_type
@@ -169,6 +170,7 @@ class AddRandomCardAction(Action):
         self.permanent_cost = permanent_cost
         self.cost_until_end_of_turn = cost_until_end_of_turn
         self.exclude_card_ids = exclude_card_ids
+        self.pool_kind = pool_kind
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -180,6 +182,8 @@ class AddRandomCardAction(Action):
             card_types=[self.card_type] if self.card_type else None,
             rarities=[self.rarity] if self.rarity else None,
             exclude_card_ids=self.exclude_card_ids,
+            rng=get_rng("card" if self.pile == "deck" else "card_random"),
+            pool_kind=self.pool_kind or ("current" if self.pile == "deck" else "combat"),
         )
 
         if random_card is None:
@@ -284,8 +288,7 @@ class UpgradeRandomCardAction(Action):
         actual_count = min(self.count, len(cards_to_choose))
         
         # Randomly select cards to upgrade
-        import random
-        cards_to_upgrade = random.sample(cards_to_choose, actual_count)
+        cards_to_upgrade = get_rng("misc").sample(cards_to_choose, actual_count)
         
         # Create upgrade actions for all selected cards
         actions = []
@@ -344,8 +347,7 @@ class TransformRandomCardAction(Action):
         actual_count = min(self.count, len(cards_to_choose))
 
         # Randomly select cards to transform
-        import random
-        cards_to_transform = random.sample(cards_to_choose, actual_count)
+        cards_to_transform = get_rng("misc").sample(cards_to_choose, actual_count)
 
         # Create transform actions for all selected cards
         actions = []
@@ -380,7 +382,7 @@ class TransformAndUpgradeCardAction(Action):
         namespace = self.card.namespace
         
         # Get a random card from the same namespace
-        new_card = get_random_card(namespaces=[namespace])
+        new_card = get_random_card(namespaces=[namespace], rng=get_rng("misc"), pool_kind="transform")
         
         if new_card is None:
             return

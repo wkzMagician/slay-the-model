@@ -19,8 +19,6 @@ class AncientWriting(Event):
     
     def trigger(self) -> None:
         from engine.game_state import game_state
-        from cards.ironclad.strike import Strike
-        from cards.ironclad.defend import Defend
         
         def upgrade_all_strikes_and_defends():
             """Upgrade all Strike and Defend cards in the player's deck."""
@@ -28,7 +26,7 @@ class AncientWriting(Event):
             upgraded_count = 0
             for card in player.deck:
                 # Check if card is a Strike or Defend (by class name or instance check)
-                if isinstance(card, (Strike, Defend)) or 'Strike' in card.__class__.__name__ or 'Defend' in card.__class__.__name__:
+                if 'Strike' in card.__class__.__name__ or 'Defend' in card.__class__.__name__:
                     if card.can_upgrade():
                         card.upgrade()
                         upgraded_count += 1

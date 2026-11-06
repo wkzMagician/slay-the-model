@@ -1,0 +1,184 @@
+[
+  {
+    "act": 1,
+    "kind": "eventList",
+    "original_ids": [
+      "Big Fish",
+      "The Cleric",
+      "Dead Adventurer",
+      "Golden Idol",
+      "Golden Wing",
+      "World of Goop",
+      "Liars Game",
+      "Living Wall",
+      "Mushrooms",
+      "Scrap Ooze",
+      "Shining Light"
+    ],
+    "project_ids": [
+      "big_fish",
+      "the_cleric",
+      "dead_adventurer",
+      "golden_idol",
+      "wing_statue",
+      "world_of_goop",
+      "the_ssssserpent",
+      "living_wall",
+      "hypnotizing_mushrooms",
+      "scrap_ooze",
+      "shining_light"
+    ]
+  },
+  {
+    "act": 1,
+    "kind": "shrineList",
+    "original_ids": [
+      "Match and Keep!",
+      "Golden Shrine",
+      "Transmorgrifier",
+      "Purifier",
+      "Upgrade Shrine",
+      "Wheel of Change"
+    ],
+    "project_ids": [
+      "match_and_keep",
+      "golden_shrine",
+      "transmogrifier",
+      "purifier",
+      "upgrade_shrine",
+      "wheel_of_change"
+    ]
+  },
+  {
+    "act": 2,
+    "kind": "eventList",
+    "original_ids": [
+      "Addict",
+      "Back to Basics",
+      "Beggar",
+      "Colosseum",
+      "Cursed Tome",
+      "Drug Dealer",
+      "Forgotten Altar",
+      "Ghosts",
+      "Masked Bandits",
+      "Nest",
+      "The Library",
+      "The Mausoleum",
+      "Vampires"
+    ],
+    "project_ids": [
+      "pleading_vagrant",
+      "ancient_writing",
+      "old_beggar",
+      "the_colosseum",
+      "cursed_tome",
+      "augmenter",
+      "forgotten_altar",
+      "council_of_ghosts",
+      "masked_bandits",
+      "the_nest",
+      "the_library",
+      "the_mausoleum",
+      "vampires"
+    ]
+  },
+  {
+    "act": 2,
+    "kind": "shrineList",
+    "original_ids": [
+      "Match and Keep!",
+      "Wheel of Change",
+      "Golden Shrine",
+      "Transmorgrifier",
+      "Purifier",
+      "Upgrade Shrine"
+    ],
+    "project_ids": [
+      "match_and_keep",
+      "wheel_of_change",
+      "golden_shrine",
+      "transmogrifier",
+      "purifier",
+      "upgrade_shrine"
+    ]
+  },
+  {
+    "act": 3,
+    "kind": "eventList",
+    "original_ids": [
+      "Falling",
+      "MindBloom",
+      "The Moai Head",
+      "Mysterious Sphere",
+      "SensoryStone",
+      "Tomb of Lord Red Mask",
+      "Winding Halls"
+    ],
+    "project_ids": [
+      "falling",
+      "mind_bloom",
+      "the_moai_head",
+      "mysterious_sphere",
+      "sensory_stone",
+      "tomb_of_lord_red_mask",
+      "winding_halls"
+    ]
+  },
+  {
+    "act": 3,
+    "kind": "shrineList",
+    "original_ids": [
+      "Match and Keep!",
+      "Wheel of Change",
+      "Golden Shrine",
+      "Transmorgrifier",
+      "Purifier",
+      "Upgrade Shrine"
+    ],
+    "project_ids": [
+      "match_and_keep",
+      "wheel_of_change",
+      "golden_shrine",
+      "transmogrifier",
+      "purifier",
+      "upgrade_shrine"
+    ]
+  },
+  {
+    "act": 0,
+    "kind": "specialOneTimeEventList",
+    "original_ids": [
+      "Accursed Blacksmith",
+      "Bonfire Elementals",
+      "Designer",
+      "Duplicator",
+      "FaceTrader",
+      "Fountain of Cleansing",
+      "Knowing Skull",
+      "Lab",
+      "N'loth",
+      "NoteForYourself",
+      "SecretPortal",
+      "The Joust",
+      "WeMeetAgain",
+      "The Woman in Blue"
+    ],
+    "project_ids": [
+      "ominous_forge",
+      "bonfire_spirits",
+      "designer_in_spire",
+      "duplicator",
+      "face_trader",
+      "divine_fountain",
+      "knowing_skull",
+      "lab",
+      "nloth",
+      "a_note_for_yourself",
+      "secret_portal",
+      "the_joust",
+      "we_meet_again",
+      "woman_in_blue"
+    ]
+  }
+]

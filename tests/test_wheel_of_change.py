@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng, StreamRandom
 from typing import cast
 
 from actions.display import DisplayTextAction, InputRequestAction
@@ -11,7 +12,7 @@ def test_wheel_of_change_wraps_gold_result_with_reveal_message(monkeypatch):
     helper.game_state.current_act = 1
     helper.game_state.action_queue.clear()
 
-    monkeypatch.setattr("events.wheel_of_change.random.choice", lambda items: items[0])
+    monkeypatch.setattr(get_rng("misc"), "choice", lambda items: items[0])
 
     event = WheelOfChange()
     event.trigger()

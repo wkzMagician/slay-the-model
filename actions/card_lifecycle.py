@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from actions.base import Action
 from typing import List, Optional, TYPE_CHECKING
@@ -77,14 +78,13 @@ class AddCardAction(Action):
         self.target = target
 
     def execute(self) -> None:
-        import random
         from engine.game_state import game_state
         from engine.messages import CardDrawnMessage
         from engine.messages import CardAddedToPileMessage
         from utils.types import CardType
 
         # Check probability if chance < 1.0
-        if self.chance < 1.0 and random.random() >= self.chance:
+        if self.chance < 1.0 and get_rng("card_random").random() >= self.chance:
             # Chance check failed - don't add the card
             return
 
@@ -116,11 +116,6 @@ class AddCardAction(Action):
                             self.card.upgrade()
 
                 game_state.player.card_manager.add_to_pile(self.card, target_pile, pos=self.position)
-                if self.source == "reward" and target_pile == "deck":
-                    if getattr(self.card, "rarity", None) == RarityType.COMMON:
-                        game_state.card_chance_common_counter += 1
-                    elif getattr(self.card, "rarity", None) == RarityType.RARE:
-                        game_state.card_chance_common_counter = 0
                 get_card_location = getattr(game_state.player.card_manager, "get_card_location", None)
                 actual_pile_obj = (
                     get_card_location(self.card)
@@ -229,6 +224,12 @@ class DiscardCardAction(Action):
             if discarded and self.trigger_effects:
                 if game_state.current_combat is not None:
                     game_state.current_combat.combat_state.discarded_cards_this_turn += 1
+                # The original notifies the remaining hand's didDiscard hooks
+                # separately from the discarded card's own discard trigger.
+                for hand_card in list(game_state.player.card_manager.get_pile("hand")):
+                    hook = getattr(hand_card, "did_discard", None)
+                    if callable(hook):
+                        hook()
                 publish_message(
                     CardDiscardedMessage(
                         card=self.card,
@@ -321,7 +322,6 @@ class ExhaustRandomCardAction(Action):
     def execute(self) -> None:
         from engine.game_state import game_state
         from engine.messages import ShuffleMessage
-        import random
 
         if not game_state.player:
             return
@@ -333,7 +333,7 @@ class ExhaustRandomCardAction(Action):
             return
 
         amount_to_exhaust = min(self.amount, len(cards_in_pile))
-        cards_to_exhaust = random.sample(cards_in_pile, amount_to_exhaust)
+        cards_to_exhaust = get_rng("card_random").sample(cards_in_pile, amount_to_exhaust)
 
         actions = []
         for card in cards_to_exhaust:
@@ -350,7 +350,6 @@ class ShuffleAction(Action):
         """Execute shuffle: move discard pile into draw pile and shuffle."""
         from engine.game_state import game_state
         from engine.messages import ShuffleMessage
-        import random
 
         if not game_state.player or not hasattr(game_state.player, "card_manager"):
             return
@@ -364,6 +363,6 @@ class ShuffleAction(Action):
 
         # Combine and shuffle
         draw_cards = card_manager.get_pile("draw_pile")
-        random.shuffle(draw_cards)
+        get_rng("shuffle").shuffle(draw_cards)
         
         publish_message(ShuffleMessage(owner=game_state.player))

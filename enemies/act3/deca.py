@@ -36,8 +36,8 @@ class Deca(Enemy):
     
     def on_combat_start(self, floor: int):
         """Initialize combat state and add Artifact."""
-        super().on_combat_start(floor)
         self._use_beam = True
+        super().on_combat_start(floor)
         
         # Get ascension from game state
         from engine.game_state import game_state

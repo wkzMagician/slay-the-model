@@ -2,6 +2,7 @@
 Shop Relics
 Relics available only at shop.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 from typing import List
 from actions.base import Action, LambdaAction
@@ -159,6 +160,13 @@ class PrismaticShard(Relic):
         """Allow card rewards to use all colors."""
         return True
 
+    def on_obtain(self):
+        from engine.game_state import game_state
+        player = game_state.player
+        if player.namespace != "defect" and player.base_orb_slots == 0:
+            player.base_orb_slots = 1
+            player.orb_manager.max_orb_slots = max(1, player.orb_manager.max_orb_slots)
+
 
 @register("relic")
 class Orrery(Relic):
@@ -219,9 +227,8 @@ class StrangeSpoonShop(Relic):
 
     def should_prevent_exhaust(self, card=None) -> bool:
         """50% chance to discard a card instead of exhausting it."""
-        import random
 
-        return random.random() < 0.5
+        return get_rng("card_random").random() < 0.5
 
 
 @register("relic")

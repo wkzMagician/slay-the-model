@@ -18,10 +18,17 @@ class Eviscerate(Card):
 
     upgrade_damage = 9
 
-    @property
-    def cost(self) -> int:
-        from engine.game_state import game_state
+    def did_discard(self) -> None:
+        """A discard reduces the current turn cost, not the combat base cost."""
+        turn_cost = self.cost_until_end_of_turn
+        if turn_cost is None:
+            turn_cost = self._cost
+        self.cost_until_end_of_turn = max(0, turn_cost - 1)
 
+    def on_draw(self, card):
+        if card is not self:
+            return
+        from engine.game_state import game_state
         combat = getattr(game_state, 'current_combat', None)
         discarded = combat.combat_state.discarded_cards_this_turn if combat is not None else 0
-        return max(0, self._cost - discarded)
+        self.cost_until_end_of_turn = max(0, self._cost - discarded)

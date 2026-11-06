@@ -1,4 +1,5 @@
 """Multi-step flow for the colosseum, dead adventurer, and scrap ooze."""
+from engine.random_streams import get_rng, StreamRandom
 
 from typing import cast
 
@@ -88,8 +89,8 @@ def test_dead_adventurer_rolls_the_current_search_and_counts_it_afterward(monkey
     helper.create_player()
     game_state.ascension = 0
     rolls = iter([100, 26, 51])
-    monkeypatch.setattr("events.dead_adventurer.random.choice", lambda seq: seq[0])
-    monkeypatch.setattr("events.dead_adventurer.random.randint", lambda a, b: next(rolls))
+    monkeypatch.setattr(get_rng("misc"), "choice", lambda seq: seq[0])
+    monkeypatch.setattr(get_rng("misc"), "randint", lambda a, b: next(rolls))
 
     event = DeadAdventurer()
     options = _options(event)
@@ -128,8 +129,8 @@ def test_dead_adventurer_ascension_15_first_search_uses_ten_percent(monkeypatch)
     helper = create_test_helper()
     helper.create_player()
     game_state.ascension = 15
-    monkeypatch.setattr("events.dead_adventurer.random.choice", lambda seq: seq[0])
-    monkeypatch.setattr("events.dead_adventurer.random.randint", lambda a, b: 11)
+    monkeypatch.setattr(get_rng("misc"), "choice", lambda seq: seq[0])
+    monkeypatch.setattr(get_rng("misc"), "randint", lambda a, b: 11)
 
     event = DeadAdventurer()
     options = _options(event)
@@ -145,7 +146,7 @@ def test_scrap_ooze_loses_hp_and_then_rolls(monkeypatch):
     helper = create_test_helper()
     player = helper.create_player()
     game_state.ascension = 0
-    monkeypatch.setattr("events.scrap_ooze.random.random", lambda: 0.0)
+    monkeypatch.setattr(get_rng("misc"), "random", lambda: 0.0)
 
     event = ScrapOoze()
     options = _options(event)
@@ -184,7 +185,7 @@ def test_scrap_ooze_can_reach_again_after_a_failure(monkeypatch):
     helper = create_test_helper()
     player = helper.create_player()
     game_state.ascension = 15
-    monkeypatch.setattr("events.scrap_ooze.random.random", lambda: 0.99)
+    monkeypatch.setattr(get_rng("misc"), "random", lambda: 0.99)
 
     event = ScrapOoze()
     options = _options(event)

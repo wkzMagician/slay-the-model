@@ -1,4 +1,5 @@
 """Trades and deck changes for We Meet Again, the note, and Match and Keep."""
+from engine.random_streams import get_rng, StreamRandom
 
 from typing import cast
 
@@ -58,7 +59,7 @@ def test_we_meet_again_designates_one_potion_and_locks_it(monkeypatch):
     player.potions.extend(potions)
     player.gold = 100
     player.deck.append(Inflame())
-    monkeypatch.setattr("events.we_meet_again.random.choice", _pick("potion"))
+    monkeypatch.setattr(get_rng("misc"), "choice", _pick("potion"))
 
     options = _options(WeMeetAgain())
     trades = [option for option in options if option.actions]
@@ -86,8 +87,8 @@ def test_we_meet_again_asks_for_gold_or_a_card_but_not_both(monkeypatch):
     player = helper.create_player()
     player.gold = 120
     player.deck.append(Inflame())
-    monkeypatch.setattr("events.we_meet_again.random.choice", _pick("gold"))
-    monkeypatch.setattr("events.we_meet_again.random.randint", lambda a, b: 50)
+    monkeypatch.setattr(get_rng("misc"), "choice", _pick("gold"))
+    monkeypatch.setattr(get_rng("misc"), "randint", lambda a, b: 50)
 
     options = _options(WeMeetAgain())
     trades = [option for option in options if option.actions]
@@ -101,7 +102,7 @@ def test_we_meet_again_asks_for_gold_or_a_card_but_not_both(monkeypatch):
     assert gold.amount == 50
     assert any(isinstance(action, AddRandomRelicAction) for action in trades[0].actions)
 
-    monkeypatch.setattr("events.we_meet_again.random.choice", _pick("card"))
+    monkeypatch.setattr(get_rng("misc"), "choice", _pick("card"))
     card_options = _options(WeMeetAgain())
     card_trades = [option for option in card_options if option.actions]
     assert len(card_trades) == 1
@@ -235,7 +236,8 @@ def test_match_and_keep_uses_the_current_character(monkeypatch):
         cursor["index"] += 1
         return picked
 
-    monkeypatch.setattr("events.match_and_keep.random.choice", choice)
+    monkeypatch.setattr(get_rng("card"), "choice", choice)
+    monkeypatch.setattr(get_rng("shuffle"), "choice", choice)
 
     pairs = _generate_card_pairs()
 

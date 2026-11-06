@@ -2,7 +2,7 @@
 Centurion - Normal enemy (Act 2)
 Warrior that protects the Mystic.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.centurion_intentions import (
@@ -61,7 +61,7 @@ class Centurion(Enemy):
             if protect_count >= 2:
                 return self.intentions["slash"]
             
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.60:
                 return self.intentions["slash"]
             else:
@@ -77,7 +77,7 @@ class Centurion(Enemy):
             if fury_count >= 2:
                 return self.intentions["slash"]
             
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.60:
                 return self.intentions["slash"]
             else:

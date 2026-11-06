@@ -1,7 +1,7 @@
 """Gremlin Leader intentions - Act 2 Elite enemy."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
-import random
 from typing import TYPE_CHECKING, List
 
 from actions.combat import AttackAction, GainBlockAction, ApplyPowerAction
@@ -112,7 +112,7 @@ class Rally(Intention):
         to_summon = min(2, 3 - gremlin_count)
         
         for _ in range(to_summon):
-            gremlin_class = random.choice(GREMLIN_TYPES)
+            gremlin_class = get_rng("ai").choice(GREMLIN_TYPES)
             # Summoned gremlins are minions and should not trigger on_fatal
             gremlin = gremlin_class()
             gremlin.is_minion = True

@@ -164,10 +164,10 @@ class Card(Localizable):
         if self._cost == COST_X:
             from engine.game_state import game_state
             return game_state.player.energy
-        if self.cost_until_end_of_turn is not None:
-            return self.cost_until_end_of_turn
         if self.cost_until_played is not None:
             return self.cost_until_played
+        if self.cost_until_end_of_turn is not None:
+            return self.cost_until_end_of_turn
         return self._cost
     
     @cost.setter
@@ -685,4 +685,33 @@ class Card(Localizable):
             Card: A new Card instance that is a copy of this card.
         """
         import copy
-        return copy.copy(self)
+        clone = copy.copy(self)
+        memo: dict[int, Any] = {id(self): clone}
+
+        def copy_state(value):
+            # Containers belong to the card; entities referenced by them do
+            # not. In particular, never deepcopy origin_card or the combat.
+            if id(value) in memo:
+                return memo[id(value)]
+            if isinstance(value, dict):
+                result = {}
+                memo[id(value)] = result
+                result.update((copy_state(k), copy_state(v)) for k, v in value.items())
+                return result
+            if isinstance(value, list):
+                result = []
+                memo[id(value)] = result
+                result.extend(copy_state(item) for item in value)
+                return result
+            if isinstance(value, set):
+                result = set()
+                memo[id(value)] = result
+                result.update(copy_state(item) for item in value)
+                return result
+            if isinstance(value, tuple):
+                return tuple(copy_state(item) for item in value)
+            return value
+
+        for name, value in vars(self).items():
+            setattr(clone, name, copy_state(value))
+        return clone

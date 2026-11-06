@@ -1,6 +1,6 @@
 """Gremlin Leader - Act 2 Elite enemy."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List
 
 from enemies.act2.gremlin_leader_intentions import Encourage, Rally, Stab
@@ -58,12 +58,12 @@ class GremlinLeader(Enemy):
                 # Can't use Rally twice
                 self.current_intention = self.intentions["Stab"]
             elif last == "Stab":
-                if random.random() < 0.15:
+                if get_rng("ai").random() < 0.15:
                     self.current_intention = self.intentions["Rally!"]
                 else:
                     self.current_intention = self.intentions["Encourage"]
             else:
-                if random.random() < 0.15:
+                if get_rng("ai").random() < 0.15:
                     self.current_intention = self.intentions["Rally!"]
                 else:
                     self.current_intention = self.intentions["Stab"]
@@ -71,18 +71,18 @@ class GremlinLeader(Enemy):
         elif gremlin_count == 1:
             # With 1 Gremlin: Complex pattern
             if last == "Encourage":
-                if random.random() < 0.60:
+                if get_rng("ai").random() < 0.60:
                     self.current_intention = self.intentions["Rally!"]
                 else:
                     self.current_intention = self.intentions["Stab"]
             elif last == "Stab":
-                if random.random() < 0.625:
+                if get_rng("ai").random() < 0.625:
                     self.current_intention = self.intentions["Rally!"]
                 else:
                     self.current_intention = self.intentions["Encourage"]
             else:
                 # After Rally or first turn
-                if random.random() < 0.50:
+                if get_rng("ai").random() < 0.50:
                     self.current_intention = self.intentions["Stab"]
                 else:
                     self.current_intention = self.intentions["Encourage"]
@@ -92,12 +92,12 @@ class GremlinLeader(Enemy):
             if last == "Encourage":
                 self.current_intention = self.intentions["Stab"]
             elif last == "Stab":
-                if random.random() < 0.66:
+                if get_rng("ai").random() < 0.66:
                     self.current_intention = self.intentions["Encourage"]
                 else:
                     self.current_intention = self.intentions["Stab"]
             else:
-                if random.random() < 0.66:
+                if get_rng("ai").random() < 0.66:
                     self.current_intention = self.intentions["Encourage"]
                 else:
                     self.current_intention = self.intentions["Stab"]

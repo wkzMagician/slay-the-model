@@ -2,8 +2,8 @@
 Giant Head - Act 3 Elite enemy
 Counts down until "It Is Time" attack.
 """
+from engine.random_streams import get_rng
 
-import random
 
 from enemies.base import Enemy
 from enemies.act3.giant_head_intentions import (
@@ -64,7 +64,7 @@ class GiantHead(Enemy):
             self.current_intention = self.intentions["Count"]
         else:
             # 50/50 chance
-            if random.random() < 0.5:
+            if get_rng("ai").random() < 0.5:
                 self.current_intention = self.intentions["Count"]
             else:
                 self.current_intention = self.intentions["Glare"]

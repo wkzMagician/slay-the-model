@@ -10,18 +10,14 @@ def test_seed(seed: int) -> None:
     mm.generate_map()
     nodes = mm.map_data.nodes
     
-    # Check for consecutive elite/rest/shop (same type)
-    for f in range(1, len(nodes)):
-        prev_types = {n.room_type for n in nodes[f-1]}
-        curr_types = {n.room_type for n in nodes[f]}
-        
-        # Check if same elite/rest/shop type appears in both consecutive floors
-        # This means: Floor 4 has MERCHANT and Floor 5 also has MERCHANT (bad)
-        # But: Floor 4 has MERCHANT and Floor 5 has REST/ELITE (OK)
-        for problem_type in {RoomType.ELITE, RoomType.REST, RoomType.MERCHANT}:
-            assert not (
-                problem_type in prev_types and problem_type in curr_types
-            ), f"Seed {seed} - Consecutive {problem_type.name} on floors {f-1} and {f}"
+    # Original restrictions apply to actual edges, not the entire adjacent row.
+    for floor, row in enumerate(nodes[:-1]):
+        for node in row:
+            if node.room_type in (RoomType.ELITE, RoomType.REST, RoomType.MERCHANT):
+                for destination in node.connections_up:
+                    assert nodes[floor + 1][destination].room_type != node.room_type, (
+                        f"Connected consecutive {node.room_type.name} at {floor}:{node.position}"
+                    )
 
 if __name__ == "__main__":
     seeds = [1, 42, 100, 999, 12345, 666, 777, 8888]

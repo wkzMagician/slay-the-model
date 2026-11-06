@@ -1,6 +1,6 @@
 """The Champ - Act 2 Boss enemy."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List
 
 from enemies.act2.the_champ_intentions import (
@@ -87,12 +87,12 @@ class TheChamp(Enemy):
     
     def on_combat_start(self, floor: int) -> None:
         """Initialize combat state."""
-        super().on_combat_start(floor)
         self._turn_count = 0
         self._phase = 1
         self._phase_two_turn = 0
         self._anger_used = False
         self._execute_after_anger = False
+        super().on_combat_start(floor)
     
     def on_any_hp_lost(self, amount: int, source=None, card=None) -> None:
         """Check for phase transition."""
@@ -170,7 +170,7 @@ class TheChamp(Enemy):
         # Select random move based on weights
         if available:
             total_weight = sum(prob for _, prob in available)
-            roll = random.randint(1, total_weight)
+            roll = get_rng("ai").randint(1, total_weight)
             cumulative = 0
             for name, prob in available:
                 cumulative += prob

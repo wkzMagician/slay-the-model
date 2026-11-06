@@ -1,7 +1,7 @@
 """Darkling enemy intentions for Slay the Model."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
-import random
 from typing import List
 
 from actions.combat import AttackAction, ApplyPowerAction, GainBlockAction
@@ -40,9 +40,9 @@ class Nip(Intention):
         """Roll damage at start of combat."""
         from engine.game_state import game_state
         if game_state.ascension >= 17:
-            self.base_damage = random.randint(9, 13)
+            self.base_damage = get_rng("monster_hp").randint(9, 13)
         else:
-            self.base_damage = random.randint(7, 11)
+            self.base_damage = get_rng("monster_hp").randint(7, 11)
 
     def execute(self) -> None:
         """Execute Nip intention."""

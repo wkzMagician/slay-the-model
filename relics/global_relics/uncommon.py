@@ -2,6 +2,7 @@
 Uncommon Global Relics
 Global relics available to all characters at uncommon rarity.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 from engine.messages import EnemyDefeatedMessage
 from engine.subscriptions import MessagePriority, subscribe
@@ -76,15 +77,8 @@ class BottledFlame(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.ATTACK)])
         return
-    def on_combat_start(self, floor: int):
-        """Add selected card to hand at start of combat."""
-        if self.selected_card:
-            # Add a copy of selected card to hand
-            from actions.card import AddCardAction
-            from engine.game_state import game_state
-            add_actions([AddCardAction(card=self.selected_card, dest_pile='hand', position=PilePosType.TOP)])
-            return
-        return
+    # Combat prepares the selected card's combat copy on top of the draw pile.
+    # No extra card is created by this relic at battle start.
 @register("relic")
 class BottledLightning(Relic):
     """Upon pick up, choose a Skill. Start each combat with this Card in your hand."""
@@ -99,15 +93,8 @@ class BottledLightning(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.SKILL)])
         return
-    def on_combat_start(self, floor: int):
-        """Add selected card to hand at start of combat."""
-        if self.selected_card:
-            # Add a copy of selected card to hand
-            from actions.card import AddCardAction
-            from engine.game_state import game_state
-            add_actions([AddCardAction(card=self.selected_card, dest_pile='hand', position=PilePosType.TOP)])
-            return
-        return
+    # Combat prepares the selected card's combat copy on top of the draw pile.
+    # No extra card is created by this relic at battle start.
 @register("relic")
 class BottledTornado(Relic):
     """Upon pick up, choose a Power. Start each combat with this Card in your hand."""
@@ -122,15 +109,8 @@ class BottledTornado(Relic):
         from engine.game_state import game_state
         add_actions([BottledCardInputRequestAction(self, CardType.POWER)])
         return
-    def on_combat_start(self, floor: int):
-        """Add selected card to hand at start of combat."""
-        if self.selected_card:
-            # Add a copy of selected card to hand
-            from actions.card import AddCardAction
-            from engine.game_state import game_state
-            add_actions([AddCardAction(card=self.selected_card, dest_pile='hand', position=PilePosType.TOP)])
-            return
-        return
+    # Combat prepares the selected card's combat copy on top of the draw pile.
+    # No extra card is created by this relic at battle start.
 @register("relic")
 class DarkstonePeriapt(Relic):
     """Whenever you obtain a Curse, increase your Max HP by 6."""
@@ -293,17 +273,16 @@ class Matryoshka(Relic):
             return
         from actions.reward import AddRandomRelicAction
         from engine.game_state import game_state
-        import random
 
         self.chests_to_spawn -= 1
         if chest_type == "small":
             rarity = (
                 RarityType.COMMON
-                if random.random() < 0.75
+                if get_rng("relic").random() < 0.75
                 else RarityType.UNCOMMON
             )
         elif chest_type == "medium":
-            rarity_roll = random.random()
+            rarity_roll = get_rng("relic").random()
             if rarity_roll < 0.35:
                 rarity = RarityType.COMMON
             elif rarity_roll < 0.85:
@@ -313,7 +292,7 @@ class Matryoshka(Relic):
         elif chest_type == "large":
             rarity = (
                 RarityType.COMMON
-                if random.random() < 0.25
+                if get_rng("relic").random() < 0.25
                 else RarityType.UNCOMMON
             )
         else:
@@ -402,8 +381,7 @@ class MummifiedHand(Relic):
                 if getattr(hand_card, "_cost", 0) > 0 and hand_card.cost > 0
             ]
             if hand:
-                import random
-                target_card = random.choice(hand)
+                target_card = get_rng("card_random").choice(hand)
                 target_card.cost_until_end_of_turn = 0
         return
 @register("relic")

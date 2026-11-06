@@ -1,4 +1,5 @@
 """E-02, E-04, E-07: encounter variants, Sentry scaling, and Library access."""
+from engine.random_streams import get_rng, StreamRandom
 from typing import cast
 
 import pytest
@@ -23,7 +24,7 @@ from tests.test_combat_utils import create_test_helper
     (0.5, SpikeSlimeL), (0.999999, SpikeSlimeL),
 ])
 def test_large_slime_factory_uses_equal_probability_branches(monkeypatch, roll, expected):
-    monkeypatch.setattr('map.encounter_pool.random.random', lambda: roll)
+    monkeypatch.setattr(get_rng("misc"), "random", lambda: roll)
     enemies = _create_large_slime()
     assert len(enemies) == 1
     assert isinstance(enemies[0], expected)
@@ -37,7 +38,7 @@ def test_sentry_reads_run_ascension_and_applies_thresholds_in_combat(monkeypatch
     helper = create_test_helper()
     player = helper.create_player(hp=80, max_hp=80)
     helper.game_state.ascension = ascension
-    monkeypatch.setattr('enemies.act1.sentry.random.randint', lambda low, high: high)
+    monkeypatch.setattr(get_rng("monster_hp"), "randint", lambda low, high: high)
     sentry = Sentry()
     assert sentry.ascension == ascension
     assert sentry.hp == hp_max
@@ -54,7 +55,7 @@ def test_sentry_reads_run_ascension_and_applies_thresholds_in_combat(monkeypatch
 @pytest.mark.parametrize('high_hp,expected_hp', [(False, 38), (True, 42)])
 def test_explicit_zero_ascension_overrides_high_run_ascension(monkeypatch, high_hp, expected_hp):
     game_state.ascension = 20
-    monkeypatch.setattr('enemies.act1.sentry.random.randint', lambda low, high: high if high_hp else low)
+    monkeypatch.setattr(get_rng("monster_hp"), "randint", lambda low, high: high if high_hp else low)
     sentry = Sentry(ascension=0)
     assert sentry.ascension == 0
     assert sentry.hp == expected_hp

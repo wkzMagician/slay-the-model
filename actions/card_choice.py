@@ -5,7 +5,8 @@ from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, PilePosType, RarityType
-from utils.random import get_random_card, get_random_card_reward
+from utils.random import get_random_card, get_card_reward_options
+from engine.random_streams import get_rng
 if TYPE_CHECKING:
     from cards.base import Card
 
@@ -284,7 +285,7 @@ class ChooseAddRandomCardAction(Action):
 
     def __init__(self, pile: str = 'hand', total: int = 3, namespace: Optional[str] = None, rarity: Optional[RarityType] = None,
                  card_type: Optional[CardType] = None, cost_until_end_of_turn: Optional[int] = None,
-                 copies: int = 1, must_select: bool = False):
+                 copies: int = 1, must_select: bool = False, pool_kind: Optional[str] = None):
         self.pile = pile
         self.total = total
         self.namespace = namespace
@@ -293,6 +294,7 @@ class ChooseAddRandomCardAction(Action):
         self.cost_until_end_of_turn = cost_until_end_of_turn
         self.copies = copies
         self.must_select = must_select
+        self.pool_kind = pool_kind
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -309,7 +311,9 @@ class ChooseAddRandomCardAction(Action):
                 rarities=[self.rarity] if self.rarity else None,
                 card_types=[self.card_type] if self.card_type else None,
                 exclude_card_ids=selected_card_ids,  # Exclude already selected cards
-                exclude_starter=True  # Exclude STARTER rarity from rewards
+                exclude_starter=True,  # Exclude STARTER rarity from rewards
+                rng=get_rng("card" if self.pile == "deck" else "card_random"),
+                pool_kind=self.pool_kind or ("current" if self.pile == "deck" else "combat"),
             )
             if not random_card:
                 continue
@@ -824,7 +828,7 @@ class ChooseObtainCardAction(Action):
         total (int): Total amount of cards to choose from
         namespace (str): Card namespace
         encounter_type (str): Type of encounter for rarity weights ("normal", "elite", "shop").
-        use_rolling_offset (bool): If True, adjust rare chance based on common cards gained.
+        use_rolling_offset (bool): Update rarity compensation while generating candidates.
         exclude_set (Optional[List[str]]): List of card idstrs to exclude (prevents duplicates)
         pile (str): Destination pile for selected card
         allow_upgraded (bool): Whether rewards can roll upgraded cards.
@@ -861,23 +865,16 @@ class ChooseObtainCardAction(Action):
             reward_namespace = None
 
         options = []
-        selected_card_ids = list(self.exclude_set)  # Track selected cards to avoid duplicates
-        for _ in range(self.total):
-            random_card = get_random_card_reward(
-                namespaces=[reward_namespace] if reward_namespace else None,
-                encounter_type=self.encounter_type,
-                use_rolling_offset=self.use_rolling_offset,
-                exclude_set=selected_card_ids,
-                allow_upgraded=self.allow_upgraded,
-            )
-            if not random_card:
-                continue
-            if self.pile in ("deck"):
-                for relic in list(game_state.player.relics):
-                    hook = getattr(relic, "should_upgrade_added_card", None)
-                    if hook and hook(random_card, self.pile) and random_card.can_upgrade():
-                        random_card.upgrade()
-            selected_card_ids.append(random_card.idstr)  # Track to avoid duplicates in next iteration
+        candidates = get_card_reward_options(
+            total=self.total,
+            namespaces=[reward_namespace] if reward_namespace else None,
+            encounter_type=self.encounter_type,
+            use_rolling_offset=self.use_rolling_offset,
+            exclude_set=self.exclude_set,
+            allow_upgraded=self.allow_upgraded,
+            preview_pile=self.pile,
+        )
+        for random_card in candidates:
             option = random_card.info() # random_card.display_name
             options.append(
                 Option(
@@ -953,7 +950,7 @@ class SetNightmarePowerAction(Action):
         from engine.game_state import game_state
         from powers.definitions.nightmare import NightmarePower
         if game_state.player is not None and self.card is not None:
-            game_state.player.add_power(NightmarePower(owner=game_state.player, stored_card=self.card.copy()))
+            game_state.player.add_power(NightmarePower(owner=game_state.player, stored_card=self.card))
 
 
 @register("action")

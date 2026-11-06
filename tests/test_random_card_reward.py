@@ -1,382 +1,168 @@
-"""
-Tests for random card reward system with rarity weights.
-"""
+"""Reward protocol controls use real state/cards and observe integer RNG calls."""
+from collections import Counter
+from types import SimpleNamespace
+from unittest.mock import patch
+from typing import cast
+
 import pytest
-from unittest.mock import patch, MagicMock
-from utils.random import CARD_RARITY_PROBABILITIES
-from utils.types import RarityType, CardType
-
-
-class TestCardRarityProbabilities:
-    """Test rarity probability configurations."""
-
-    def test_normal_encounter_base_probs(self):
-        """Test normal encounter has correct base probabilities."""
-        probs = CARD_RARITY_PROBABILITIES["normal"]
-        assert probs[RarityType.COMMON] == 60
-        assert probs[RarityType.UNCOMMON] == 37
-        assert probs[RarityType.RARE] == 3
-        total = sum(probs.values())
-        assert total == 100
-
-    def test_elite_encounter_base_probs(self):
-        """Test elite encounter has higher rare chance."""
-        probs = CARD_RARITY_PROBABILITIES["elite"]
-        assert probs[RarityType.COMMON] == 50
-        assert probs[RarityType.UNCOMMON] == 40
-        assert probs[RarityType.RARE] == 10
-        total = sum(probs.values())
-        assert total == 100
-
-    def test_shop_encounter_base_probs(self):
-        """Test shop encounter has moderate rare chance."""
-        probs = CARD_RARITY_PROBABILITIES["shop"]
-        assert probs[RarityType.COMMON] == 54
-        assert probs[RarityType.UNCOMMON] == 37
-        assert probs[RarityType.RARE] == 9
-        total = sum(probs.values())
-        assert total == 100
-
-
-class TestRollingOffsetCounter:
-    """Test rolling offset counter functions."""
-
-    def setup_method(self):
-        """Setup mocks before each test."""
-        # Mock game_state
-        from unittest.mock import MagicMock
-        import sys
-
-        mock_gs = MagicMock()
-        mock_gs.card_chance_common_counter = 0
-        sys.modules['engine.game_state'] = MagicMock()
-        sys.modules['engine.game_state'].game_state = mock_gs
-
-    def test_increment_counter(self):
-        """Test counter increments correctly."""
-        from utils.random import increment_card_chance_common_counter
-        from engine.game_state import game_state
-
-        initial = game_state.card_chance_common_counter
-        assert initial == 0
-
-        increment_card_chance_common_counter()
-        assert game_state.card_chance_common_counter == initial + 1
-
-        increment_card_chance_common_counter()
-        increment_card_chance_common_counter()
-        assert game_state.card_chance_common_counter == initial + 3
-
-    def test_reset_counter(self):
-        """Test counter resets correctly."""
-        from utils.random import increment_card_chance_common_counter, reset_card_chance_common_counter
-        from engine.game_state import game_state
-
-        # Increment counter
-        for _ in range(10):
-            increment_card_chance_common_counter()
-        assert game_state.card_chance_common_counter == 10
-
-        # Reset counter
-        reset_card_chance_common_counter()
-        assert game_state.card_chance_common_counter == 0
-
-
-class TestGetRandomCardRewardIntegration:
-    """Integration tests for get_random_card_reward function."""
-
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
-    @patch('engine.game_state.game_state')
-    def test_rolling_offset_increases_rare_chance(self, mock_gs, mock_get, mock_list):
-        """Test that rolling offset increases rare probability."""
-        # Setup mock game state
-        mock_gs.card_chance_common_counter = 0
-
-        # Setup mock registry to return test cards
-        mock_list.return_value = ["card1", "card2", "card3"]
-
-        # Create mock card class
-        mock_card_cls = MagicMock()
-        mock_card_instance = MagicMock()
-        mock_card_instance.namespace = "test"
-        mock_card_instance.card_type = CardType.ATTACK
-        mock_card_instance.set = None
-        mock_card_instance.rarity = RarityType.COMMON
-        mock_card_cls.return_value = mock_card_instance
-
-        # Make get_registered return the same mock for all cards
-        mock_get.return_value = mock_card_cls
-
-        # Import after mocking to avoid circular import
-        from utils.random import get_random_card_reward, increment_card_chance_common_counter
-
-        # Get 10 cards with offset=0
-        cards_offset_0 = []
-        for _ in range(10):
-            card = get_random_card_reward(
-                namespaces=["test"],
-                encounter_type="normal",
-                use_rolling_offset=False
-            )
-            cards_offset_0.append(card)
-
-        # Increment counter to increase rare chance
-        for _ in range(47):  # Max offset
-            increment_card_chance_common_counter()
-
-        assert mock_gs.card_chance_common_counter == 47
-
-        # Get 10 cards with offset=47
-        cards_offset_47 = []
-        for _ in range(10):
-            card = get_random_card_reward(
-                namespaces=["test"],
-                encounter_type="normal",
-                use_rolling_offset=True
-            )
-            cards_offset_47.append(card)
-
-        # Verify cards were returned
-        assert len(cards_offset_0) == 10
-        assert len(cards_offset_47) == 10
-
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
-    @patch('engine.game_state.game_state')
-    def test_rolling_offset_uses_global_common_counter_in_rarity_weights(
-        self, mock_gs, mock_get, mock_list, mock_choices, _mock_choice
-    ):
-        mock_gs.card_chance_common_counter = 7
-        mock_gs.player.relics = []
-        mock_list.return_value = ["common_card", "uncommon_card", "rare_card"]
-
-        def _build(rarity):
-            card_cls = MagicMock()
-            card = MagicMock()
-            card.namespace = "test"
-            card.card_type = CardType.ATTACK
-            card.set = None
-            card.rarity = rarity
-            card.can_upgrade.return_value = False
-            card_cls.return_value = card
-            return card_cls
-
-        registry = {
-            "common_card": _build(RarityType.COMMON),
-            "uncommon_card": _build(RarityType.UNCOMMON),
-            "rare_card": _build(RarityType.RARE),
-        }
-        mock_get.side_effect = lambda _kind, name: registry[name]
-        mock_choices.return_value = [(RarityType.RARE, ["rare_card"])]
-
-        from utils.random import get_random_card_reward
-
-        get_random_card_reward(
-            namespaces=["test"],
-            encounter_type="normal",
-            use_rolling_offset=True,
-        )
-
-        available = mock_choices.call_args.kwargs["weights"]
-        assert available == [53 / 100, 37 / 100, 10 / 100]
-
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
-    def test_different_encounter_types(self, mock_get, mock_list):
-        """Test different encounter types work correctly."""
-        # Setup mock registry
-        mock_list.return_value = ["card1", "card2", "card3"]
-
-        # Create mock card class
-        mock_card_cls = MagicMock()
-        mock_card_instance = MagicMock()
-        mock_card_instance.namespace = "test"
-        mock_card_instance.card_type = CardType.ATTACK
-        mock_card_instance.set = None
-        mock_card_instance.rarity = RarityType.COMMON
-        mock_card_cls.return_value = mock_card_instance
-
-        mock_get.return_value = mock_card_cls
-
-        # Import after mocking
-        from utils.random import get_random_card_reward
-
-        # Test normal encounter
-        card_normal = get_random_card_reward(
-            namespaces=["test"],
-            encounter_type="normal"
-        )
-        assert card_normal is not None
-
-        # Test elite encounter
-        card_elite = get_random_card_reward(
-            namespaces=["test"],
-            encounter_type="elite"
-        )
-        assert card_elite is not None
-
-        # Test shop encounter
-        card_shop = get_random_card_reward(
-            namespaces=["test"],
-            encounter_type="shop"
-        )
-        assert card_shop is not None
-
-
-class TestRewardCardUpgradeChance:
-    """Tests for combat reward upgraded card chance by act/ascension."""
-
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
-    @patch('engine.game_state.game_state')
-    def test_act2_reward_can_upgrade(self, mock_gs, mock_get, mock_list,
-                                     mock_choices, _mock_choice):
-        """Act 2 combat rewards can roll upgraded cards."""
-        mock_gs.current_act = 2
-        mock_gs.ascension = 0
-        mock_gs.player.relics = []
-
-        mock_list.return_value = ["card1"]
-
-        mock_card_cls = MagicMock()
-        mock_card = MagicMock()
-        mock_card.namespace = "test"
-        mock_card.rarity = RarityType.COMMON
-        mock_card.can_upgrade.return_value = True
-        mock_card_cls.return_value = mock_card
-        mock_get.return_value = mock_card_cls
-
-        mock_choices.return_value = [(RarityType.COMMON, ["card1"])]
-
-        from utils.random import get_random_card_reward
-
-        with patch('utils.random.random.random', return_value=0.2):
-            card = get_random_card_reward(
-                namespaces=["test"],
-                encounter_type="normal",
-                allow_upgraded=True,
-            )
-
-        assert card is mock_card
-        mock_card.upgrade.assert_called_once()
-
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
-    @patch('engine.game_state.game_state')
-    def test_act1_reward_never_upgrades(self, mock_gs, mock_get, mock_list,
-                                        mock_choices, _mock_choice):
-        """Act 1 combat rewards should not upgrade."""
-        mock_gs.current_act = 1
-        mock_gs.ascension = 0
-        mock_gs.player.relics = []
-
-        mock_list.return_value = ["card1"]
-
-        mock_card_cls = MagicMock()
-        mock_card = MagicMock()
-        mock_card.namespace = "test"
-        mock_card.rarity = RarityType.COMMON
-        mock_card.can_upgrade.return_value = True
-        mock_card_cls.return_value = mock_card
-        mock_get.return_value = mock_card_cls
-
-        mock_choices.return_value = [(RarityType.COMMON, ["card1"])]
-
-        from utils.random import get_random_card_reward
-
-        with patch('utils.random.random.random', return_value=0.0):
-            card = get_random_card_reward(
-                namespaces=["test"],
-                encounter_type="normal",
-                allow_upgraded=True,
-            )
-
-        assert card is mock_card
-        mock_card.upgrade.assert_not_called()
-
-    @patch('utils.random.random.choice', side_effect=lambda seq: seq[0])
-    @patch('utils.random.random.choices')
-    @patch('utils.random.list_registered')
-    @patch('utils.random.get_registered')
-    @patch('engine.game_state.game_state')
-    def test_asc12_act2_upgrade_chance_halved(self, mock_gs, mock_get, mock_list,
-                                              mock_choices, _mock_choice):
-        """Ascension 12+ halves Act 2 reward upgrade chance to 12.5%."""
-        mock_gs.current_act = 2
-        mock_gs.ascension = 12
-        mock_gs.player.relics = []
-
-        mock_list.return_value = ["card1"]
-
-        mock_card_cls = MagicMock()
-        mock_card = MagicMock()
-        mock_card.namespace = "test"
-        mock_card.rarity = RarityType.COMMON
-        mock_card.can_upgrade.return_value = True
-        mock_card_cls.return_value = mock_card
-        mock_get.return_value = mock_card_cls
-
-        mock_choices.return_value = [(RarityType.COMMON, ["card1"])]
-
-        from utils.random import get_random_card_reward
-
-        with patch('utils.random.random.random', return_value=0.2):
-            card = get_random_card_reward(
-                namespaces=["test"],
-                encounter_type="normal",
-                allow_upgraded=True,
-            )
-
-        assert card is mock_card
-        mock_card.upgrade.assert_not_called()
-
-
-class TestExcludeByCardIdstr:
-    """exclude_set / exclude_card_ids use Card.idstr only."""
-
-    def setup_method(self):
-        import cards.ironclad  # noqa: F401 — registers Ironclad cards in global registry
-
-    def test_get_random_card_reward_respects_idstr_exclude(self):
-        from utils.random import get_random_card_reward
-
-        c1 = get_random_card_reward(
-            namespaces=["ironclad"],
-            encounter_type="normal",
-            allow_upgraded=False,
-        )
-        assert c1 is not None
-        for _ in range(100):
-            c2 = get_random_card_reward(
-                namespaces=["ironclad"],
-                encounter_type="normal",
-                allow_upgraded=False,
-                exclude_set=[c1.idstr],
-            )
-            assert c2 is None or c2.idstr != c1.idstr
-
-    def test_get_random_card_respects_idstr_exclude(self):
-        from utils.random import get_random_card
-        from utils.types import RarityType
-
-        c1 = get_random_card(
-            namespaces=["ironclad"],
-            rarities=[RarityType.COMMON],
-            exclude_starter=True,
-        )
-        assert c1 is not None
-        for _ in range(100):
-            c2 = get_random_card(
-                namespaces=["ironclad"],
-                rarities=[RarityType.COMMON],
-                exclude_starter=True,
-                exclude_card_ids=[c1.idstr],
-            )
-            assert c2 is None or c2.idstr != c1.idstr
+
+from engine.card_pools import CardPools, original_id, original_rarity
+from engine.card_rewards import reward_cards, roll_rarity, update_compensation
+from engine.game_state import game_state
+from engine.random_streams import get_rng, StreamRandom
+from utils.random import CARD_RARITY_PROBABILITIES, get_random_card, get_random_card_reward
+from utils.types import RarityType as R
+
+
+@pytest.mark.parametrize('kind,expected', [('normal',(60,37,3)), ('elite',(50,40,10)), ('shop',(54,37,9))])
+def test_base_rates(kind, expected):
+    assert tuple(CARD_RARITY_PROBABILITIES[kind][r] for r in (R.COMMON,R.UNCOMMON,R.RARE)) == expected
+
+
+@pytest.mark.parametrize('kind,expected', [('normal',(65,35,0)), ('elite',(55,40,5)), ('shop',(59,37,4))])
+def test_initial_integer_boundaries(kind, expected):
+    assert game_state.card_rarity_offset == 5
+    with patch.object(StreamRandom, 'random_int', side_effect=range(100)) as draw:
+        counts = Counter(roll_rarity(get_rng('card'), kind) for _ in range(100))
+    assert tuple(counts[r] for r in (R.COMMON,R.UNCOMMON,R.RARE)) == expected
+    assert all(call.args == (99,) for call in draw.call_args_list)
+    assert game_state.card_rarity_offset == 5
+
+
+def test_compensation_floor_reset_and_compatibility_property():
+    for _ in range(100):
+        update_compensation(R.COMMON)
+    assert game_state.card_rarity_offset == -40
+    assert game_state.card_chance_common_counter == 45
+    update_compensation(R.UNCOMMON)
+    assert game_state.card_rarity_offset == -40
+    update_compensation(R.RARE)
+    assert game_state.card_chance_common_counter == 0
+    game_state.card_chance_common_counter = 20
+    assert game_state.card_rarity_offset == -15
+
+
+def test_nloth_changes_rare_threshold_before_uncommon_boundary():
+    game_state.player.relics = [SimpleNamespace(idstr='NlothGift')]
+    game_state.card_rarity_offset = 0
+    with patch.object(StreamRandom, 'random_int', side_effect=range(100)):
+        counts = Counter(roll_rarity(get_rng('card')) for _ in range(100))
+    assert counts == {R.RARE:9, R.UNCOMMON:37, R.COMMON:54}
+
+
+def test_duplicate_retries_use_full_same_tier_and_update_only_once():
+    observations = []
+    indices = iter([0,0,1,1,2])
+    def pick(seq):
+        observations.append(list(seq))
+        return seq[next(indices)]
+    with patch.object(StreamRandom, 'random_int', return_value=99) as roll, patch.object(StreamRandom, 'choice', side_effect=pick):
+        cards = reward_cards(3, ['ironclad'], allow_upgraded=False)
+    assert [original_id(c) for c in cards] == ['Anger','Cleave','Warcry']
+    assert len(observations) == 5 and all(pool == observations[0] for pool in observations)
+    assert len(observations[0]) == 20
+    assert roll.call_count == 3
+    assert game_state.card_rarity_offset == 2
+
+
+@pytest.mark.parametrize('act,asc,chance', [(1,0,0),(2,0,.25),(3,0,.5),(2,12,.125),(3,20,.25)])
+def test_all_candidates_precede_upgrade_calls(act, asc, chance):
+    game_state.current_act, game_state.ascension = act, asc
+    events = []
+    indices = iter([0,1,2])
+    def pick(seq):
+        events.append('card')
+        return seq[next(indices)]
+    def boolean(value):
+        events.append(('upgrade',value))
+        return False
+    with patch.object(StreamRandom,'random_int',return_value=99), patch.object(StreamRandom,'choice',side_effect=pick), patch.object(StreamRandom,'random_boolean',side_effect=boolean):
+        cards = reward_cards(3,['ironclad'])
+    assert events == ['card']*3 + [('upgrade',chance)]*3
+    assert all(c.upgrade_level == 0 for c in cards)
+
+
+def test_rare_skips_random_upgrade_but_egg_previews_still_apply():
+    from relics.global_relics.uncommon import MoltenEgg
+    game_state.player.relics = [MoltenEgg()]
+    game_state.card_rarity_offset = -40
+    game_state.current_act = 3
+    def choose_attack(seq):
+        from engine.card_pools import definitions
+        return next(value for value in seq if definitions()[value].type == 'ATTACK')
+    with patch.object(StreamRandom,'random_int',return_value=0), patch.object(StreamRandom,'choice',side_effect=choose_attack), patch.object(StreamRandom,'random_boolean') as boolean:
+        cards = reward_cards(1,['ironclad'],preview_pile='deck')
+    assert original_rarity(cards[0]) == R.RARE
+    assert cards[0].upgrade_level == 1
+    boolean.assert_not_called()
+
+
+def test_generation_changes_compensation_and_claim_does_not():
+    from actions.card_choice import ChooseObtainCardAction
+    from actions.card_lifecycle import AddCardAction
+    from actions.display import InputRequestAction
+    with patch.object(StreamRandom,'random_int',return_value=99), patch.object(StreamRandom,'choice',side_effect=lambda seq:seq[-1]):
+        ChooseObtainCardAction(total=1,namespace='ironclad',use_rolling_offset=True).execute()
+    assert game_state.card_rarity_offset == 4
+    menu = game_state.action_queue.peek_next()
+    assert isinstance(menu, InputRequestAction)
+    card = cast(AddCardAction, cast(InputRequestAction, menu).options[0].actions[0]).card
+    AddCardAction(card=card,dest_pile='deck',source='reward').execute()
+    assert game_state.card_rarity_offset == 4
+
+
+def test_insufficient_pool_terminates_without_tier_fallback():
+    pools = CardPools()
+    pools.current[('ironclad','COMMON')] = ['Anger']
+    game_state.card_pools = pools
+    with patch.object(StreamRandom,'random_int',side_effect=lambda bound: 99 if bound == 99 else 0):
+        result = reward_cards(3,['ironclad'],allow_upgraded=False)
+    assert [original_id(c) for c in result] == ['Anger']
+    assert game_state.card_rarity_offset == 2
+
+
+@pytest.mark.parametrize('method', ['reward','generic'])
+def test_exclusions_accept_project_identity(method):
+    first = get_random_card_reward(['ironclad'])
+    assert first is not None
+    for _ in range(50):
+        card = (get_random_card_reward(['ironclad'],exclude_set=[first.idstr]) if method == 'reward'
+                else get_random_card(['ironclad'],exclude_card_ids=[first.idstr]))
+        assert card is None or card.idstr != first.idstr
+
+
+@pytest.mark.parametrize('selection', ['take','skip','bowl'])
+def test_real_reward_menu_resolution_preserves_generation_compensation(selection, monkeypatch):
+    from actions.card_choice import ChooseObtainCardAction
+    from relics.global_relics.uncommon import SingingBowl
+    game_state.config.auto_select = True
+    if selection == 'bowl':
+        game_state.player.relics = [SingingBowl()]
+    deck_before = len(game_state.player.card_manager.get_pile('deck'))
+    hp_before = game_state.player.max_hp
+    def select(request):
+        return [] if selection == 'skip' else [len(request.options)-1] if selection == 'bowl' else [0]
+    monkeypatch.setattr(game_state,'_resolve_debug_selection',select)
+    action = ChooseObtainCardAction(total=3,namespace='ironclad',use_rolling_offset=True,allow_upgraded=True)
+    action.execute()
+    offset = game_state.card_rarity_offset
+    state = cast(StreamRandom, get_rng('card')).export_state()
+    game_state.drive_actions()
+    assert game_state.card_rarity_offset == offset
+    assert cast(StreamRandom, get_rng('card')).export_state() == state
+    assert len(game_state.player.card_manager.get_pile('deck')) == deck_before + (selection == 'take')
+    assert game_state.player.max_hp == hp_before + (2 if selection == 'bowl' else 0)
+
+
+def test_any_color_helper_consumes_a_shuffle_long_before_each_pick(monkeypatch):
+    rng = cast(StreamRandom, get_rng('card'))
+    long_draw = rng.random_long
+    observed = []
+    def observe():
+        observed.append('long')
+        return long_draw()
+    monkeypatch.setattr(rng,'random_long',observe)
+    cards = reward_cards(3,None,allow_upgraded=False)
+    assert len(cards) == len({original_id(c) for c in cards}) == 3
+    assert len(observed) >= 3
+    assert all(card.namespace in ('ironclad','silent','defect','watcher','colorless') for card in cards)

@@ -1,4 +1,5 @@
 """Group two: Ritual timing, Spike Slimes, Dead Adventurer, and cleansing."""
+from engine.random_streams import get_rng, StreamRandom
 from typing import cast
 
 import pytest
@@ -42,7 +43,7 @@ def queued_choice() -> InputRequestAction:
 @pytest.mark.parametrize('upper', [False, True])
 def test_cultist_hp_and_ritual_ascension_boundaries(monkeypatch, ascension, hp_range, ritual_amount, upper):
     game_state.ascension = ascension
-    monkeypatch.setattr('enemies.base.random.randint', lambda low, high: high if upper else low)
+    monkeypatch.setattr(get_rng("monster_hp"), "randint", lambda low, high: high if upper else low)
     enemy = Cultist()
     assert enemy.hp == hp_range[1 if upper else 0]
     enemy.intentions['ritual'].execute()
@@ -209,7 +210,7 @@ def test_dead_adventurer_search_starts_fight_and_awards_remaining_loot_once(monk
         fights.append(combat.enemies)
         return GameTerminalState.COMBAT_WIN
     monkeypatch.setattr(Combat, 'start', win)
-    monkeypatch.setattr('events.dead_adventurer.random.randint', lambda low, high: low)
+    monkeypatch.setattr(get_rng("misc"), "randint", lambda low, high: low)
     event.trigger()
     request = queued_choice()
     game_state.action_queue.add_actions(request.options[0].actions)

@@ -2,9 +2,9 @@
 
 A card matching minigame where you flip cards and match pairs to add them to your deck.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from typing import List, Optional, Tuple
 from events.base_event import Event
 from events.event_pool import register_event
@@ -52,7 +52,7 @@ def _generate_card_pairs() -> List[Tuple[Card, Card]]:
                 colorless_cards.append(card_cls)
     
     if colorless_cards:
-        colorless_cls = random.choice(colorless_cards)
+        colorless_cls = get_rng("shuffle").choice(colorless_cards)
         pairs.append((colorless_cls(), colorless_cls()))
     
     # Get a curse pair
@@ -65,7 +65,7 @@ def _generate_card_pairs() -> List[Tuple[Card, Card]]:
                 curse_cards.append(card_cls)
     
     if curse_cards:
-        curse_cls = random.choice(curse_cards)
+        curse_cls = get_rng("card").choice(curse_cards)
         pairs.append((curse_cls(), curse_cls()))
     
     # Get 4 random pairs from the current character (Common, Uncommon, or Rare)
@@ -92,7 +92,7 @@ def _generate_card_pairs() -> List[Tuple[Card, Card]]:
     # Select 4 unique card types for pairs
     selected_classes = set()
     while len(pairs) < 6 and weighted_cards:
-        card_cls = random.choice(weighted_cards)
+        card_cls = get_rng("card").choice(weighted_cards)
         if card_cls not in selected_classes:
             selected_classes.add(card_cls)
             pairs.append((card_cls(), card_cls()))
@@ -111,7 +111,7 @@ def _create_shuffled_deck(pairs: List[Tuple[Card, Card]]) -> List[dict]:
                 'revealed': False,
                 'matched': False,
             })
-    random.shuffle(cards)
+    get_rng("misc").shuffle(cards)
     return cards
 
 

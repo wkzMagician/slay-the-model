@@ -1,4 +1,5 @@
-﻿"""Silent-specific relics."""
+"""Silent-specific relics."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_actions
 
 from actions.base import LambdaAction
@@ -92,9 +93,8 @@ class TheSpecimen(Relic):
             if poison_amount > 0:
                 alive_enemies = self.alive_enemies()
                 if alive_enemies:
-                    import random
 
-                    target_enemy = random.choice(alive_enemies)
+                    target_enemy = get_rng("card_random").choice(alive_enemies)
                     add_actions([
                         ApplyPowerAction(power="Poison", target=target_enemy, amount=poison_amount)
                     ])
@@ -115,9 +115,8 @@ class Tingsha(Relic):
         assert game_state.current_combat is not None
         alive_enemies = [enemy for enemy in game_state.current_combat.enemies if not enemy.is_dead()]
         if alive_enemies:
-            import random
 
-            target_enemy = random.choice(alive_enemies)
+            target_enemy = get_rng("card_random").choice(alive_enemies)
             add_actions([DealDamageAction(damage=3, target=target_enemy)])
         return
 

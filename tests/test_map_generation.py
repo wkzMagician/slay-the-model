@@ -48,7 +48,7 @@ def test_map_generation():
     # No elite/rest in floors 2-4
     no_elite_rest_early = all(
         all(n.room_type not in [RoomType.ELITE, RoomType.REST] for n in mm.map_data.nodes[f])
-        for f in range(2, 5)
+        for f in range(2, 6)
     )
     print(f"\nNo elite/rest in floors 2-4: {no_elite_rest_early}")
     
@@ -56,17 +56,17 @@ def test_map_generation():
     no_rest_14 = all(n.room_type != RoomType.REST for n in mm.map_data.nodes[14])
     print(f"No rest on floor 14: {no_rest_14}")
     
-    # Check for consecutive elite/rest/shop
+    # Only connected parent/child rooms constrain one another. Unrelated
+    # routes may contain the same room type on neighboring rows (RUN-024).
     has_consecutive = False
-    for f in range(1, total_floors - 1):
-        prev_types = {n.room_type for n in mm.map_data.nodes[f-1]}
-        curr_types = {n.room_type for n in mm.map_data.nodes[f]}
-        for pt in prev_types:
-            if pt in [RoomType.ELITE, RoomType.REST, RoomType.MERCHANT]:
-                if pt in curr_types:
-                    print(f"\nWARNING: Consecutive {pt.name} on floors {f-1} and {f}")
+    for floor, row in enumerate(mm.map_data.nodes[:-1]):
+        for node in row:
+            if node.room_type not in (RoomType.ELITE, RoomType.REST, RoomType.MERCHANT):
+                continue
+            for destination in node.connections_up:
+                if mm.map_data.nodes[floor + 1][destination].room_type == node.room_type:
                     has_consecutive = True
-    
+
     if not has_consecutive:
         print("\nNo consecutive elite/rest/shop: True")
     else:

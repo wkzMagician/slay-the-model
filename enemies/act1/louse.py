@@ -2,7 +2,7 @@
 Louse enemies - Red and Green Louse.
 Small insects with Curl Up power.
 """
-import random
+from engine.random_streams import get_rng
 from typing import List, TYPE_CHECKING
 from enemies.base import Enemy
 from utils.types import EnemyType
@@ -27,14 +27,14 @@ class RedLouse(Enemy):
         )
         
         # Random damage between 5-7 (chosen at combat start)
-        self._bite_damage = random.randint(5, 7)
+        self._bite_damage = get_rng("monster_hp").randint(5, 7)
         
         # Register intentions with random damage
         self.add_intention(LouseBiteIntention(self, self._bite_damage))
         self.add_intention(RedLouseGrowIntention(self))
         
         # Curl Up: Gains X Block when first receiving attack damage
-        self._curl_up = random.randint(3, 7)
+        self._curl_up = get_rng("monster_hp").randint(3, 7)
         
         # Add CurlUpPower to display ability and handle curl up logic
         from powers.definitions.curl_up import CurlUpPower
@@ -50,7 +50,7 @@ class RedLouse(Enemy):
         """
         # First turn: random choice
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.75:
                 return self.intentions["bite"]
             else:
@@ -73,7 +73,7 @@ class RedLouse(Enemy):
                 return self.intentions["bite"]
         
         # Normal pattern: 75% Bite, 25% Grow
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.75:
             return self.intentions["bite"]
         else:
@@ -91,14 +91,14 @@ class GreenLouse(Enemy):
         )
         
         # Random damage between 5-7 (chosen at combat start)
-        self._bite_damage = random.randint(5, 7)
+        self._bite_damage = get_rng("monster_hp").randint(5, 7)
         
         # Register intentions with random damage
         self.add_intention(LouseBiteIntention(self, self._bite_damage))
         self.add_intention(GreenLouseSpitWebIntention(self))
         
         # Curl Up: Gains X Block when first receiving attack damage
-        self._curl_up = random.randint(3, 7)
+        self._curl_up = get_rng("monster_hp").randint(3, 7)
         
         # Add CurlUpPower to display ability and handle curl up logic
         from powers.definitions.curl_up import CurlUpPower
@@ -114,7 +114,7 @@ class GreenLouse(Enemy):
         """
         # First turn: random choice
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.75:
                 return self.intentions["bite"]
             else:
@@ -137,7 +137,7 @@ class GreenLouse(Enemy):
                 return self.intentions["bite"]
         
         # Normal pattern: 75% Bite, 25% Spit Web
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.75:
             return self.intentions["bite"]
         else:

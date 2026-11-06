@@ -1,7 +1,7 @@
 """Silent uncommon skill card - Bouncing Flask."""
+from engine.random_streams import get_rng
 
 from typing import List
-import random
 
 from actions.combat import ApplyPowerAction
 from cards.base import Card
@@ -33,7 +33,7 @@ class BouncingFlask(Card):
 
         actions = []
         for _ in range(self.get_magic_value("hits")):
-            target = random.choice(enemies)
+            target = get_rng("card_random").choice(enemies)
             poison = self.get_magic_value("poison")
             actions.append(ApplyPowerAction(PoisonPower(amount=poison, duration=poison, owner=target), target))
         add_actions(actions)

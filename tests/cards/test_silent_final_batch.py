@@ -233,6 +233,9 @@ class TestSilentFinalBatch:
         card.cost_until_end_of_turn = 1
         assert card.cost_until_end_of_turn == 1
         card.cost_until_played = 0
+        # Forethought/Setup's freeToPlayOnce wins over costForTurn.
+        assert card.cost == 0
+        card.cost_until_played = None
         assert card.cost == 1
 
     def test_storm_of_steel_discards_hand_and_adds_shivs(self):

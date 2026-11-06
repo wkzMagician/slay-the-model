@@ -16,6 +16,7 @@ from engine.messages import (
     CardPlayedMessage,
     CombatEndedMessage,
     CombatStartedMessage,
+    CombatPreDrawMessage,
     CreatureDiedMessage,
     EnemyHpDepletedMessage,
     EnemyDefeatedMessage,
@@ -125,6 +126,11 @@ _NEW_STATUS = lambda _bound_method, message: message.new_status
 
 def _build_contracts() -> dict[type[GameMessage], MessageContract]:
     contracts = {
+        CombatPreDrawMessage: MessageContract(
+            message_type=CombatPreDrawMessage,
+            param_names=("floor",),
+            binder=_bind(_FLOOR),
+        ),
         CombatStartedMessage: MessageContract(
             message_type=CombatStartedMessage,
             param_names=("floor",),
@@ -341,6 +347,12 @@ def invoke_subscription_contract(bound_method: Callable, message: GameMessage, m
         return None
     param_names = validate_bound_subscription(bound_method, type(message), resolved_method_name)
     if contract.param_names != param_names:
+        return None
+    # A pickup's one-time hook belongs to that acquired instance. Other
+    # subscribers still observe every RelicObtainedMessage normally.
+    if (isinstance(message, RelicObtainedMessage)
+            and resolved_method_name == "on_obtain"
+            and getattr(bound_method, "__self__", None) is not message.relic):
         return None
     if not contract.predicate(bound_method, message):
         return None

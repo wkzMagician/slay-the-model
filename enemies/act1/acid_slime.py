@@ -2,8 +2,8 @@
 Acid Slime enemies - Large, Medium, and Small variants.
 Large and Medium can split into smaller slimes when damaged.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
-import random
 from typing import List, TYPE_CHECKING
 from enemies.base import Enemy
 from utils.types import EnemyType
@@ -58,7 +58,7 @@ class AcidSlimeL(Enemy):
         
         # First move: 30% Spit, 40% Lick, 30% Tackle
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.30:
                 return self.intentions["corrosive_spit"]
             elif roll < 0.70:
@@ -79,7 +79,7 @@ class AcidSlimeL(Enemy):
         # Cannot use Tackle twice in a row
         if last == "tackle" and consecutive_count >= 1:
             # Must switch to another move
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.43:  # 30/70 for corrosive_spit
                 return self.intentions["corrosive_spit"]
             else:
@@ -89,20 +89,20 @@ class AcidSlimeL(Enemy):
         if consecutive_count >= 2:
             # Must switch to a different move
             if last == "corrosive_spit":
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.5:
                     return self.intentions["lick"]
                 else:
                     return self.intentions["tackle"]
             elif last == "lick":
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.5:
                     return self.intentions["corrosive_spit"]
                 else:
                     return self.intentions["tackle"]
         
         # Normal pattern: 30% Spit, 40% Lick, 30% Tackle
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.30:
             return self.intentions["corrosive_spit"]
         elif roll < 0.70:
@@ -150,7 +150,7 @@ class AcidSlimeM(Enemy):
         """
         # First move: 30% Spit, 40% Lick, 30% Tackle
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.30:
                 return self.intentions["corrosive_spit"]
             elif roll < 0.70:
@@ -170,7 +170,7 @@ class AcidSlimeM(Enemy):
         
         # Cannot use Lick twice in a row
         if last == "lick" and consecutive_count >= 1:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.5:
                 return self.intentions["corrosive_spit"]
             else:
@@ -180,20 +180,20 @@ class AcidSlimeM(Enemy):
         if consecutive_count >= 2:
             # Must switch to a different move
             if last == "corrosive_spit":
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.5:
                     return self.intentions["lick"]
                 else:
                     return self.intentions["tackle"]
             elif last == "tackle":
-                roll = random.random()
+                roll = get_rng("ai").random()
                 if roll < 0.5:
                     return self.intentions["corrosive_spit"]
                 else:
                     return self.intentions["lick"]
         
         # Normal pattern: 30% Spit, 40% Lick, 30% Tackle
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.30:
             return self.intentions["corrosive_spit"]
         elif roll < 0.70:
@@ -226,7 +226,7 @@ class AcidSlimeS(Enemy):
         """
         # First move: 50% Lick, 50% Tackle
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.50:
                 return self.intentions["lick"]
             else:
@@ -250,7 +250,7 @@ class AcidSlimeS(Enemy):
                 return self.intentions["lick"]
         
         # Normal pattern: 50% Lick, 50% Tackle
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.50:
             return self.intentions["lick"]
         else:

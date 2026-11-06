@@ -1,6 +1,6 @@
 """Spire Shield - Act 4 Elite."""
+from engine.random_streams import get_rng
 
-import random
 from typing import TYPE_CHECKING, Optional
 
 from enemies.act4.spire_shield_intentions import Bash, Fortify, Smash
@@ -40,10 +40,10 @@ class SpireShield(Enemy):
     
     def on_combat_start(self, floor: int):
         """Initialize combat state and BackAttack mechanics."""
-        super().on_combat_start(floor)
         self._turn_number = 0
         self._pair_sequence = []
         self._pair_index = 0
+        super().on_combat_start(floor)
         
         # Initialize BackAttack manager if Spear is present
         self._init_back_attack_mechanics()
@@ -98,7 +98,7 @@ class SpireShield(Enemy):
             return "Smash"
 
         if self._pair_index >= len(self._pair_sequence):
-            self._pair_sequence = random.choice(
+            self._pair_sequence = get_rng("ai").choice(
                 [["Bash", "Fortify"], ["Fortify", "Bash"]]
             )
             self._pair_index = 0

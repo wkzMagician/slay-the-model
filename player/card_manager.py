@@ -1,4 +1,5 @@
 """Card pile management for the player."""
+from engine.random_streams import get_rng
 
 from typing import List, Optional, Union, Dict, Any
 from cards.base import Card
@@ -41,6 +42,9 @@ class CardManager:
         self.piles['hand'] = []
         self.piles['exhaust_pile'] = []
         self.piles['limbo'] = []
+        # CardGroup.initializeDeck consumes one shuffle-domain long even for
+        # an empty/singleton deck, then uses Java48 Collections.shuffle.
+        get_rng("shuffle").shuffle(self.piles['draw_pile'])
 
     def shuffle_discard_to_draw(self) -> bool:
         """Move discard into draw pile and shuffle.
@@ -52,8 +56,7 @@ class CardManager:
         had_discard = bool(self.piles['discard_pile'])
         self.piles['draw_pile'].extend(self.piles['discard_pile'])
         self.piles['discard_pile'] = []
-        import random
-        random.shuffle(self.piles['draw_pile'])
+        get_rng("shuffle").shuffle(self.piles['draw_pile'])
         from engine.game_state import game_state
 
         player = game_state.player
@@ -104,8 +107,7 @@ class CardManager:
         elif pos == PilePosType.BOTTOM:
             self.piles[pile].insert(0, card)
         elif pos == PilePosType.RANDOM:
-            import random
-            index = random.randint(0, len(self.piles[pile]))
+            index = get_rng("card_random").randint(0, len(self.piles[pile]))
             self.piles[pile].insert(index, card)
         return True
             

@@ -1,5 +1,5 @@
 """Time Eater - Act 3 Boss."""
-import random
+from engine.random_streams import get_rng
 from typing import Optional
 
 from enemies.act3.time_eater_intentions import (
@@ -40,9 +40,9 @@ class TimeEater(Enemy):
     
     def on_combat_start(self, floor: int):
         """Initialize combat state and add Time Warp power."""
-        super().on_combat_start(floor)
         self._haste_used = False
         self._haste_triggered = False
+        super().on_combat_start(floor)
         
         # Add Time Warp power at combat start
         from powers.definitions.time_warp import TimeWarpPower
@@ -91,7 +91,7 @@ class TimeEater(Enemy):
         
         # Random selection with constraints
         while True:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.45:  # 45% Reverberate
                 if reverberate_count < 2:  # Not 3x in a row
                     return self.intentions["Reverberate"]

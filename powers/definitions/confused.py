@@ -2,6 +2,7 @@
 Confused power for SneckoEye relic.
 Randomizes card costs whenever a card is drawn.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 from typing import List, Optional
 from powers.base import Power, StackType
@@ -35,11 +36,10 @@ class ConfusedPower(Power):
         Returns:
             List of actions to execute (empty list, effect is immediate)
         """
-        import random as rd
         # Randomize between 0 and 3 (like original Slay the Spire)
         # Use LambdaAction to modify card cost via action pattern
         def _randomize_card_cost() -> None:
-            randomized_cost = rd.randint(0, 3)
+            randomized_cost = get_rng("card_random").randint(0, 3)
             if hasattr(card.__class__, 'cost') and isinstance(getattr(card.__class__, 'cost'), property):
                 setattr(card, '_cost', randomized_cost)
                 return

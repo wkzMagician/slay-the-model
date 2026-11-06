@@ -1,6 +1,6 @@
 """Nemesis elite enemy - Act 3 Elite."""
+from engine.random_streams import get_rng
 
-import random
 from typing import Optional
 
 from enemies.act3.nemesis_intentions import (
@@ -37,8 +37,8 @@ class Nemesis(Enemy):
     
     def on_combat_start(self, floor: int):
         """Reset state on combat start."""
-        super().on_combat_start(floor)
         self._turn_count = 0
+        super().on_combat_start(floor)
     
     def determine_next_intention(self, floor: int):
         """Determine next intention based on Nemesis pattern."""
@@ -50,7 +50,7 @@ class Nemesis(Enemy):
         
         # First turn: 50% Tri Attack or 50% Tri Burn
         if self._turn_count == 1:
-            if random.random() < 0.5:
+            if get_rng("ai").random() < 0.5:
                 self.current_intention = self.intentions["Tri Attack"]
             else:
                 self.current_intention = self.intentions["Tri Burn"]
@@ -87,7 +87,7 @@ class Nemesis(Enemy):
         
         # Random selection
         if valid_options:
-            choice = random.choice(valid_options)
+            choice = get_rng("ai").choice(valid_options)
             self.current_intention = self.intentions[choice]
         else:
             # Fallback to Tri Attack if nothing valid

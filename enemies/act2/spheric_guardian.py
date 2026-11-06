@@ -31,8 +31,8 @@ class SphericGuardian(Enemy):
     
     def on_combat_start(self, floor: int = 1):
         """Initialize combat state."""
-        super().on_combat_start(floor)
         self._pattern_index = 0
+        super().on_combat_start(floor)
         
         # Initial powers and block
         from powers.definitions.barricade import BarricadePower

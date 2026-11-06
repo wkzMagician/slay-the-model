@@ -1,6 +1,6 @@
 """Book of Stabbing - Act 2 Elite enemy."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List
 
 from enemies.act2.book_of_stabbing_intentions import BigStab, MultiStab
@@ -74,7 +74,7 @@ class BookOfStabbing(Enemy):
                 self.current_intention = self.intentions["Big Stab"]
         else:
             # Both available - 15% Big Stab, 85% Multi Stab
-            if random.random() < 0.15:
+            if get_rng("ai").random() < 0.15:
                 self.current_intention = self.intentions["Big Stab"]
             else:
                 self.current_intention = self.intentions["Multi Stab"]

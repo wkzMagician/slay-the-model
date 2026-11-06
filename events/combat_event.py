@@ -48,7 +48,7 @@ class CombatEvent(Event):
             self._handle_victory()
         # ESCAPE：没有reward
         
-        if result == GameTerminalState.GAME_LOSE:
+        if result in (GameTerminalState.GAME_LOSE, GameTerminalState.GAME_EXIT):
             set_terminal_state(result)
             return
 

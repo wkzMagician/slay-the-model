@@ -1,4 +1,5 @@
 """Mind Bloom combat rewards and Knowing Skull independent HP payments."""
+from engine.random_streams import get_rng, StreamRandom
 from typing import cast
 
 import pytest
@@ -49,7 +50,7 @@ def test_bloom_creates_real_boss_only_after_selection(player, monkeypatch, boss_
     def choose(classes):
         seen.append(tuple(classes))
         return boss_class
-    monkeypatch.setattr('events.mind_bloom.random.choice', choose)
+    monkeypatch.setattr(get_rng("misc"), "choice", choose)
     event = MindBloom()
     event.trigger()
     menu = queued_menu()
@@ -79,8 +80,7 @@ def test_bloom_win_grants_rare_relic_gold_and_optional_deck_reward_once(player, 
         return BirdFacedUrn()
     monkeypatch.setattr('actions.reward.get_random_relic', draw_relic)
     offered = [Strike(), Defend(), Bash()]
-    cards = iter(offered)
-    monkeypatch.setattr('actions.card_choice.get_random_card_reward', lambda **kwargs: next(cards))
+    monkeypatch.setattr('actions.card_choice.get_card_reward_options', lambda **kwargs: offered)
     requests = []
     def select(request):
         requests.append(request)

@@ -1,10 +1,10 @@
-﻿"""
+"""
 Combat logic class - independent from rooms.
 Can be triggered by CombatRoom or Events.
 Uses global action queue for action management.
 """
+from utils.card_display import draw_pile_display_order
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
-from collections import Counter
 from typing import Any, List, cast
 from engine.runtime_events import emit_text as tui_print
 from actions.base import Action
@@ -19,6 +19,7 @@ from localization import LocalStr, Localizable, t
 from engine.messages import (
     CombatEndedMessage,
     CombatStartedMessage,
+    CombatPreDrawMessage,
     PlayerTurnPostDrawMessage,
     PlayerTurnEndedMessage,
     PlayerTurnStartedMessage,
@@ -53,6 +54,8 @@ class Combat(Localizable):
         # Combat control flags
         self.combat_ended = False
         self.player_turn_ended = False
+        self._opening_draw_queued = False
+        self._opening_extra_draw = 0
 
     def add_enemy(self, enemy: Enemy):
         """Add an enemy to combat."""
@@ -118,7 +121,7 @@ class Combat(Localizable):
         Start combat execution.
 
         Returns:
-            Execution result: WIN / LOSE / ESCAPE
+            Execution result: WIN / LOSE / ESCAPE / EXIT
         """
         from engine.game_state import game_state
 
@@ -129,11 +132,12 @@ class Combat(Localizable):
         game_state.action_queue.add_action(DisplayTextAction(
             text_key="combat.enter"
         ))
-        game_state.drive_actions()
-
-        self.combat_state.current_phase = "player_start"
-
         try:
+            result = game_state.drive_actions()
+            if result is not None:
+                return result
+
+            self.combat_state.current_phase = "player_start"
             while True:
                 result = self._execute_next_phase()
                 if result is not None:
@@ -167,11 +171,7 @@ class Combat(Localizable):
 
         self._start_player_turn()
         result = game_state.drive_actions()
-        if result in (
-            GameTerminalState.COMBAT_WIN,
-            GameTerminalState.GAME_LOSE,
-            GameTerminalState.COMBAT_ESCAPE,
-        ):
+        if result is not None:
             return result
 
         result = self._check_combat_end()
@@ -189,11 +189,7 @@ class Combat(Localizable):
         self._build_player_action()
 
         result = game_state.drive_actions()
-        if result in (
-            GameTerminalState.COMBAT_WIN,
-            GameTerminalState.GAME_LOSE,
-            GameTerminalState.COMBAT_ESCAPE,
-        ):
+        if result is not None:
             return result
 
         result = self._check_combat_end()
@@ -283,7 +279,6 @@ class Combat(Localizable):
 
     def _print_combat_state(self):
         """Print detailed combat state for player feedback"""
-        import random
         from engine.game_state import game_state
         from localization import t
         from tui import get_app, is_tui_mode
@@ -335,9 +330,7 @@ class Combat(Localizable):
         for i, card in enumerate(hand):
             tui_print(f"  [{i+1}] {card.info()}")
 
-        draw_display = list(reversed(draw_pile))
-        if not has_frozen_eye:
-            random.shuffle(draw_display)
+        draw_display = draw_pile_display_order(draw_pile, reveal_order=has_frozen_eye)
         draw_text = ", ".join(card.display_name.resolve() for card in draw_display)
         discard_text = ", ".join(card.display_name.resolve() for card in discard_pile)
         tui_print(f"\n{t('ui.draw_pile', default='Draw Pile')} ({len(draw_pile)}): {draw_text}")
@@ -469,6 +462,10 @@ class Combat(Localizable):
             self.combat_state.skip_enemy_turn_once = False
             self.combat_state.current_phase = "enemy_end"
             return None
+
+        # An actual enemy phase consumes the opening preservation even when
+        # a component caller did not drive the initial player-start phase.
+        self.combat_state.preserve_enemy_intent_once = False
 
         # Print enemy turn header
         tui_print(f"\n{t('ui.enemy_turn', default='=== Enemy Turn ===')}")
@@ -604,9 +601,13 @@ class Combat(Localizable):
         game_state.pending_card_plays = []
         game_state.active_card_plays = []
         game_state.pending_turn_end_cards = []
+        game_state.pending_turn_start_actions = []
         
         # Reset and setup combat state
         self.combat_state.reset_combat_info()
+        # CombatStarted already selects the opening move. The first player
+        # turn must display that choice rather than advance AI/RNG again.
+        self.combat_state.preserve_enemy_intent_once = True
 
         if hasattr(game_state.player, "orb_manager"):
             game_state.player.orb_manager.clear_all()
@@ -617,9 +618,10 @@ class Combat(Localizable):
             )
         
         # Reset card manager for combat (initialize draw pile from deck)
+        self._opening_extra_draw = 0
         if hasattr(game_state.player, 'card_manager'):
             game_state.player.card_manager.reset_for_combat()
-            self._prepare_opening_hand()
+            self._opening_extra_draw = self._prepare_opening_hand()
         
         # Reset combat flags
         self.combat_ended = False
@@ -627,8 +629,16 @@ class Combat(Localizable):
         
         # Clear player powers at start of each combat (powers don't persist between combats)
         game_state.player.powers = []
+        game_state.player.energy = game_state.player.max_energy
         
         alive_enemies = [e for e in self.enemies if e.hp > 0]
+        publish_message(CombatPreDrawMessage(
+            owner=game_state.player, enemies=alive_enemies, floor=game_state.current_floor,
+        ))
+        from actions.card import DrawCardsAction
+        # Initial draws precede normal battle-start relic actions.
+        game_state.action_queue.add_action(DrawCardsAction(count=game_state.player.draw_count))
+        self._opening_draw_queued = True
         publish_message(
             CombatStartedMessage(
                 owner=game_state.player,
@@ -647,42 +657,27 @@ class Combat(Localizable):
             game_state.player.hp = 10000
         
     def _prepare_opening_hand(self):
-        """Move innate/bottled cards from draw pile to opening hand."""
+        """Place innate/bottled combat copies on top; return excess draw count."""
         from engine.game_state import game_state
 
         card_manager = game_state.player.card_manager
-        draw_pile = list(card_manager.get_pile("draw_pile"))
-
-        def _bottle_key(card):
-            """Key for bottled-card matching: distinguish upgrade levels."""
-            card_id = getattr(card, "idstr", card.__class__.__name__)
-            upgrade_level = getattr(card, "upgrade_level", 0)
-            return (card_id, upgrade_level)
-
-        # 1) Innate cards always start in hand.
+        draw_pile = card_manager.get_pile("draw_pile")
+        selected = {id(card) for relic in game_state.player.relics
+                    if (card := getattr(relic, "selected_card", None)) is not None}
+        ordinary, on_top = [], []
         for card in draw_pile:
-            if getattr(card, "innate", False):
-                card_manager.move_to(card=card, src="draw_pile", dst="hand")
-
-        # 2) Bottled relic cards (if selected) should also start in hand.
-        # selected_card references deck-time objects, so match by id+upgrade_level.
-        bottled_targets = Counter()
-        for relic in game_state.player.relics:
-            selected_card = getattr(relic, "selected_card", None)
-            if selected_card is None:
-                continue
-            card_key = _bottle_key(selected_card)
-            bottled_targets[card_key] += 1
-
-        if not bottled_targets:
-            return
-
-        for card in list(card_manager.get_pile("draw_pile")):
-            card_key = _bottle_key(card)
-            if bottled_targets[card_key] <= 0:
-                continue
-            card_manager.move_to(card=card, src="draw_pile", dst="hand")
-            bottled_targets[card_key] -= 1
+            if (getattr(card, "innate", False) or getattr(card, "bottled", False)
+                    or id(getattr(card, "origin_card", card)) in selected):
+                on_top.append(card)
+            else:
+                ordinary.append(card)
+        # Both groups preserve their post-shuffle iteration order. The end of
+        # the list is the top, matching CardGroup.addToTop / draw_one.pop().
+        draw_pile[:] = ordinary + on_top
+        hand_size = game_state.player.draw_count + sum(
+            getattr(relic, "opening_hand_size_bonus", 0) for relic in game_state.player.relics
+        )
+        return max(0, len(on_top) - hand_size)
 
     def _start_player_turn(self):
         """Start player turn - draw cards, reset energy, trigger start-of-turn effects"""
@@ -713,13 +708,13 @@ class Combat(Localizable):
         
         draw_count = max(0, draw_count - draw_reduction)
 
-        # First combat turn only: if opening hand already has X cards
-        # (e.g., Innate/Bottled), only draw max(Y-X, 0) cards.
-        if self.combat_state.combat_turn == 0:
-            opening_hand_count = len(game_state.player.card_manager.get_pile("hand"))
-            draw_count = max(0, draw_count - opening_hand_count)
+        # The normal opening draw was queued before battle-start bonuses.
+        # Never deduct generated cards or bonus draws from the base amount.
+        if self.combat_state.combat_turn == 0 and self._opening_draw_queued:
+            draw_count = 0
 
-        game_state.player.energy = game_state.player.max_energy
+        if self.combat_state.combat_turn != 0 or not self._opening_draw_queued:
+            game_state.player.energy = game_state.player.max_energy
 
         if game_state.player.status_manager.status == StatusType.DIVINITY:
             ChangeStanceAction(StatusType.NEUTRAL).execute()
@@ -764,6 +759,11 @@ class Combat(Localizable):
             )
 
         game_state.action_queue.add_action(LambdaAction(_publish_post_draw))
+
+        if self._opening_extra_draw > 0:
+            from actions.card import DrawCardsAction
+            game_state.pending_turn_start_actions.append(DrawCardsAction(count=self._opening_extra_draw))
+            self._opening_extra_draw = 0
 
         # Increment turn counter
         self.combat_state.combat_turn += 1

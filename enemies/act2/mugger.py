@@ -2,7 +2,7 @@
 Mugger - Normal enemy (Act 2)
 Thief that steals gold and escapes.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from powers.definitions.thievery import ThieveryPower
 from utils.types import EnemyType
@@ -52,14 +52,14 @@ class Mugger(Enemy):
         
         # After Mug: 70% Lunge, 30% Smoke Bomb
         if last == "mug":
-            if random.random() < 0.70:
+            if get_rng("ai").random() < 0.70:
                 return self.intentions["lunge"]
             else:
                 return self.intentions["smoke_bomb"]
         
         # After Lunge: 50% Mug, 35% Smoke Bomb, 15% Escape
         elif last == "lunge":
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.50:
                 return self.intentions["mug"]
             elif roll < 0.85:  # 0.50 + 0.35
@@ -69,7 +69,7 @@ class Mugger(Enemy):
         
         # After Smoke Bomb: 60% Mug, 40% Lunge
         elif last == "smoke_bomb":
-            if random.random() < 0.60:
+            if get_rng("ai").random() < 0.60:
                 return self.intentions["mug"]
             else:
                 return self.intentions["lunge"]

@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng, StreamRandom
 import random
 from unittest.mock import MagicMock
 from typing import cast
@@ -82,7 +83,7 @@ def test_mummified_hand_only_selects_positive_cost_cards(monkeypatch):
     helper.add_card_to_hand(zero_cost)
     helper.add_card_to_hand(paid_card)
 
-    monkeypatch.setattr(random, "choice", lambda seq: seq[0])
+    monkeypatch.setattr(get_rng("card_random"), "choice", lambda seq: seq[0])
 
     relic.on_card_play(Inflame(), [])
 
@@ -193,7 +194,7 @@ def test_matryoshka_large_chest_never_requests_rare_relic(monkeypatch):
     relic = Matryoshka()
     player.relics.append(relic)
 
-    monkeypatch.setattr(random, "random", lambda: 0.99)
+    monkeypatch.setattr(get_rng("card_random"), "random", lambda: 0.99)
 
     relic.on_chest_open("large")
 

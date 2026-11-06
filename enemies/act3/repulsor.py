@@ -1,6 +1,6 @@
 """Repulsor enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List, Optional
 
 from enemies.act3.repulsor_intentions import DazeIntention, RepulsorAttack
@@ -39,7 +39,7 @@ class Repulsor(Enemy):
             self._last_was_attack = False
             return self.intentions["Daze"]
         
-        if random.random() < 0.2:  # 20% Attack
+        if get_rng("ai").random() < 0.2:  # 20% Attack
             self._last_was_attack = True
             return self.intentions["Attack"]
         else:  # 80% Daze

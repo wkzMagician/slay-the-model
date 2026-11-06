@@ -2,8 +2,8 @@
 Fungi Beast - Common enemy
 Gains strength over time. Applies Vulnerable on death.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
-import random
 from typing import List, TYPE_CHECKING
 from enemies.base import Enemy
 from utils.types import EnemyType
@@ -40,7 +40,7 @@ class FungiBeast(Enemy):
         """
         # First turn: random choice
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.60:
                 return self.intentions["bite"]
             else:
@@ -64,7 +64,7 @@ class FungiBeast(Enemy):
             return self.intentions["bite"]
         
         # Normal pattern: 60% Bite, 40% Grow
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.60:
             return self.intentions["bite"]
         else:

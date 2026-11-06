@@ -1,7 +1,7 @@
 """Spire Spear Elite intentions for Act 4."""
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
-import random
 from typing import List
 
 from actions.base import Action
@@ -22,7 +22,7 @@ class BurnStrike(Intention):
     def execute(self):
         from engine.game_state import game_state
 
-        damage, hits, burn_pile = random.choice(
+        damage, hits, burn_pile = get_rng("ai").choice(
             [(5, 2, "discard_pile"), (6, 2, "discard_pile"),
              (6, 2, "draw_pile")]
         )
@@ -95,7 +95,7 @@ class Piercer(Intention):
                 )
             )
 
-        if random.choice([True, False]):
+        if get_rng("ai").choice([True, False]):
             combat = getattr(game_state, "current_combat", None) or getattr(
                 game_state, "combat", None
             )

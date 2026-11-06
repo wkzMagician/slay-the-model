@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Sentry - Act 1 Elite enemy"""
+from engine.random_streams import get_rng
 
-import random
 from enemies.base import Enemy
 from utils.types import EnemyType
 from utils.registry import register
@@ -19,9 +19,9 @@ class Sentry(Enemy):
             ascension = game_state.ascension
 
         if ascension >= 8:
-            hp = random.randint(39, 45)
+            hp = get_rng("monster_hp").randint(39, 45)
         else:
-            hp = random.randint(38, 42)
+            hp = get_rng("monster_hp").randint(38, 42)
         
         super().__init__(hp_range=(hp, hp))
         self.ascension = ascension

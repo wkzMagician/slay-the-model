@@ -1,8 +1,8 @@
 """
 Miscellaneous actions (room, shop, treasure).
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
-import random
 from typing import Optional
 from actions.base import Action, LambdaAction
 from actions.card import AddCardAction
@@ -248,10 +248,10 @@ class OpenChestAction(Action):
 
         elif self.treasure_room.chest_type == "small":
             actions = []
-            if random.random() < 0.50:
-                gold = random.randint(23, 27)
+            if get_rng("treasure").random() < 0.50:
+                gold = get_rng("treasure").randint(23, 27)
                 actions.append(AddGoldAction(amount=gold))
-            if random.random() < 0.75:
+            if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.COMMON]
             else:
                 rarities = [RarityType.UNCOMMON]
@@ -267,10 +267,10 @@ class OpenChestAction(Action):
             
         elif self.treasure_room.chest_type == "medium":
             actions = []
-            if random.random() < 0.35:
-                gold = random.randint(45, 55)
+            if get_rng("treasure").random() < 0.35:
+                gold = get_rng("treasure").randint(45, 55)
                 actions.append(AddGoldAction(amount=gold))
-            relic_random = random.random()
+            relic_random = get_rng("treasure").random()
             if relic_random < 0.35:
                 rarities = [RarityType.COMMON]
             elif relic_random < 0.85:
@@ -289,10 +289,10 @@ class OpenChestAction(Action):
 
         elif self.treasure_room.chest_type == "large":
             actions = []
-            if random.random() < 0.50:
-                gold = random.randint(68, 82)
+            if get_rng("treasure").random() < 0.50:
+                gold = get_rng("treasure").randint(68, 82)
                 actions.append(AddGoldAction(amount=gold))
-            if random.random() < 0.75:
+            if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.UNCOMMON]
             else:
                 rarities = [RarityType.RARE]

@@ -11,9 +11,6 @@ if TYPE_CHECKING:
 def make_replay_copy(card: "Card") -> "Card":
     """Copy combat values without sharing the card's mutable value containers."""
     clone = card.copy()
-    for name, value in vars(card).items():
-        if isinstance(value, (dict, list, set)):
-            setattr(clone, name, value.copy())
     for name in ("_rebound_to_draw", "_is_replay"):
         if hasattr(clone, name):
             delattr(clone, name)

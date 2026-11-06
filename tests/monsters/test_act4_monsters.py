@@ -1,4 +1,5 @@
 """Test Act 4 monsters - Spire Shield, Spire Spear, Corrupt Heart"""
+from engine.random_streams import get_rng, StreamRandom
 import unittest
 from unittest.mock import patch
 
@@ -54,8 +55,8 @@ class TestSpireShield(unittest.TestCase):
     
     def test_pattern_starts_with_bash(self):
         """Test Spire Shield starts with Bash"""
-        with patch(
-            "enemies.act4.spire_shield.random.choice",
+        with patch.object(
+            StreamRandom, "choice",
             return_value=["Bash", "Fortify"],
         ):
             shield = SpireShield()
@@ -64,8 +65,8 @@ class TestSpireShield(unittest.TestCase):
     
     def test_pattern_sequence(self):
         """Test Spire Shield turn pattern with Smash every 3 turns."""
-        with patch(
-            "enemies.act4.spire_shield.random.choice",
+        with patch.object(
+            StreamRandom, "choice",
             side_effect=[
                 ["Bash", "Fortify"],
                 ["Fortify", "Bash"],
@@ -122,8 +123,8 @@ class TestSpireSpear(unittest.TestCase):
     
     def test_pattern_sequence(self):
         """Test Spear turn pattern with Skewer every 3 turns from turn 2."""
-        with patch(
-            "enemies.act4.spire_spear.random.choice",
+        with patch.object(
+            StreamRandom, "choice",
             return_value=["Burn Strike", "Piercer"],
         ):
             spear = SpireSpear()
@@ -171,8 +172,8 @@ class TestCorruptHeart(unittest.TestCase):
     
     def test_pattern_rules(self):
         """Test Corrupt Heart uses Debilitate first and Buff every 3 turns."""
-        with patch(
-            "enemies.act4.corrupt_heart.random.choice",
+        with patch.object(
+            StreamRandom, "choice",
             side_effect=[
                 ["Blood Shots", "Echo"],
                 ["Echo", "Blood Shots"],

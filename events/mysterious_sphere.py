@@ -2,9 +2,9 @@
 
 Fight 2 Orb Walkers for relic reward.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -42,7 +42,7 @@ class MysteriousSphere(Event):
                         enemies=orb_walkers,
                         victory_actions=[
                             AddRandomRelicAction(rarity='rare'),
-                            AddGoldAction(amount=random.randint(45, 55)),
+                            AddGoldAction(amount=get_rng("misc").randint(45, 55)),
                             AddRandomCardAction()
                         ]
                     )

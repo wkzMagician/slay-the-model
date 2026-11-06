@@ -1,4 +1,5 @@
 """Defect uncommon skill card - Chaos."""
+from engine.random_streams import get_rng
 
 from typing import List
 
@@ -24,9 +25,8 @@ class Chaos(Card):
     upgrade_magic = {"orbs": 2}
 
     def on_play(self, targets: List[Creature] = []):
-        import random
         from engine.runtime_api import add_action
 
         orb_types = [LightningOrb, FrostOrb, DarkOrb, PlasmaOrb]
         for _ in range(self.get_magic_value("orbs")):
-            add_action(AddOrbAction(random.choice(orb_types)()))
+            add_action(AddOrbAction(get_rng("card_random").choice(orb_types)()))

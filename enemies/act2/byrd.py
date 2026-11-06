@@ -2,7 +2,7 @@
 Byrd - Normal enemy (Act 2)
 Flying bird that uses aerial attacks.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.byrd_intentions import (
@@ -35,7 +35,6 @@ class Byrd(Enemy):
     
     def on_combat_start(self, floor: int = 1):
         """Initialize combat state."""
-        super().on_combat_start(floor)
         self._is_flying = True
         self._grounded_pattern_index = 0
         # Add 3 (4 in A7+) stacks of FlyingPower
@@ -43,6 +42,8 @@ class Byrd(Enemy):
         from engine.game_state import game_state
         flying_stacks = 4 if game_state.ascension >= 7 else 3
         self.add_power(FlyingPower(amount=flying_stacks, owner=self))
+        # The opening selector reads Flying; initialize it before selecting.
+        super().on_combat_start(floor)
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on flying state and history."""
@@ -71,7 +72,7 @@ class Byrd(Enemy):
         
         # Byrd never starts with Swoop
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.50:
                 return self.intentions["peck"]
             elif roll < 0.80:  # 0.50 + 0.30
@@ -80,7 +81,7 @@ class Byrd(Enemy):
                 return self.intentions["peck"]  # Don't use swoop first
         
         # After patterns
-        roll = random.random()
+        roll = get_rng("ai").random()
         
         # Can't use Caw twice in a row
         if last == "caw":

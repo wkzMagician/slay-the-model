@@ -2,9 +2,9 @@
 
 Trade a potion, gold, or card for a random relic.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -38,9 +38,9 @@ class WeMeetAgain(Event):
         if any(_offerable_card(card) for card in game_state.player.deck):
             demands.append("card")
 
-        demand = random.choice(demands) if demands else None
+        demand = get_rng("misc").choice(demands) if demands else None
         if demand == "potion":
-            potion = random.choice(list(game_state.player.potions))
+            potion = get_rng("misc").choice(list(game_state.player.potions))
             potion.event_locked = True
             options.append(Option(
                 name=(
@@ -56,7 +56,7 @@ class WeMeetAgain(Event):
                 ],
             ))
         elif demand == "gold":
-            gold_amount = random.randint(50, min(game_state.player.gold, 150))
+            gold_amount = get_rng("misc").randint(50, min(game_state.player.gold, 150))
             options.append(Option(
                 name=(
                     LocalStr('events.we_meet_again.give_gold')

@@ -113,6 +113,15 @@ class RoundEndedMessage(GameMessage):
 
 
 @dataclass(frozen=True)
+class CombatPreDrawMessage(GameMessage):
+    """Combat setup has reached the effects that precede opening draws."""
+
+    owner: "Creature"
+    enemies: List["Creature"]
+    floor: int = 1
+
+
+@dataclass(frozen=True)
 class CombatStartedMessage(GameMessage):
     """Combat setup has completed and combat-start effects may run."""
 
@@ -345,6 +354,7 @@ EXPLICIT_SUBSCRIPTION_MESSAGE_TYPES = (
     CardPlayedMessage,
     CombatEndedMessage,
     CombatStartedMessage,
+    CombatPreDrawMessage,
     CreatureDiedMessage,
     EnemyHpDepletedMessage,
     EnemyDefeatedMessage,

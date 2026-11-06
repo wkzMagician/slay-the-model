@@ -2,9 +2,9 @@
 
 Reach into the ooze, lose HP, then roll for a relic. Ascension 15 raises the HP cost.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -31,7 +31,7 @@ class ScrapOoze(Event):
 
     def _resolve_reach(self) -> None:
         relic_chance = 0.25 + (self.attempt_count * 0.10)
-        if random.random() < relic_chance:
+        if get_rng("misc").random() < relic_chance:
             self.relic_obtained = True
             add_actions([
                 AddRandomRelicAction(),

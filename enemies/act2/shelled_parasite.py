@@ -2,8 +2,8 @@
 Shelled Parasite - Normal enemy (Act 2)
 Armored parasite that heals itself.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
-import random
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.shelled_parasite_intentions import (
@@ -35,8 +35,8 @@ class ShelledParasite(Enemy):
     
     def on_combat_start(self, floor: int = 1):
         """Initialize combat state."""
-        super().on_combat_start(floor)
         self._has_been_stunned = False
+        super().on_combat_start(floor)
         
         # Add Plated Armor x 14
         from powers.definitions.plated_armor import PlatedArmorPower
@@ -116,7 +116,7 @@ class ShelledParasite(Enemy):
         # Cannot use Double Strike or Life Suck three times in a row
         # Cannot use Felt twice in a row
         
-        roll = random.random()
+        roll = get_rng("ai").random()
         
         # Felt has 20% chance but can't be used twice in a row
         if last != "felt" and roll < 0.20:
@@ -135,7 +135,7 @@ class ShelledParasite(Enemy):
         
         # Calculate adjusted probabilities
         total_prob = sum(p for _, p in available_intents)
-        roll = random.random() * total_prob
+        roll = get_rng("ai").random() * total_prob
         
         cumulative = 0
         for intent_name, prob in available_intents:

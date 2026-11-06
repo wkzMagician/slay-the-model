@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from typing import TYPE_CHECKING, List, Optional
 
@@ -92,7 +93,6 @@ class RandomCardAttackAction(Action):
         self.source = source
 
     def execute(self) -> None:
-        import random
         from engine.game_state import game_state
         from utils.dynamic_values import attack_base_damage
 
@@ -105,7 +105,7 @@ class RandomCardAttackAction(Action):
                    if enemy.is_alive and not enemy.half_dead]
         if not enemies:
             return
-        target = random.choice(enemies)
+        target = get_rng("card_random").choice(enemies)
         add_action(AttackAction(
             attack_base_damage(self.card), target=target,
             source=self.source, card=self.card,

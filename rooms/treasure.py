@@ -1,8 +1,8 @@
 """
 Treasure room implementation.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
-import random
 from tui.print_utils import tui_print
 from actions.display import InputRequestAction, DisplayTextAction
 from actions.misc import LeaveRoomAction, OpenChestAction
@@ -38,39 +38,36 @@ class TreasureRoom(Room):
         if self.is_boss:
             self.chest_type = "boss"
         else:
-            roll = random.random()
+            roll = get_rng("treasure").random()
             self.chest_type = "small" if roll < 0.50 else "medium" if roll < 0.83 else "large"
         return self.chest_type
 
     def _get_small_chest_contents(self):
         """Get contents for a small chest."""
-        import random
         from utils.types import RarityType
         from relics.relics import get_random_relic_by_rarity
         # Small chest: 23-27 gold + 1 common relic
-        gold = random.randint(23, 27)
+        gold = get_rng("treasure").randint(23, 27)
         relic_classes = get_random_relic_by_rarity(RarityType.COMMON)
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.COMMON, "relics": [relic] if relic else []}
 
     def _get_medium_chest_contents(self):
         """Get contents for a medium chest."""
-        import random
         from utils.types import RarityType
         from relics.relics import get_random_relic_by_rarity
         # Medium chest: 45-55 gold + 1 uncommon relic
-        gold = random.randint(45, 55)
+        gold = get_rng("treasure").randint(45, 55)
         relic_classes = get_random_relic_by_rarity(RarityType.UNCOMMON)
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.UNCOMMON, "relics": [relic] if relic else []}
 
     def _get_large_chest_contents(self):
         """Get contents for a large chest."""
-        import random
         from utils.types import RarityType
         from relics.relics import get_random_relic_by_rarity
         # Large chest: 68-82 gold + 1 rare relic
-        gold = random.randint(68, 82)
+        gold = get_rng("treasure").randint(68, 82)
         relic_classes = get_random_relic_by_rarity(RarityType.RARE)
         relic = relic_classes[0]() if relic_classes else None
         return {"gold": gold, "relic": RarityType.RARE, "relics": [relic] if relic else []}

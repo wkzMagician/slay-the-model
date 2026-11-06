@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from typing import List, Optional, TYPE_CHECKING
 
@@ -126,14 +127,13 @@ class AddEliteRelicAction(Action):
     """Grant an elite relic with the normal 50/33/17 tier distribution."""
 
     def execute(self) -> None:
-        import random
         from engine.game_state import game_state
         from relics.global_relics.special import RedCirclet
 
         player = game_state.player
         if player is None:
             return
-        roll = random.randint(0, 99)
+        roll = get_rng("relic").randint(0, 99)
         tiers = [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]
         first = 0 if roll < 50 else (2 if roll > 82 else 1)
         excluded = list(game_state.obtained_relics | {
@@ -243,11 +243,10 @@ class AddGoldAction(Action):
         self.chance = chance
     
     def execute(self) -> None:
-        import random
         from engine.game_state import game_state
         from engine.messages import GoldGainedMessage
         if game_state.player:
-            if random.random() < self.chance:
+            if self.chance == 1.0 or get_rng("misc").random() < self.chance:
                 # Ectoplasm: block all gold gain.
                 if any(getattr(relic, "idstr", None) == "Ectoplasm"
                        for relic in game_state.player.relics):

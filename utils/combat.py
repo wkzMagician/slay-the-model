@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 from typing import Optional, Union, List, TYPE_CHECKING
 from entities.creature import Creature
 from utils.types import TargetType 
@@ -30,9 +31,8 @@ def resolve_target(target_type: TargetType) -> List[Optional[Creature]]:
         alive_enemies = [e for e in enemies if e.hp > 0]
         return [min(alive_enemies, key=lambda e: e.hp) if alive_enemies else None]
     elif target_type == TargetType.ENEMY_RANDOM:
-        import random
         alive_enemies = [e for e in enemies if e.hp > 0]
-        return [random.choice(alive_enemies) if alive_enemies else None]
+        return [get_rng("card_random").choice(alive_enemies) if alive_enemies else None]
     elif target_type == TargetType.ENEMY_ALL:
         return [e for e in enemies if e.hp > 0]
     elif target_type == TargetType.ENEMY_SELECT:

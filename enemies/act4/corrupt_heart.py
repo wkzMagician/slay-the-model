@@ -1,6 +1,6 @@
 """Corrupt Heart - Act 4 Final Boss."""
+from engine.random_streams import get_rng
 
-import random
 from typing import Optional
 
 from enemies.act4.corrupt_heart_intentions import (
@@ -46,11 +46,11 @@ class CorruptHeart(Enemy):
         from engine.game_state import game_state
 
         ascension = getattr(game_state, "ascension", 0)
-        super().on_combat_start(floor)
         self._turn_number = 0
         self._pair_sequence = []
         self._pair_index = 0
         self._buff_count = 0
+        super().on_combat_start(floor)
         self.remove_power("Beat of Death")
         self.remove_power("Invincible")
         self.remove_power("Painful Stabs")
@@ -68,7 +68,7 @@ class CorruptHeart(Enemy):
             return "Buff"
 
         if self._pair_index >= len(self._pair_sequence):
-            self._pair_sequence = random.choice(
+            self._pair_sequence = get_rng("ai").choice(
                 [["Blood Shots", "Echo"], ["Echo", "Blood Shots"]]
             )
             self._pair_index = 0

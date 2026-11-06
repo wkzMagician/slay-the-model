@@ -2,6 +2,7 @@
 
 Powerful choices with consequences (boss fight, upgrade all, gold, or heal).
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
 
 from events.base_event import Event
@@ -15,7 +16,6 @@ from utils.types import RarityType
 from enemies.act1.the_guardian import TheGuardian
 from enemies.act1.the_hexaghost import TheHexaghost
 from enemies.act1.slime_boss import SlimeBoss
-import random
 from localization import LocalStr
 from utils.option import Option
 from engine.game_state import game_state
@@ -83,7 +83,7 @@ class MindBloom(Event):
 
     def _start_war(self, gold: int) -> None:
         """Generate a real Act 1 boss only when the fight option is selected."""
-        boss_class = random.choice((TheGuardian, TheHexaghost, SlimeBoss))
+        boss_class = get_rng("misc").choice((TheGuardian, TheHexaghost, SlimeBoss))
         add_action(StartFightAction(
             enemies=[boss_class()],
             victory_actions=[

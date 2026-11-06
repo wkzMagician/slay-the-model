@@ -18,4 +18,4 @@ class HelloWorldPower(Power):
         from engine.game_state import game_state
 
         namespace = game_state.player.namespace if game_state.player is not None else None
-        add_action(AddRandomCardAction(pile="hand", namespace=namespace, rarity=RarityType.COMMON))
+        add_action(AddRandomCardAction(pile="hand", namespace=namespace, rarity=RarityType.COMMON, pool_kind="current"))

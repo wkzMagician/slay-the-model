@@ -2,9 +2,9 @@
 
 Forced gold loss or gain gold at HP cost.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 
-import random
 from events.base_event import Event
 from events.event_pool import register_event
 from actions.display import InputRequestAction, DisplayTextAction
@@ -29,9 +29,9 @@ class WorldOfGoop(Event):
         
         # Gold loss: 20-50 normal, 35-75 on A15+
         if game_state.ascension >= 15:
-            gold_loss = min(random.randint(35, 75), game_state.player.gold)
+            gold_loss = min(get_rng("misc").randint(35, 75), game_state.player.gold)
         else:
-            gold_loss = min(random.randint(20, 50), game_state.player.gold)
+            gold_loss = min(get_rng("misc").randint(20, 50), game_state.player.gold)
         
         # Build options
         options = [

@@ -273,7 +273,8 @@ class GameFlow:
         """Display initial game welcome messages"""
         tui_print(f"\n{t('ui.game_welcome', default='Welcome to the Spire!')}")
         tui_print(f"{t('ui.game_awaken', default='You awaken in a strange place...')}")
-        tui_print(f"{t('ui.seed_display', seed=game_state.config.seed, default=f'Seed: {game_state.config.seed}')}")
+        seed_code = game_state.config.seed_code
+        tui_print(f"{t('ui.seed_display', seed=seed_code, default=f'Seed: {seed_code}')}")
         tui_print(f"{t('ui.character_display', character=t(f'ui.character.{game_state.config.character.lower()}', default=game_state.config.character), default=f'Character: {game_state.config.character}')}\n")
         flush_runtime_events()
 

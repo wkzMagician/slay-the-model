@@ -1,0 +1,17 @@
+[
+{"seed":0,"size":0,"child_seed":2940871956904845945,"next_card_first":[],"next_parent_long":-1645442809927433695},
+{"seed":0,"size":1,"child_seed":2940871956904845945,"next_card_first":[0],"next_parent_long":-1645442809927433695},
+{"seed":0,"size":12,"child_seed":2940871956904845945,"next_card_first":[9, 3, 10, 6, 5, 0, 11, 4, 7, 2, 1, 8],"next_parent_long":-1645442809927433695},
+{"seed":1,"size":0,"child_seed":3787875997830008111,"next_card_first":[],"next_parent_long":7110081793310507210},
+{"seed":1,"size":1,"child_seed":3787875997830008111,"next_card_first":[0],"next_parent_long":7110081793310507210},
+{"seed":1,"size":12,"child_seed":3787875997830008111,"next_card_first":[6, 5, 3, 0, 10, 9, 8, 4, 1, 2, 11, 7],"next_parent_long":7110081793310507210},
+{"seed":523,"size":0,"child_seed":9118435139604836487,"next_card_first":[],"next_parent_long":3669624885176011319},
+{"seed":523,"size":1,"child_seed":9118435139604836487,"next_card_first":[0],"next_parent_long":3669624885176011319},
+{"seed":523,"size":12,"child_seed":9118435139604836487,"next_card_first":[6, 5, 10, 3, 9, 0, 4, 2, 1, 11, 8, 7],"next_parent_long":3669624885176011319},
+{"seed":524,"size":0,"child_seed":-402381851260252972,"next_card_first":[],"next_parent_long":4199337533255098890},
+{"seed":524,"size":1,"child_seed":-402381851260252972,"next_card_first":[0],"next_parent_long":4199337533255098890},
+{"seed":524,"size":12,"child_seed":-402381851260252972,"next_card_first":[10, 6, 5, 0, 3, 9, 4, 11, 7, 1, 2, 8],"next_parent_long":4199337533255098890},
+{"seed":-1,"size":0,"child_seed":-7651268203606709133,"next_card_first":[],"next_parent_long":6825445973354849325},
+{"seed":-1,"size":1,"child_seed":-7651268203606709133,"next_card_first":[0],"next_parent_long":6825445973354849325},
+{"seed":-1,"size":12,"child_seed":-7651268203606709133,"next_card_first":[5, 0, 6, 3, 10, 9, 2, 1, 11, 4, 8, 7],"next_parent_long":6825445973354849325}
+]

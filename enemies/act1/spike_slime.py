@@ -2,8 +2,8 @@
 Spike Slime enemies - Large, Medium, and Small variants.
 Large can split into smaller slimes when damaged.
 """
+from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions
-import random
 from typing import List, TYPE_CHECKING
 from enemies.base import Enemy
 from utils.types import EnemyType
@@ -59,7 +59,7 @@ class SpikeSlimeL(Enemy):
         
         # First move: 30% Tackle, 70% Lick
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.30:
                 return self.intentions["tackle"]
             else:
@@ -85,7 +85,7 @@ class SpikeSlimeL(Enemy):
                 return self.intentions["tackle"]
         
         # Normal pattern: 30% Tackle, 70% Lick
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.30:
             return self.intentions["tackle"]
         else:
@@ -129,7 +129,7 @@ class SpikeSlimeM(Enemy):
         """
         # First move: 30% Tackle, 70% Lick
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.30:
                 return self.intentions["tackle"]
             else:
@@ -153,7 +153,7 @@ class SpikeSlimeM(Enemy):
                 return self.intentions["lick"]
         
         # Normal pattern: 30% Tackle, 70% Lick
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.30:
             return self.intentions["tackle"]
         else:
@@ -188,7 +188,7 @@ class SpikeSlimeS(Enemy):
         """
         # First move: 50% Lick, 50% Tackle
         if not self.history_intentions:
-            roll = random.random()
+            roll = get_rng("ai").random()
             if roll < 0.50:
                 return self.intentions["lick"]
             else:
@@ -212,7 +212,7 @@ class SpikeSlimeS(Enemy):
                 return self.intentions["lick"]
         
         # Normal pattern: 50% Lick, 50% Tackle
-        roll = random.random()
+        roll = get_rng("ai").random()
         if roll < 0.50:
             return self.intentions["lick"]
         else:

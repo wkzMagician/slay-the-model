@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Lagavulin - Act 1 Elite enemy"""
+from engine.random_streams import get_rng
 
-import random
 from enemies.base import Enemy
 from utils.types import EnemyType
 from utils.registry import register
@@ -20,7 +20,7 @@ class Lagavulin(Enemy):
 
         ascension = max(ascension, getattr(game_state, "ascension", 0))
         if ascension >= 8:
-            hp = random.randint(112, 115)
+            hp = get_rng("monster_hp").randint(112, 115)
         else:
             hp = 110
         

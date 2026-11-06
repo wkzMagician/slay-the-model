@@ -1,4 +1,5 @@
 """Single damage modification, dynamic attack previews, and per-hit resolution."""
+from engine.random_streams import get_rng, StreamRandom
 import math
 from typing import cast
 
@@ -52,7 +53,7 @@ def test_attack_preview_and_actual_damage_apply_modifiers_once(
     player = helper.create_player(hp=10000, max_hp=10000)
     game_state.ascension = ascension
     set_language('en')
-    monkeypatch.setattr('random.randint', lambda low, high: low)
+    monkeypatch.setattr(get_rng("monster_hp"), "randint", lambda low, high: low)
     enemy = enemy_class()
     enemy.add_power(StrengthPower(amount=strength))
     if weak:
@@ -123,7 +124,7 @@ def test_giant_head_next_damage_is_stable_and_caps_in_real_turns(monkeypatch, as
     helper = create_test_helper()
     player = helper.create_player(hp=10000, max_hp=10000)
     game_state.ascension = ascension
-    monkeypatch.setattr('random.random', lambda: 0.9)
+    monkeypatch.setattr(get_rng("ai"), "random", lambda: 0.9)
     enemy = GiantHead()
     combat = helper.start_combat([enemy])
     time_attacks = 0
@@ -150,7 +151,7 @@ def test_maw_real_turn_count_uses_original_initial_offset(monkeypatch):
     helper = create_test_helper()
     player = helper.create_player(hp=1000, max_hp=1000)
     rolls = iter([0.9, 0.1, 0.1, 0.1, 0.1])
-    monkeypatch.setattr('random.random', lambda: next(rolls))
+    monkeypatch.setattr(get_rng("ai"), "random", lambda: next(rolls))
     enemy = TheMaw()
     combat = helper.start_combat([enemy])
     enemy.add_power(StrengthPower(amount=3))
@@ -193,7 +194,7 @@ def test_book_freezes_hits_before_execution_and_a18_big_stab_growth(monkeypatch,
     helper = create_test_helper()
     player = helper.create_player(hp=1000, max_hp=1000)
     game_state.ascension = ascension
-    monkeypatch.setattr('random.random', lambda: 0.9)
+    monkeypatch.setattr(get_rng("ai"), "random", lambda: 0.9)
     enemy = BookOfStabbing()
     combat = helper.start_combat([enemy])
     for hits in counts:

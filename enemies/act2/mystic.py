@@ -2,7 +2,7 @@
 Mystic - Normal enemy (Act 2)
 Support caster that heals and buffs allies.
 """
-import random
+from engine.random_streams import get_rng
 from enemies.base import Enemy
 from utils.types import EnemyType
 from enemies.act2.mystic_intentions import (
@@ -30,8 +30,8 @@ class Mystic(Enemy):
     
     def on_combat_start(self, floor: int = 1):
         """Initialize combat state."""
-        super().on_combat_start(floor)
         self._consecutive_heals = 0
+        super().on_combat_start(floor)
     
     def determine_next_intention(self, floor: int = 1):
         """Determine next intention based on ally health."""
@@ -80,7 +80,7 @@ class Mystic(Enemy):
             return self.intentions["attack"]
         
         # Normal: Attack (60%), Buff (40%)
-        if random.random() < 0.60:
+        if get_rng("ai").random() < 0.60:
             return self.intentions["attack"]
         else:
             return self.intentions["buff"]

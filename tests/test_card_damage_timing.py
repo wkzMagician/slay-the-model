@@ -3,6 +3,7 @@
 All card cases enter through PlayCardAction. Patched random.choice supplies
 controlled targeting inputs; it does not replace damage or queue execution.
 """
+from engine.random_streams import get_rng, StreamRandom
 
 import random
 
@@ -145,7 +146,7 @@ def test_random_multihit_chooses_only_current_living_targets_once_per_hit(
         choices.append(tuple(candidates))
         return candidates[0]
 
-    monkeypatch.setattr(random, "choice", choose)
+    monkeypatch.setattr(get_rng("card_random"), "choice", choose)
     hits = trace_card_hits(helper, player, card, monkeypatch)
 
     play(helper, card)
@@ -170,7 +171,7 @@ def test_random_multihit_recalculates_vulnerability_for_each_selected_target(
         choices.append(target)
         return target
 
-    monkeypatch.setattr(random, "choice", choose)
+    monkeypatch.setattr(get_rng("card_random"), "choice", choose)
     hits = trace_card_hits(helper, player, card, monkeypatch)
 
     play(helper, card)
@@ -350,7 +351,7 @@ def test_random_card_notifies_every_enemy_card_listener_once(
         choices.append(tuple(candidates))
         return candidates[0]
 
-    monkeypatch.setattr(random, "choice", choose)
+    monkeypatch.setattr(get_rng("card_random"), "choice", choose)
     messages = []
     original = helper.game_state.publish_message
 

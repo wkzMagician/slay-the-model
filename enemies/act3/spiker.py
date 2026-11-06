@@ -1,6 +1,6 @@
 """Spiker enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List, Optional
 
 from enemies.act3.spiker_intentions import BuffThorns, SpikeAttack
@@ -48,7 +48,7 @@ class Spiker(Enemy):
             return self.intentions["Buff Thorns"]
         
         # 50/50 choice
-        if random.random() < 0.5:
+        if get_rng("ai").random() < 0.5:
             self._last_was_attack = True
             return self.intentions["Attack"]
         else:

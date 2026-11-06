@@ -1,4 +1,4 @@
-﻿import random
+import random
 from typing import Iterable, List, Optional
 from entities.creature import Creature
 from engine.runtime_api import add_action, add_actions

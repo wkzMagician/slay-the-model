@@ -1,4 +1,5 @@
 """Event option availability, displayed costs, and actual effects."""
+from engine.random_streams import get_rng, StreamRandom
 import importlib
 import inspect
 from typing import cast
@@ -67,7 +68,7 @@ def test_cleric_preserves_indices_locks_cost_boundaries_and_heals(player, ascens
 def test_wing_statue_keeps_destroy_at_same_index(player, monkeypatch, damage, enabled):
     attack = Strike(base_damage=damage)
     player.card_manager.piles['deck'] = [attack]
-    monkeypatch.setattr('events.wing_statue.random.randint', lambda *_: 67)
+    monkeypatch.setattr(get_rng("misc"), "randint", lambda *_: 67)
     options = menu_for(WingStatue()).options
     assert len(options) == 3
     assert options[1].enabled is enabled
@@ -145,7 +146,7 @@ def test_scrap_ooze_refreshes_hp_and_probability_after_failed_attempt(player, mo
     assert str(base) in resolve_text(option.detail) and '25%' in resolve_text(option.detail)
     assert isinstance(option.actions[0], LoseHPAction)
     option.actions[0].execute()
-    monkeypatch.setattr('events.scrap_ooze.random.random', lambda: 1.0)
+    monkeypatch.setattr(get_rng("misc"), "random", lambda: 1.0)
     event._resolve_reach()
     refreshed = cast(InputRequestAction, game_state.action_queue.queue[-1])
     assert isinstance(refreshed, InputRequestAction)

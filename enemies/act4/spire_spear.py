@@ -1,6 +1,6 @@
 """Spire Spear - Act 4 Elite."""
+from engine.random_streams import get_rng
 
-import random
 from typing import TYPE_CHECKING, Optional
 
 from enemies.act4.spire_spear_intentions import BurnStrike, Piercer, Skewer
@@ -39,10 +39,10 @@ class SpireSpear(Enemy):
     
     def on_combat_start(self, floor: int):
         """Initialize combat state."""
-        super().on_combat_start(floor)
         self._turn_number = 0
         self._pair_sequence = []
         self._pair_index = 0
+        super().on_combat_start(floor)
     
     def on_death(self):
         """Clean up BackAttack mechanics when Spear dies."""
@@ -62,7 +62,7 @@ class SpireSpear(Enemy):
             return "Skewer"
 
         if self._pair_index >= len(self._pair_sequence):
-            self._pair_sequence = random.choice(
+            self._pair_sequence = get_rng("ai").choice(
                 [["Burn Strike", "Piercer"], ["Piercer", "Burn Strike"]]
             )
             self._pair_index = 0

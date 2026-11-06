@@ -22,12 +22,16 @@ from utils.random import get_random_card
 @register("relic")
 class SneckoEye(Relic):
     """Draw 2 additional cards each turn. Start each combat Confused."""
+
+    # The legacy turn hook supplies these draws, but original masterHandSize
+    # already includes them when computing excess innate/bottled draws.
+    opening_hand_size_bonus = 2
     
     def __init__(self):
         super().__init__()
         self.rarity = RarityType.BOSS
 
-    def on_combat_start(self, floor: int):
+    def on_combat_start_pre_draw(self, floor: int):
         """Start each combat confused"""
         from engine.game_state import game_state
         player = game_state.player

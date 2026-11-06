@@ -23,7 +23,7 @@ def test_all_constraints(seed: int):
     assert RoomType.REST in floor_15_types, "Floor 15 doesn't have REST room"
 
     # Constraint 4: Floors 2-4 don't have ELITE or REST
-    for f in range(2, 5):
+    for f in range(2, 6):
         floor_types = {n.room_type for n in nodes[f]}
         assert RoomType.ELITE not in floor_types, f"Floor {f} has ELITE (not allowed in first 5)"
         assert RoomType.REST not in floor_types, f"Floor {f} has REST (not allowed in first 5)"
@@ -32,12 +32,11 @@ def test_all_constraints(seed: int):
     floor_14_types = {n.room_type for n in nodes[14]}
     assert RoomType.REST not in floor_14_types, "Floor 14 has REST (not allowed)"
 
-    # Constraint 6: No consecutive ELITE/REST/MERCHANT
-    for f in range(1, len(nodes)):
-        prev_types = {n.room_type for n in nodes[f - 1]}
-        curr_types = {n.room_type for n in nodes[f]}
-
-        for problem_type in {RoomType.ELITE, RoomType.REST, RoomType.MERCHANT}:
-            assert not (
-                problem_type in prev_types and problem_type in curr_types
-            ), f"Consecutive {problem_type.name} on floors {f - 1} and {f}"
+    # Original restrictions apply to actual edges, not the entire adjacent row.
+    for floor, row in enumerate(nodes[:-1]):
+        for node in row:
+            if node.room_type in (RoomType.ELITE, RoomType.REST, RoomType.MERCHANT):
+                for destination in node.connections_up:
+                    assert nodes[floor + 1][destination].room_type != node.room_type, (
+                        f"Connected consecutive {node.room_type.name} at {floor}:{node.position}"
+                    )

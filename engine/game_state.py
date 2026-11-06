@@ -6,14 +6,17 @@ Global action queue architecture:
 - Use game_state.execute_all_actions() to execute queued actions
 - No individual action queues in rooms/events/combat
 """
-import random as rd
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.card_pools import CardPools
 
 from engine.input_protocol import InputRequest, InputSubmission
 from engine.message_bus import MessageBus
 from engine.runtime_context import RuntimeContext
 from engine.event_pool_state import EventPoolState
 from engine.run_clock import RunClock
+from engine.random_streams import RandomStreams, using_streams
 from utils.result_types import GameTerminalState
 from config.game_config import GameConfig
 import os
@@ -44,6 +47,8 @@ class GameState:
         # Configuration
         config_path = os.path.join(os.path.dirname(__file__), "..", "config", "game_config.yaml")
         self.config = GameConfig.load(config_path)
+        self.config.resolve_seed(int(time.time()))
+        self.random_streams = RandomStreams(self.config.seed)
         
         from localization import set_language
         set_language(self.config.language)
@@ -76,8 +81,9 @@ class GameState:
         self.gold_spent_in_shop = 0
         self.card_removal_price = 75
 
-        # Card chance rolling offset (each common card gained increases rare chance)
-        self.card_chance_common_counter = 0
+        # Original signed cardBlizzRandomizer; legacy counter maps to 5-offset.
+        self.card_rarity_offset = 5
+        self.card_pools: Optional["CardPools"] = None  # lazy, run-owned
 
         # Potion drop chance (40% base, -10% after drop, +10% after no drop)
         self.potion_drop_chance = 40
@@ -103,6 +109,7 @@ class GameState:
         self.pending_card_plays = []
         self.active_card_plays = []
         self.pending_turn_end_cards = []
+        self.pending_turn_start_actions = []
         self.message_bus = MessageBus()
         
         # Current combat (None when not in combat)
@@ -117,20 +124,27 @@ class GameState:
         
         
         # game setup
-        if self.config.seed == -1:
-            self.config.seed = int(time.time())
-        rd.seed(self.config.seed)
-        self.event_pool_state = EventPoolState(self.config.seed)
+        self.event_pool_state = EventPoolState(self.config.seed, self.random_streams["event"])
         # character
-        self.player = create_player(self.config.character)
+        with using_streams(self.random_streams):
+            self.player = create_player(self.config.character, ascension=self.ascension)
         from relics.boss_pool import BossRelicPool
-        self.boss_relic_pool = BossRelicPool(self.config.seed)
+        pool_seeds = self.random_streams.initialize_relic_pool_seeds()
+        self.boss_relic_pool = BossRelicPool(self.config.seed, child_seed=pool_seeds["boss"])
         
         # temp value for select result
         self.last_select_idx = -1
         self.runtime_context = RuntimeContext(game_state=self)
         self.pending_input_request = None
         self.terminal_state = None
+
+    @property
+    def card_chance_common_counter(self) -> int:
+        return 5 - self.card_rarity_offset
+
+    @card_chance_common_counter.setter
+    def card_chance_common_counter(self, value: int) -> None:
+        self.card_rarity_offset = max(-40, min(5, 5 - int(value)))
 
     @property
     def elapsed_time(self) -> float:
@@ -307,8 +321,10 @@ class GameState:
         from map import MapManager
         
         self.event_pool_state.enter_act(self.current_act)
+        self.random_streams.enter_act(self.current_act)
         self.run_clock.start()
-        self.map_manager = MapManager(self.config.seed + self.current_act, act_id=self.current_act)
+        self.map_manager = MapManager(self.random_streams.map_seed(self.current_act),
+                                      act_id=self.current_act, random_streams=self.random_streams)
         self.map_data = self.map_manager.generate_map()
 
     def execute_all_actions(self):
@@ -321,6 +337,7 @@ class GameState:
             if self.terminal_state is not None:
                 result = self.terminal_state
                 self.terminal_state = None
+                self.pending_turn_start_actions = []
                 from actions.card_play_lifecycle import cleanup_terminal_card_plays
                 cleanup_terminal_card_plays()
                 return result
@@ -334,6 +351,12 @@ class GameState:
                 continue
 
             if self.action_queue.is_empty():
+                # Original preTurnActions follow ordinary actions, before
+                # cardQueue auto-play. Opening innate overflow uses this lane.
+                turn_start = getattr(self, "pending_turn_start_actions", [])
+                if turn_start:
+                    self.action_queue.add_action(turn_start.pop(0))
+                    continue
                 from actions.card_play_lifecycle import finalize_card_play
                 from actions.combat_cards import PlayCardAction
 

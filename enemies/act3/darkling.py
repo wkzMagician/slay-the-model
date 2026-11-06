@@ -1,6 +1,6 @@
 """Darkling enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
-import random
 from typing import List, Optional
 
 from enemies.act3.darkling_intentions import (
@@ -55,7 +55,7 @@ class Darkling(Enemy):
         # Turn 1: 50/50 Nip or Harden
         if self._turn_count == 0:
             self._turn_count += 1
-            if random.random() < 0.5:
+            if get_rng("ai").random() < 0.5:
                 return self.intentions["Nip"]
             else:
                 return self.intentions["Harden"]
@@ -71,7 +71,7 @@ class Darkling(Enemy):
         # Cannot use Harden or Chomp twice in a row
         # Cannot use Nip three times in a row
 
-        roll = random.random()
+        roll = get_rng("ai").random()
 
         # Check constraints
         can_nip = self._consecutive_nip < 2
@@ -107,7 +107,7 @@ class Darkling(Enemy):
         can_nip = self._consecutive_nip < 2
         can_harden = self._consecutive_harden == 0
 
-        roll = random.random()
+        roll = get_rng("ai").random()
 
         if roll < 0.5 and can_nip:
             self._reset_consecutive()

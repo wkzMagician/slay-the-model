@@ -1,4 +1,5 @@
 """Orb Walker enemy - Act 3 Normal enemy."""
+from engine.random_streams import get_rng
 
 from enemies.base import Enemy
 from enemies.act3.orb_walker_intentions import Laser, Claw
@@ -23,7 +24,6 @@ class OrbWalker(Enemy):
         - Claw (34% chance)
         Cannot use either action three times in a row.
         """
-        import random
 
         # Check for repeated moves
         if len(self.history_intentions) >= 3:
@@ -36,7 +36,7 @@ class OrbWalker(Enemy):
                 return
 
         # Random selection
-        if random.random() < 0.66:
+        if get_rng("ai").random() < 0.66:
             self.current_intention = self.intentions["Laser"]
         else:
             self.current_intention = self.intentions["Claw"]

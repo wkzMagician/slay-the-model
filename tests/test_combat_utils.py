@@ -133,7 +133,17 @@ class CombatTestHelper:
         
         combat = Combat(enemies=enemies)
         self.game_state.combat = combat
+        prepared_energy = self.game_state.player.energy
         combat._init_combat()
+        # This is a prepared arena, not a normal first player decision. Keep
+        # the old fixture boundary before base draw so card-effect tests can
+        # inject hands/piles and energy. Native startup tests use Combat.start.
+        from actions.card import DrawCardsAction
+        opening = next(action for action in self.game_state.action_queue.queue
+                       if isinstance(action, DrawCardsAction))
+        self.game_state.action_queue.queue.remove(opening)
+        combat._opening_draw_queued = False
+        self.game_state.player.energy = prepared_energy
         return combat
     
     def play_card(self, card: Card, target: Optional[Creature] = None) -> bool:

@@ -1,7 +1,7 @@
 """The Maw enemy for Slay the Model."""
+from engine.random_streams import get_rng
 
 from typing import Optional
-import random
 
 from enemies.act3.the_maw_intentions import (
     TheMawRoar, TheMawSlam, TheMawNomNom, TheMawDrool
@@ -59,8 +59,8 @@ class TheMaw(Enemy):
         if last is None:
             selected = "Roar"
         elif last in ("Roar", "Drool"):
-            selected = "Slam" if random.random() < 0.5 else "Nom Nom"
+            selected = "Slam" if get_rng("ai").random() < 0.5 else "Nom Nom"
         else:
-            selected = "Nom Nom" if random.random() < 0.5 else "Drool"
+            selected = "Nom Nom" if get_rng("ai").random() < 0.5 else "Drool"
         self._last_move = selected
         return self.intentions[selected]

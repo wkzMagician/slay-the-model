@@ -1,3 +1,4 @@
+from engine.random_streams import get_rng
 # -*- coding: utf-8 -*-
 from engine.runtime_api import add_action, add_actions
 """Looter - Common enemy in Act 1 and Act 2.
@@ -5,7 +6,6 @@ from engine.runtime_api import add_action, add_actions
 Steals gold when attacking and tries to escape after a few turns.
 """
 
-import random
 from typing import List, TYPE_CHECKING
 
 from enemies.base import Enemy
@@ -98,7 +98,7 @@ class Looter(Enemy):
         
         # Turn 3: 50% Lunge or 50% Smoke Bomb
         if next_turn == 3:
-            if random.random() < 0.5:
+            if get_rng("ai").random() < 0.5:
                 return self.intentions["lunge"]
             else:
                 return self.intentions["smoke_bomb"]

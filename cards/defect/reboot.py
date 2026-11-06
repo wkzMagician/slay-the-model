@@ -1,4 +1,5 @@
 """Defect rare skill card - Reboot."""
+from engine.random_streams import get_rng
 
 from typing import List
 
@@ -20,7 +21,6 @@ class Reboot(Card):
     upgrade_draw = 6
 
     def on_play(self, targets: List[Creature] = []):
-        import random
         from engine.game_state import game_state
         from engine.runtime_api import add_action
         from actions.base import LambdaAction
@@ -30,7 +30,7 @@ class Reboot(Card):
             for pile_name in ("hand", "discard_pile"):
                 for card in list(card_manager.get_pile(pile_name)):
                     card_manager.move_to(card, "draw_pile", src=pile_name)
-            random.shuffle(card_manager.get_pile("draw_pile"))
+            get_rng("shuffle").shuffle(card_manager.get_pile("draw_pile"))
 
         add_action(LambdaAction(_reboot))
         add_action(DrawCardsAction(count=self.draw))

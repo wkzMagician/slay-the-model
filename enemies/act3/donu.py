@@ -39,8 +39,8 @@ class Donu(Enemy):
         from powers.definitions.artifact import ArtifactPower
 
         ascension = getattr(game_state, "ascension", 0)
-        super().on_combat_start(floor)
         self._use_circle_of_power = True
+        super().on_combat_start(floor)
 
         self.add_power(ArtifactPower(amount=3 if ascension >= 19 else 2, owner=self))
     
