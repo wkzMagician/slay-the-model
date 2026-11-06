@@ -80,8 +80,7 @@ def test_bloom_win_grants_rare_relic_gold_and_optional_deck_reward_once(player, 
         return BirdFacedUrn()
     monkeypatch.setattr('actions.reward.get_random_relic', draw_relic)
     offered = [Strike(), Defend(), Bash()]
-    cards = iter(offered)
-    monkeypatch.setattr('actions.card_choice.get_random_card_reward', lambda **kwargs: next(cards))
+    monkeypatch.setattr('actions.card_choice.get_card_reward_options', lambda **kwargs: offered)
     requests = []
     def select(request):
         requests.append(request)

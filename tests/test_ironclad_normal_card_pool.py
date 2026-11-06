@@ -18,6 +18,7 @@ with contextlib.redirect_stdout(io.StringIO()):
     from engine.game_state import game_state
     from utils.registry import get_registered,list_registered
     from utils.random import get_random_card
+    from engine.card_pools import original_rarity, definitions
     from utils.types import RarityType
     character=sys.argv[1]
     from engine.random_streams import get_rng
@@ -43,8 +44,8 @@ with contextlib.redirect_stdout(io.StringIO()):
         for rarity in [RarityType.COMMON,RarityType.UNCOMMON,RarityType.RARE]:
             result=get_random_card(namespaces=[player.namespace],rarities=[rarity])
             assert result is not None
-            assert result.namespace==player.namespace and result.rarity==rarity
-            pools[rarity.name]=seen[-1]
+            assert result.namespace==player.namespace and original_rarity(result)==rarity
+            pools[rarity.name]=[definitions()[value].cls for value in seen[-1]]
     finally:
         rng.choice=real_choice
     starting=[card.idstr for card in player.card_manager.piles['deck']]

@@ -115,12 +115,8 @@ def get_card_price(rarity, rng):
 
 
 def roll_card_rarity(rng):
-    rarity_roll = rng.random()
-    if rarity_roll < 0.54:
-        return RarityType.COMMON
-    if rarity_roll < 0.91:
-        return RarityType.UNCOMMON
-    return RarityType.RARE
+    from engine.card_rewards import roll_rarity
+    return roll_rarity(rng, "shop", use_offset=True)
 
 
 
@@ -162,6 +158,7 @@ def generate_colored_cards(player, card_provider=get_random_card, rng=None):
     for _ in range(2):
         rarity = roll_card_rarity(rng)
         card = card_provider(
+            pool_kind="shop",
             rarities=[rarity],
             card_types=[CardType.ATTACK],
             namespaces=card_namespaces,
@@ -174,6 +171,7 @@ def generate_colored_cards(player, card_provider=get_random_card, rng=None):
     for _ in range(2):
         rarity = roll_card_rarity(rng)
         card = card_provider(
+            pool_kind="shop",
             rarities=[rarity],
             card_types=[CardType.SKILL],
             namespaces=card_namespaces,
@@ -185,6 +183,7 @@ def generate_colored_cards(player, card_provider=get_random_card, rng=None):
 
     rarity = roll_card_rarity(rng)
     card = card_provider(
+        pool_kind="shop",
         rarities=[rarity],
         card_types=[CardType.POWER],
         namespaces=card_namespaces,
@@ -203,6 +202,7 @@ def generate_colorless_cards(card_provider=get_random_card):
     cards = []
 
     uncommon_card = card_provider(
+        pool_kind="shop",
         rarities=[RarityType.UNCOMMON],
         card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
         namespaces=["colorless"],
@@ -211,6 +211,7 @@ def generate_colorless_cards(card_provider=get_random_card):
         cards.append(uncommon_card)
 
     rare_card = card_provider(
+        pool_kind="shop",
         rarities=[RarityType.RARE],
         card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
         namespaces=["colorless"],
@@ -292,6 +293,7 @@ def restock_shop_item(
             if rarity not in {RarityType.UNCOMMON, RarityType.RARE}:
                 rarity = RarityType.UNCOMMON
             new_item = card_provider(
+                pool_kind="shop",
                 rarities=[rarity, RarityType.RARE] if rarity == RarityType.UNCOMMON else [RarityType.RARE],
                 card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
                 namespaces=["colorless"],
@@ -301,6 +303,7 @@ def restock_shop_item(
             card_type = getattr(getattr(shop_item, "item", None), "card_type", None) or rng.choice([CardType.ATTACK, CardType.SKILL, CardType.POWER])
             rarity = roll_card_rarity(rng)
             new_item = card_provider(
+                pool_kind="shop",
                 rarities=[rarity],
                 card_types=[card_type],
                 namespaces=build_card_namespaces(player),

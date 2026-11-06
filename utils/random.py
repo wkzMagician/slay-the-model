@@ -14,7 +14,7 @@ else:
     Potion = Any  # Runtime placeholder
 
 
-def get_random_card(namespaces: Optional[List[str]] = None, 
+def _get_registry_card(namespaces: Optional[List[str]] = None,
                      rarities: Optional[List[RarityType]] = None, 
                      card_types: Optional[List[CardType]] = None, 
                      target_set: Optional[List[str]] = None, 
@@ -74,6 +74,26 @@ def get_random_card(namespaces: Optional[List[str]] = None,
     return selected_card_cls() if selected_card_cls else None
 
 
+def get_random_card(namespaces=None, rarities=None, card_types=None, target_set=None,
+                    exclude_set=None, exclude_card_ids=None, exclude_starter=False, rng=None,
+                    *, pool_kind="library"):
+    from engine.card_pools import current_pools, definitions, NAMESPACES
+    rng = rng if rng is not None else get_rng("card_random")
+    # Explicit extension/target-set API retains its registration-based meaning.
+    # Normal four-character consumers use the fixed original catalog.
+    if target_set or namespaces and any(name not in NAMESPACES for name in namespaces):
+        return _get_registry_card(namespaces, rarities, card_types, target_set,
+                                  exclude_set, exclude_card_ids, exclude_starter, rng)
+    records = definitions()
+    ids = current_pools().candidates(namespaces, rarities, card_types,
+                                    pool_kind=pool_kind, exclude_starter=exclude_starter)
+    blocked = set(exclude_card_ids or [])
+    ids = [value for value in ids if value not in blocked and records[value].project_id not in blocked]
+    if exclude_set:
+        ids = [value for value in ids if getattr(records[value].make_card(), "set", None) not in exclude_set]
+    return records[rng.choice(ids)].make_card() if ids else None
+
+
 # 基础概率配置（按百分比）
 CARD_RARITY_PROBABILITIES = {
     "normal": {RarityType.COMMON: 60, RarityType.UNCOMMON: 37, RarityType.RARE: 3},
@@ -83,142 +103,19 @@ CARD_RARITY_PROBABILITIES = {
 
 card_rarity_probabilities = CARD_RARITY_PROBABILITIES.copy()
 
-def get_random_card_reward(namespaces: Optional[List[str]] = None,
-                         encounter_type: str = "normal",
-                         use_rolling_offset: bool = False,
-                         exclude_set: Optional[List[str]] = None,
-                         allow_upgraded: bool = False) -> Optional[Card]:
-    """
-    Get a random card from registry with rarity weights based on encounter type.
+def get_card_reward_options(total=3, namespaces=None, encounter_type="normal", use_rolling_offset=True,
+                            exclude_set=None, allow_upgraded=True, *, preview_pile=None):
+    from engine.card_rewards import reward_cards
+    return reward_cards(total, namespaces, encounter_type, use_rolling_offset,
+                        exclude_set, allow_upgraded, preview_pile=preview_pile)
 
-    args:
-        namespaces (Optional[List[str]]): List of namespaces to filter cards.
-        encounter_type (str): Type of encounter for rarity weights ("normal", "elite", "shop").
-        use_rolling_offset (bool): If True, adjust rare chance based on common cards gained.
-        exclude_set (Optional[List[str]]): Card.idstr values to exclude (prevents duplicates).
-        allow_upgraded (bool): If True, card can roll as upgraded based on act/ascension.
 
-    returns:
-        Optional[Card]: A random card matching criteria with weighted rarity, or None if none found.
-    """
-    # Get base probabilities for this encounter type
-    base_probs = card_rarity_probabilities.get(encounter_type, card_rarity_probabilities["normal"]).copy()
-    rolling_offset = 0
-    if use_rolling_offset:
-        try:
-            from engine.game_state import game_state
-            rolling_offset = int(getattr(game_state, "card_chance_common_counter", 0))
-        except Exception:
-            rolling_offset = 0
-        rolling_offset = max(0, min(rolling_offset, 40))
-        base_probs[RarityType.RARE] = base_probs.get(RarityType.RARE, 0) + rolling_offset
-        base_probs[RarityType.COMMON] = max(0, base_probs.get(RarityType.COMMON, 0) - rolling_offset)
-
-    # N'loth's Gift: rare chance x3, taken from common chance.
-    try:
-        from engine.game_state import game_state
-        has_nloth_gift = any(
-            getattr(relic, "idstr", None) == "NlothGift"
-            for relic in getattr(game_state.player, "relics", [])
-        )
-    except Exception:
-        has_nloth_gift = False
-
-    if has_nloth_gift:
-        original_rare = base_probs.get(RarityType.RARE, 0)
-        boosted_rare = max(0, original_rare) * 3
-        common_shift = boosted_rare - max(0, original_rare)
-        base_probs[RarityType.RARE] = boosted_rare
-        base_probs[RarityType.COMMON] = max(
-            0,
-            base_probs.get(RarityType.COMMON, 0) - common_shift,
-        )
-
-    # Filter available cards
-    all_card_idstrs = list_registered("card")
-    cards_by_rarity = {
-        RarityType.COMMON: [],
-        RarityType.UNCOMMON: [],
-        RarityType.RARE: []
-    }
-
-    for card_idstr in all_card_idstrs:
-        card_cls = get_registered("card", card_idstr)
-        if not card_cls:
-            continue
-        card_instance = card_cls()
-
-        # Filter by namespace
-        if namespaces and card_instance.namespace not in namespaces:
-            continue
-
-        # Exclude STARTER rarity cards from rewards
-        if card_instance.rarity == RarityType.STARTER:
-            continue
-
-        # Exclude already selected cards (prevent duplicates); values must be Card.idstr.
-        if exclude_set and card_instance.idstr in exclude_set:
-            continue
-
-        # Group cards by rarity
-        if card_instance.rarity in cards_by_rarity:
-            cards_by_rarity[card_instance.rarity].append(card_idstr)
-
-    # Check if any cards available for each rarity
-    available_rarities = [
-        (rarity, cards_by_rarity[rarity])
-        for rarity in [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]
-        if cards_by_rarity[rarity]
-    ]
-
-    if not available_rarities:
-        return None
-    
-    # 处理负权重：将负值替换为0
-    effective_probs = {}
-    for rarity, _ in available_rarities:
-        prob = base_probs.get(rarity, 0)
-        effective_probs[rarity] = max(0, prob)  # 负权重视为0
-    
-    # 计算权重：基于可用的稀有度和基础概率
-    total_prob = sum(effective_probs[rarity] for rarity, _ in available_rarities)
-    
-    # 如果总概率为0（所有权重都是0或负数），使用均匀分布
-    if total_prob <= 0:
-        weights = [1.0 / len(available_rarities) for _ in available_rarities]
-    else:
-        weights = [effective_probs[rarity] / total_prob for rarity, _ in available_rarities]
-
-    # Randomly select rarity based on weights
-    selected_rarity, card_list = get_rng("card").choices(available_rarities, weights=weights, k=1)[0]
-    
-    # Randomly select a card from the chosen rarity
-    selected_card_idstr = get_rng("card").choice(card_list)
-    selected_card_cls = get_registered("card", selected_card_idstr)
-    selected_card = selected_card_cls() if selected_card_cls else None
-
-    if (
-        selected_card is not None
-        and allow_upgraded
-        and selected_card.can_upgrade()
-    ):
-        act = 1
-        ascension = 0
-        try:
-            from engine.game_state import game_state
-            act = max(1, min(3, getattr(game_state, "current_act", 1)))
-            ascension = getattr(game_state, "ascension", 0)
-        except Exception:
-            pass
-
-        upgrade_chance = _get_card_reward_upgrade_chance(
-            act=act,
-            ascension=ascension,
-        )
-        if get_rng("card").random() < upgrade_chance:
-            selected_card.upgrade()
-
-    return selected_card
+def get_random_card_reward(namespaces=None, encounter_type="normal", use_rolling_offset=False,
+                           exclude_set=None, allow_upgraded=False):
+    """Single-slot compatibility API; menus must generate the whole batch first."""
+    cards = get_card_reward_options(1, namespaces, encounter_type, use_rolling_offset,
+                                    exclude_set, allow_upgraded)
+    return cards[0] if cards else None
 
 
 def _get_card_reward_upgrade_chance(act: int, ascension: int) -> float:
@@ -236,21 +133,15 @@ def _get_card_reward_upgrade_chance(act: int, ascension: int) -> float:
 
 
 def increment_card_chance_common_counter():
-    """
-    Increment the common card counter for rolling offset.
-    Call this when a common card is taken as a reward.
-    """
-    from engine.game_state import game_state
-    game_state.card_chance_common_counter += 1
+    """Compatibility API: account for a generated COMMON candidate, not a claim."""
+    from engine.card_rewards import update_compensation
+    update_compensation(RarityType.COMMON)
 
 
 def reset_card_chance_common_counter():
-    """
-    Reset the common card counter for rolling offset.
-    Call this when a rare card is taken as a reward.
-    """
-    from engine.game_state import game_state
-    game_state.card_chance_common_counter = 0
+    """Compatibility API: reset after generating a RARE candidate."""
+    from engine.card_rewards import update_compensation
+    update_compensation(RarityType.RARE)
 
 
 def get_random_relic(characters: Optional[List[str]] = None, 

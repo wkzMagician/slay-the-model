@@ -6,7 +6,7 @@ from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, PilePosType, RarityType
-from utils.random import get_random_card, get_random_card_reward
+from utils.random import get_random_card
 if TYPE_CHECKING:
     from cards.base import Card
 
@@ -39,7 +39,7 @@ class TransformCardAction(Action):
 
         add_actions([
             RemoveCardAction(card=self.card, src_pile=self.pile),
-            AddCardAction(card=get_random_card(namespaces=[namespace], rng=get_rng("misc")), dest_pile=self.pile),
+            AddCardAction(card=get_random_card(namespaces=[namespace], rng=get_rng("misc"), pool_kind="transform"), dest_pile=self.pile),
         ], to_front=True)
 
 @register("action")
@@ -161,7 +161,7 @@ class AddRandomCardAction(Action):
     def __init__(self, pile: str = 'hand', upgrade: bool = False,
                  card_type: Optional[CardType] = None, rarity: Optional[RarityType] = None, namespace: Optional[str] = None,
                  permanent_cost: Optional[int] = None, cost_until_end_of_turn: Optional[int] = None,
-                 exclude_card_ids: Optional[List[str]] = None):
+                 exclude_card_ids: Optional[List[str]] = None, pool_kind: Optional[str] = None):
         self.pile = pile
         self.upgrade = upgrade
         self.card_type = card_type
@@ -170,6 +170,7 @@ class AddRandomCardAction(Action):
         self.permanent_cost = permanent_cost
         self.cost_until_end_of_turn = cost_until_end_of_turn
         self.exclude_card_ids = exclude_card_ids
+        self.pool_kind = pool_kind
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -182,6 +183,7 @@ class AddRandomCardAction(Action):
             rarities=[self.rarity] if self.rarity else None,
             exclude_card_ids=self.exclude_card_ids,
             rng=get_rng("card" if self.pile == "deck" else "card_random"),
+            pool_kind=self.pool_kind or ("current" if self.pile == "deck" else "combat"),
         )
 
         if random_card is None:
@@ -380,7 +382,7 @@ class TransformAndUpgradeCardAction(Action):
         namespace = self.card.namespace
         
         # Get a random card from the same namespace
-        new_card = get_random_card(namespaces=[namespace], rng=get_rng("misc"))
+        new_card = get_random_card(namespaces=[namespace], rng=get_rng("misc"), pool_kind="transform")
         
         if new_card is None:
             return

@@ -6,7 +6,10 @@ Global action queue architecture:
 - Use game_state.execute_all_actions() to execute queued actions
 - No individual action queues in rooms/events/combat
 """
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.card_pools import CardPools
 
 from engine.input_protocol import InputRequest, InputSubmission
 from engine.message_bus import MessageBus
@@ -78,8 +81,9 @@ class GameState:
         self.gold_spent_in_shop = 0
         self.card_removal_price = 75
 
-        # Card chance rolling offset (each common card gained increases rare chance)
-        self.card_chance_common_counter = 0
+        # Original signed cardBlizzRandomizer; legacy counter maps to 5-offset.
+        self.card_rarity_offset = 5
+        self.card_pools: Optional["CardPools"] = None  # lazy, run-owned
 
         # Potion drop chance (40% base, -10% after drop, +10% after no drop)
         self.potion_drop_chance = 40
@@ -133,6 +137,14 @@ class GameState:
         self.runtime_context = RuntimeContext(game_state=self)
         self.pending_input_request = None
         self.terminal_state = None
+
+    @property
+    def card_chance_common_counter(self) -> int:
+        return 5 - self.card_rarity_offset
+
+    @card_chance_common_counter.setter
+    def card_chance_common_counter(self, value: int) -> None:
+        self.card_rarity_offset = max(-40, min(5, 5 - int(value)))
 
     @property
     def elapsed_time(self) -> float:
