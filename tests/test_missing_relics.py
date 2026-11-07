@@ -51,14 +51,10 @@ def test_relic_is_exported_registered_and_in_native_rare_pool(cls, monkeypatch):
     helper.game_state.player = create_player('Ironclad')
     helper.game_state.player.relics = []
     helper.game_state.current_floor = 1
-    seen = []
-    choose = get_rng("relic").choice
-
-    def observe(sequence):
-        seen.extend(sequence)
-        return choose(sequence)
-
-    monkeypatch.setattr(get_rng("relic"), 'choice', observe)
+    pool = helper.game_state.relic_pools
+    pool.initialize('RARE')
+    assert pool.remaining['RARE'] is not None
+    seen = list(pool.remaining['RARE'])
     get_random_relic(characters=['ironclad'], rarities=[RarityType.RARE])
     assert cls.__name__ in seen
     assert get_registered('relic', cls.__name__) is cls

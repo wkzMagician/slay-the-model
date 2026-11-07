@@ -438,6 +438,7 @@ class PaperPhrog(Relic):
     
     def __init__(self):
         super().__init__()
+        self.namespace = "ironclad"
         self.rarity = RarityType.UNCOMMON
         self.damage_phase = DamagePhase.MULTIPLICATIVE  # Vulnerable multiplier adjustment
 
@@ -483,6 +484,7 @@ class SelfFormingClay(Relic):
     
     def __init__(self):
         super().__init__()
+        self.namespace = "ironclad"
         self.rarity = RarityType.UNCOMMON
         self.block_gain_next_turn = 0
     

@@ -1,6 +1,6 @@
 from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, cast
 
 from tui.print_utils import tui_print
 from actions.base import Action, LambdaAction
@@ -23,6 +23,12 @@ def _handle_obtained_relic(relic: "Relic"):
         return
 
     player = game_state.player
+    if relic.idstr == "Circlet":
+        from relics.global_relics.special import Circlet
+        existing = next((item for item in player.relics if getattr(item, "idstr", None) == "Circlet"), None)
+        if existing is not None:
+            cast(Circlet, existing).counter += 1
+            return
     replacement = relic.replaces_relic
     if replacement is not None:
         index = next((i for i, old in enumerate(player.relics) if getattr(old, "idstr", None) == replacement), None)
@@ -128,7 +134,7 @@ class AddEliteRelicAction(Action):
 
     def execute(self) -> None:
         from engine.game_state import game_state
-        from relics.global_relics.special import RedCirclet
+        from relics.global_relics.special import Circlet
 
         player = game_state.player
         if player is None:
@@ -139,13 +145,8 @@ class AddEliteRelicAction(Action):
         excluded = list(game_state.obtained_relics | {
             str(getattr(relic, "idstr", "")) for relic in player.relics
         })
-        # Exhausted common/uncommon pools fall through to the next tier.
-        for tier in tiers[first:]:
-            relic = get_random_relic(rarities=[tier], exclude=excluded)
-            if relic is not None:
-                _handle_obtained_relic(relic)
-                return
-        _handle_obtained_relic(RedCirclet())
+        relic = get_random_relic(rarities=[tiers[first]], exclude=excluded)
+        _handle_obtained_relic(relic if relic is not None else Circlet())
 
 
 @register("action")
@@ -308,11 +309,15 @@ class AddRandomPotionAction(Action):
     Optional:
         None
     """
-    def __init__(self, character: str):
+    def __init__(self, character: str, uniform: bool = False):
         self.character = character
+        self.uniform = uniform
     
     def execute(self) -> None:
-        potion = get_random_potion(characters=[self.character])
+        if self.uniform:
+            potion = get_random_potion(characters=[self.character], uniform=True)
+        else:
+            potion = get_random_potion(characters=[self.character])
         if potion:
             AddPotionAction(potion=potion).execute()
 

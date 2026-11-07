@@ -87,10 +87,10 @@ def build_card_namespaces(player):
 
 
 def roll_potion_rarity(rng):
-    rarity_roll = rng.random()
-    if rarity_roll < 0.65:
+    rarity_roll = rng.random_int(0, 99)
+    if rarity_roll < 65:
         return RarityType.COMMON
-    if rarity_roll < 0.90:
+    if rarity_roll < 90:
         return RarityType.UNCOMMON
     return RarityType.RARE
 
@@ -260,10 +260,10 @@ def generate_shop_items(
 
     for _ in range(2):
         rarity = roll_relic_rarity(rng)
-        relic = relic_provider(rarities=[rarity])
+        relic = relic_provider(rarities=[rarity], from_end=True)
         items.append(ShopItem("relic", relic, get_relic_price(rarity, rng)))
 
-    shop_relic = relic_provider(rarities=[RarityType.SHOP])
+    shop_relic = relic_provider(rarities=[RarityType.SHOP], from_end=True)
     items.append(ShopItem("relic", shop_relic, rng.randint(143, 158)))
     return items
 
@@ -322,7 +322,7 @@ def restock_shop_item(
         shop_item.base_price = get_potion_price(rarity, rng)
     elif shop_item.item_type == "relic":
         rarity = roll_relic_rarity(rng)
-        new_item = relic_provider(rarities=[rarity])
+        new_item = relic_provider(rarities=[rarity], from_end=True)
         if not new_item:
             return
         shop_item.item = new_item

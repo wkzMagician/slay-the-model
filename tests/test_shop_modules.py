@@ -57,8 +57,8 @@ class _DeterministicRng:
         assert low <= value <= high
         return value
 
-    def random_int(self, bound):
-        assert bound == 99
+    def random_int(self, bound, end=None):
+        assert (bound, end) in ((99, None), (0, 99))
         return int(next(self._random_values) * 100)
 
     def choice(self, values):
@@ -173,7 +173,7 @@ def test_generate_shop_items_builds_expected_inventory_shape_and_price_bands():
         {"characters": ["silent"], "rarities": [RarityType.UNCOMMON]},
         {"characters": ["silent"], "rarities": [RarityType.RARE]},
     ]
-    assert relic_calls[-1] == {"rarities": [RarityType.SHOP]}
+    assert relic_calls[-1] == {"rarities": [RarityType.SHOP], "from_end": True}
 
 
 
@@ -307,7 +307,7 @@ def test_restock_shop_item_never_requests_shop_relic_rarity():
         relic_provider=lambda **kwargs: relic_calls.append(kwargs) or _DummyRelic("new"),
     )
 
-    assert relic_calls == [{"rarities": [RarityType.UNCOMMON]}]
+    assert relic_calls == [{"rarities": [RarityType.UNCOMMON], "from_end": True}]
 
 
 def test_restock_colorless_card_preserves_colorless_pool():

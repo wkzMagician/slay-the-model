@@ -20,7 +20,7 @@ class BurningBlood(Relic):
     
     def __init__(self):
         super().__init__()
-        self.rarity = RarityType.COMMON
+        self.rarity = RarityType.STARTER
 
     def on_combat_end(self):
         """Heal 6 HP at combat end"""
@@ -217,6 +217,7 @@ class OrangePellets(Relic):
     
     def __init__(self):
         super().__init__()
+        self.namespace = "any"
         self.rarity = RarityType.SHOP
         self.power_count = 0
         self.attack_count = 0

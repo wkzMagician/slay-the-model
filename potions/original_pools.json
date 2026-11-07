@@ -1,0 +1,399 @@
+{
+  "basis": "Actual fixed-JAR PotionHelper.getPotions ID queries and fixed-source rarity bridge",
+  "potions": [
+    {
+      "id": "BloodPotion",
+      "module": "potions.ironclad",
+      "cls": "BloodPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "ElixirPotion",
+      "module": "potions.ironclad",
+      "cls": "Elixir",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "HeartOfIron",
+      "module": "potions.ironclad",
+      "cls": "HeartOfIron",
+      "rarity": "RARE"
+    },
+    {
+      "id": "Block Potion",
+      "module": "potions.global_potions",
+      "cls": "BlockPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Dexterity Potion",
+      "module": "potions.global_potions",
+      "cls": "DexterityPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Energy Potion",
+      "module": "potions.global_potions",
+      "cls": "EnergyPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Explosive Potion",
+      "module": "potions.global_potions",
+      "cls": "ExplosivePotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Fire Potion",
+      "module": "potions.global_potions",
+      "cls": "FirePotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Strength Potion",
+      "module": "potions.global_potions",
+      "cls": "StrengthPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Swift Potion",
+      "module": "potions.global_potions",
+      "cls": "SwiftPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Weak Potion",
+      "module": "potions.global_potions",
+      "cls": "WeakPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "FearPotion",
+      "module": "potions.global_potions",
+      "cls": "FearPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "AttackPotion",
+      "module": "potions.global_potions",
+      "cls": "AttackPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "SkillPotion",
+      "module": "potions.global_potions",
+      "cls": "SkillPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "PowerPotion",
+      "module": "potions.global_potions",
+      "cls": "PowerPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "ColorlessPotion",
+      "module": "potions.global_potions",
+      "cls": "ColorlessPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "SteroidPotion",
+      "module": "potions.global_potions",
+      "cls": "FlexPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "SpeedPotion",
+      "module": "potions.global_potions",
+      "cls": "SpeedPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "BlessingOfTheForge",
+      "module": "potions.global_potions",
+      "cls": "BlessingOfTheForge",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "Regen Potion",
+      "module": "potions.global_potions",
+      "cls": "RegenPotion",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "Ancient Potion",
+      "module": "potions.global_potions",
+      "cls": "AncientPotion",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "LiquidBronze",
+      "module": "potions.global_potions",
+      "cls": "LiquidBronze",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "GamblersBrew",
+      "module": "potions.global_potions",
+      "cls": "GamblersBrew",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "EssenceOfSteel",
+      "module": "potions.global_potions",
+      "cls": "EssenceOfSteel",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "DuplicationPotion",
+      "module": "potions.global_potions",
+      "cls": "DuplicationPotion",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "DistilledChaos",
+      "module": "potions.global_potions",
+      "cls": "DistilledChaos",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "LiquidMemories",
+      "module": "potions.global_potions",
+      "cls": "LiquidMemories",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "CultistPotion",
+      "module": "potions.global_potions",
+      "cls": "CultistPotion",
+      "rarity": "RARE"
+    },
+    {
+      "id": "Fruit Juice",
+      "module": "potions.global_potions",
+      "cls": "FruitJuice",
+      "rarity": "RARE"
+    },
+    {
+      "id": "SneckoOil",
+      "module": "potions.global_potions",
+      "cls": "SneckoOil",
+      "rarity": "RARE"
+    },
+    {
+      "id": "FairyPotion",
+      "module": "potions.global_potions",
+      "cls": "FairyInABottle",
+      "rarity": "RARE"
+    },
+    {
+      "id": "SmokeBomb",
+      "module": "potions.global_potions",
+      "cls": "SmokeBomb",
+      "rarity": "RARE"
+    },
+    {
+      "id": "EntropicBrew",
+      "module": "potions.global_potions",
+      "cls": "EntropicBrew",
+      "rarity": "RARE"
+    },
+    {
+      "id": "Poison Potion",
+      "module": "potions.silent",
+      "cls": "PoisonPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "CunningPotion",
+      "module": "potions.silent",
+      "cls": "CunningPotion",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "GhostInAJar",
+      "module": "potions.silent",
+      "cls": "GhostInAJar",
+      "rarity": "RARE"
+    },
+    {
+      "id": "FocusPotion",
+      "module": "potions.defect",
+      "cls": "FocusPotion",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "PotionOfCapacity",
+      "module": "potions.defect",
+      "cls": "PotionOfCapacity",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "EssenceOfDarkness",
+      "module": "potions.defect",
+      "cls": "EssenceOfDarkness",
+      "rarity": "RARE"
+    },
+    {
+      "id": "BottledMiracle",
+      "module": "potions.watcher",
+      "cls": "BottledMiracle",
+      "rarity": "COMMON"
+    },
+    {
+      "id": "StancePotion",
+      "module": "potions.watcher",
+      "cls": "StancePotion",
+      "rarity": "UNCOMMON"
+    },
+    {
+      "id": "Ambrosia",
+      "module": "potions.watcher",
+      "cls": "Ambrosia",
+      "rarity": "RARE"
+    }
+  ],
+  "pools": {
+    "ironclad": [
+      "BloodPotion",
+      "ElixirPotion",
+      "HeartOfIron",
+      "Block Potion",
+      "Dexterity Potion",
+      "Energy Potion",
+      "Explosive Potion",
+      "Fire Potion",
+      "Strength Potion",
+      "Swift Potion",
+      "Weak Potion",
+      "FearPotion",
+      "AttackPotion",
+      "SkillPotion",
+      "PowerPotion",
+      "ColorlessPotion",
+      "SteroidPotion",
+      "SpeedPotion",
+      "BlessingOfTheForge",
+      "Regen Potion",
+      "Ancient Potion",
+      "LiquidBronze",
+      "GamblersBrew",
+      "EssenceOfSteel",
+      "DuplicationPotion",
+      "DistilledChaos",
+      "LiquidMemories",
+      "CultistPotion",
+      "Fruit Juice",
+      "SneckoOil",
+      "FairyPotion",
+      "SmokeBomb",
+      "EntropicBrew"
+    ],
+    "silent": [
+      "Poison Potion",
+      "CunningPotion",
+      "GhostInAJar",
+      "Block Potion",
+      "Dexterity Potion",
+      "Energy Potion",
+      "Explosive Potion",
+      "Fire Potion",
+      "Strength Potion",
+      "Swift Potion",
+      "Weak Potion",
+      "FearPotion",
+      "AttackPotion",
+      "SkillPotion",
+      "PowerPotion",
+      "ColorlessPotion",
+      "SteroidPotion",
+      "SpeedPotion",
+      "BlessingOfTheForge",
+      "Regen Potion",
+      "Ancient Potion",
+      "LiquidBronze",
+      "GamblersBrew",
+      "EssenceOfSteel",
+      "DuplicationPotion",
+      "DistilledChaos",
+      "LiquidMemories",
+      "CultistPotion",
+      "Fruit Juice",
+      "SneckoOil",
+      "FairyPotion",
+      "SmokeBomb",
+      "EntropicBrew"
+    ],
+    "defect": [
+      "FocusPotion",
+      "PotionOfCapacity",
+      "EssenceOfDarkness",
+      "Block Potion",
+      "Dexterity Potion",
+      "Energy Potion",
+      "Explosive Potion",
+      "Fire Potion",
+      "Strength Potion",
+      "Swift Potion",
+      "Weak Potion",
+      "FearPotion",
+      "AttackPotion",
+      "SkillPotion",
+      "PowerPotion",
+      "ColorlessPotion",
+      "SteroidPotion",
+      "SpeedPotion",
+      "BlessingOfTheForge",
+      "Regen Potion",
+      "Ancient Potion",
+      "LiquidBronze",
+      "GamblersBrew",
+      "EssenceOfSteel",
+      "DuplicationPotion",
+      "DistilledChaos",
+      "LiquidMemories",
+      "CultistPotion",
+      "Fruit Juice",
+      "SneckoOil",
+      "FairyPotion",
+      "SmokeBomb",
+      "EntropicBrew"
+    ],
+    "watcher": [
+      "BottledMiracle",
+      "StancePotion",
+      "Ambrosia",
+      "Block Potion",
+      "Dexterity Potion",
+      "Energy Potion",
+      "Explosive Potion",
+      "Fire Potion",
+      "Strength Potion",
+      "Swift Potion",
+      "Weak Potion",
+      "FearPotion",
+      "AttackPotion",
+      "SkillPotion",
+      "PowerPotion",
+      "ColorlessPotion",
+      "SteroidPotion",
+      "SpeedPotion",
+      "BlessingOfTheForge",
+      "Regen Potion",
+      "Ancient Potion",
+      "LiquidBronze",
+      "GamblersBrew",
+      "EssenceOfSteel",
+      "DuplicationPotion",
+      "DistilledChaos",
+      "LiquidMemories",
+      "CultistPotion",
+      "Fruit Juice",
+      "SneckoOil",
+      "FairyPotion",
+      "SmokeBomb",
+      "EntropicBrew"
+    ]
+  }
+}

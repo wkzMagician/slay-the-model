@@ -53,10 +53,13 @@ def get_random_relic_by_rarity(rarity: RarityType, count: int = 1) -> List[Type]
     Returns:
         List of relic classes
     """
-    relics = RELICS_BY_RARITY.get(rarity, [])
-    if not relics:
-        return []
-    return get_rng("relic").sample(relics, min(count, len(relics)))
+    from utils.random import get_random_relic
+    result = []
+    for _ in range(count):
+        relic = get_random_relic(rarities=[rarity])
+        if relic is not None:
+            result.append(type(relic))
+    return result
 
 
 def get_single_random_relic_by_rarity(rarity: RarityType) -> Optional[Type]:

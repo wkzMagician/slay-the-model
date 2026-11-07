@@ -19,7 +19,7 @@ class RingOfTheSnake(Relic):
 
     def __init__(self):
         super().__init__()
-        self.rarity = RarityType.COMMON
+        self.rarity = RarityType.STARTER
 
     def on_combat_start(self, floor: int):
         add_actions([DrawCardsAction(count=2)])
