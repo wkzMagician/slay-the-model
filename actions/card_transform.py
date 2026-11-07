@@ -7,6 +7,7 @@ from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, PilePosType, RarityType
 from utils.random import get_random_card
+from engine.card_generation import transformed_card
 if TYPE_CHECKING:
     from cards.base import Card
 
@@ -35,11 +36,12 @@ class TransformCardAction(Action):
         if not game_state.player:
             return
 
-        namespace = self.card.namespace
-
+        new_card = transformed_card(self.card, get_rng("misc"))
+        if new_card is None:
+            return
         add_actions([
             RemoveCardAction(card=self.card, src_pile=self.pile),
-            AddCardAction(card=get_random_card(namespaces=[namespace], rng=get_rng("misc"), pool_kind="transform"), dest_pile=self.pile),
+            AddCardAction(card=new_card, dest_pile=self.pile),
         ], to_front=True)
 
 @register("action")
@@ -379,10 +381,7 @@ class TransformAndUpgradeCardAction(Action):
         if not game_state.player:
             return
 
-        namespace = self.card.namespace
-        
-        # Get a random card from the same namespace
-        new_card = get_random_card(namespaces=[namespace], rng=get_rng("misc"), pool_kind="transform")
+        new_card = transformed_card(self.card, get_rng("misc"))
         
         if new_card is None:
             return

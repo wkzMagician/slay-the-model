@@ -37,7 +37,7 @@ class TheLibrary(Event):
                     actions=[ChooseObtainCardAction(
                     total=20,
                     namespace=game_state.player.namespace,
-                    encounter_type="shop",
+                    selection_kind="library",
                     use_rolling_offset=False,
                     can_skip=False
                 )]
