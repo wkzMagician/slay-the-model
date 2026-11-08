@@ -150,47 +150,30 @@ def get_relic_price(rarity, rng):
 @route_domains(card_random="card")
 def generate_colored_cards(player, card_provider=get_random_card, rng=None):
     """Generate 5 colored cards for the shop."""
+    from engine.card_pools import original_id
+
     card_namespaces = build_card_namespaces(player)
     rng = rng if rng is not None else get_rng("card")
     cards = []
-    seen_ids = []
 
-    for _ in range(2):
-        rarity = roll_card_rarity(rng)
-        card = card_provider(
-            pool_kind="shop",
-            rarities=[rarity],
-            card_types=[CardType.ATTACK],
-            namespaces=card_namespaces,
-            exclude_card_ids=seen_ids,
-        )
-        if card:
-            cards.append(card)
-            seen_ids.append(getattr(card, "idstr", getattr(card, "label", card.__class__.__name__)))
-
-    for _ in range(2):
-        rarity = roll_card_rarity(rng)
-        card = card_provider(
-            pool_kind="shop",
-            rarities=[rarity],
-            card_types=[CardType.SKILL],
-            namespaces=card_namespaces,
-            exclude_card_ids=seen_ids,
-        )
-        if card:
-            cards.append(card)
-            seen_ids.append(getattr(card, "idstr", getattr(card, "label", card.__class__.__name__)))
-
-    rarity = roll_card_rarity(rng)
-    card = card_provider(
-        pool_kind="shop",
-        rarities=[rarity],
-        card_types=[CardType.POWER],
-        namespaces=card_namespaces,
-        exclude_card_ids=seen_ids,
-    )
-    if card:
-        cards.append(card)
+    for card_type, count in ((CardType.ATTACK, 2), (CardType.SKILL, 2), (CardType.POWER, 1)):
+        previous_id = None
+        for _ in range(count):
+            while True:
+                rarity = roll_card_rarity(rng)
+                card = card_provider(
+                    pool_kind="shop",
+                    rarities=[rarity],
+                    card_types=[card_type],
+                    namespaces=card_namespaces,
+                )
+                if card is None:
+                    break
+                if getattr(card, "namespace", None) != "colorless" and original_id(card) != previous_id:
+                    break
+            if card is not None:
+                cards.append(card)
+                previous_id = original_id(card)
 
     return cards
 
@@ -237,6 +220,7 @@ def generate_shop_items(
     namespace = getattr(player, "namespace", None) or "ironclad"
 
     colored_cards = generate_colored_cards(player=player, card_provider=card_provider, rng=explicit_rng)
+    colorless_cards = generate_colorless_cards(card_provider=card_provider)
     colored_start_idx = len(items)
     for card in colored_cards:
         if card is None:
@@ -244,19 +228,12 @@ def generate_shop_items(
         items.append(ShopItem("card", card, get_card_price(card.rarity, rng)))
 
     colored_end_idx = len(items)
+    for card in colorless_cards:
+        items.append(ShopItem("card", card, get_colorless_card_price(card.rarity, rng)))
+
     if colored_end_idx > colored_start_idx:
         discounted_index = rng.randint(colored_start_idx, colored_end_idx - 1)
         items[discounted_index].discount = 0.5
-
-    for card in generate_colorless_cards(card_provider=card_provider):
-        if card is None:
-            continue
-        items.append(ShopItem("card", card, get_colorless_card_price(card.rarity, rng)))
-
-    for _ in range(3):
-        rarity = roll_potion_rarity(explicit_rng if explicit_rng is not None else get_rng("potion"))
-        potion = potion_provider(characters=[namespace], rarities=[rarity])
-        items.append(ShopItem("potion", potion, get_potion_price(rarity, rng)))
 
     for _ in range(2):
         rarity = roll_relic_rarity(rng)
@@ -265,6 +242,10 @@ def generate_shop_items(
 
     shop_relic = relic_provider(rarities=[RarityType.SHOP], from_end=True)
     items.append(ShopItem("relic", shop_relic, rng.randint(143, 158)))
+    for _ in range(3):
+        rarity = roll_potion_rarity(explicit_rng if explicit_rng is not None else get_rng("potion"))
+        potion = potion_provider(characters=[namespace], rarities=[rarity])
+        items.append(ShopItem("potion", potion, get_potion_price(rarity, rng)))
     return items
 
 
