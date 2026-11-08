@@ -132,6 +132,9 @@ class AddRandomRelicAction(Action):
 class AddEliteRelicAction(Action):
     """Grant an elite relic with the normal 50/33/17 tier distribution."""
 
+    def __init__(self, non_campfire: bool = False):
+        self.non_campfire = non_campfire
+
     def execute(self) -> None:
         from engine.game_state import game_state
         from relics.global_relics.special import Circlet
@@ -146,6 +149,10 @@ class AddEliteRelicAction(Action):
             str(getattr(relic, "idstr", "")) for relic in player.relics
         })
         relic = get_random_relic(rarities=[tiers[first]], exclude=excluded)
+        if self.non_campfire:
+            from relics.spawn_rules import CAMPFIRE_RELICS
+            while relic is not None and relic.idstr in CAMPFIRE_RELICS:
+                relic = get_random_relic(rarities=[tiers[first]], exclude=excluded)
         _handle_obtained_relic(relic if relic is not None else Circlet())
 
 

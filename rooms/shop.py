@@ -25,6 +25,7 @@ class ShopRoom(Room):
         """Initialize the shop inventory."""
         from engine.game_state import game_state
 
+        game_state.current_room = self
         self.card_removal_price = getattr(game_state, "card_removal_price", 75)
         self.items = self._generate_items()
 
@@ -33,6 +34,7 @@ class ShopRoom(Room):
         from engine.game_state import game_state
         from engine.messages import ShopEnteredMessage
 
+        game_state.current_room = self
         emit_text(self.local("enter", default="Enter the room"))
         publish_message(
             ShopEnteredMessage(owner=game_state.player, room=self, entities=[]),
@@ -41,7 +43,10 @@ class ShopRoom(Room):
 
     def leave(self):
         """Leave the shop and reset single-visit state."""
+        from engine.game_state import game_state
         super().leave()
+        if game_state.current_room is self:
+            game_state.current_room = None
         self.card_removal_used = False
 
     def _generate_items(self):
