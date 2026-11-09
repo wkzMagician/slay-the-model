@@ -39,6 +39,7 @@ def test_message_bus_dispatches_shop_entered_subscription():
 def test_shop_room_enter_publishes_shop_entered_message(monkeypatch):
     helper = create_test_helper()
     player = helper.create_player(hp=80, max_hp=80, energy=3)
+    player.namespace = "ironclad"  # The merchant requires a playable character pool.
     relic = _ShopEnterRelic()
     player.relics = [relic]
     room = ShopRoom()

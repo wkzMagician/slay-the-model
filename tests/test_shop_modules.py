@@ -57,6 +57,9 @@ class _DeterministicRng:
         assert low <= value <= high
         return value
 
+    def random_float(self, start, end):
+        return start
+
     def random_int(self, bound, end=None):
         assert (bound, end) in ((99, None), (0, 99))
         return int(next(self._random_values) * 100)
@@ -151,7 +154,7 @@ def test_generate_shop_items_builds_expected_inventory_shape_and_price_bands():
     relic_calls = []
     rng = _DeterministicRng(
         random_values=[0.1, 0.8, 0.95, 0.2, 0.7, 0.1, 0.8, 0.1, 0.8, 0.95],
-        randint_values=[45, 68, 135, 50, 83, 81, 162, 3, 143, 238, 150, 48, 71, 95],
+        randint_values=[3],
     )
 
     items = generate_shop_items(
@@ -167,7 +170,7 @@ def test_generate_shop_items_builds_expected_inventory_shape_and_price_bands():
     assert [item.item_type for item in items].count("potion") == 3
     assert [item.item_type for item in items].count("relic") == 3
     assert sum(1 for item in items[:5] if item.discount == 0.5) == 1
-    assert [item.base_price for item in items[:7]] == [45, 68, 135, 50, 83, 81, 162]
+    assert [item.base_price for item in items[:7]] == [45, 67, 135, 45, 67, 81, 162]
     assert potion_calls == [
         {"characters": ["silent"], "rarities": [RarityType.COMMON]},
         {"characters": ["silent"], "rarities": [RarityType.UNCOMMON]},
@@ -234,7 +237,7 @@ def test_restock_shop_item_uses_same_potion_namespace_rules_as_initial_inventory
 
     assert potion_calls == [{"characters": ["defect"], "rarities": [RarityType.COMMON]}]
     assert shop_item.item.info() == "New Potion"
-    assert shop_item.base_price == 52
+    assert shop_item.base_price == 48
     assert shop_item.discount == 0
     assert shop_item.purchased is False
 
@@ -257,7 +260,7 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
     )
     rng = _DeterministicRng(
         random_values=[0.5, 0.5, 0.5, 0.5, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5],
-        randint_values=[45, 45, 45, 45, 45, 81, 162, 0, 143, 143, 143, 48, 48, 48, 45],
+        randint_values=[0],
     )
 
     items = generate_shop_items(
@@ -336,7 +339,7 @@ def test_restock_colorless_card_preserves_colorless_pool():
         "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER],
         "namespaces": ["colorless"],
     }]
-    assert shop_item.base_price == 90
+    assert shop_item.base_price == 81
 
 
 def test_generate_colored_cards_rolls_rarity_per_slot_instead_of_pooling_all_rarities():

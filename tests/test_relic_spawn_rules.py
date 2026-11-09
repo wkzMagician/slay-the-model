@@ -178,7 +178,7 @@ def test_shop_initial_inventory_and_restock_use_shop_context(monkeypatch):
     assert observed == [room] and game_state.current_room is room
     game_state.relic_pools.remaining['COMMON'] = ['Vajra','MawBank']
     from types import SimpleNamespace
-    rng = SimpleNamespace(random=lambda:0.0, randint=lambda low,high:low)
+    rng = SimpleNamespace(random=lambda:0.0, randint=lambda low,high:low, random_float=lambda low,high:low)
     restock_shop_item(room.items[0], game_state.player, rng=rng)
     assert room.items[0].item.idstr == 'Vajra'
     room.leave()

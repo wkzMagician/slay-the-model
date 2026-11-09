@@ -85,6 +85,9 @@ def test_inventory_phase_order_includes_all_prices_before_sale(monkeypatch):
         def randint(self,low,high):
             events.append('sale' if (low,high)==(0,4) else 'price')
             return low
+        def random_float(self,start,end):
+            events.append("price")
+            return start
         def random(self):
             events.append('relic-tier')
             return 0.1

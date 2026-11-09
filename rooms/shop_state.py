@@ -3,6 +3,7 @@ from engine.random_streams import get_rng, route_domains
 
 from utils.random import get_random_card, get_random_potion, get_random_relic
 from utils.types import CardType, RarityType
+from utils.compatible_random import float32, java_round_float
 
 from rooms.shop_pricing import compute_shop_price
 
@@ -16,6 +17,7 @@ class ShopItem:
         self.base_price = base_price
         self.discount = discount
         self.purchased = False
+        self.card_restock = False
 
     def get_final_price(self, ascension_level=0):
         """Calculate the final price using only local item state."""
@@ -24,6 +26,7 @@ class ShopItem:
             ascension_level=ascension_level,
             discount=self.discount,
             item_type=self.item_type,
+            card_restock=getattr(self, "card_restock", False),
         )
 
     def get_final_price_with_modifiers(
@@ -48,6 +51,7 @@ class ShopItem:
             has_the_courier=bool(has_the_courier),
             has_smiling_mask=bool(has_smiling_mask),
             item_type=self.item_type,
+            card_restock=getattr(self, "card_restock", False),
         )
 
 
@@ -106,12 +110,15 @@ def roll_relic_rarity(rng):
 
 
 
+def _card_price(rarity, rng, *, colorless=False):
+    base = {RarityType.STARTER: 9999, RarityType.COMMON: 50,
+            RarityType.UNCOMMON: 75, RarityType.RARE: 150, RarityType.SPECIAL: 9999}.get(rarity, 0)
+    price = float32(base * rng.random_float(0.9, 1.1))
+    return float32(price * float32(1.2)) if colorless else price
+
+
 def get_card_price(rarity, rng):
-    if rarity == RarityType.COMMON:
-        return rng.randint(45, 55)
-    if rarity == RarityType.UNCOMMON:
-        return rng.randint(68, 83)
-    return rng.randint(135, 165)
+    return int(_card_price(rarity, rng))
 
 
 def roll_card_rarity(rng):
@@ -119,32 +126,42 @@ def roll_card_rarity(rng):
     return roll_rarity(rng, "shop", use_offset=True)
 
 
-
 def get_colorless_card_price(rarity, rng):
-    if rarity == RarityType.UNCOMMON:
-        return rng.randint(81, 99)
-    if rarity == RarityType.RARE:
-        return rng.randint(162, 198)
-    return rng.randint(81, 99)
-
+    return int(_card_price(rarity, rng, colorless=True))
 
 
 def get_potion_price(rarity, rng):
-    if rarity == RarityType.COMMON:
-        return rng.randint(48, 53)
-    if rarity == RarityType.UNCOMMON:
-        return rng.randint(71, 79)
-    return rng.randint(95, 105)
-
+    base = {RarityType.COMMON: 50, RarityType.UNCOMMON: 75, RarityType.RARE: 100}.get(rarity, 999)
+    return java_round_float(float32(base * rng.random_float(0.95, 1.05)))
 
 
 def get_relic_price(rarity, rng):
-    if rarity == RarityType.COMMON:
-        return rng.randint(143, 158)
-    if rarity == RarityType.UNCOMMON:
-        return rng.randint(238, 263)
-    return rng.randint(285, 315)
+    base = {RarityType.STARTER: 300, RarityType.COMMON: 150, RarityType.UNCOMMON: 250,
+            RarityType.RARE: 300, RarityType.SHOP: 150, RarityType.SPECIAL: 400,
+            RarityType.BOSS: 999}.get(rarity, -1)
+    return java_round_float(float32(base * rng.random_float(0.95, 1.05)))
 
+
+def _relic_price_rarity(relic, fallback):
+    from relics.pools import definitions
+    row = definitions().get(getattr(relic, "idstr", None))
+    return RarityType[row["tier"]] if row else getattr(relic, "rarity", fallback)
+
+
+def _shop_card(card_type, rarity, namespaces, card_provider):
+    tiers = [rarity]
+    if card_type == CardType.POWER:
+        tiers = {
+            RarityType.COMMON: [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE],
+            RarityType.UNCOMMON: [RarityType.UNCOMMON, RarityType.RARE],
+            RarityType.RARE: [RarityType.RARE, RarityType.UNCOMMON],
+        }.get(rarity, tiers)
+    # Each empty tier is checked once. An exhausted extension pool returns None.
+    for tier in tiers:
+        card = card_provider(pool_kind="shop", rarities=[tier], card_types=[card_type], namespaces=namespaces)
+        if card is not None:
+            return card
+    return None
 
 
 @route_domains(card_random="card")
@@ -161,12 +178,7 @@ def generate_colored_cards(player, card_provider=get_random_card, rng=None):
         for _ in range(count):
             while True:
                 rarity = roll_card_rarity(rng)
-                card = card_provider(
-                    pool_kind="shop",
-                    rarities=[rarity],
-                    card_types=[card_type],
-                    namespaces=card_namespaces,
-                )
+                card = _shop_card(card_type, rarity, card_namespaces, card_provider)
                 if card is None:
                     break
                 if getattr(card, "namespace", None) != "colorless" and original_id(card) != previous_id:
@@ -214,6 +226,8 @@ def generate_shop_items(
     relic_provider=get_random_relic,
 ):
     """Generate the current shop inventory."""
+    from engine.card_pools import original_rarity
+
     explicit_rng = rng
     rng = rng if rng is not None else get_rng("merchant")
     items = []
@@ -225,11 +239,11 @@ def generate_shop_items(
     for card in colored_cards:
         if card is None:
             raise ValueError("unable to get card")
-        items.append(ShopItem("card", card, get_card_price(card.rarity, rng)))
+        items.append(ShopItem("card", card, get_card_price(original_rarity(card), rng)))
 
     colored_end_idx = len(items)
     for card in colorless_cards:
-        items.append(ShopItem("card", card, get_colorless_card_price(card.rarity, rng)))
+        items.append(ShopItem("card", card, get_colorless_card_price(original_rarity(card), rng)))
 
     if colored_end_idx > colored_start_idx:
         discounted_index = rng.randint(colored_start_idx, colored_end_idx - 1)
@@ -238,14 +252,14 @@ def generate_shop_items(
     for _ in range(2):
         rarity = roll_relic_rarity(rng)
         relic = relic_provider(rarities=[rarity], from_end=True)
-        items.append(ShopItem("relic", relic, get_relic_price(rarity, rng)))
+        items.append(ShopItem("relic", relic, get_relic_price(_relic_price_rarity(relic, rarity), rng)))
 
     shop_relic = relic_provider(rarities=[RarityType.SHOP], from_end=True)
-    items.append(ShopItem("relic", shop_relic, rng.randint(143, 158)))
+    items.append(ShopItem("relic", shop_relic, get_relic_price(_relic_price_rarity(shop_relic, RarityType.SHOP), rng)))
     for _ in range(3):
         rarity = roll_potion_rarity(explicit_rng if explicit_rng is not None else get_rng("potion"))
         potion = potion_provider(characters=[namespace], rarities=[rarity])
-        items.append(ShopItem("potion", potion, get_potion_price(rarity, rng)))
+        items.append(ShopItem("potion", potion, get_potion_price(getattr(potion, "rarity", rarity), rng)))
     return items
 
 
@@ -260,6 +274,8 @@ def restock_shop_item(
     relic_provider=get_random_relic,
 ):
     """Replace a purchased shop slot with a fresh item using the same source-of-truth rules."""
+    from engine.card_pools import original_rarity
+
     if not player or not shop_item:
         return
 
@@ -279,35 +295,31 @@ def restock_shop_item(
                 card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
                 namespaces=["colorless"],
             )
-            base_price = get_colorless_card_price(getattr(new_item, "rarity", rarity), rng) if new_item else None
+            base_price = _card_price(original_rarity(new_item), rng, colorless=True) if new_item else None
         else:
             card_type = getattr(getattr(shop_item, "item", None), "card_type", None) or rng.choice([CardType.ATTACK, CardType.SKILL, CardType.POWER])
             rarity = roll_card_rarity(rng)
-            new_item = card_provider(
-                pool_kind="shop",
-                rarities=[rarity],
-                card_types=[card_type],
-                namespaces=build_card_namespaces(player),
-            )
-            base_price = get_card_price(getattr(new_item, "rarity", rarity), rng) if new_item else None
+            new_item = _shop_card(card_type, rarity, build_card_namespaces(player), card_provider)
+            base_price = _card_price(original_rarity(new_item), rng) if new_item else None
         if not new_item:
             return
         shop_item.item = new_item
         shop_item.base_price = base_price
+        shop_item.card_restock = True
     elif shop_item.item_type == "potion":
         rarity = roll_potion_rarity(explicit_rng if explicit_rng is not None else get_rng("potion"))
         new_item = potion_provider(characters=[namespace], rarities=[rarity])
         if not new_item:
             return
         shop_item.item = new_item
-        shop_item.base_price = get_potion_price(rarity, rng)
+        shop_item.base_price = get_potion_price(getattr(new_item, "rarity", rarity), rng)
     elif shop_item.item_type == "relic":
         rarity = roll_relic_rarity(rng)
         new_item = relic_provider(rarities=[rarity], from_end=True)
         if not new_item:
             return
         shop_item.item = new_item
-        shop_item.base_price = get_relic_price(rarity, rng)
+        shop_item.base_price = get_relic_price(_relic_price_rarity(new_item, rarity), rng)
     else:
         return
 
