@@ -4,6 +4,8 @@ from engine.runtime_events import emit_text
 from rooms.base import Room
 from rooms.shop_state import ShopItem, game_state_has_relic, generate_shop_items
 from rooms.shop_menu import build_shop_menu
+from rooms.shop_pricing import compute_card_removal_price
+from utils.compatible_random import float32, java_round_float
 from utils.types import RoomType
 
 
@@ -20,6 +22,7 @@ class ShopRoom(Room):
         self.items = []
         self.card_removal_price = 75
         self.card_removal_used = False
+        self.actual_card_removal_price = None
 
     def init(self):
         """Initialize the shop inventory."""
@@ -28,6 +31,8 @@ class ShopRoom(Room):
         game_state.current_room = self
         self.card_removal_price = getattr(game_state, "card_removal_price", 75)
         self.items = self._generate_items()
+        self.actual_card_removal_price = None
+        self.prepare_prices()
 
     def enter(self) -> None:
         """Enter the shop and present the initial menu."""
@@ -54,10 +59,40 @@ class ShopRoom(Room):
         from engine.game_state import game_state
         return generate_shop_items(player=getattr(game_state, "player", None))
 
+    def prepare_prices(self):
+        from engine.game_state import game_state
+        for item in self.items:
+            item.prepare_price(game_state.ascension, game_state.player)
+        if self.actual_card_removal_price is None:
+            self.update_removal_price()
+
+    def update_removal_price(self, after_removal=False):
+        from engine.game_state import game_state
+        self.actual_card_removal_price = compute_card_removal_price(
+            self.card_removal_price,
+            has_membership_card=_has_relic("MembershipCard", game_state),
+            has_the_courier=_has_relic("TheCourier", game_state),
+            has_smiling_mask=_has_relic("SmilingMask", game_state),
+            after_removal=after_removal,
+        )
+
+    def on_shop_relic_purchased(self, relic_id):
+        from engine.game_state import game_state
+        if relic_id == "MembershipCard":
+            for item in self.items:
+                item.quoted_price = java_round_float(float32(item.quoted_price * float32(0.5)))
+            self.actual_card_removal_price = compute_card_removal_price(
+                self.card_removal_price, has_membership_card=True,
+                has_smiling_mask=_has_relic("SmilingMask", game_state),
+            )
+        if relic_id == "SmilingMask":
+            self.actual_card_removal_price = 50
+
     def _build_shop_menu(self):
         """Build the current shop menu."""
         from engine.game_state import game_state
 
+        self.prepare_prices()
         player = getattr(game_state, "player", None)
         player_gold = getattr(player, "gold", None) if player else None
 
@@ -66,11 +101,12 @@ class ShopRoom(Room):
             localize=self.local,
             items=self.items,
             player_gold=player_gold,
-            ascension_level=getattr(game_state, "ascension_level", 0),
+            ascension_level=game_state.ascension,
             card_removal_price=self.card_removal_price,
             card_removal_used=self.card_removal_used,
             has_smiling_mask=_has_relic("SmilingMask", game_state),
             has_membership_card=_has_relic("MembershipCard", game_state),
             has_the_courier=_has_relic("TheCourier", game_state),
             room=self,
+            removal_quote=self.actual_card_removal_price,
         )

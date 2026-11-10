@@ -84,14 +84,14 @@ def test_card_removal_price_applies_courier_discount():
     assert price == 60
 
 
-def test_card_removal_price_stacks_membership_and_courier():
+def test_initial_card_removal_price_uses_last_discount_from_base():
     price = compute_card_removal_price(
         base_price=100,
         has_membership_card=True,
         has_the_courier=True,
         has_smiling_mask=False,
     )
-    assert price == 40
+    assert price == 50
 
 
 

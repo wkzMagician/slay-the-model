@@ -18,15 +18,21 @@ class ShopItem:
         self.discount = discount
         self.purchased = False
         self.card_restock = False
+        self.restocked = False
+        self.quoted_price: int | None = None
 
     def get_final_price(self, ascension_level=0):
         """Calculate the final price using only local item state."""
+        quoted_price = getattr(self, "quoted_price", None)
+        if quoted_price is not None:
+            return quoted_price
         return compute_shop_price(
             base_price=self.base_price,
             ascension_level=ascension_level,
             discount=self.discount,
             item_type=self.item_type,
             card_restock=getattr(self, "card_restock", False),
+            restocked=getattr(self, "restocked", False),
         )
 
     def get_final_price_with_modifiers(
@@ -43,6 +49,9 @@ class ShopItem:
             has_the_courier = game_state_has_relic("TheCourier", game_state)
             has_smiling_mask = game_state_has_relic("SmilingMask", game_state)
 
+        quoted_price = getattr(self, "quoted_price", None)
+        if quoted_price is not None:
+            return quoted_price
         return compute_shop_price(
             base_price=self.base_price,
             ascension_level=ascension_level,
@@ -52,7 +61,18 @@ class ShopItem:
             has_smiling_mask=bool(has_smiling_mask),
             item_type=self.item_type,
             card_restock=getattr(self, "card_restock", False),
+            restocked=getattr(self, "restocked", False),
         )
+
+    def prepare_price(self, ascension_level, player):
+        """Freeze this slot's current quote once until a discount or restock."""
+        self.quoted_price = self.get_final_price_with_modifiers(
+            ascension_level,
+            has_membership_card=game_state_has_relic("MembershipCard", player=player),
+            has_the_courier=game_state_has_relic("TheCourier", player=player),
+            has_smiling_mask=game_state_has_relic("SmilingMask", player=player),
+        )
+
 
 
 
@@ -61,13 +81,14 @@ def normalize_relic_key(value):
 
 
 
-def game_state_has_relic(relic_key, game_state=None):
+def game_state_has_relic(relic_key, game_state=None, *, player=None):
     """Check whether the current player has a relic by id or name."""
-    if not game_state or not getattr(game_state, "player", None):
+    player = player if player is not None else getattr(game_state, "player", None)
+    if player is None:
         return False
 
     target = normalize_relic_key(relic_key)
-    for relic in getattr(game_state.player, "relics", []):
+    for relic in getattr(player, "relics", []):
         relic_id = getattr(relic, "idstr", None)
         if relic_id and normalize_relic_key(relic_id) == target:
             return True
@@ -323,5 +344,10 @@ def restock_shop_item(
     else:
         return
 
+    was_quoted = getattr(shop_item, "quoted_price", None) is not None
     shop_item.discount = 0
     shop_item.purchased = False
+    shop_item.restocked = True
+    shop_item.quoted_price = None
+    if was_quoted:
+        shop_item.prepare_price(0, player)

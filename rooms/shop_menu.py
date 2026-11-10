@@ -31,12 +31,13 @@ def build_shop_menu(
     has_membership_card=False,
     has_the_courier=False,
     room=None,
+    removal_quote=None,
 ):
     """Build an input request for the current shop state."""
     options = []
 
     if not card_removal_used:
-        removal_price = compute_card_removal_price(
+        removal_price = removal_quote if removal_quote is not None else compute_card_removal_price(
             base_price=card_removal_price,
             has_membership_card=has_membership_card,
             has_the_courier=has_the_courier,

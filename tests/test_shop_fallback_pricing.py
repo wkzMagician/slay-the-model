@@ -113,8 +113,7 @@ def test_actual_buy_twice_restock_power_and_defer_card_rounding(role,ascension,m
     monkeypatch.setattr(shop_state,'roll_card_rarity',lambda rng:RarityType.COMMON)
     for _ in range(2):
         before=player.gold
-        # BuyItemAction's existing ascension_level input is tracked by SHOP-002.
-        price=item.get_final_price_with_modifiers(getattr(game_state,'ascension_level',0),game_state)
+        price=item.get_final_price_with_modifiers(game_state.ascension,game_state)
         BuyItemAction(item,4).execute()
         assert before-player.gold==price
         assert definitions()[original_id(item.item)].type=='POWER'
