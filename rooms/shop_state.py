@@ -307,12 +307,10 @@ def restock_shop_item(
     if shop_item.item_type == "card":
         namespace = getattr(getattr(shop_item, "item", None), "namespace", None)
         if namespace == "colorless":
-            rarity = getattr(getattr(shop_item, "item", None), "rarity", RarityType.UNCOMMON)
-            if rarity not in {RarityType.UNCOMMON, RarityType.RARE}:
-                rarity = RarityType.UNCOMMON
+            rarity = RarityType.RARE if rng.random() < float32(0.3) else RarityType.UNCOMMON
             new_item = card_provider(
                 pool_kind="shop",
-                rarities=[rarity, RarityType.RARE] if rarity == RarityType.UNCOMMON else [RarityType.RARE],
+                rarities=[rarity],
                 card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
                 namespaces=["colorless"],
             )
@@ -335,8 +333,15 @@ def restock_shop_item(
         shop_item.item = new_item
         shop_item.base_price = get_potion_price(getattr(new_item, "rarity", rarity), rng)
     elif shop_item.item_type == "relic":
+        from relics.global_relics.common import MawBank, SmilingMask
+        from relics.global_relics.rare import OldCoin
+        from relics.global_relics.uncommon import TheCourier
+
         rarity = roll_relic_rarity(rng)
         new_item = relic_provider(rarities=[rarity], from_end=True)
+        while isinstance(new_item, (OldCoin, SmilingMask, MawBank, TheCourier)):
+            rarity = roll_relic_rarity(rng)
+            new_item = relic_provider(rarities=[rarity], from_end=True)
         if not new_item:
             return
         shop_item.item = new_item

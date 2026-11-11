@@ -73,6 +73,8 @@ def test_prices_and_merchant_state_against_fixed_jar(row,monkeypatch):
         # Original setPrice receives an already selected card. Fix only the outer
         # rarity/candidate inputs while running production restock price handling.
         monkeypatch.setattr(shop_state,'roll_card_rarity',lambda rng:rarity)
+        if row['kind']=='colorless':
+            monkeypatch.setattr(rng,'random',lambda:0.0 if rarity==RarityType.RARE else float32(0.3))
         actual=[]
         for _ in row['prices']:
             shop_state.restock_shop_item(item,game_state.player,rng=rng,card_provider=lambda **kwargs:definition.make_card())

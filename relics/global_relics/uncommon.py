@@ -596,12 +596,8 @@ class TheCourier(Relic):
         self.rarity = RarityType.UNCOMMON
 
     def should_restock_shop_item(self, item_type: str, item=None) -> bool:
-        """Restock purchased non-shop-relic items."""
-        if item_type == "remove":
-            return False
-        if item_type != "relic":
-            return True
-        return getattr(item, "rarity", None) != RarityType.SHOP
+        """Restock each purchased merchandise slot."""
+        return item_type in {"card", "relic", "potion"}
 
 
 @register("relic")

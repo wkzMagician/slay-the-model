@@ -318,7 +318,7 @@ def test_restock_colorless_card_preserves_colorless_pool():
     shop_item = ShopItem("card", _DummyCard("Colorless Old", RarityType.UNCOMMON), 81)
     shop_item.item.namespace = "colorless"
     card_calls = []
-    rng = _DeterministicRng(random_values=[], randint_values=[90])
+    rng = _DeterministicRng(random_values=[0.5], randint_values=[90])
 
     def provider(**kwargs):
         card_calls.append(kwargs)
@@ -335,7 +335,7 @@ def test_restock_colorless_card_preserves_colorless_pool():
 
     assert card_calls == [{
         "pool_kind": "shop",
-        "rarities": [RarityType.UNCOMMON, RarityType.RARE],
+        "rarities": [RarityType.UNCOMMON],
         "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER],
         "namespaces": ["colorless"],
     }]
