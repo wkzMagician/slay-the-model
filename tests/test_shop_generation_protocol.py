@@ -88,9 +88,10 @@ def test_inventory_phase_order_includes_all_prices_before_sale(monkeypatch):
         def random_float(self,start,end):
             events.append("price")
             return start
-        def random(self):
+        def random_int(self,bound):
+            assert bound==99
             events.append('relic-tier')
-            return 0.1
+            return 10
     monkeypatch.setattr(shop_state,'roll_card_rarity',lambda rng:RarityType.UNCOMMON)
     monkeypatch.setattr(shop_state,'roll_potion_rarity',lambda rng:RarityType.COMMON)
     items = shop_state.generate_shop_items(game_state.player,rng=PriceRng(),card_provider=cards,relic_provider=relics,potion_provider=potions)

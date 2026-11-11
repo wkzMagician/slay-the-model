@@ -57,11 +57,12 @@ def test_colorless_threshold_is_float32_strict_and_ignores_old_tier(old_tier,val
 
 
 def test_four_rejections_reroll_tiers_and_price_only_final_candidate():
-    values=iter([0.9,0.1,0.1,0.6,0.9])
+    values=iter([90,10,10,60,90])
     candidates=iter([make_relic(key) for key in ['OldCoin','SmilingMask','MawBank','TheCourier','Ginger']])
     events=[]
     class Rng:
-        def random(self):
+        def random_int(self,bound):
+            assert bound==99
             events.append('tier')
             return next(values)
         def random_float(self,low,high):
@@ -85,9 +86,10 @@ def test_shop_qualification_rejection_consumes_tail_without_outer_reroll():
     game_state.relic_pools.remaining['COMMON']=['Anchor','SmilingMask','MawBank']
     events=[]
     class Rng:
-        def random(self):
+        def random_int(self,bound):
+            assert bound==99
             events.append('tier')
-            return 0.1
+            return 10
         def random_float(self,low,high):
             events.append('price')
             return 1.0
@@ -165,7 +167,9 @@ def test_actual_colorless_purchase_and_restock_twice(role,ascension,seed,old_tie
 
 def test_no_candidate_keeps_sold_slot_and_does_not_roll_price():
     class Rng:
-        def random(self): return 0.1
+        def random_int(self,bound):
+            assert bound==99
+            return 10
         def random_float(self,*args): raise AssertionError('empty candidate must not receive a price')
     item=shop_state.ShopItem('relic',make_relic('Anchor'),150)
     item.purchased=True

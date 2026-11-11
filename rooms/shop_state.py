@@ -105,8 +105,6 @@ def build_card_namespaces(player):
         return ["ironclad"]
 
     namespace = getattr(player, "namespace", None) or "ironclad"
-    if any(getattr(relic, "idstr", None) == "PrismaticShard" for relic in getattr(player, "relics", [])):
-        return None
     return [namespace]
 
 
@@ -122,10 +120,10 @@ def roll_potion_rarity(rng):
 
 
 def roll_relic_rarity(rng):
-    rarity_roll = rng.random()
-    if rarity_roll < 0.50:
+    rarity_roll = rng.random_int(99)
+    if rarity_roll < 48:
         return RarityType.COMMON
-    if rarity_roll < 0.83:
+    if rarity_roll < 82:
         return RarityType.UNCOMMON
     return RarityType.RARE
 

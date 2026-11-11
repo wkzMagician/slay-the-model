@@ -278,11 +278,11 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
     )
 
     assert card_calls[:5] == [
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": None},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": None},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": None},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": None},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": None},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": ["watcher"]},
     ]
     assert card_calls[5:7] == [
         {"pool_kind": "shop", "rarities": [RarityType.UNCOMMON], "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER], "namespaces": ["colorless"]},
@@ -292,7 +292,7 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
         "pool_kind": "shop",
         "rarities": [RarityType.COMMON],
         "card_types": [CardType.ATTACK],
-        "namespaces": None,
+        "namespaces": ["watcher"],
     }
 
 
@@ -301,7 +301,7 @@ def test_restock_shop_item_never_requests_shop_relic_rarity():
     player = SimpleNamespace(namespace="ironclad", relics=[])
     shop_item = ShopItem("relic", _DummyRelic("old"), 143)
     relic_calls = []
-    rng = _DeterministicRng(random_values=[0.82], randint_values=[260])
+    rng = _DeterministicRng(random_values=[0.81], randint_values=[260])
 
     restock_shop_item(
         shop_item=shop_item,
