@@ -2,7 +2,7 @@
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from engine.runtime_events import emit_text
 from rooms.base import Room
-from rooms.shop_state import ShopItem, game_state_has_relic, generate_shop_items
+from rooms.shop_state import ShopItem, game_state_has_relic, generate_shop_items, preview_shop_card
 from rooms.shop_menu import build_shop_menu
 from rooms.shop_pricing import compute_card_removal_price
 from utils.compatible_random import float32, java_round_float
@@ -87,6 +87,11 @@ class ShopRoom(Room):
             )
         if relic_id == "SmilingMask":
             self.actual_card_removal_price = 50
+        relic = next((item for item in game_state.player.relics if getattr(item, "idstr", None) == relic_id), None)
+        if relic is not None:
+            for item in self.items:
+                if item.item_type == "card" and not item.purchased and item.item is not None:
+                    preview_shop_card(item.item, [relic])
 
     def _build_shop_menu(self):
         """Build the current shop menu."""

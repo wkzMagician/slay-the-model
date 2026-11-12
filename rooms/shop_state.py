@@ -237,6 +237,14 @@ def generate_colorless_cards(card_provider=get_random_card):
 
 
 
+def preview_shop_card(card, relics):
+    """Apply obtain-preview upgrades to the actual card offered for sale."""
+    for relic in relics:
+        hook = getattr(relic, "should_upgrade_added_card", None)
+        if hook and hook(card, "deck") and card.can_upgrade():
+            card.upgrade()
+
+
 def generate_shop_items(
     player=None,
     rng=None,
@@ -259,10 +267,12 @@ def generate_shop_items(
         if card is None:
             raise ValueError("unable to get card")
         items.append(ShopItem("card", card, get_card_price(original_rarity(card), rng)))
+        preview_shop_card(card, getattr(player, "relics", []))
 
     colored_end_idx = len(items)
     for card in colorless_cards:
         items.append(ShopItem("card", card, get_colorless_card_price(original_rarity(card), rng)))
+        preview_shop_card(card, getattr(player, "relics", []))
 
     if colored_end_idx > colored_start_idx:
         discounted_index = rng.randint(colored_start_idx, colored_end_idx - 1)
@@ -312,14 +322,14 @@ def restock_shop_item(
                 card_types=[CardType.SKILL, CardType.ATTACK, CardType.POWER],
                 namespaces=["colorless"],
             )
-            base_price = _card_price(original_rarity(new_item), rng, colorless=True) if new_item else None
         else:
             card_type = getattr(getattr(shop_item, "item", None), "card_type", None) or rng.choice([CardType.ATTACK, CardType.SKILL, CardType.POWER])
             rarity = roll_card_rarity(rng)
             new_item = _shop_card(card_type, rarity, build_card_namespaces(player), card_provider)
-            base_price = _card_price(original_rarity(new_item), rng) if new_item else None
         if not new_item:
             return
+        preview_shop_card(new_item, player.relics)
+        base_price = _card_price(original_rarity(new_item), rng, colorless=namespace == "colorless")
         shop_item.item = new_item
         shop_item.base_price = base_price
         shop_item.card_restock = True

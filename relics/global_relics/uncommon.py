@@ -17,6 +17,19 @@ from utils.types import RarityType, CardType, PilePosType
 from utils.registry import register
 from utils.damage_phase import DamagePhase
 
+
+def _egg_should_upgrade(card, dest_pile, expected_type):
+    from engine.card_pools import definitions, original_id
+
+    record = definitions().get(original_id(card))
+    card_type = CardType[record.type] if record else getattr(card, "card_type", None)
+    return (
+        dest_pile == "deck"
+        and card_type == expected_type
+        and getattr(card, "upgrade_level", 0) == 0
+        and card.can_upgrade()
+    )
+
 # Existing relic
 @register("relic")
 class HornCleat(Relic):
@@ -147,10 +160,7 @@ class FrozenEgg(Relic):
 
     def should_upgrade_added_card(self, card, dest_pile: str = "deck") -> bool:
         """Upgrade added Power cards."""
-        return (
-            dest_pile in ("deck")
-            and getattr(card, "card_type", None) == CardType.POWER
-        )
+        return _egg_should_upgrade(card, dest_pile, CardType.POWER)
 
 
 @register("relic")
@@ -357,10 +367,7 @@ class MoltenEgg(Relic):
 
     def should_upgrade_added_card(self, card, dest_pile: str = "deck") -> bool:
         """Upgrade added Attack cards."""
-        return (
-            dest_pile in ("deck")
-            and getattr(card, "card_type", None) == CardType.ATTACK
-        )
+        return _egg_should_upgrade(card, dest_pile, CardType.ATTACK)
 
 
 @register("relic")
@@ -610,10 +617,7 @@ class ToxicEgg(Relic):
 
     def should_upgrade_added_card(self, card, dest_pile: str = "deck") -> bool:
         """Upgrade added Skill cards."""
-        return (
-            dest_pile in ("deck")
-            and getattr(card, "card_type", None) == CardType.SKILL
-        )
+        return _egg_should_upgrade(card, dest_pile, CardType.SKILL)
 
 
 @register("relic")
