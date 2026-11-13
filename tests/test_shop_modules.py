@@ -57,8 +57,11 @@ class _DeterministicRng:
         assert low <= value <= high
         return value
 
-    def random_int(self, bound):
-        assert bound == 99
+    def random_float(self, start, end):
+        return start
+
+    def random_int(self, bound, end=None):
+        assert (bound, end) in ((99, None), (0, 99))
         return int(next(self._random_values) * 100)
 
     def choice(self, values):
@@ -81,14 +84,14 @@ def test_card_removal_price_applies_courier_discount():
     assert price == 60
 
 
-def test_card_removal_price_stacks_membership_and_courier():
+def test_initial_card_removal_price_uses_last_discount_from_base():
     price = compute_card_removal_price(
         base_price=100,
         has_membership_card=True,
         has_the_courier=True,
         has_smiling_mask=False,
     )
-    assert price == 40
+    assert price == 50
 
 
 
@@ -150,8 +153,8 @@ def test_generate_shop_items_builds_expected_inventory_shape_and_price_bands():
     potion_calls = []
     relic_calls = []
     rng = _DeterministicRng(
-        random_values=[0.1, 0.8, 0.95, 0.2, 0.7, 0.1, 0.8, 0.95, 0.2, 0.7],
-        randint_values=[45, 68, 135, 50, 83, 3, 81, 162, 48, 71, 95, 143, 238, 150],
+        random_values=[0.1, 0.8, 0.95, 0.2, 0.7, 0.1, 0.8, 0.1, 0.8, 0.95],
+        randint_values=[3],
     )
 
     items = generate_shop_items(
@@ -167,13 +170,13 @@ def test_generate_shop_items_builds_expected_inventory_shape_and_price_bands():
     assert [item.item_type for item in items].count("potion") == 3
     assert [item.item_type for item in items].count("relic") == 3
     assert sum(1 for item in items[:5] if item.discount == 0.5) == 1
-    assert [item.base_price for item in items[:8]] == [45, 68, 135, 50, 83, 81, 162, 48]
+    assert [item.base_price for item in items[:7]] == [45, 67, 135, 45, 67, 81, 162]
     assert potion_calls == [
         {"characters": ["silent"], "rarities": [RarityType.COMMON]},
         {"characters": ["silent"], "rarities": [RarityType.UNCOMMON]},
         {"characters": ["silent"], "rarities": [RarityType.RARE]},
     ]
-    assert relic_calls[-1] == {"rarities": [RarityType.SHOP]}
+    assert relic_calls[-1] == {"rarities": [RarityType.SHOP], "from_end": True}
 
 
 
@@ -234,7 +237,7 @@ def test_restock_shop_item_uses_same_potion_namespace_rules_as_initial_inventory
 
     assert potion_calls == [{"characters": ["defect"], "rarities": [RarityType.COMMON]}]
     assert shop_item.item.info() == "New Potion"
-    assert shop_item.base_price == 52
+    assert shop_item.base_price == 48
     assert shop_item.discount == 0
     assert shop_item.purchased is False
 
@@ -257,7 +260,7 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
     )
     rng = _DeterministicRng(
         random_values=[0.5, 0.5, 0.5, 0.5, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5],
-        randint_values=[45, 45, 45, 45, 45, 0, 81, 162, 48, 48, 48, 143, 143, 143, 45],
+        randint_values=[0],
     )
 
     items = generate_shop_items(
@@ -275,11 +278,11 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
     )
 
     assert card_calls[:5] == [
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": None, "exclude_card_ids": []},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": None, "exclude_card_ids": ["Atk1"]},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": None, "exclude_card_ids": ["Atk1", "Atk2"]},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": None, "exclude_card_ids": ["Atk1", "Atk2", "Skill1"]},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": None, "exclude_card_ids": ["Atk1", "Atk2", "Skill1", "Skill2"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["watcher"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": ["watcher"]},
     ]
     assert card_calls[5:7] == [
         {"pool_kind": "shop", "rarities": [RarityType.UNCOMMON], "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER], "namespaces": ["colorless"]},
@@ -289,7 +292,7 @@ def test_card_generation_and_restock_share_card_provider_rules_including_prismat
         "pool_kind": "shop",
         "rarities": [RarityType.COMMON],
         "card_types": [CardType.ATTACK],
-        "namespaces": None,
+        "namespaces": ["watcher"],
     }
 
 
@@ -298,7 +301,7 @@ def test_restock_shop_item_never_requests_shop_relic_rarity():
     player = SimpleNamespace(namespace="ironclad", relics=[])
     shop_item = ShopItem("relic", _DummyRelic("old"), 143)
     relic_calls = []
-    rng = _DeterministicRng(random_values=[0.82], randint_values=[260])
+    rng = _DeterministicRng(random_values=[0.81], randint_values=[260])
 
     restock_shop_item(
         shop_item=shop_item,
@@ -307,7 +310,7 @@ def test_restock_shop_item_never_requests_shop_relic_rarity():
         relic_provider=lambda **kwargs: relic_calls.append(kwargs) or _DummyRelic("new"),
     )
 
-    assert relic_calls == [{"rarities": [RarityType.UNCOMMON]}]
+    assert relic_calls == [{"rarities": [RarityType.UNCOMMON], "from_end": True}]
 
 
 def test_restock_colorless_card_preserves_colorless_pool():
@@ -315,7 +318,7 @@ def test_restock_colorless_card_preserves_colorless_pool():
     shop_item = ShopItem("card", _DummyCard("Colorless Old", RarityType.UNCOMMON), 81)
     shop_item.item.namespace = "colorless"
     card_calls = []
-    rng = _DeterministicRng(random_values=[], randint_values=[90])
+    rng = _DeterministicRng(random_values=[0.5], randint_values=[90])
 
     def provider(**kwargs):
         card_calls.append(kwargs)
@@ -332,11 +335,11 @@ def test_restock_colorless_card_preserves_colorless_pool():
 
     assert card_calls == [{
         "pool_kind": "shop",
-        "rarities": [RarityType.UNCOMMON, RarityType.RARE],
+        "rarities": [RarityType.UNCOMMON],
         "card_types": [CardType.SKILL, CardType.ATTACK, CardType.POWER],
         "namespaces": ["colorless"],
     }]
-    assert shop_item.base_price == 90
+    assert shop_item.base_price == 81
 
 
 def test_generate_colored_cards_rolls_rarity_per_slot_instead_of_pooling_all_rarities():
@@ -355,15 +358,15 @@ def test_generate_colored_cards_rolls_rarity_per_slot_instead_of_pooling_all_rar
 
     def provider(**kwargs):
         calls.append({k: list(v) if isinstance(v, list) else v for k, v in kwargs.items()})
-        return _DummyCard("Card", kwargs["rarities"][0])
+        return _DummyCard(f"Card{len(calls)}", kwargs["rarities"][0])
 
     cards = generate_colored_cards(player=player, card_provider=provider, rng=_FixedRng())
 
     assert len(cards) == 5
     assert calls == [
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["silent"], "exclude_card_ids": []},
-        {"pool_kind": "shop", "rarities": [RarityType.UNCOMMON], "card_types": [CardType.ATTACK], "namespaces": ["silent"], "exclude_card_ids": ["Card"]},
-        {"pool_kind": "shop", "rarities": [RarityType.RARE], "card_types": [CardType.SKILL], "namespaces": ["silent"], "exclude_card_ids": ["Card", "Card"]},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["silent"], "exclude_card_ids": ["Card", "Card", "Card"]},
-        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": ["silent"], "exclude_card_ids": ["Card", "Card", "Card", "Card"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.ATTACK], "namespaces": ["silent"]},
+        {"pool_kind": "shop", "rarities": [RarityType.UNCOMMON], "card_types": [CardType.ATTACK], "namespaces": ["silent"]},
+        {"pool_kind": "shop", "rarities": [RarityType.RARE], "card_types": [CardType.SKILL], "namespaces": ["silent"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.SKILL], "namespaces": ["silent"]},
+        {"pool_kind": "shop", "rarities": [RarityType.COMMON], "card_types": [CardType.POWER], "namespaces": ["silent"]},
     ]

@@ -63,7 +63,10 @@ class Relic(Localizable):
 
     def can_spawn(self) -> bool:
         from engine.game_state import game_state
+        from relics.spawn_rules import eligible
 
+        if not eligible(self):
+            return False
         if self.replaces_relic is None:
             return True
         player = game_state.player

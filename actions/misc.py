@@ -115,8 +115,14 @@ class BuyItemAction(Action):
         if not isinstance(player_gold, (int, float)):
             player_gold = 0
 
+        room = getattr(game_state, "current_room", None)
+        prepare_prices = getattr(room, "prepare_prices", None)
+        if callable(prepare_prices):
+            prepare_prices()
+
         if self.shop_item.item_type == "card_removal":
-            final_price = getattr(self.shop_item, "base_price", 0)
+            current_quote = getattr(room, "actual_card_removal_price", None)
+            final_price = current_quote if current_quote is not None else getattr(self.shop_item, "base_price", 0)
             assert player_gold >= final_price
             gold_spent = final_price
             game_state.player.gold -= final_price
@@ -130,6 +136,10 @@ class BuyItemAction(Action):
                     if hasattr(room, "card_removal_price"):
                         room.card_removal_price = next_price
 
+            update_removal_price = getattr(room, "update_removal_price", None)
+            if callable(update_removal_price):
+                update_removal_price(after_removal=True)
+
             tui_print(t("ui.shop_removed_card", default="Removed a card from deck"))
 
             if _has_relic("MawBank", game_state):
@@ -141,7 +151,7 @@ class BuyItemAction(Action):
                 add_action(follow_up)
             return
 
-        ascension = getattr(game_state, "ascension_level", 0) if game_state else 0
+        ascension = getattr(game_state, "ascension", 0) if game_state else 0
         if not isinstance(ascension, (int, float)):
             ascension = 0
         final_price = self.shop_item.get_final_price_with_modifiers(ascension, game_state)
@@ -154,6 +164,9 @@ class BuyItemAction(Action):
             AddCardAction(card=self.shop_item.item, dest_pile="deck", source="shop").execute()
         elif self.shop_item.item_type == "relic":
             AddRelicByNameAction(relic_id=self.shop_item.item.idstr).execute()
+            on_relic_purchased = getattr(room, "on_shop_relic_purchased", None)
+            if callable(on_relic_purchased):
+                on_relic_purchased(self.shop_item.item.idstr)
         elif self.shop_item.item_type == "potion":
             AddPotionAction(potion=self.shop_item.item).execute()
 

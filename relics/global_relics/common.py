@@ -560,7 +560,7 @@ class WarPaint(Relic):
     def on_obtain(self):
         from actions.card import UpgradeRandomCardAction
         from engine.game_state import game_state
-        add_actions([UpgradeRandomCardAction(card_type="Skill", count=2)])
+        add_actions([UpgradeRandomCardAction(card_type="Skill", count=2, selection_kind="shuffle")])
         return
 @register("relic")
 class Whetstone(Relic):
@@ -573,5 +573,5 @@ class Whetstone(Relic):
     def on_obtain(self):
         from actions.card import UpgradeRandomCardAction
         from engine.game_state import game_state
-        add_actions([UpgradeRandomCardAction(card_type="Attack", count=2)])
+        add_actions([UpgradeRandomCardAction(card_type="Attack", count=2, selection_kind="shuffle")])
         return

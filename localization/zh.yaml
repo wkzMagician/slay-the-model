@@ -2336,6 +2336,9 @@ potions:
     name: 混沌药水
     description: 用随机药水填满所有空的药水栏。
 relics:
+  Circlet:
+    name: "头环"
+    description: "已经没有可获得的遗物了。"
   RedCirclet:
     name: "红头环"
     description: "已经没有可获得的 Boss 遗物了。"

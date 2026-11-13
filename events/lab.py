@@ -29,7 +29,7 @@ class Lab(Event):
         potion_count = 2 if game_state.ascension >= 15 else 3
         
         # Build options
-        potion_actions = [AddRandomPotionAction(character=game_state.player.character) for _ in range(potion_count)]
+        potion_actions = [AddRandomPotionAction(character=game_state.player.character, uniform=True) for _ in range(potion_count)]
         
         options = [
             Option(

@@ -1,0 +1,1429 @@
+{
+  "rows": [
+    {
+      "cls": "Abacus",
+      "id": "TheAbacus",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/Abacus.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Akabeko",
+      "id": "Akabeko",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Akabeko.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Anchor",
+      "id": "Anchor",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Anchor.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "AncientTeaSet",
+      "id": "Ancient Tea Set",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/AncientTeaSet.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "ArtOfWar",
+      "id": "Art of War",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/ArtOfWar.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Astrolabe",
+      "id": "Astrolabe",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/Astrolabe.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BagOfMarbles",
+      "id": "Bag of Marbles",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/BagOfMarbles.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BagOfPreparation",
+      "id": "Bag of Preparation",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/BagOfPreparation.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BirdFacedUrn",
+      "id": "Bird Faced Urn",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/BirdFacedUrn.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BlackStar",
+      "id": "Black Star",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/BlackStar.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BloodVial",
+      "id": "Blood Vial",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/BloodVial.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BloodyIdol",
+      "id": "Bloody Idol",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/BloodyIdol.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BlueCandle",
+      "id": "Blue Candle",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/BlueCandle.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Boot",
+      "id": "Boot",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Boot.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BottledFlame",
+      "id": "Bottled Flame",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/BottledFlame.java",
+      "can_spawn_source": "for (AbstractCard c : AbstractDungeon.player.masterDeck.group) {\n            if (c.type != AbstractCard.CardType.ATTACK || c.rarity == AbstractCard.CardRarity.BASIC) continue;\n            return true;\n        }\n        return false;"
+    },
+    {
+      "cls": "BottledLightning",
+      "id": "Bottled Lightning",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/BottledLightning.java",
+      "can_spawn_source": "for (AbstractCard c : AbstractDungeon.player.masterDeck.group) {\n            if (c.type != AbstractCard.CardType.SKILL || c.rarity == AbstractCard.CardRarity.BASIC) continue;\n            return true;\n        }\n        return false;"
+    },
+    {
+      "cls": "BottledTornado",
+      "id": "Bottled Tornado",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/BottledTornado.java",
+      "can_spawn_source": "return CardHelper.hasCardType(AbstractCard.CardType.POWER);"
+    },
+    {
+      "cls": "BronzeScales",
+      "id": "Bronze Scales",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/BronzeScales.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BustedCrown",
+      "id": "Busted Crown",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/BustedCrown.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Calipers",
+      "id": "Calipers",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Calipers.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CallingBell",
+      "id": "Calling Bell",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/CallingBell.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CaptainsWheel",
+      "id": "CaptainsWheel",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/CaptainsWheel.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Cauldron",
+      "id": "Cauldron",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/Cauldron.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CentennialPuzzle",
+      "id": "Centennial Puzzle",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/CentennialPuzzle.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CeramicFish",
+      "id": "CeramicFish",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/CeramicFish.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "ChemicalX",
+      "id": "Chemical X",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/ChemicalX.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "ClockworkSouvenir",
+      "id": "ClockworkSouvenir",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/ClockworkSouvenir.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CoffeeDripper",
+      "id": "Coffee Dripper",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/CoffeeDripper.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Courier",
+      "id": "The Courier",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Courier.java",
+      "can_spawn_source": "return (Settings.isEndless || AbstractDungeon.floorNum <= 48) && !(AbstractDungeon.getCurrRoom() instanceof ShopRoom);"
+    },
+    {
+      "cls": "CultistMask",
+      "id": "CultistMask",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/CultistMask.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CursedKey",
+      "id": "Cursed Key",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/CursedKey.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "DarkstonePeriapt",
+      "id": "Darkstone Periapt",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/DarkstonePeriapt.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "DeadBranch",
+      "id": "Dead Branch",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/DeadBranch.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "DollysMirror",
+      "id": "DollysMirror",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/DollysMirror.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "DreamCatcher",
+      "id": "Dream Catcher",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/DreamCatcher.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "DuVuDoll",
+      "id": "Du-Vu Doll",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/DuVuDoll.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Ectoplasm",
+      "id": "Ectoplasm",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/Ectoplasm.java",
+      "can_spawn_source": "return AbstractDungeon.actNum <= 1;"
+    },
+    {
+      "cls": "EmptyCage",
+      "id": "Empty Cage",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/EmptyCage.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Enchiridion",
+      "id": "Enchiridion",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/Enchiridion.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "EternalFeather",
+      "id": "Eternal Feather",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/EternalFeather.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "FaceOfCleric",
+      "id": "FaceOfCleric",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/FaceOfCleric.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "FossilizedHelix",
+      "id": "FossilizedHelix",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/FossilizedHelix.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "FrozenEgg2",
+      "id": "Frozen Egg 2",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/FrozenEgg2.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "FrozenEye",
+      "id": "Frozen Eye",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/FrozenEye.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "FusionHammer",
+      "id": "Fusion Hammer",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/FusionHammer.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "GamblingChip",
+      "id": "Gambling Chip",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/GamblingChip.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Ginger",
+      "id": "Ginger",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Ginger.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Girya",
+      "id": "Girya",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Girya.java",
+      "can_spawn_source": "if (AbstractDungeon.floorNum >= 48 && !Settings.isEndless) {\n            return false;\n        }\n        int campfireRelicCount = 0;\n        for (AbstractRelic r : AbstractDungeon.player.relics) {\n            if (!(r instanceof PeacePipe) && !(r instanceof Shovel) && !(r instanceof Girya)) continue;\n            ++campfireRelicCount;\n        }\n        return campfireRelicCount < 2;"
+    },
+    {
+      "cls": "GoldenIdol",
+      "id": "Golden Idol",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/GoldenIdol.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "GremlinHorn",
+      "id": "Gremlin Horn",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/GremlinHorn.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "GremlinMask",
+      "id": "GremlinMask",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/GremlinMask.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "HandDrill",
+      "id": "HandDrill",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/HandDrill.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "HappyFlower",
+      "id": "Happy Flower",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/HappyFlower.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "HornCleat",
+      "id": "HornCleat",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/HornCleat.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "IceCream",
+      "id": "Ice Cream",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/IceCream.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "IncenseBurner",
+      "id": "Incense Burner",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/IncenseBurner.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "InkBottle",
+      "id": "InkBottle",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/InkBottle.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "JuzuBracelet",
+      "id": "Juzu Bracelet",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/JuzuBracelet.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "Kunai",
+      "id": "Kunai",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Kunai.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Lantern",
+      "id": "Lantern",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Lantern.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "LetterOpener",
+      "id": "Letter Opener",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/LetterOpener.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "LizardTail",
+      "id": "Lizard Tail",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/LizardTail.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Mango",
+      "id": "Mango",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Mango.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MarkOfTheBloom",
+      "id": "Mark of the Bloom",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/MarkOfTheBloom.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Matryoshka",
+      "id": "Matryoshka",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Matryoshka.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 40;"
+    },
+    {
+      "cls": "MawBank",
+      "id": "MawBank",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/MawBank.java",
+      "can_spawn_source": "return (Settings.isEndless || AbstractDungeon.floorNum <= 48) && !(AbstractDungeon.getCurrRoom() instanceof ShopRoom);"
+    },
+    {
+      "cls": "MealTicket",
+      "id": "MealTicket",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/MealTicket.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "MeatOnTheBone",
+      "id": "Meat on the Bone",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/MeatOnTheBone.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "MedicalKit",
+      "id": "Medical Kit",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/MedicalKit.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MembershipCard",
+      "id": "Membership Card",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/MembershipCard.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MercuryHourglass",
+      "id": "Mercury Hourglass",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/MercuryHourglass.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MoltenEgg2",
+      "id": "Molten Egg 2",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/MoltenEgg2.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "MummifiedHand",
+      "id": "Mummified Hand",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/MummifiedHand.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MutagenicStrength",
+      "id": "MutagenicStrength",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/MutagenicStrength.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Necronomicon",
+      "id": "Necronomicon",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/Necronomicon.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "NeowsLament",
+      "id": "NeowsBlessing",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/NeowsLament.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "NilrysCodex",
+      "id": "Nilry's Codex",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/NilrysCodex.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "NlothsGift",
+      "id": "Nloth's Gift",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/NlothsGift.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "NlothsMask",
+      "id": "NlothsMask",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/NlothsMask.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Nunchaku",
+      "id": "Nunchaku",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Nunchaku.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "OddlySmoothStone",
+      "id": "Oddly Smooth Stone",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/OddlySmoothStone.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "OddMushroom",
+      "id": "Odd Mushroom",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/OddMushroom.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "OldCoin",
+      "id": "Old Coin",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/OldCoin.java",
+      "can_spawn_source": "return (Settings.isEndless || AbstractDungeon.floorNum <= 48) && !(AbstractDungeon.getCurrRoom() instanceof ShopRoom);"
+    },
+    {
+      "cls": "Omamori",
+      "id": "Omamori",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Omamori.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "OrangePellets",
+      "id": "OrangePellets",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/OrangePellets.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Orichalcum",
+      "id": "Orichalcum",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Orichalcum.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "OrnamentalFan",
+      "id": "Ornamental Fan",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/OrnamentalFan.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Orrery",
+      "id": "Orrery",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/Orrery.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PandorasBox",
+      "id": "Pandora's Box",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/PandorasBox.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Pantograph",
+      "id": "Pantograph",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Pantograph.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PeacePipe",
+      "id": "Peace Pipe",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/PeacePipe.java",
+      "can_spawn_source": "if (AbstractDungeon.floorNum >= 48 && !Settings.isEndless) {\n            return false;\n        }\n        int campfireRelicCount = 0;\n        for (AbstractRelic r : AbstractDungeon.player.relics) {\n            if (!(r instanceof PeacePipe) && !(r instanceof Shovel) && !(r instanceof Girya)) continue;\n            ++campfireRelicCount;\n        }\n        return campfireRelicCount < 2;"
+    },
+    {
+      "cls": "Pear",
+      "id": "Pear",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Pear.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PenNib",
+      "id": "Pen Nib",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/PenNib.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PhilosopherStone",
+      "id": "Philosopher's Stone",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/PhilosopherStone.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Pocketwatch",
+      "id": "Pocketwatch",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Pocketwatch.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PotionBelt",
+      "id": "Potion Belt",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/PotionBelt.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "PrayerWheel",
+      "id": "Prayer Wheel",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/PrayerWheel.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "PreservedInsect",
+      "id": "PreservedInsect",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/PreservedInsect.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 52;"
+    },
+    {
+      "cls": "PrismaticShard",
+      "id": "PrismaticShard",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/PrismaticShard.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "QuestionCard",
+      "id": "Question Card",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/QuestionCard.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "RedMask",
+      "id": "Red Mask",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/RedMask.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "RegalPillow",
+      "id": "Regal Pillow",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/RegalPillow.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "RunicDome",
+      "id": "Runic Dome",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/RunicDome.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "RunicPyramid",
+      "id": "Runic Pyramid",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/RunicPyramid.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SacredBark",
+      "id": "SacredBark",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/SacredBark.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Shovel",
+      "id": "Shovel",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Shovel.java",
+      "can_spawn_source": "if (AbstractDungeon.floorNum >= 48 && !Settings.isEndless) {\n            return false;\n        }\n        int campfireRelicCount = 0;\n        for (AbstractRelic r : AbstractDungeon.player.relics) {\n            if (!(r instanceof PeacePipe) && !(r instanceof Shovel) && !(r instanceof Girya)) continue;\n            ++campfireRelicCount;\n        }\n        return campfireRelicCount < 2;"
+    },
+    {
+      "cls": "Shuriken",
+      "id": "Shuriken",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Shuriken.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SingingBowl",
+      "id": "Singing Bowl",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/SingingBowl.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "SlaversCollar",
+      "id": "SlaversCollar",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/SlaversCollar.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Sling",
+      "id": "Sling",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/Sling.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SmilingMask",
+      "id": "Smiling Mask",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/SmilingMask.java",
+      "can_spawn_source": "return (Settings.isEndless || AbstractDungeon.floorNum <= 48) && !(AbstractDungeon.getCurrRoom() instanceof ShopRoom);"
+    },
+    {
+      "cls": "SneckoEye",
+      "id": "Snecko Eye",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/SneckoEye.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Sozu",
+      "id": "Sozu",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/Sozu.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SpiritPoop",
+      "id": "Spirit Poop",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/SpiritPoop.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SsserpentHead",
+      "id": "SsserpentHead",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/SsserpentHead.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "StoneCalendar",
+      "id": "StoneCalendar",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/StoneCalendar.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "StrangeSpoon",
+      "id": "Strange Spoon",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/StrangeSpoon.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Strawberry",
+      "id": "Strawberry",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Strawberry.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "StrikeDummy",
+      "id": "StrikeDummy",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/StrikeDummy.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Sundial",
+      "id": "Sundial",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/Sundial.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "ThreadAndNeedle",
+      "id": "Thread and Needle",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/ThreadAndNeedle.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "TinyChest",
+      "id": "Tiny Chest",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/TinyChest.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 35;"
+    },
+    {
+      "cls": "TinyHouse",
+      "id": "Tiny House",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/TinyHouse.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Toolbox",
+      "id": "Toolbox",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/Toolbox.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Torii",
+      "id": "Torii",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Torii.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "ToxicEgg2",
+      "id": "Toxic Egg 2",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/ToxicEgg2.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 48;"
+    },
+    {
+      "cls": "ToyOrnithopter",
+      "id": "Toy Ornithopter",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/ToyOrnithopter.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "TungstenRod",
+      "id": "TungstenRod",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/TungstenRod.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Turnip",
+      "id": "Turnip",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/Turnip.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "UnceasingTop",
+      "id": "Unceasing Top",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/UnceasingTop.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Vajra",
+      "id": "Vajra",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Vajra.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "VelvetChoker",
+      "id": "Velvet Choker",
+      "tier": "BOSS",
+      "namespace": "any",
+      "path": "relics/VelvetChoker.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Waffle",
+      "id": "Lee's Waffle",
+      "tier": "SHOP",
+      "namespace": "any",
+      "path": "relics/Waffle.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "WarPaint",
+      "id": "War Paint",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/WarPaint.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "WarpedTongs",
+      "id": "WarpedTongs",
+      "tier": "SPECIAL",
+      "namespace": "any",
+      "path": "relics/WarpedTongs.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Whetstone",
+      "id": "Whetstone",
+      "tier": "COMMON",
+      "namespace": "any",
+      "path": "relics/Whetstone.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "WhiteBeast",
+      "id": "White Beast Statue",
+      "tier": "UNCOMMON",
+      "namespace": "any",
+      "path": "relics/WhiteBeast.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "WingBoots",
+      "id": "WingedGreaves",
+      "tier": "RARE",
+      "namespace": "any",
+      "path": "relics/WingBoots.java",
+      "can_spawn_source": "return Settings.isEndless || AbstractDungeon.floorNum <= 40;"
+    },
+    {
+      "cls": "HoveringKite",
+      "id": "HoveringKite",
+      "tier": "BOSS",
+      "namespace": "silent",
+      "path": "relics/HoveringKite.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "NinjaScroll",
+      "id": "Ninja Scroll",
+      "tier": "UNCOMMON",
+      "namespace": "silent",
+      "path": "relics/NinjaScroll.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PaperCrane",
+      "id": "Paper Crane",
+      "tier": "UNCOMMON",
+      "namespace": "silent",
+      "path": "relics/PaperCrane.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "RingOfTheSerpent",
+      "id": "Ring of the Serpent",
+      "tier": "BOSS",
+      "namespace": "silent",
+      "path": "relics/RingOfTheSerpent.java",
+      "can_spawn_source": "return AbstractDungeon.player.hasRelic(\"Ring of the Snake\");"
+    },
+    {
+      "cls": "SnakeRing",
+      "id": "Ring of the Snake",
+      "tier": "STARTER",
+      "namespace": "silent",
+      "path": "relics/SnakeRing.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SneckoSkull",
+      "id": "Snake Skull",
+      "tier": "COMMON",
+      "namespace": "silent",
+      "path": "relics/SneckoSkull.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "TheSpecimen",
+      "id": "The Specimen",
+      "tier": "RARE",
+      "namespace": "silent",
+      "path": "relics/TheSpecimen.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Tingsha",
+      "id": "Tingsha",
+      "tier": "RARE",
+      "namespace": "silent",
+      "path": "relics/Tingsha.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "ToughBandages",
+      "id": "Tough Bandages",
+      "tier": "RARE",
+      "namespace": "silent",
+      "path": "relics/ToughBandages.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "TwistedFunnel",
+      "id": "TwistedFunnel",
+      "tier": "SHOP",
+      "namespace": "silent",
+      "path": "relics/TwistedFunnel.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "WristBlade",
+      "id": "WristBlade",
+      "tier": "BOSS",
+      "namespace": "silent",
+      "path": "relics/WristBlade.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BlackBlood",
+      "id": "Black Blood",
+      "tier": "BOSS",
+      "namespace": "ironclad",
+      "path": "relics/BlackBlood.java",
+      "can_spawn_source": "return AbstractDungeon.player.hasRelic(\"Burning Blood\");"
+    },
+    {
+      "cls": "Brimstone",
+      "id": "Brimstone",
+      "tier": "SHOP",
+      "namespace": "ironclad",
+      "path": "relics/Brimstone.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "BurningBlood",
+      "id": "Burning Blood",
+      "tier": "STARTER",
+      "namespace": "ironclad",
+      "path": "relics/BurningBlood.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "ChampionsBelt",
+      "id": "Champion Belt",
+      "tier": "RARE",
+      "namespace": "ironclad",
+      "path": "relics/ChampionsBelt.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CharonsAshes",
+      "id": "Charon's Ashes",
+      "tier": "RARE",
+      "namespace": "ironclad",
+      "path": "relics/CharonsAshes.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MagicFlower",
+      "id": "Magic Flower",
+      "tier": "RARE",
+      "namespace": "ironclad",
+      "path": "relics/MagicFlower.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "MarkOfPain",
+      "id": "Mark of Pain",
+      "tier": "BOSS",
+      "namespace": "ironclad",
+      "path": "relics/MarkOfPain.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PaperFrog",
+      "id": "Paper Frog",
+      "tier": "UNCOMMON",
+      "namespace": "ironclad",
+      "path": "relics/PaperFrog.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "RedSkull",
+      "id": "Red Skull",
+      "tier": "COMMON",
+      "namespace": "ironclad",
+      "path": "relics/RedSkull.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "RunicCube",
+      "id": "Runic Cube",
+      "tier": "BOSS",
+      "namespace": "ironclad",
+      "path": "relics/RunicCube.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SelfFormingClay",
+      "id": "Self Forming Clay",
+      "tier": "UNCOMMON",
+      "namespace": "ironclad",
+      "path": "relics/SelfFormingClay.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CrackedCore",
+      "id": "Cracked Core",
+      "tier": "STARTER",
+      "namespace": "defect",
+      "path": "relics/CrackedCore.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "DataDisk",
+      "id": "DataDisk",
+      "tier": "COMMON",
+      "namespace": "defect",
+      "path": "relics/DataDisk.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "EmotionChip",
+      "id": "Emotion Chip",
+      "tier": "RARE",
+      "namespace": "defect",
+      "path": "relics/EmotionChip.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "FrozenCore",
+      "id": "FrozenCore",
+      "tier": "BOSS",
+      "namespace": "defect",
+      "path": "relics/FrozenCore.java",
+      "can_spawn_source": "return AbstractDungeon.player.hasRelic(\"Cracked Core\");"
+    },
+    {
+      "cls": "GoldPlatedCables",
+      "id": "Cables",
+      "tier": "UNCOMMON",
+      "namespace": "defect",
+      "path": "relics/GoldPlatedCables.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Inserter",
+      "id": "Inserter",
+      "tier": "BOSS",
+      "namespace": "defect",
+      "path": "relics/Inserter.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "NuclearBattery",
+      "id": "Nuclear Battery",
+      "tier": "BOSS",
+      "namespace": "defect",
+      "path": "relics/NuclearBattery.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "RunicCapacitor",
+      "id": "Runic Capacitor",
+      "tier": "SHOP",
+      "namespace": "defect",
+      "path": "relics/RunicCapacitor.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "SymbioticVirus",
+      "id": "Symbiotic Virus",
+      "tier": "UNCOMMON",
+      "namespace": "defect",
+      "path": "relics/SymbioticVirus.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "CloakClasp",
+      "id": "CloakClasp",
+      "tier": "RARE",
+      "namespace": "watcher",
+      "path": "relics/CloakClasp.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Damaru",
+      "id": "Damaru",
+      "tier": "COMMON",
+      "namespace": "watcher",
+      "path": "relics/Damaru.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "GoldenEye",
+      "id": "GoldenEye",
+      "tier": "RARE",
+      "namespace": "watcher",
+      "path": "relics/GoldenEye.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "HolyWater",
+      "id": "HolyWater",
+      "tier": "BOSS",
+      "namespace": "watcher",
+      "path": "relics/HolyWater.java",
+      "can_spawn_source": "return AbstractDungeon.player.hasRelic(\"PureWater\");"
+    },
+    {
+      "cls": "Melange",
+      "id": "Melange",
+      "tier": "SHOP",
+      "namespace": "watcher",
+      "path": "relics/Melange.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "PureWater",
+      "id": "PureWater",
+      "tier": "STARTER",
+      "namespace": "watcher",
+      "path": "relics/PureWater.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "VioletLotus",
+      "id": "VioletLotus",
+      "tier": "BOSS",
+      "namespace": "watcher",
+      "path": "relics/VioletLotus.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "TeardropLocket",
+      "id": "TeardropLocket",
+      "tier": "UNCOMMON",
+      "namespace": "watcher",
+      "path": "relics/TeardropLocket.java",
+      "can_spawn_source": null
+    },
+    {
+      "cls": "Duality",
+      "id": "Yang",
+      "tier": "UNCOMMON",
+      "namespace": "watcher",
+      "path": "relics/Duality.java",
+      "can_spawn_source": null
+    }
+  ],
+  "errors": []
+}

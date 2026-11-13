@@ -9,6 +9,11 @@ from utils.registry import register
 from utils.types import CardType, RarityType
 
 
+def _turn_cost(card: Card) -> int:
+    """Read costForTurn independently of energy and free-to-play-once state."""
+    return card._cost if card.cost_until_end_of_turn is None else card.cost_until_end_of_turn
+
+
 @register("card")
 class Madness(Card):
     """Reduce cost of random card to 0 this combat, Exhaust"""
@@ -28,11 +33,15 @@ class Madness(Card):
 
         if game_state.player and hasattr(game_state.player, "card_manager"):
             hand_cards = list(game_state.player.card_manager.get_pile("hand"))
-            better_candidates = [card for card in hand_cards if card.cost > 0]
-            fallback_candidates = [
-                card for card in hand_cards
-                if card.cost_until_end_of_turn is None and getattr(card, "_cost", None) not in (-1, -2) and card.cost > 0
-            ]
-            candidates = better_candidates or fallback_candidates
-            if candidates:
-                get_rng("card_random").choice(candidates).cost = 0
+            better = any(_turn_cost(card) > 0 for card in hand_cards)
+            if not better and not any(card._cost > 0 for card in hand_cards):
+                return
+            while True:
+                card = get_rng("card_random").choice(hand_cards)
+                cost = _turn_cost(card) if better else card._cost
+                if cost > 0:
+                    card._cost = 0
+                    card.cost_until_end_of_turn = 0
+                    if card.cost_until_played is not None:
+                        card.cost_until_played = 0
+                    return

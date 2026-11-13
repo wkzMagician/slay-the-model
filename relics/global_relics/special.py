@@ -88,3 +88,15 @@ class NeowsLament(Relic):
 class RedCirclet(Relic):
     """Repeatable fallback when the Boss relic pool is exhausted."""
     rarity = RarityType.SPECIAL
+
+
+@register("relic")
+class Circlet(Relic):
+    """Repeatable fallback for exhausted ordinary relic pools."""
+    rarity = RarityType.SPECIAL
+    text_name = "Circlet"
+    counter_field = "counter"
+
+    def __init__(self):
+        super().__init__()
+        self.counter = 1
