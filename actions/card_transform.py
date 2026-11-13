@@ -1,7 +1,7 @@
 from engine.random_streams import get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
 from actions.base import Action
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Literal, Optional, TYPE_CHECKING
 from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register
@@ -238,12 +238,17 @@ class UpgradeRandomCardAction(Action):
     Optional:
         card_type (str): Type of cards to choose from (Attack/Skill/Power)
         namespace (str): Card namespace (default: player's character)
+        selection_kind (str): Use sample or a derived-seed Java shuffle
     """
     def __init__(self, count: int = 1, card_type: Optional[str] = None, 
-                 namespace: Optional[str] = None):
+                 namespace: Optional[str] = None, *,
+                 selection_kind: Literal["sample", "shuffle"] = "sample"):
+        if selection_kind == "shuffle" and count < 0:
+            raise ValueError("Upgrade count must be nonnegative")
         self.count = count
         self.card_type = card_type
         self.namespace = namespace
+        self.selection_kind = selection_kind
     
     def execute(self) -> None:
         """Execute: upgrade random cards from deck"""
@@ -256,7 +261,7 @@ class UpgradeRandomCardAction(Action):
         # Get deck
         deck = game_state.player.card_manager.get_pile('deck')
         
-        if not deck:
+        if not deck and self.selection_kind == "sample":
             return
         
         # Filter cards by type (if specified) and that can be upgraded
@@ -282,6 +287,10 @@ class UpgradeRandomCardAction(Action):
         if self.namespace is not None:
             cards_to_choose = [c for c in cards_to_choose if c.namespace == card_namespace]
         
+        if self.selection_kind == "shuffle":
+            # The parent long is consumed even for empty or singleton lists.
+            get_rng("misc").shuffle(cards_to_choose)
+
         if not cards_to_choose:
             print(t("ui.no_upgradeable_cards", default="No upgradeable cards found"))
             return
@@ -290,7 +299,10 @@ class UpgradeRandomCardAction(Action):
         actual_count = min(self.count, len(cards_to_choose))
         
         # Randomly select cards to upgrade
-        cards_to_upgrade = get_rng("misc").sample(cards_to_choose, actual_count)
+        if self.selection_kind == "shuffle":
+            cards_to_upgrade = cards_to_choose[:actual_count]
+        else:
+            cards_to_upgrade = get_rng("misc").sample(cards_to_choose, actual_count)
         
         # Create upgrade actions for all selected cards
         actions = []
