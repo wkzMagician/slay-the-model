@@ -95,7 +95,7 @@ class TheColosseum(Event):
                                 enemies=[Taskmaster(), GremlinNob()],
                                 escape_actions=[LambdaAction(self.end_event)],
                                 victory_actions=[
-                                    AddGoldAction(amount=100),
+                                    AddGoldAction(amount=100, source="event_combat"),
                                     AddRandomRelicAction(rarity='rare'),
                                     AddRandomRelicAction(rarity='uncommon'),
                                     AddRandomCardAction(),

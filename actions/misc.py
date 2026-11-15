@@ -271,7 +271,7 @@ class OpenChestAction(Action):
             actions = []
             if get_rng("treasure").random() < 0.50:
                 gold = _chest_gold(25)
-                actions.append(AddGoldAction(amount=gold))
+                actions.append(AddGoldAction(amount=gold, source="treasure"))
             if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.COMMON]
             else:
@@ -290,7 +290,7 @@ class OpenChestAction(Action):
             actions = []
             if get_rng("treasure").random() < 0.35:
                 gold = _chest_gold(50)
-                actions.append(AddGoldAction(amount=gold))
+                actions.append(AddGoldAction(amount=gold, source="treasure"))
             relic_random = get_rng("treasure").random()
             if relic_random < 0.35:
                 rarities = [RarityType.COMMON]
@@ -312,7 +312,7 @@ class OpenChestAction(Action):
             actions = []
             if get_rng("treasure").random() < 0.50:
                 gold = _chest_gold(75)
-                actions.append(AddGoldAction(amount=gold))
+                actions.append(AddGoldAction(amount=gold, source="treasure"))
             if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.UNCOMMON]
             else:

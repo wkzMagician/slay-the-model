@@ -88,7 +88,7 @@ class MindBloom(Event):
             enemies=[boss_class()],
             victory_actions=[
                 AddRandomRelicAction(rarity=RarityType.RARE),
-                AddGoldAction(amount=gold),
+                AddGoldAction(amount=gold, source="event_combat"),
                 ChooseObtainCardAction(
                     namespace=game_state.player.namespace, pile="deck", can_skip=True,
                     encounter_type="normal", use_rolling_offset=True, allow_upgraded=True,

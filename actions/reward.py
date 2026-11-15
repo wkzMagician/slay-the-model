@@ -245,10 +245,21 @@ class AddGoldAction(Action):
         
     Optional:
         chance (float): Probability of adding gold (0.0-1.0). Default is 1.0 (always)
+        source (str): direct, combat, event_combat, treasure, or stolen.
+            Eligible reward bonuses are fixed at construction time.
     """
-    def __init__(self, amount: int, chance: float = 1.0):
+    def __init__(self, amount: int, chance: float = 1.0, source: str = "direct"):
+        from engine.game_state import game_state
+
         self.amount = amount
         self.chance = chance
+        self.source = source
+        # RewardItem applies its bonus when the reward is created.
+        if source in ("combat", "event_combat") and game_state.player:
+            for relic in game_state.player.relics:
+                hook = getattr(relic, "modify_gold_gained", None)
+                if hook is not None:
+                    self.amount = hook(self.amount)
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -260,12 +271,9 @@ class AddGoldAction(Action):
                        for relic in game_state.player.relics):
                     return
 
-                # Calculate modified gold amount through relics
+                if self.amount <= 0:
+                    return
                 modified_amount = self.amount
-                for relic in game_state.player.relics:
-                    hook = getattr(relic, "modify_gold_gained", None)
-                    if hook is not None:
-                        modified_amount = hook(modified_amount)
                 
                 game_state.player.gold += modified_amount
                 tui_print(t("rewards.gold", default="Gained {amount} gold", amount=modified_amount))

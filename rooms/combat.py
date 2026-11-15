@@ -135,7 +135,7 @@ class CombatRoom(Room):
         # Calculate gold reward
         gold_amount = self._calculate_gold_reward()
         if gold_amount > 0:
-            actions.append(AddGoldAction(amount=gold_amount))
+            actions.append(AddGoldAction(amount=gold_amount, source="combat"))
 
         if self.room_type == RoomType.ELITE:
             actions.append(AddEliteRelicAction())
@@ -197,7 +197,13 @@ class CombatRoom(Room):
         """
 
         if self.room_type == RoomType.BOSS:
-            return get_rng("misc").randint(95, 105)
+            from engine.game_state import game_state
+            from utils.compatible_random import float32, java_round_float
+
+            amount = get_rng("misc").randint(95, 105)
+            if game_state.ascension >= 13:
+                return java_round_float(float32(amount * 0.75))
+            return amount
         elif self.room_type == RoomType.ELITE:
             return get_rng("treasure").randint(25, 35)
         else:

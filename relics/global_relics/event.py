@@ -47,8 +47,10 @@ class GoldenIdol(Relic):
         self.rarity = RarityType.EVENT
 
     def modify_gold_gained(self, base_gold: int) -> int:
-        """Increase gold gained by 25%."""
-        return int(base_gold * 1.25)
+        """Apply the bonus while an eligible gold reward is created."""
+        from utils.compatible_random import float32, java_round_float
+
+        return base_gold + java_round_float(float32(float32(base_gold) * 0.25))
 
 @register("relic")
 class BloodyIdol(Relic):
