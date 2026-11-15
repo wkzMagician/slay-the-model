@@ -1,9 +1,9 @@
 """
 Miscellaneous actions (room, shop, treasure).
 """
-from engine.random_streams import get_rng
+from engine.random_streams import StreamRandom, get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
-from typing import Optional
+from typing import Optional, cast
 from actions.base import Action, LambdaAction
 from actions.card import AddCardAction
 from actions.display import InputRequestAction
@@ -15,6 +15,7 @@ from utils.registry import register
 from utils.result_types import GameTerminalState
 from utils.types import RarityType
 from tui.print_utils import tui_print
+from utils.compatible_random import float32, java_round_float
 
 
 # ============================================================================
@@ -220,6 +221,13 @@ class BuyItemAction(Action):
 # Treasure Actions
 # ============================================================================
 
+def _chest_gold(base_gold: int) -> int:
+    lower = float32(base_gold * float32(0.9))
+    upper = float32(base_gold * float32(1.1))
+    value = cast(StreamRandom, get_rng("treasure")).random_float(lower, upper)
+    return java_round_float(value)
+
+
 @register("action")
 class OpenChestAction(Action):
     """Action to open a treasure chest"""
@@ -262,7 +270,7 @@ class OpenChestAction(Action):
         elif self.treasure_room.chest_type == "small":
             actions = []
             if get_rng("treasure").random() < 0.50:
-                gold = get_rng("treasure").randint(23, 27)
+                gold = _chest_gold(25)
                 actions.append(AddGoldAction(amount=gold))
             if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.COMMON]
@@ -281,7 +289,7 @@ class OpenChestAction(Action):
         elif self.treasure_room.chest_type == "medium":
             actions = []
             if get_rng("treasure").random() < 0.35:
-                gold = get_rng("treasure").randint(45, 55)
+                gold = _chest_gold(50)
                 actions.append(AddGoldAction(amount=gold))
             relic_random = get_rng("treasure").random()
             if relic_random < 0.35:
@@ -303,7 +311,7 @@ class OpenChestAction(Action):
         elif self.treasure_room.chest_type == "large":
             actions = []
             if get_rng("treasure").random() < 0.50:
-                gold = get_rng("treasure").randint(68, 82)
+                gold = _chest_gold(75)
                 actions.append(AddGoldAction(amount=gold))
             if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.UNCOMMON]

@@ -174,21 +174,12 @@ class CombatRoom(Room):
 
         # Add potion reward with probability check
         # Base 40% chance, -10% after drop, +10% after no drop
-        # White Beast Statue: always drop
-        if _has_relic("White Beast Statue", game_state):
-            # Always drop with White Beast Statue
-            actions.append(AddRandomPotionAction(
-                character=game_state.player.character
-            ))
-            game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
+        chance = 100 if _has_relic("White Beast Statue", game_state) else game_state.potion_drop_chance
+        if get_rng("potion").randint(0, 99) < chance:
+            actions.append(AddRandomPotionAction(character=game_state.player.character))
+            game_state.potion_drop_chance -= 10
         else:
-            if get_rng("potion").randint(1, 100) <= game_state.potion_drop_chance:
-                actions.append(AddRandomPotionAction(
-                    character=game_state.player.character
-                ))
-                game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
-            else:
-                game_state.potion_drop_chance = min(90, game_state.potion_drop_chance + 10)
+            game_state.potion_drop_chance += 10
 
         actions.append(LeaveRoomAction(room=self))
         return actions
