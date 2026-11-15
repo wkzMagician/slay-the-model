@@ -107,7 +107,7 @@ class CardManager:
         elif pos == PilePosType.BOTTOM:
             self.piles[pile].insert(0, card)
         elif pos == PilePosType.RANDOM:
-            index = get_rng("card_random").randint(0, len(self.piles[pile]))
+            index = get_rng("card_random").randint(0, len(self.piles[pile]) - 1) if self.piles[pile] else 0
             self.piles[pile].insert(index, card)
         return True
             

@@ -1,9 +1,6 @@
 """Defect rare skill card - Reboot."""
-from engine.random_streams import get_rng
-
 from typing import List
 
-from actions.card import DrawCardsAction
 from cards.base import Card
 from entities.creature import Creature
 from utils.registry import register
@@ -21,16 +18,8 @@ class Reboot(Card):
     upgrade_draw = 6
 
     def on_play(self, targets: List[Creature] = []):
-        from engine.game_state import game_state
+        from actions.card_shuffle import DrawAfterShuffleAction, queue_active_shuffle
         from engine.runtime_api import add_action
-        from actions.base import LambdaAction
 
-        def _reboot():
-            card_manager = game_state.player.card_manager
-            for pile_name in ("hand", "discard_pile"):
-                for card in list(card_manager.get_pile(pile_name)):
-                    card_manager.move_to(card, "draw_pile", src=pile_name)
-            get_rng("shuffle").shuffle(card_manager.get_pile("draw_pile"))
-
-        add_action(LambdaAction(_reboot))
-        add_action(DrawCardsAction(count=self.draw))
+        queue_active_shuffle(include_hand=True)
+        add_action(DrawAfterShuffleAction(count=self.draw))
