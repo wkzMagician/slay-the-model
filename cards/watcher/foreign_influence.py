@@ -20,7 +20,7 @@ class ForeignInfluence(Card):
         add_action(
             ChooseAddRandomCardAction(
                 total=3,
-                pool_kind="library",
+                selection_kind="foreign",
                 card_type=CardType.ATTACK,
                 cost_until_end_of_turn=0 if self.upgrade_level > 0 else None,
             )

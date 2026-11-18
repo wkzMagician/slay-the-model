@@ -112,12 +112,12 @@ class DeadAdventurer(Event):
                 # Build victory rewards: remaining loot + bonus gold
                 victory_rewards = []
                 if not self.found_gold:
-                    victory_rewards.append(AddGoldAction(amount=30))
+                    victory_rewards.append(AddGoldAction(amount=30, source="event_combat"))
                 if not self.found_relic:
                     victory_rewards.append(AddRandomRelicAction(
                         rarities=[RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE]
                     ))
-                victory_rewards.append(AddGoldAction(amount=get_rng("misc").randint(25, 35)))
+                victory_rewards.append(AddGoldAction(amount=get_rng("misc").randint(25, 35), source="event_combat"))
                 victory_rewards.append(LambdaAction(lambda: self.end_event()))
                 
                 options.append(Option(

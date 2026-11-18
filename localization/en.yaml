@@ -2368,6 +2368,9 @@ potions:
     name: Entropic Brew
     description: Fill all your empty potion slots with random potions.
 relics:
+  Circlet:
+    name: "Circlet"
+    description: "You ran out of relics to find."
   RedCirclet:
     name: "Red Circlet"
     description: "You ran out of Boss relics to find."

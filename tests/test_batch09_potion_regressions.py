@@ -197,9 +197,8 @@ def test_potion_belt_does_not_spawn_after_floor_48():
     helper.create_player()
     helper.game_state.current_floor = 49
 
-    with patch("utils.random.list_registered", return_value=["PotionBelt"]), patch(
-        "utils.random.get_registered", return_value=PotionBelt
-    ):
-        relic = get_random_relic(rarities=[RarityType.COMMON])
-
-    assert relic is None
+    pools = helper.game_state.relic_pools
+    pools.remaining.update(COMMON=['PotionBelt'], UNCOMMON=[], RARE=[])
+    relic = get_random_relic(rarities=[RarityType.COMMON])
+    assert relic is not None
+    assert relic.idstr == 'Circlet'

@@ -129,8 +129,10 @@ class GameState:
         with using_streams(self.random_streams):
             self.player = create_player(self.config.character, ascension=self.ascension)
         from relics.boss_pool import BossRelicPool
+        from relics.pools import RelicPools
         pool_seeds = self.random_streams.initialize_relic_pool_seeds()
-        self.boss_relic_pool = BossRelicPool(self.config.seed, child_seed=pool_seeds["boss"])
+        self.relic_pools = RelicPools(pool_seeds)
+        self.boss_relic_pool = BossRelicPool(self.config.seed, child_seed=pool_seeds["boss"], pools=self.relic_pools)
         
         # temp value for select result
         self.last_select_idx = -1

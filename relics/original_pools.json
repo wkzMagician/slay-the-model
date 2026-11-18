@@ -1,0 +1,1995 @@
+{
+  "basis": "Fixed source registration/metadata and JDK8/17 HashMap reconstruction;all-unlocked normal",
+  "relics": [
+    {
+      "id": "TheAbacus",
+      "key": "TheAbacus",
+      "module": "relics.global_relics.shop",
+      "cls": "TheAbacus",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Akabeko",
+      "key": "Akabeko",
+      "module": "relics.global_relics.common",
+      "cls": "Akabeko",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Anchor",
+      "key": "Anchor",
+      "module": "relics.global_relics.common",
+      "cls": "Anchor",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Ancient Tea Set",
+      "key": "AncientTeaSet",
+      "module": "relics.global_relics.common",
+      "cls": "AncientTeaSet",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Art of War",
+      "key": "ArtOfWar",
+      "module": "relics.global_relics.common",
+      "cls": "ArtOfWar",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Astrolabe",
+      "key": "Astrolabe",
+      "module": "relics.global_relics.boss",
+      "cls": "Astrolabe",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Bag of Marbles",
+      "key": "BagOfMarbles",
+      "module": "relics.global_relics.common",
+      "cls": "BagOfMarbles",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Bag of Preparation",
+      "key": "BagOfPreparation",
+      "module": "relics.global_relics.common",
+      "cls": "BagOfPreparation",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Bird Faced Urn",
+      "key": "BirdFacedUrn",
+      "module": "relics.global_relics.rare",
+      "cls": "BirdFacedUrn",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Black Star",
+      "key": "BlackStar",
+      "module": "relics.global_relics.boss",
+      "cls": "BlackStar",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Blood Vial",
+      "key": "BloodVial",
+      "module": "relics.global_relics.common",
+      "cls": "BloodVial",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Bloody Idol",
+      "key": "BloodyIdol",
+      "module": "relics.global_relics.event",
+      "cls": "BloodyIdol",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Blue Candle",
+      "key": "BlueCandle",
+      "module": "relics.global_relics.uncommon",
+      "cls": "BlueCandle",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Boot",
+      "key": "TheBoot",
+      "module": "relics.global_relics.common",
+      "cls": "TheBoot",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Bottled Flame",
+      "key": "BottledFlame",
+      "module": "relics.global_relics.uncommon",
+      "cls": "BottledFlame",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Bottled Lightning",
+      "key": "BottledLightning",
+      "module": "relics.global_relics.uncommon",
+      "cls": "BottledLightning",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Bottled Tornado",
+      "key": "BottledTornado",
+      "module": "relics.global_relics.uncommon",
+      "cls": "BottledTornado",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Bronze Scales",
+      "key": "BronzeScales",
+      "module": "relics.global_relics.common",
+      "cls": "BronzeScales",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Busted Crown",
+      "key": "BustedCrown",
+      "module": "relics.global_relics.boss",
+      "cls": "BustedCrown",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Calipers",
+      "key": "Calipers",
+      "module": "relics.global_relics.rare",
+      "cls": "Calipers",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Calling Bell",
+      "key": "CallingBell",
+      "module": "relics.global_relics.boss",
+      "cls": "CallingBell",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "CaptainsWheel",
+      "key": "CaptainsWheel",
+      "module": "relics.global_relics.rare",
+      "cls": "CaptainsWheel",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Cauldron",
+      "key": "Cauldron",
+      "module": "relics.global_relics.shop",
+      "cls": "Cauldron",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Centennial Puzzle",
+      "key": "CentennialPuzzle",
+      "module": "relics.global_relics.common",
+      "cls": "CentennialPuzzle",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "CeramicFish",
+      "key": "CeramicFish",
+      "module": "relics.global_relics.common",
+      "cls": "CeramicFish",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Chemical X",
+      "key": "ChemicalX",
+      "module": "relics.global_relics.shop",
+      "cls": "ChemicalX",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "ClockworkSouvenir",
+      "key": "ClockworkSouvenir",
+      "module": "relics.global_relics.shop",
+      "cls": "ClockworkSouvenir",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Coffee Dripper",
+      "key": "CoffeeDripper",
+      "module": "relics.global_relics.boss",
+      "cls": "CoffeeDripper",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "The Courier",
+      "key": "TheCourier",
+      "module": "relics.global_relics.uncommon",
+      "cls": "TheCourier",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "CultistMask",
+      "key": "CultistHeadpiece",
+      "module": "relics.global_relics.event",
+      "cls": "CultistHeadpiece",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Cursed Key",
+      "key": "CursedKey",
+      "module": "relics.global_relics.boss",
+      "cls": "CursedKey",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Darkstone Periapt",
+      "key": "DarkstonePeriapt",
+      "module": "relics.global_relics.uncommon",
+      "cls": "DarkstonePeriapt",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Dead Branch",
+      "key": "DeadBranch",
+      "module": "relics.global_relics.rare",
+      "cls": "DeadBranch",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "DollysMirror",
+      "key": "DollysMirror",
+      "module": "relics.global_relics.shop",
+      "cls": "DollysMirror",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Dream Catcher",
+      "key": "DreamCatcher",
+      "module": "relics.global_relics.common",
+      "cls": "DreamCatcher",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Du-Vu Doll",
+      "key": "DuVuDoll",
+      "module": "relics.global_relics.rare",
+      "cls": "DuVuDoll",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Ectoplasm",
+      "key": "Ectoplasm",
+      "module": "relics.global_relics.boss",
+      "cls": "Ectoplasm",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Empty Cage",
+      "key": "EmptyCage",
+      "module": "relics.global_relics.boss",
+      "cls": "EmptyCage",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Enchiridion",
+      "key": "Enchiridion",
+      "module": "relics.global_relics.event",
+      "cls": "Enchiridion",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Eternal Feather",
+      "key": "EternalFeather",
+      "module": "relics.global_relics.uncommon",
+      "cls": "EternalFeather",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "FaceOfCleric",
+      "key": "FaceOfCleric",
+      "module": "relics.global_relics.event",
+      "cls": "FaceOfCleric",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "FossilizedHelix",
+      "key": "FossilizedHelix",
+      "module": "relics.global_relics.rare",
+      "cls": "FossilizedHelix",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Frozen Egg 2",
+      "key": "FrozenEgg",
+      "module": "relics.global_relics.uncommon",
+      "cls": "FrozenEgg",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Frozen Eye",
+      "key": "FrozenEye",
+      "module": "relics.global_relics.shop",
+      "cls": "FrozenEye",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Fusion Hammer",
+      "key": "FusionHammer",
+      "module": "relics.global_relics.boss",
+      "cls": "FusionHammer",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Gambling Chip",
+      "key": "GamblingChip",
+      "module": "relics.global_relics.rare",
+      "cls": "GamblingChip",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Ginger",
+      "key": "Ginger",
+      "module": "relics.global_relics.rare",
+      "cls": "Ginger",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Girya",
+      "key": "Girya",
+      "module": "relics.global_relics.rare",
+      "cls": "Girya",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Golden Idol",
+      "key": "GoldenIdol",
+      "module": "relics.global_relics.event",
+      "cls": "GoldenIdol",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Gremlin Horn",
+      "key": "GremlinHorn",
+      "module": "relics.global_relics.uncommon",
+      "cls": "GremlinHorn",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "GremlinMask",
+      "key": "GremlinVisage",
+      "module": "relics.global_relics.event",
+      "cls": "GremlinVisage",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "HandDrill",
+      "key": "HandDrill",
+      "module": "relics.global_relics.shop",
+      "cls": "HandDrill",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Happy Flower",
+      "key": "HappyFlower",
+      "module": "relics.global_relics.common",
+      "cls": "HappyFlower",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "HornCleat",
+      "key": "HornCleat",
+      "module": "relics.global_relics.uncommon",
+      "cls": "HornCleat",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Ice Cream",
+      "key": "IceCream",
+      "module": "relics.global_relics.rare",
+      "cls": "IceCream",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Incense Burner",
+      "key": "IncenseBurner",
+      "module": "relics.global_relics.rare",
+      "cls": "IncenseBurner",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "InkBottle",
+      "key": "InkBottle",
+      "module": "relics.global_relics.uncommon",
+      "cls": "InkBottle",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Juzu Bracelet",
+      "key": "JuzuBracelet",
+      "module": "relics.global_relics.common",
+      "cls": "JuzuBracelet",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Kunai",
+      "key": "Kunai",
+      "module": "relics.global_relics.uncommon",
+      "cls": "Kunai",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Lantern",
+      "key": "Lantern",
+      "module": "relics.global_relics.common",
+      "cls": "Lantern",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Letter Opener",
+      "key": "LetterOpener",
+      "module": "relics.global_relics.uncommon",
+      "cls": "LetterOpener",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Lizard Tail",
+      "key": "LizardTail",
+      "module": "relics.global_relics.rare",
+      "cls": "LizardTail",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Mango",
+      "key": "Mango",
+      "module": "relics.global_relics.rare",
+      "cls": "Mango",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Mark of the Bloom",
+      "key": "MarkOfBloom",
+      "module": "relics.global_relics.event",
+      "cls": "MarkOfBloom",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Matryoshka",
+      "key": "Matryoshka",
+      "module": "relics.global_relics.uncommon",
+      "cls": "Matryoshka",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "MawBank",
+      "key": "MawBank",
+      "module": "relics.global_relics.common",
+      "cls": "MawBank",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "MealTicket",
+      "key": "MealTicket",
+      "module": "relics.global_relics.common",
+      "cls": "MealTicket",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Meat on the Bone",
+      "key": "MeatOnBone",
+      "module": "relics.global_relics.uncommon",
+      "cls": "MeatOnBone",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Medical Kit",
+      "key": "MedicalKit",
+      "module": "relics.global_relics.shop",
+      "cls": "MedicalKit",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Membership Card",
+      "key": "MembershipCard",
+      "module": "relics.global_relics.shop",
+      "cls": "MembershipCard",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Mercury Hourglass",
+      "key": "MercuryHourglass",
+      "module": "relics.global_relics.uncommon",
+      "cls": "MercuryHourglass",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Molten Egg 2",
+      "key": "MoltenEgg",
+      "module": "relics.global_relics.uncommon",
+      "cls": "MoltenEgg",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Mummified Hand",
+      "key": "MummifiedHand",
+      "module": "relics.global_relics.uncommon",
+      "cls": "MummifiedHand",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "MutagenicStrength",
+      "key": "MutagenicStrength",
+      "module": "relics.global_relics.event",
+      "cls": "MutagenicStrength",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Necronomicon",
+      "key": "Necronomicon",
+      "module": "relics.global_relics.event",
+      "cls": "Necronomicon",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "NeowsBlessing",
+      "key": "NeowsLament",
+      "module": "relics.global_relics.special",
+      "cls": "NeowsLament",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Nilry's Codex",
+      "key": "NilrysCodex",
+      "module": "relics.global_relics.event",
+      "cls": "NilrysCodex",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Nloth's Gift",
+      "key": "NlothGift",
+      "module": "relics.global_relics.event",
+      "cls": "NlothGift",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "NlothsMask",
+      "key": "NlothHungryFace",
+      "module": "relics.global_relics.event",
+      "cls": "NlothHungryFace",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Nunchaku",
+      "key": "Nunchaku",
+      "module": "relics.global_relics.common",
+      "cls": "Nunchaku",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Oddly Smooth Stone",
+      "key": "OddlySmoothStone",
+      "module": "relics.global_relics.common",
+      "cls": "OddlySmoothStone",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Odd Mushroom",
+      "key": "OddMushroom",
+      "module": "relics.global_relics.event",
+      "cls": "OddMushroom",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Old Coin",
+      "key": "OldCoin",
+      "module": "relics.global_relics.rare",
+      "cls": "OldCoin",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Omamori",
+      "key": "Omamori",
+      "module": "relics.global_relics.common",
+      "cls": "Omamori",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "OrangePellets",
+      "key": "OrangePellets",
+      "module": "relics.character.ironclad",
+      "cls": "OrangePellets",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Orichalcum",
+      "key": "Orichalcum",
+      "module": "relics.global_relics.common",
+      "cls": "Orichalcum",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Ornamental Fan",
+      "key": "OrnamentalFan",
+      "module": "relics.global_relics.uncommon",
+      "cls": "OrnamentalFan",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Orrery",
+      "key": "Orrery",
+      "module": "relics.global_relics.shop",
+      "cls": "Orrery",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Pandora's Box",
+      "key": "PandorasBox",
+      "module": "relics.global_relics.boss",
+      "cls": "PandorasBox",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Pantograph",
+      "key": "Pantograph",
+      "module": "relics.global_relics.uncommon",
+      "cls": "Pantograph",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Peace Pipe",
+      "key": "PeacePipe",
+      "module": "relics.global_relics.rare",
+      "cls": "PeacePipe",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Pear",
+      "key": "Pear",
+      "module": "relics.global_relics.uncommon",
+      "cls": "Pear",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Pen Nib",
+      "key": "PenNib",
+      "module": "relics.global_relics.common",
+      "cls": "PenNib",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Philosopher's Stone",
+      "key": "PhilosophersStone",
+      "module": "relics.global_relics.boss",
+      "cls": "PhilosophersStone",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Pocketwatch",
+      "key": "Pocketwatch",
+      "module": "relics.global_relics.rare",
+      "cls": "Pocketwatch",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Potion Belt",
+      "key": "PotionBelt",
+      "module": "relics.global_relics.common",
+      "cls": "PotionBelt",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Prayer Wheel",
+      "key": "PrayerWheel",
+      "module": "relics.global_relics.rare",
+      "cls": "PrayerWheel",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "PreservedInsect",
+      "key": "PreservedInsect",
+      "module": "relics.global_relics.common",
+      "cls": "PreservedInsect",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "PrismaticShard",
+      "key": "PrismaticShard",
+      "module": "relics.global_relics.shop",
+      "cls": "PrismaticShard",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Question Card",
+      "key": "QuestionCard",
+      "module": "relics.global_relics.uncommon",
+      "cls": "QuestionCard",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Red Mask",
+      "key": "RedMask",
+      "module": "relics.global_relics.event",
+      "cls": "RedMask",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Regal Pillow",
+      "key": "RegalPillow",
+      "module": "relics.global_relics.common",
+      "cls": "RegalPillow",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Runic Dome",
+      "key": "RunicDome",
+      "module": "relics.global_relics.boss",
+      "cls": "RunicDome",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Runic Pyramid",
+      "key": "RunicPyramid",
+      "module": "relics.global_relics.boss",
+      "cls": "RunicPyramid",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "SacredBark",
+      "key": "SacredBark",
+      "module": "relics.global_relics.boss",
+      "cls": "SacredBark",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Shovel",
+      "key": "Shovel",
+      "module": "relics.global_relics.rare",
+      "cls": "Shovel",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Shuriken",
+      "key": "Shuriken",
+      "module": "relics.global_relics.uncommon",
+      "cls": "Shuriken",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Singing Bowl",
+      "key": "SingingBowl",
+      "module": "relics.global_relics.uncommon",
+      "cls": "SingingBowl",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "SlaversCollar",
+      "key": "SlaversCollar",
+      "module": "relics.global_relics.boss",
+      "cls": "SlaversCollar",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Sling",
+      "key": "SlingOfCourage",
+      "module": "relics.global_relics.shop",
+      "cls": "SlingOfCourage",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Smiling Mask",
+      "key": "SmilingMask",
+      "module": "relics.global_relics.common",
+      "cls": "SmilingMask",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Snecko Eye",
+      "key": "SneckoEye",
+      "module": "relics.global_relics.boss",
+      "cls": "SneckoEye",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Sozu",
+      "key": "Sozu",
+      "module": "relics.global_relics.boss",
+      "cls": "Sozu",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Spirit Poop",
+      "key": "SpiritPoop",
+      "module": "relics.global_relics.event",
+      "cls": "SpiritPoop",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "SsserpentHead",
+      "key": "SsserpentHead",
+      "module": "relics.global_relics.event",
+      "cls": "SsserpentHead",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "StoneCalendar",
+      "key": "StoneCalendar",
+      "module": "relics.global_relics.rare",
+      "cls": "StoneCalendar",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Strange Spoon",
+      "key": "StrangeSpoonShop",
+      "module": "relics.global_relics.shop",
+      "cls": "StrangeSpoonShop",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Strawberry",
+      "key": "Strawberry",
+      "module": "relics.global_relics.common",
+      "cls": "Strawberry",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "StrikeDummy",
+      "key": "StrikeDummy",
+      "module": "relics.global_relics.shop",
+      "cls": "StrikeDummy",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Sundial",
+      "key": "Sundial",
+      "module": "relics.global_relics.uncommon",
+      "cls": "Sundial",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Thread and Needle",
+      "key": "ThreadAndNeedle",
+      "module": "relics.global_relics.rare",
+      "cls": "ThreadAndNeedle",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Tiny Chest",
+      "key": "TinyChest",
+      "module": "relics.global_relics.common",
+      "cls": "TinyChest",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Tiny House",
+      "key": "TinyHouse",
+      "module": "relics.global_relics.boss",
+      "cls": "TinyHouse",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Toolbox",
+      "key": "Toolbox",
+      "module": "relics.global_relics.shop",
+      "cls": "Toolbox",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Torii",
+      "key": "Torii",
+      "module": "relics.global_relics.rare",
+      "cls": "Torii",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Toxic Egg 2",
+      "key": "ToxicEgg",
+      "module": "relics.global_relics.uncommon",
+      "cls": "ToxicEgg",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Toy Ornithopter",
+      "key": "ToyOrnithopter",
+      "module": "relics.global_relics.common",
+      "cls": "ToyOrnithopter",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "TungstenRod",
+      "key": "TungstenRod",
+      "module": "relics.global_relics.rare",
+      "cls": "TungstenRod",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Turnip",
+      "key": "Turnip",
+      "module": "relics.global_relics.rare",
+      "cls": "Turnip",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Unceasing Top",
+      "key": "UnceasingTop",
+      "module": "relics.global_relics.rare",
+      "cls": "UnceasingTop",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "Vajra",
+      "key": "Vajra",
+      "module": "relics.global_relics.common",
+      "cls": "Vajra",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Velvet Choker",
+      "key": "VelvetChoker",
+      "module": "relics.global_relics.boss",
+      "cls": "VelvetChoker",
+      "namespace": "any",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Lee's Waffle",
+      "key": "LeesWaffle",
+      "module": "relics.global_relics.shop",
+      "cls": "LeesWaffle",
+      "namespace": "any",
+      "tier": "SHOP"
+    },
+    {
+      "id": "War Paint",
+      "key": "WarPaint",
+      "module": "relics.global_relics.common",
+      "cls": "WarPaint",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "WarpedTongs",
+      "key": "WarpedTongs",
+      "module": "relics.global_relics.event",
+      "cls": "WarpedTongs",
+      "namespace": "any",
+      "tier": "SPECIAL"
+    },
+    {
+      "id": "Whetstone",
+      "key": "Whetstone",
+      "module": "relics.global_relics.common",
+      "cls": "Whetstone",
+      "namespace": "any",
+      "tier": "COMMON"
+    },
+    {
+      "id": "White Beast Statue",
+      "key": "WhiteBeastStatue",
+      "module": "relics.global_relics.uncommon",
+      "cls": "WhiteBeastStatue",
+      "namespace": "any",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "WingedGreaves",
+      "key": "WingBoots",
+      "module": "relics.global_relics.rare",
+      "cls": "WingBoots",
+      "namespace": "any",
+      "tier": "RARE"
+    },
+    {
+      "id": "HoveringKite",
+      "key": "HoveringKite",
+      "module": "relics.character.silent",
+      "cls": "HoveringKite",
+      "namespace": "silent",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Ninja Scroll",
+      "key": "NinjaScroll",
+      "module": "relics.character.silent",
+      "cls": "NinjaScroll",
+      "namespace": "silent",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Paper Crane",
+      "key": "PaperKrane",
+      "module": "relics.character.silent",
+      "cls": "PaperKrane",
+      "namespace": "silent",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Ring of the Serpent",
+      "key": "RingOfTheSerpent",
+      "module": "relics.character.silent",
+      "cls": "RingOfTheSerpent",
+      "namespace": "silent",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Ring of the Snake",
+      "key": "RingOfTheSnake",
+      "module": "relics.character.silent",
+      "cls": "RingOfTheSnake",
+      "namespace": "silent",
+      "tier": "STARTER"
+    },
+    {
+      "id": "Snake Skull",
+      "key": "SneckoSkull",
+      "module": "relics.character.silent",
+      "cls": "SneckoSkull",
+      "namespace": "silent",
+      "tier": "COMMON"
+    },
+    {
+      "id": "The Specimen",
+      "key": "TheSpecimen",
+      "module": "relics.character.silent",
+      "cls": "TheSpecimen",
+      "namespace": "silent",
+      "tier": "RARE"
+    },
+    {
+      "id": "Tingsha",
+      "key": "Tingsha",
+      "module": "relics.character.silent",
+      "cls": "Tingsha",
+      "namespace": "silent",
+      "tier": "RARE"
+    },
+    {
+      "id": "Tough Bandages",
+      "key": "ToughBandages",
+      "module": "relics.character.silent",
+      "cls": "ToughBandages",
+      "namespace": "silent",
+      "tier": "RARE"
+    },
+    {
+      "id": "TwistedFunnel",
+      "key": "TwistedFunnel",
+      "module": "relics.character.silent",
+      "cls": "TwistedFunnel",
+      "namespace": "silent",
+      "tier": "SHOP"
+    },
+    {
+      "id": "WristBlade",
+      "key": "WristBlade",
+      "module": "relics.character.silent",
+      "cls": "WristBlade",
+      "namespace": "silent",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Black Blood",
+      "key": "BlackBlood",
+      "module": "relics.character.ironclad",
+      "cls": "BlackBlood",
+      "namespace": "ironclad",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Brimstone",
+      "key": "Brimstone",
+      "module": "relics.character.ironclad",
+      "cls": "Brimstone",
+      "namespace": "ironclad",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Burning Blood",
+      "key": "BurningBlood",
+      "module": "relics.character.ironclad",
+      "cls": "BurningBlood",
+      "namespace": "ironclad",
+      "tier": "STARTER"
+    },
+    {
+      "id": "Champion Belt",
+      "key": "ChampionBelt",
+      "module": "relics.character.ironclad",
+      "cls": "ChampionBelt",
+      "namespace": "ironclad",
+      "tier": "RARE"
+    },
+    {
+      "id": "Charon's Ashes",
+      "key": "CharonsAshes",
+      "module": "relics.character.ironclad",
+      "cls": "CharonsAshes",
+      "namespace": "ironclad",
+      "tier": "RARE"
+    },
+    {
+      "id": "Magic Flower",
+      "key": "MagicFlower",
+      "module": "relics.character.ironclad",
+      "cls": "MagicFlower",
+      "namespace": "ironclad",
+      "tier": "RARE"
+    },
+    {
+      "id": "Mark of Pain",
+      "key": "MarkOfPain",
+      "module": "relics.character.ironclad",
+      "cls": "MarkOfPain",
+      "namespace": "ironclad",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Paper Frog",
+      "key": "PaperPhrog",
+      "module": "relics.global_relics.uncommon",
+      "cls": "PaperPhrog",
+      "namespace": "ironclad",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Red Skull",
+      "key": "RedSkull",
+      "module": "relics.character.ironclad",
+      "cls": "RedSkull",
+      "namespace": "ironclad",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Runic Cube",
+      "key": "RunicCube",
+      "module": "relics.character.ironclad",
+      "cls": "RunicCube",
+      "namespace": "ironclad",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Self Forming Clay",
+      "key": "SelfFormingClay",
+      "module": "relics.global_relics.uncommon",
+      "cls": "SelfFormingClay",
+      "namespace": "ironclad",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Cracked Core",
+      "key": "CrackedCore",
+      "module": "relics.character.defect",
+      "cls": "CrackedCore",
+      "namespace": "defect",
+      "tier": "STARTER"
+    },
+    {
+      "id": "DataDisk",
+      "key": "DataDisk",
+      "module": "relics.character.defect",
+      "cls": "DataDisk",
+      "namespace": "defect",
+      "tier": "COMMON"
+    },
+    {
+      "id": "Emotion Chip",
+      "key": "EmotionChip",
+      "module": "relics.character.defect",
+      "cls": "EmotionChip",
+      "namespace": "defect",
+      "tier": "RARE"
+    },
+    {
+      "id": "FrozenCore",
+      "key": "FrozenCore",
+      "module": "relics.character.defect",
+      "cls": "FrozenCore",
+      "namespace": "defect",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Cables",
+      "key": "GoldPlatedCables",
+      "module": "relics.character.defect",
+      "cls": "GoldPlatedCables",
+      "namespace": "defect",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Inserter",
+      "key": "Inserter",
+      "module": "relics.character.defect",
+      "cls": "Inserter",
+      "namespace": "defect",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Nuclear Battery",
+      "key": "NuclearBattery",
+      "module": "relics.character.defect",
+      "cls": "NuclearBattery",
+      "namespace": "defect",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Runic Capacitor",
+      "key": "RunicCapacitor",
+      "module": "relics.character.defect",
+      "cls": "RunicCapacitor",
+      "namespace": "defect",
+      "tier": "SHOP"
+    },
+    {
+      "id": "Symbiotic Virus",
+      "key": "SymbioticVirus",
+      "module": "relics.character.defect",
+      "cls": "SymbioticVirus",
+      "namespace": "defect",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "CloakClasp",
+      "key": "CloakClasp",
+      "module": "relics.character.watcher",
+      "cls": "CloakClasp",
+      "namespace": "watcher",
+      "tier": "RARE"
+    },
+    {
+      "id": "Damaru",
+      "key": "Damaru",
+      "module": "relics.character.watcher",
+      "cls": "Damaru",
+      "namespace": "watcher",
+      "tier": "COMMON"
+    },
+    {
+      "id": "GoldenEye",
+      "key": "GoldenEye",
+      "module": "relics.character.watcher",
+      "cls": "GoldenEye",
+      "namespace": "watcher",
+      "tier": "RARE"
+    },
+    {
+      "id": "HolyWater",
+      "key": "HolyWater",
+      "module": "relics.character.watcher",
+      "cls": "HolyWater",
+      "namespace": "watcher",
+      "tier": "BOSS"
+    },
+    {
+      "id": "Melange",
+      "key": "Melange",
+      "module": "relics.character.watcher",
+      "cls": "Melange",
+      "namespace": "watcher",
+      "tier": "SHOP"
+    },
+    {
+      "id": "PureWater",
+      "key": "PureWater",
+      "module": "relics.character.watcher",
+      "cls": "PureWater",
+      "namespace": "watcher",
+      "tier": "STARTER"
+    },
+    {
+      "id": "VioletLotus",
+      "key": "VioletLotus",
+      "module": "relics.character.watcher",
+      "cls": "VioletLotus",
+      "namespace": "watcher",
+      "tier": "BOSS"
+    },
+    {
+      "id": "TeardropLocket",
+      "key": "TeardropLocket",
+      "module": "relics.character.watcher",
+      "cls": "TeardropLocket",
+      "namespace": "watcher",
+      "tier": "UNCOMMON"
+    },
+    {
+      "id": "Yang",
+      "key": "Duality",
+      "module": "relics.character.watcher",
+      "cls": "Duality",
+      "namespace": "watcher",
+      "tier": "UNCOMMON"
+    }
+  ],
+  "pools": {
+    "ironclad": {
+      "COMMON": [
+        "Whetstone",
+        "Boot",
+        "Blood Vial",
+        "MealTicket",
+        "Pen Nib",
+        "Akabeko",
+        "Lantern",
+        "Regal Pillow",
+        "Bag of Preparation",
+        "Ancient Tea Set",
+        "Smiling Mask",
+        "Potion Belt",
+        "PreservedInsect",
+        "Omamori",
+        "MawBank",
+        "Art of War",
+        "Toy Ornithopter",
+        "CeramicFish",
+        "Vajra",
+        "Centennial Puzzle",
+        "Strawberry",
+        "Happy Flower",
+        "Oddly Smooth Stone",
+        "War Paint",
+        "Bronze Scales",
+        "Juzu Bracelet",
+        "Dream Catcher",
+        "Nunchaku",
+        "Tiny Chest",
+        "Orichalcum",
+        "Anchor",
+        "Bag of Marbles",
+        "Red Skull"
+      ],
+      "UNCOMMON": [
+        "Bottled Tornado",
+        "Sundial",
+        "Kunai",
+        "Pear",
+        "Blue Candle",
+        "Eternal Feather",
+        "StrikeDummy",
+        "Singing Bowl",
+        "Matryoshka",
+        "InkBottle",
+        "The Courier",
+        "Frozen Egg 2",
+        "Ornamental Fan",
+        "Bottled Lightning",
+        "Gremlin Horn",
+        "HornCleat",
+        "Toxic Egg 2",
+        "Letter Opener",
+        "Question Card",
+        "Bottled Flame",
+        "Shuriken",
+        "Molten Egg 2",
+        "Meat on the Bone",
+        "Darkstone Periapt",
+        "Mummified Hand",
+        "Pantograph",
+        "White Beast Statue",
+        "Mercury Hourglass",
+        "Self Forming Clay",
+        "Paper Frog"
+      ],
+      "RARE": [
+        "Ginger",
+        "Old Coin",
+        "Bird Faced Urn",
+        "Unceasing Top",
+        "Torii",
+        "StoneCalendar",
+        "Shovel",
+        "WingedGreaves",
+        "Thread and Needle",
+        "Turnip",
+        "Ice Cream",
+        "Calipers",
+        "Lizard Tail",
+        "Prayer Wheel",
+        "Girya",
+        "Dead Branch",
+        "Du-Vu Doll",
+        "Pocketwatch",
+        "Mango",
+        "Incense Burner",
+        "Gambling Chip",
+        "Peace Pipe",
+        "CaptainsWheel",
+        "FossilizedHelix",
+        "TungstenRod",
+        "Magic Flower",
+        "Charon's Ashes",
+        "Champion Belt"
+      ],
+      "SHOP": [
+        "Sling",
+        "HandDrill",
+        "Toolbox",
+        "Chemical X",
+        "Lee's Waffle",
+        "Orrery",
+        "DollysMirror",
+        "OrangePellets",
+        "PrismaticShard",
+        "ClockworkSouvenir",
+        "Frozen Eye",
+        "TheAbacus",
+        "Medical Kit",
+        "Cauldron",
+        "Strange Spoon",
+        "Membership Card",
+        "Brimstone"
+      ],
+      "BOSS": [
+        "Fusion Hammer",
+        "Velvet Choker",
+        "Runic Dome",
+        "SlaversCollar",
+        "Snecko Eye",
+        "Pandora's Box",
+        "Cursed Key",
+        "Busted Crown",
+        "Ectoplasm",
+        "Tiny House",
+        "Sozu",
+        "Philosopher's Stone",
+        "Astrolabe",
+        "Black Star",
+        "SacredBark",
+        "Empty Cage",
+        "Runic Pyramid",
+        "Calling Bell",
+        "Coffee Dripper",
+        "Black Blood",
+        "Mark of Pain",
+        "Runic Cube"
+      ]
+    },
+    "silent": {
+      "COMMON": [
+        "Whetstone",
+        "Boot",
+        "Blood Vial",
+        "MealTicket",
+        "Pen Nib",
+        "Akabeko",
+        "Lantern",
+        "Regal Pillow",
+        "Bag of Preparation",
+        "Ancient Tea Set",
+        "Smiling Mask",
+        "Potion Belt",
+        "PreservedInsect",
+        "Omamori",
+        "MawBank",
+        "Art of War",
+        "Toy Ornithopter",
+        "CeramicFish",
+        "Vajra",
+        "Centennial Puzzle",
+        "Strawberry",
+        "Happy Flower",
+        "Oddly Smooth Stone",
+        "War Paint",
+        "Bronze Scales",
+        "Juzu Bracelet",
+        "Dream Catcher",
+        "Nunchaku",
+        "Tiny Chest",
+        "Orichalcum",
+        "Anchor",
+        "Bag of Marbles",
+        "Snake Skull"
+      ],
+      "UNCOMMON": [
+        "Bottled Tornado",
+        "Sundial",
+        "Kunai",
+        "Pear",
+        "Blue Candle",
+        "Eternal Feather",
+        "StrikeDummy",
+        "Singing Bowl",
+        "Matryoshka",
+        "InkBottle",
+        "The Courier",
+        "Frozen Egg 2",
+        "Ornamental Fan",
+        "Bottled Lightning",
+        "Gremlin Horn",
+        "HornCleat",
+        "Toxic Egg 2",
+        "Letter Opener",
+        "Question Card",
+        "Bottled Flame",
+        "Shuriken",
+        "Molten Egg 2",
+        "Meat on the Bone",
+        "Darkstone Periapt",
+        "Mummified Hand",
+        "Pantograph",
+        "White Beast Statue",
+        "Mercury Hourglass",
+        "Ninja Scroll",
+        "Paper Crane"
+      ],
+      "RARE": [
+        "Ginger",
+        "Old Coin",
+        "Bird Faced Urn",
+        "Unceasing Top",
+        "Torii",
+        "StoneCalendar",
+        "Shovel",
+        "WingedGreaves",
+        "Thread and Needle",
+        "Turnip",
+        "Ice Cream",
+        "Calipers",
+        "Lizard Tail",
+        "Prayer Wheel",
+        "Girya",
+        "Dead Branch",
+        "Du-Vu Doll",
+        "Pocketwatch",
+        "Mango",
+        "Incense Burner",
+        "Gambling Chip",
+        "Peace Pipe",
+        "CaptainsWheel",
+        "FossilizedHelix",
+        "TungstenRod",
+        "Tough Bandages",
+        "The Specimen",
+        "Tingsha"
+      ],
+      "SHOP": [
+        "Sling",
+        "HandDrill",
+        "Toolbox",
+        "Chemical X",
+        "Lee's Waffle",
+        "Orrery",
+        "DollysMirror",
+        "OrangePellets",
+        "PrismaticShard",
+        "ClockworkSouvenir",
+        "Frozen Eye",
+        "TheAbacus",
+        "Medical Kit",
+        "Cauldron",
+        "Strange Spoon",
+        "Membership Card",
+        "TwistedFunnel"
+      ],
+      "BOSS": [
+        "Fusion Hammer",
+        "Velvet Choker",
+        "Runic Dome",
+        "SlaversCollar",
+        "Snecko Eye",
+        "Pandora's Box",
+        "Cursed Key",
+        "Busted Crown",
+        "Ectoplasm",
+        "Tiny House",
+        "Sozu",
+        "Philosopher's Stone",
+        "Astrolabe",
+        "Black Star",
+        "SacredBark",
+        "Empty Cage",
+        "Runic Pyramid",
+        "Calling Bell",
+        "Coffee Dripper",
+        "WristBlade",
+        "HoveringKite",
+        "Ring of the Serpent"
+      ]
+    },
+    "defect": {
+      "COMMON": [
+        "Whetstone",
+        "Boot",
+        "Blood Vial",
+        "MealTicket",
+        "Pen Nib",
+        "Akabeko",
+        "Lantern",
+        "Regal Pillow",
+        "Bag of Preparation",
+        "Ancient Tea Set",
+        "Smiling Mask",
+        "Potion Belt",
+        "PreservedInsect",
+        "Omamori",
+        "MawBank",
+        "Art of War",
+        "Toy Ornithopter",
+        "CeramicFish",
+        "Vajra",
+        "Centennial Puzzle",
+        "Strawberry",
+        "Happy Flower",
+        "Oddly Smooth Stone",
+        "War Paint",
+        "Bronze Scales",
+        "Juzu Bracelet",
+        "Dream Catcher",
+        "Nunchaku",
+        "Tiny Chest",
+        "Orichalcum",
+        "Anchor",
+        "Bag of Marbles",
+        "DataDisk"
+      ],
+      "UNCOMMON": [
+        "Bottled Tornado",
+        "Sundial",
+        "Kunai",
+        "Pear",
+        "Blue Candle",
+        "Eternal Feather",
+        "StrikeDummy",
+        "Singing Bowl",
+        "Matryoshka",
+        "InkBottle",
+        "The Courier",
+        "Frozen Egg 2",
+        "Ornamental Fan",
+        "Bottled Lightning",
+        "Gremlin Horn",
+        "HornCleat",
+        "Toxic Egg 2",
+        "Letter Opener",
+        "Question Card",
+        "Bottled Flame",
+        "Shuriken",
+        "Molten Egg 2",
+        "Meat on the Bone",
+        "Darkstone Periapt",
+        "Mummified Hand",
+        "Pantograph",
+        "White Beast Statue",
+        "Mercury Hourglass",
+        "Symbiotic Virus",
+        "Cables"
+      ],
+      "RARE": [
+        "Ginger",
+        "Old Coin",
+        "Bird Faced Urn",
+        "Unceasing Top",
+        "Torii",
+        "StoneCalendar",
+        "Shovel",
+        "WingedGreaves",
+        "Thread and Needle",
+        "Turnip",
+        "Ice Cream",
+        "Calipers",
+        "Lizard Tail",
+        "Prayer Wheel",
+        "Girya",
+        "Dead Branch",
+        "Du-Vu Doll",
+        "Pocketwatch",
+        "Mango",
+        "Incense Burner",
+        "Gambling Chip",
+        "Peace Pipe",
+        "CaptainsWheel",
+        "FossilizedHelix",
+        "TungstenRod",
+        "Emotion Chip"
+      ],
+      "SHOP": [
+        "Sling",
+        "HandDrill",
+        "Toolbox",
+        "Chemical X",
+        "Lee's Waffle",
+        "Orrery",
+        "DollysMirror",
+        "OrangePellets",
+        "PrismaticShard",
+        "ClockworkSouvenir",
+        "Frozen Eye",
+        "TheAbacus",
+        "Medical Kit",
+        "Cauldron",
+        "Strange Spoon",
+        "Membership Card",
+        "Runic Capacitor"
+      ],
+      "BOSS": [
+        "Fusion Hammer",
+        "Velvet Choker",
+        "Runic Dome",
+        "SlaversCollar",
+        "Snecko Eye",
+        "Pandora's Box",
+        "Cursed Key",
+        "Busted Crown",
+        "Ectoplasm",
+        "Tiny House",
+        "Sozu",
+        "Philosopher's Stone",
+        "Astrolabe",
+        "Black Star",
+        "SacredBark",
+        "Empty Cage",
+        "Runic Pyramid",
+        "Calling Bell",
+        "Coffee Dripper",
+        "Inserter",
+        "FrozenCore",
+        "Nuclear Battery"
+      ]
+    },
+    "watcher": {
+      "COMMON": [
+        "Whetstone",
+        "Boot",
+        "Blood Vial",
+        "MealTicket",
+        "Pen Nib",
+        "Akabeko",
+        "Lantern",
+        "Regal Pillow",
+        "Bag of Preparation",
+        "Ancient Tea Set",
+        "Smiling Mask",
+        "Potion Belt",
+        "PreservedInsect",
+        "Omamori",
+        "MawBank",
+        "Art of War",
+        "Toy Ornithopter",
+        "CeramicFish",
+        "Vajra",
+        "Centennial Puzzle",
+        "Strawberry",
+        "Happy Flower",
+        "Oddly Smooth Stone",
+        "War Paint",
+        "Bronze Scales",
+        "Juzu Bracelet",
+        "Dream Catcher",
+        "Nunchaku",
+        "Tiny Chest",
+        "Orichalcum",
+        "Anchor",
+        "Bag of Marbles",
+        "Damaru"
+      ],
+      "UNCOMMON": [
+        "Bottled Tornado",
+        "Sundial",
+        "Kunai",
+        "Pear",
+        "Blue Candle",
+        "Eternal Feather",
+        "StrikeDummy",
+        "Singing Bowl",
+        "Matryoshka",
+        "InkBottle",
+        "The Courier",
+        "Frozen Egg 2",
+        "Ornamental Fan",
+        "Bottled Lightning",
+        "Gremlin Horn",
+        "HornCleat",
+        "Toxic Egg 2",
+        "Letter Opener",
+        "Question Card",
+        "Bottled Flame",
+        "Shuriken",
+        "Molten Egg 2",
+        "Meat on the Bone",
+        "Darkstone Periapt",
+        "Mummified Hand",
+        "Pantograph",
+        "White Beast Statue",
+        "Mercury Hourglass",
+        "Yang",
+        "TeardropLocket"
+      ],
+      "RARE": [
+        "Ginger",
+        "Old Coin",
+        "Bird Faced Urn",
+        "Unceasing Top",
+        "Torii",
+        "StoneCalendar",
+        "Shovel",
+        "WingedGreaves",
+        "Thread and Needle",
+        "Turnip",
+        "Ice Cream",
+        "Calipers",
+        "Lizard Tail",
+        "Prayer Wheel",
+        "Girya",
+        "Dead Branch",
+        "Du-Vu Doll",
+        "Pocketwatch",
+        "Mango",
+        "Incense Burner",
+        "Gambling Chip",
+        "Peace Pipe",
+        "CaptainsWheel",
+        "FossilizedHelix",
+        "TungstenRod",
+        "CloakClasp",
+        "GoldenEye"
+      ],
+      "SHOP": [
+        "Sling",
+        "HandDrill",
+        "Toolbox",
+        "Chemical X",
+        "Lee's Waffle",
+        "Orrery",
+        "DollysMirror",
+        "OrangePellets",
+        "PrismaticShard",
+        "ClockworkSouvenir",
+        "Frozen Eye",
+        "TheAbacus",
+        "Medical Kit",
+        "Cauldron",
+        "Strange Spoon",
+        "Membership Card",
+        "Melange"
+      ],
+      "BOSS": [
+        "Fusion Hammer",
+        "Velvet Choker",
+        "Runic Dome",
+        "SlaversCollar",
+        "Snecko Eye",
+        "Pandora's Box",
+        "Cursed Key",
+        "Busted Crown",
+        "Ectoplasm",
+        "Tiny House",
+        "Sozu",
+        "Philosopher's Stone",
+        "Astrolabe",
+        "Black Star",
+        "SacredBark",
+        "Empty Cage",
+        "Runic Pyramid",
+        "Calling Bell",
+        "Coffee Dripper",
+        "HolyWater",
+        "VioletLotus"
+      ]
+    }
+  }
+}

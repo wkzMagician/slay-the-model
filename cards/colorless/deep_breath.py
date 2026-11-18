@@ -1,7 +1,6 @@
 """
 Colorless Uncommon Skill card - Deep Breath
 """
-from engine.runtime_api import add_actions
 from typing import List
 from cards.base import Card
 from entities.creature import Creature
@@ -22,7 +21,10 @@ class DeepBreath(Card):
     upgrade_draw = 2
 
     def on_play(self, targets: List[Creature] = []):
-        from actions.card import ShuffleAction
+        from actions.card_shuffle import DrawAfterShuffleAction, queue_active_shuffle
+        from engine.game_state import game_state
+        from engine.runtime_api import add_action
 
-        super().on_play(targets)
-        add_actions([ShuffleAction()], to_front=True)
+        if game_state.player and game_state.player.card_manager.get_pile("discard_pile"):
+            queue_active_shuffle()
+        add_action(DrawAfterShuffleAction(count=self.draw))

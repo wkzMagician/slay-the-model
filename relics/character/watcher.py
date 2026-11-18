@@ -14,7 +14,7 @@ from utils.types import RarityType, StatusType, CardType
 
 @register("relic")
 class PureWater(Relic):
-    rarity = RarityType.COMMON
+    rarity = RarityType.STARTER
     text_name = "Pure Water"
     text_description = "At the start of each combat, add 1 Miracle to your hand."
 

@@ -65,11 +65,11 @@ def test_apotheosis_upgrades_hand_draw_discard_and_exhaust():
 def test_discovery_is_not_restricted_to_colorless_pool(monkeypatch):
     captured = {}
 
-    def fake_get_random_card(*, namespaces=None, **kwargs):
+    def fake_fixed_choices(total, namespaces, rarities, card_types, pool_kind, rng):
         captured["namespaces"] = namespaces
-        return Strike()
+        return [Strike()]
 
-    monkeypatch.setattr("actions.card_choice.get_random_card", fake_get_random_card)
+    monkeypatch.setattr("actions.card_choice.fixed_choices", fake_fixed_choices)
 
     helper = create_test_helper()
     helper.create_player(energy=3)

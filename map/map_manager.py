@@ -940,8 +940,8 @@ class MapManager:
         
         # Ssserpent Head effect: gain 50 Gold
         if self.has_ssserpent_head:
-            from engine.game_state import game_state
-            game_state.player.gold += 50
-            tui_print(t("ui.ssserpent_head_gold", default="Ssserpent Head: Gained 50 gold!"))
+            from actions.reward import AddGoldAction
+
+            AddGoldAction(amount=50).execute()
         
         return chosen_type

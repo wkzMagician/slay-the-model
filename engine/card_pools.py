@@ -15,6 +15,11 @@ from utils.types import CardType, RarityType
 COLORS = ("ironclad", "silent", "defect", "watcher")
 NAMESPACES = (*COLORS, "colorless", "curse", "status")
 TIERS = ("COMMON", "UNCOMMON", "RARE")
+# Independent CardLibrary.curses HashMap iteration, fixed-source/JDK8/17 reference.
+CURSE_TRANSFORM_IDS = (
+    "Regret", "Injury", "Shame", "Parasite", "Normality",
+    "Doubt", "Writhe", "Pain", "Decay", "Clumsy",
+)
 
 
 @dataclass(frozen=True)
@@ -84,7 +89,7 @@ class CardPools:
         self.source = {key: list(reversed(values)) for key, values in self.current.items()}
 
     def candidates(self, namespaces=None, rarities=None, card_types=None, *, pool_kind="library", exclude_starter=False):
-        if pool_kind not in {"library", "current", "source", "combat", "transform", "shop"}:
+        if pool_kind not in {"library", "current", "source", "combat", "transform", "shop", "sorted"}:
             raise ValueError(f"Unknown card pool protocol: {pool_kind}")
         if pool_kind == "library":
             ids = [row.id for row in catalog() if row.module is not None]
@@ -119,7 +124,7 @@ class CardPools:
             if pool_kind == "combat" and row.healing:
                 continue
             result.append(card_id)
-        if pool_kind == "shop":
+        if pool_kind in ("shop", "sorted"):
             result.sort(key=java_id_key)
         return result
 

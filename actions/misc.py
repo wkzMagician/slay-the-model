@@ -1,9 +1,9 @@
 """
 Miscellaneous actions (room, shop, treasure).
 """
-from engine.random_streams import get_rng
+from engine.random_streams import StreamRandom, get_rng
 from engine.runtime_api import add_action, add_actions, publish_message, request_input, set_terminal_state
-from typing import Optional
+from typing import Optional, cast
 from actions.base import Action, LambdaAction
 from actions.card import AddCardAction
 from actions.display import InputRequestAction
@@ -15,6 +15,7 @@ from utils.registry import register
 from utils.result_types import GameTerminalState
 from utils.types import RarityType
 from tui.print_utils import tui_print
+from utils.compatible_random import float32, java_round_float
 
 
 # ============================================================================
@@ -115,8 +116,14 @@ class BuyItemAction(Action):
         if not isinstance(player_gold, (int, float)):
             player_gold = 0
 
+        room = getattr(game_state, "current_room", None)
+        prepare_prices = getattr(room, "prepare_prices", None)
+        if callable(prepare_prices):
+            prepare_prices()
+
         if self.shop_item.item_type == "card_removal":
-            final_price = getattr(self.shop_item, "base_price", 0)
+            current_quote = getattr(room, "actual_card_removal_price", None)
+            final_price = current_quote if current_quote is not None else getattr(self.shop_item, "base_price", 0)
             assert player_gold >= final_price
             gold_spent = final_price
             game_state.player.gold -= final_price
@@ -130,6 +137,10 @@ class BuyItemAction(Action):
                     if hasattr(room, "card_removal_price"):
                         room.card_removal_price = next_price
 
+            update_removal_price = getattr(room, "update_removal_price", None)
+            if callable(update_removal_price):
+                update_removal_price(after_removal=True)
+
             tui_print(t("ui.shop_removed_card", default="Removed a card from deck"))
 
             if _has_relic("MawBank", game_state):
@@ -141,7 +152,7 @@ class BuyItemAction(Action):
                 add_action(follow_up)
             return
 
-        ascension = getattr(game_state, "ascension_level", 0) if game_state else 0
+        ascension = getattr(game_state, "ascension", 0) if game_state else 0
         if not isinstance(ascension, (int, float)):
             ascension = 0
         final_price = self.shop_item.get_final_price_with_modifiers(ascension, game_state)
@@ -154,6 +165,9 @@ class BuyItemAction(Action):
             AddCardAction(card=self.shop_item.item, dest_pile="deck", source="shop").execute()
         elif self.shop_item.item_type == "relic":
             AddRelicByNameAction(relic_id=self.shop_item.item.idstr).execute()
+            on_relic_purchased = getattr(room, "on_shop_relic_purchased", None)
+            if callable(on_relic_purchased):
+                on_relic_purchased(self.shop_item.item.idstr)
         elif self.shop_item.item_type == "potion":
             AddPotionAction(potion=self.shop_item.item).execute()
 
@@ -207,6 +221,13 @@ class BuyItemAction(Action):
 # Treasure Actions
 # ============================================================================
 
+def _chest_gold(base_gold: int) -> int:
+    lower = float32(base_gold * float32(0.9))
+    upper = float32(base_gold * float32(1.1))
+    value = cast(StreamRandom, get_rng("treasure")).random_float(lower, upper)
+    return java_round_float(value)
+
+
 @register("action")
 class OpenChestAction(Action):
     """Action to open a treasure chest"""
@@ -249,8 +270,8 @@ class OpenChestAction(Action):
         elif self.treasure_room.chest_type == "small":
             actions = []
             if get_rng("treasure").random() < 0.50:
-                gold = get_rng("treasure").randint(23, 27)
-                actions.append(AddGoldAction(amount=gold))
+                gold = _chest_gold(25)
+                actions.append(AddGoldAction(amount=gold, source="treasure"))
             if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.COMMON]
             else:
@@ -268,8 +289,8 @@ class OpenChestAction(Action):
         elif self.treasure_room.chest_type == "medium":
             actions = []
             if get_rng("treasure").random() < 0.35:
-                gold = get_rng("treasure").randint(45, 55)
-                actions.append(AddGoldAction(amount=gold))
+                gold = _chest_gold(50)
+                actions.append(AddGoldAction(amount=gold, source="treasure"))
             relic_random = get_rng("treasure").random()
             if relic_random < 0.35:
                 rarities = [RarityType.COMMON]
@@ -290,8 +311,8 @@ class OpenChestAction(Action):
         elif self.treasure_room.chest_type == "large":
             actions = []
             if get_rng("treasure").random() < 0.50:
-                gold = get_rng("treasure").randint(68, 82)
-                actions.append(AddGoldAction(amount=gold))
+                gold = _chest_gold(75)
+                actions.append(AddGoldAction(amount=gold, source="treasure"))
             if get_rng("treasure").random() < 0.75:
                 rarities = [RarityType.UNCOMMON]
             else:

@@ -41,14 +41,11 @@ def test_confused_power():
     card = MockCard()
     player.card_manager.piles['hand'].append(card)
 
-    # Test on_card_draw queues the randomization action
+    # The draw callback completes the cost update synchronously.
     from engine.game_state import game_state
     game_state.action_queue.clear()
     power.on_card_draw(card)
-    assert len(game_state.action_queue.queue) == 1, "Should queue one LambdaAction"
-
-    # Execute queued action to randomize
-    game_state.execute_all_actions()
+    assert game_state.action_queue.is_empty()
 
     # Check cost was randomized (0-3)
     assert 0 <= card.cost <= 3, "Cost should be between 0-3"

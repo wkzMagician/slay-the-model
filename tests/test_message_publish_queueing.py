@@ -45,6 +45,7 @@ def test_publish_message_queues_follow_up_actions_in_global_queue():
 def test_shop_room_enter_publishes_without_participants_and_returns_only_menu(monkeypatch):
     helper = create_test_helper()
     player = helper.create_player(hp=80, max_hp=80, energy=3)
+    player.namespace = "ironclad"  # The merchant requires a playable character pool.
     player.relics = [_ShopRelic()]
     room = ShopRoom()
     room.init()

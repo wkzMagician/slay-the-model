@@ -51,7 +51,7 @@ class WomanInBlueEvent(Event):
                 name=LocalStr("events.woman_in_blue.buy", count=count),
                 detail=LocalStr("events.woman_in_blue.buy_detail", count=count, cost=cost),
                 actions=[LoseGoldAction(amount=cost),
-                         *[AddRandomPotionAction(character=game_state.player.character) for _ in range(count)],
+                         *[AddRandomPotionAction(character=game_state.player.character, uniform=True) for _ in range(count)],
                          LambdaAction(self.end_event)],
             ))
 

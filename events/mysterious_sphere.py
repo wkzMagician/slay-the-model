@@ -42,7 +42,7 @@ class MysteriousSphere(Event):
                         enemies=orb_walkers,
                         victory_actions=[
                             AddRandomRelicAction(rarity='rare'),
-                            AddGoldAction(amount=get_rng("misc").randint(45, 55)),
+                            AddGoldAction(amount=get_rng("misc").randint(45, 55), source="event_combat"),
                             AddRandomCardAction()
                         ]
                     )

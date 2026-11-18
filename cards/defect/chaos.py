@@ -3,7 +3,6 @@ from engine.random_streams import get_rng
 
 from typing import List
 
-from actions.base import LambdaAction
 from actions.orb import AddOrbAction
 from cards.base import Card
 from entities.creature import Creature
@@ -27,6 +26,6 @@ class Chaos(Card):
     def on_play(self, targets: List[Creature] = []):
         from engine.runtime_api import add_action
 
-        orb_types = [LightningOrb, FrostOrb, DarkOrb, PlasmaOrb]
+        orb_types = [DarkOrb, FrostOrb, LightningOrb, PlasmaOrb]
         for _ in range(self.get_magic_value("orbs")):
             add_action(AddOrbAction(get_rng("card_random").choice(orb_types)()))

@@ -145,7 +145,7 @@ def test_elite_relic_exhaustion_falls_through_and_excludes_owned(monkeypatch):
     h.game_state.obtained_relics.update(list_registered('relic'))
     monkeypatch.setattr(get_rng("relic"), "randint",lambda *args:0)
     AddEliteRelicAction().execute()
-    assert relic_ids(p) == ['RedCirclet']
+    assert relic_ids(p) == ['Circlet']
 
 
 def test_elite_reward_excludes_held_relic_even_without_obtain_history(monkeypatch):

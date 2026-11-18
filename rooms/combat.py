@@ -135,7 +135,7 @@ class CombatRoom(Room):
         # Calculate gold reward
         gold_amount = self._calculate_gold_reward()
         if gold_amount > 0:
-            actions.append(AddGoldAction(amount=gold_amount))
+            actions.append(AddGoldAction(amount=gold_amount, source="combat"))
 
         if self.room_type == RoomType.ELITE:
             actions.append(AddEliteRelicAction())
@@ -174,21 +174,12 @@ class CombatRoom(Room):
 
         # Add potion reward with probability check
         # Base 40% chance, -10% after drop, +10% after no drop
-        # White Beast Statue: always drop
-        if _has_relic("White Beast Statue", game_state):
-            # Always drop with White Beast Statue
-            actions.append(AddRandomPotionAction(
-                character=game_state.player.character
-            ))
-            game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
+        chance = 100 if _has_relic("White Beast Statue", game_state) else game_state.potion_drop_chance
+        if get_rng("potion").randint(0, 99) < chance:
+            actions.append(AddRandomPotionAction(character=game_state.player.character))
+            game_state.potion_drop_chance -= 10
         else:
-            if get_rng("potion").randint(1, 100) <= game_state.potion_drop_chance:
-                actions.append(AddRandomPotionAction(
-                    character=game_state.player.character
-                ))
-                game_state.potion_drop_chance = max(10, game_state.potion_drop_chance - 10)
-            else:
-                game_state.potion_drop_chance = min(90, game_state.potion_drop_chance + 10)
+            game_state.potion_drop_chance += 10
 
         actions.append(LeaveRoomAction(room=self))
         return actions
@@ -206,7 +197,13 @@ class CombatRoom(Room):
         """
 
         if self.room_type == RoomType.BOSS:
-            return get_rng("misc").randint(95, 105)
+            from engine.game_state import game_state
+            from utils.compatible_random import float32, java_round_float
+
+            amount = get_rng("misc").randint(95, 105)
+            if game_state.ascension >= 13:
+                return java_round_float(float32(amount * 0.75))
+            return amount
         elif self.room_type == RoomType.ELITE:
             return get_rng("treasure").randint(25, 35)
         else:

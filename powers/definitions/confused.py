@@ -2,11 +2,10 @@
 Confused power for SneckoEye relic.
 Randomizes card costs whenever a card is drawn.
 """
-from engine.random_streams import get_rng
-from engine.runtime_api import add_action, add_actions
-from typing import List, Optional
+from typing import cast
+
+from engine.random_streams import StreamRandom, get_rng
 from powers.base import Power, StackType
-from actions.base import Action, LambdaAction
 from utils.registry import register
 
 @register("power")
@@ -28,22 +27,11 @@ class ConfusedPower(Power):
         super().__init__(amount=amount, duration=duration, owner=owner)
 
     def on_card_draw(self, card):
-        """Randomize cost of a card when it is drawn.
-        
-        Args:
-            card: The card that was just drawn
-            
-        Returns:
-            List of actions to execute (empty list, effect is immediate)
-        """
-        # Randomize between 0 and 3 (like original Slay the Spire)
-        # Use LambdaAction to modify card cost via action pattern
-        def _randomize_card_cost() -> None:
-            randomized_cost = get_rng("card_random").randint(0, 3)
-            if hasattr(card.__class__, 'cost') and isinstance(getattr(card.__class__, 'cost'), property):
-                setattr(card, '_cost', randomized_cost)
-                return
-            setattr(card, 'cost', randomized_cost)
-
-        add_actions([LambdaAction(func=_randomize_card_cost)])
-        return
+        """Complete the original cost update during the draw callback."""
+        if card._cost < 0:
+            return
+        randomized_cost = cast(StreamRandom, get_rng("card_random")).random_int(3)
+        if card._cost != randomized_cost:
+            card._cost = randomized_cost
+            card.cost_until_end_of_turn = randomized_cost
+        card.cost_until_played = None

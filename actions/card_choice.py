@@ -5,8 +5,9 @@ from localization import LocalStr, t
 from utils.option import Option
 from utils.registry import register
 from utils.types import CardType, PilePosType, RarityType
-from utils.random import get_random_card, get_card_reward_options
+from utils.random import get_card_reward_options
 from engine.random_streams import get_rng
+from engine.card_generation import fixed_choices, foreign_choices, library_choices, neow_choices
 if TYPE_CHECKING:
     from cards.base import Card
 
@@ -285,7 +286,8 @@ class ChooseAddRandomCardAction(Action):
 
     def __init__(self, pile: str = 'hand', total: int = 3, namespace: Optional[str] = None, rarity: Optional[RarityType] = None,
                  card_type: Optional[CardType] = None, cost_until_end_of_turn: Optional[int] = None,
-                 copies: int = 1, must_select: bool = False, pool_kind: Optional[str] = None):
+                 copies: int = 1, must_select: bool = False, pool_kind: Optional[str] = None,
+                 selection_kind: str = "fixed"):
         self.pile = pile
         self.total = total
         self.namespace = namespace
@@ -295,6 +297,7 @@ class ChooseAddRandomCardAction(Action):
         self.copies = copies
         self.must_select = must_select
         self.pool_kind = pool_kind
+        self.selection_kind = selection_kind
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -304,20 +307,21 @@ class ChooseAddRandomCardAction(Action):
         from actions.display import InputRequestAction
 
         options = []
-        selected_card_ids = []  # Track selected cards to avoid duplicates
-        for _ in range(self.total):
-            random_card = get_random_card(
-                namespaces=[self.namespace] if self.namespace else None,
-                rarities=[self.rarity] if self.rarity else None,
-                card_types=[self.card_type] if self.card_type else None,
-                exclude_card_ids=selected_card_ids,  # Exclude already selected cards
-                exclude_starter=True,  # Exclude STARTER rarity from rewards
-                rng=get_rng("card" if self.pile == "deck" else "card_random"),
-                pool_kind=self.pool_kind or ("current" if self.pile == "deck" else "combat"),
+        if self.selection_kind == "foreign":
+            candidates = foreign_choices(self.total)
+        elif self.selection_kind == "neow":
+            candidates = neow_choices(self.total, self.namespace, self.rarity == RarityType.RARE)
+        elif self.selection_kind == "fixed":
+            candidates = fixed_choices(
+                self.total, [self.namespace] if self.namespace else None,
+                [self.rarity] if self.rarity else None,
+                [self.card_type] if self.card_type else None,
+                self.pool_kind or ("current" if self.pile == "deck" else "combat"),
+                get_rng("card" if self.pile == "deck" else "card_random"),
             )
-            if not random_card:
-                continue
-            selected_card_ids.append(random_card.idstr)  # Track this card
+        else:
+            raise ValueError(f"Unknown card choice protocol: {self.selection_kind}")
+        for random_card in candidates:
             # Apply a temporary cost override to the generated card.
             if self.cost_until_end_of_turn is not None:
                 random_card.cost_until_end_of_turn = self.cost_until_end_of_turn
@@ -839,7 +843,8 @@ class ChooseObtainCardAction(Action):
     def __init__(self, total: int = 3, namespace: Optional[str] = None, 
                  encounter_type: str = "normal", use_rolling_offset: bool = False,
                  exclude_set: Optional[List[str]] = None, pile: str = "deck",
-                 allow_upgraded: bool = False, can_skip: bool = True):
+                 allow_upgraded: bool = False, can_skip: bool = True,
+                 selection_kind: str = "combat"):
         self.total = total
         self.namespace = namespace
         self.encounter_type = encounter_type
@@ -848,6 +853,7 @@ class ChooseObtainCardAction(Action):
         self.pile = pile
         self.allow_upgraded = allow_upgraded
         self.can_skip = can_skip
+        self.selection_kind = selection_kind
     
     def execute(self) -> None:
         from engine.game_state import game_state
@@ -865,15 +871,20 @@ class ChooseObtainCardAction(Action):
             reward_namespace = None
 
         options = []
-        candidates = get_card_reward_options(
-            total=self.total,
-            namespaces=[reward_namespace] if reward_namespace else None,
-            encounter_type=self.encounter_type,
-            use_rolling_offset=self.use_rolling_offset,
-            exclude_set=self.exclude_set,
-            allow_upgraded=self.allow_upgraded,
-            preview_pile=self.pile,
-        )
+        if self.selection_kind == "library":
+            candidates = library_choices(self.total)
+        elif self.selection_kind == "combat":
+            candidates = get_card_reward_options(
+                total=self.total,
+                namespaces=[reward_namespace] if reward_namespace else None,
+                encounter_type=self.encounter_type,
+                use_rolling_offset=self.use_rolling_offset,
+                exclude_set=self.exclude_set,
+                allow_upgraded=self.allow_upgraded,
+                preview_pile=self.pile,
+            )
+        else:
+            raise ValueError(f"Unknown card reward protocol: {self.selection_kind}")
         for random_card in candidates:
             option = random_card.info() # random_card.display_name
             options.append(
@@ -890,7 +901,7 @@ class ChooseObtainCardAction(Action):
             and getattr(relic, "can_choose_max_hp_instead_of_card")()
             for relic in game_state.player.relics
         )
-        if can_singing_bowl:
+        if can_singing_bowl and self.selection_kind != "library":
             options.append(
                 Option(
                     name=LocalStr("ui.gain_max_hp_instead", default="Gain +2 Max HP"),

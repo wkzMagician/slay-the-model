@@ -25,6 +25,7 @@ class Discovery(Card):
         add_actions([
             ChooseAddRandomCardAction(
                 total=3,
+                must_select=True,
                 cost_until_end_of_turn=0 if self.upgrade_level > 0 else None,
             )
         ])

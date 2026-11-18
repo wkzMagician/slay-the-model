@@ -1,5 +1,5 @@
-from engine.random_streams import get_rng
-from typing import Any, List, Optional, TYPE_CHECKING
+from engine.random_streams import get_rng, StreamRandom
+from typing import Any, List, Optional, TYPE_CHECKING, cast
 from utils.registry import get_registered, list_registered
 from utils.types import CardType, RarityType
 
@@ -144,7 +144,7 @@ def reset_card_chance_common_counter():
     update_compensation(RarityType.RARE)
 
 
-def get_random_relic(characters: Optional[List[str]] = None, 
+def _get_registry_relic(characters: Optional[List[str]] = None,
                      rarities: Optional[List[RarityType]] = None,
                      exclude: Optional[List[str]] = None) -> Optional[Relic]:
     """
@@ -212,7 +212,7 @@ def get_random_relic(characters: Optional[List[str]] = None,
     selected_relic_cls = get_registered("relic", selected_relic_idstr)
     return selected_relic_cls() if selected_relic_cls else None
 
-def get_random_potion(characters: Optional[List[str]] = None,
+def _get_registry_potion(characters: Optional[List[str]] = None,
                       rarities: Optional[List[RarityType]] = None):
     """
     Get a random potion from registry based on criteria.
@@ -285,6 +285,33 @@ def get_random_potion(characters: Optional[List[str]] = None,
     selected_potion_idstr = get_rng("potion").choice(filtered_potion_idstrs)
     selected_potion_cls = get_registered("potion", selected_potion_idstr)
     return selected_potion_cls() if selected_potion_cls else None
+
+
+def get_random_relic(characters=None, rarities=None, exclude=None, *, from_end=False):
+    from engine.game_state import game_state
+    from relics.pools import TIERS
+    tiers = list(rarities or [RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE])
+    requested = {value.lower() for value in characters} if characters else {game_state.player.namespace}
+    if requested != {game_state.player.namespace} or any(tier.name not in TIERS for tier in tiers):
+        return _get_registry_relic(characters, rarities, exclude)
+    rng = cast(StreamRandom, get_rng("relic"))
+    if set(tiers) == {RarityType.COMMON, RarityType.UNCOMMON, RarityType.RARE}:
+        roll = rng.random_int(0, 99)
+        tier = RarityType.COMMON if roll < 50 else RarityType.UNCOMMON if roll < 83 else RarityType.RARE
+    else:
+        tier = tiers[0] if len(tiers) == 1 else rng.choice(tiers)
+    if tier == RarityType.BOSS:
+        return game_state.boss_relic_pool.draw(exclude=exclude or (), characters=characters)
+    return game_state.relic_pools.draw(tier, exclude or (), characters, from_end=from_end)
+
+
+def get_random_potion(characters=None, rarities=None, *, uniform=False, limited=False):
+    from engine.game_state import game_state
+    from potions.pool import catalog, draw_potion
+    roles = {value.lower() for value in characters} if characters else {game_state.player.namespace}
+    if len(roles) != 1 or not roles.issubset(catalog()["pools"]):
+        return _get_registry_potion(characters, rarities)
+    return draw_potion(next(iter(roles)), rarities, uniform=uniform, limited=limited)
 
 
 def get_random_events(act: int = 1, count: int = 1) -> List[Any]:

@@ -107,11 +107,11 @@ class NeoEvent(Event):
             ),
             Option(
                 name=LocalStr("blessing.choose_card_option"),
-                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace=game_state.player.character, rarity=None)]
+                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace=game_state.player.namespace, rarity=None, selection_kind="neow")]
             ),
             Option(
                 name=LocalStr("blessing.uncommon_colorless_option"),
-                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace="colorless", rarity=RarityType.UNCOMMON)]
+                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace="colorless", rarity=RarityType.UNCOMMON, selection_kind="neow")]
             ),
             Option(
                 name=LocalStr("blessing.random_rare_card_option"),
@@ -182,11 +182,11 @@ class NeoEvent(Event):
             ),
             Option(
                 name=LocalStr("blessing.choose_rare_card_option"),
-                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace=game_state.player.character, rarity=RarityType.RARE)]
+                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace=game_state.player.namespace, rarity=RarityType.RARE, selection_kind="neow")]
             ),
             Option(
                 name=LocalStr("blessing.choose_rare_colorless_card_option"),
-                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace="colorless", rarity=RarityType.RARE)]
+                actions=[ChooseAddRandomCardAction(pile="deck", total=3, namespace="colorless", rarity=RarityType.RARE, selection_kind="neow")]
             ),
             Option(
                 name=LocalStr("blessing.random_rare_relic_option"),

@@ -470,7 +470,7 @@ class RegenPotion(Potion):
 @register("potion")
 class SmokeBomb(Potion):
     """Escape non-boss combat without rewards"""
-    rarity = RarityType.UNCOMMON
+    rarity = RarityType.RARE
     category = "Global"
     name = "Smoke Bomb"
 
